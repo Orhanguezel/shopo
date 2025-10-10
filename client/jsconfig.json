@@ -1,0 +1,12 @@
+// client/tsconfig.json  (veya jsconfig.json)
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@api/*": ["api-manage/*"],
+      "@i18n/*": ["i18n/*"],
+      "@assets/*": ["src/assets/*"]
+    }
+  }
+}
