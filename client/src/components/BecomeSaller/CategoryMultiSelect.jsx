@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+// src/components/BecomeSaller/CategoryMultiSelect.jsx
+import { useEffect, useMemo, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import InputCom from "@/components/Helpers/InputCom";
 import { useGetPublicCategoriesQuery } from "@/api-manage/api-call-functions/public/publicCategories.api";
+import InputCom from "@/components/Helpers/InputCom";
 
 const guessName = (c) =>
   (typeof c?.name === "string" && c.name) ||
@@ -12,22 +13,41 @@ const guessName = (c) =>
   (c?.name && Object.values(c.name)[0]) ||
   "Category";
 
-function CategoryMultiSelect({
+export default function CategoryMultiSelect({
   value,
   onChange,
   required,
   disabled,
   label,
+  placeholder = "Select categories",
+  maxRender = 3,
 }) {
+  const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
+  const boxRef = useRef(null);
+
+  // ESC / dışarı tıklama ile kapat
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    const onClick = (e) => {
+      if (!boxRef.current) return;
+      if (!boxRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, []);
 
   // Aktif kategorileri çek (RTK Query)
-  const { data, isLoading, isError, error } = useGetPublicCategoriesQuery({
+  const { data, isLoading, isError } = useGetPublicCategoriesQuery({
     status: "active",
     pageSize: 1000,
   });
 
-  // RTK’dan gelen veriyi normalize et
+  // options: [{id, name}]
   const options = useMemo(() => {
     const items = data?.items || [];
     return items.map((c) => ({
@@ -36,6 +56,14 @@ function CategoryMultiSelect({
     }));
   }, [data]);
 
+  // Map’ler
+  const nameById = useMemo(() => {
+    const map = new Map();
+    options.forEach((o) => map.set(o.id, o.name));
+    return map;
+  }, [options]);
+
+  // Arama filtresi
   const filtered = useMemo(() => {
     const s = (q || "").toLowerCase();
     if (!s) return options;
@@ -44,89 +72,153 @@ function CategoryMultiSelect({
 
   const toggle = (id) => {
     if (disabled) return;
-    const next = value.includes(id) ? value.filter((x) => x !== id) : [...value, id];
+    const next = value.includes(id)
+      ? value.filter((x) => x !== id)
+      : [...value, id];
     onChange?.(next);
   };
 
+  const selectAllVisible = () => {
+    if (disabled) return;
+    const ids = filtered.map((o) => o.id);
+    const union = Array.from(new Set([...value, ...ids]));
+    onChange?.(union);
+  };
+
+  const clearAll = () => {
+    if (disabled) return;
+    onChange?.([]);
+  };
+
+  // Butonda görünen değer
+  const selectedNames = useMemo(() => {
+    const names = value.map((id) => nameById.get(id)).filter(Boolean);
+    if (names.length <= maxRender) return names.join(", ");
+    return `${names.slice(0, maxRender).join(", ")} +${names.length - maxRender}`;
+  }, [value, nameById, maxRender]);
+
   return (
-    <div>
-      <h3 className="text-[18px] font-semibold text-qblack mb-2" aria-label={label}>
+    <div className="relative" ref={boxRef}>
+      <h3 className="text-[18px] font-semibold text-qblack mb-2">
         {label} {required && <span className="text-qred">*</span>}
       </h3>
 
-      <div className="mb-3">
-        <InputCom
-          label="Search categories"
-          type="text"
-          inputClasses="h-[44px]"
-          name="category_search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          disabled={disabled}
-        />
-      </div>
-
-      {isLoading && (
-        <div className="mb-4 text-sm text-qgraytwo">Kategoriler yükleniyor…</div>
-      )}
-
-      {isError && (
-        <div className="mb-4 text-sm text-qred">
-          Kategori listesi alınamadı{error?.data?.message ? `: ${error.data.message}` : "."}
-          &nbsp;Yine de aşağıdan ID yazarak seçim yapabilirsiniz.
-        </div>
-      )}
-
-      {options.length > 0 && (
-        <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-56 overflow-auto border border-gray-200 p-3 rounded">
-          {filtered.map((c) => (
-            <label key={c.id} className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                className="w-4 h-4"
-                checked={value.includes(c.id)}
-                onChange={() => toggle(c.id)}
-                disabled={disabled}
-              />
-              <span>{c.name}</span>
-            </label>
-          ))}
-          {!filtered.length && (
-            <div className="col-span-full text-sm text-qgraytwo">
-              Aramanıza uygun kategori bulunamadı.
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Fallback: ID’leri virgülle gir */}
-      <InputCom
-        label="Category IDs (comma separated; fallback)"
-        type="text"
-        inputClasses="h-[44px]"
-        name="category_ids_fallback"
-        value={(value || []).join(",")}
-        onChange={(e) => {
-          if (disabled) return;
-          const raw = e.target.value || "";
-          const ids = raw.split(",").map((s) => s.trim()).filter(Boolean);
-          onChange?.(Array.from(new Set(ids)));
-        }}
+      {/* Trigger */}
+      <button
+        type="button"
         disabled={disabled}
-      />
-      <p className="text-xs text-qgraytwo mt-1">
-        Yukarıdaki listeden seçim yapabilir veya bu alana kategori ID’lerini girebilirsiniz.
-      </p>
+        onClick={() => setOpen((o) => !o)}
+        className={`w-full h-[44px] border border-gray-200 rounded px-3 flex items-center justify-between ${disabled ? "opacity-60 cursor-not-allowed" : "hover:border-gray-300"}`}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span className={`truncate ${value.length ? "text-qblack" : "text-qgraytwo"}`}>
+          {value.length ? selectedNames : placeholder}
+        </span>
+        <svg className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
+          <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
+        </svg>
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div
+          className="absolute z-20 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg"
+          role="listbox"
+        >
+          <div className="p-3 border-b border-gray-100">
+            <InputCom
+              label="Search"
+              type="text"
+              inputClasses="h-[40px]"
+              name="category_search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              disabled={disabled}
+            />
+            <div className="mt-2 flex gap-2">
+              <button
+                type="button"
+                onClick={selectAllVisible}
+                disabled={disabled || !filtered.length}
+                className="px-2 h-8 border rounded text-xs"
+              >
+                Select visible
+              </button>
+              <button
+                type="button"
+                onClick={clearAll}
+                disabled={disabled || !value.length}
+                className="px-2 h-8 border rounded text-xs"
+              >
+                Clear all
+              </button>
+            </div>
+          </div>
+
+          <div className="max-h-64 overflow-auto p-2">
+            {isLoading && (
+              <div className="text-sm text-qgraytwo px-2 py-1">Kategoriler yükleniyor…</div>
+            )}
+            {isError && (
+              <div className="text-sm text-qred px-2 py-1">
+                Kategori listesi alınamadı.
+              </div>
+            )}
+            {!isLoading && filtered.length === 0 && (
+              <div className="text-sm text-qgraytwo px-2 py-1">
+                Aramanıza uygun kategori bulunamadı.
+              </div>
+            )}
+            {filtered.map((c) => {
+              const checked = value.includes(c.id);
+              return (
+                <label
+                  key={c.id}
+                  className={`flex items-center gap-2 px-3 py-2 rounded cursor-pointer ${checked ? "bg-gray-50" : "hover:bg-gray-50"}`}
+                >
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4"
+                    checked={checked}
+                    onChange={() => toggle(c.id)}
+                    disabled={disabled}
+                  />
+                  <span className="text-sm">{c.name}</span>
+                </label>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center justify-between p-2 border-t border-gray-100">
+            <span className="text-xs text-qgraytwo">
+              {value.length} selected
+            </span>
+            <button
+              type="button"
+              className="text-sm px-3 h-8 rounded bg-qblack text-white disabled:opacity-60"
+              onClick={() => setOpen(false)}
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 CategoryMultiSelect.propTypes = {
+  /** Selected category IDs (ObjectId strings) */
   value: PropTypes.arrayOf(PropTypes.string),
+  /** (ids: string[]) => void */
   onChange: PropTypes.func,
   required: PropTypes.bool,
   disabled: PropTypes.bool,
   label: PropTypes.string,
+  placeholder: PropTypes.string,
+  /** Button’da kaç isim gösterilsin */
+  maxRender: PropTypes.number,
 };
 
 CategoryMultiSelect.defaultProps = {
@@ -134,6 +226,6 @@ CategoryMultiSelect.defaultProps = {
   required: true,
   disabled: false,
   label: "Categories",
+  placeholder: "Select categories",
+  maxRender: 3,
 };
-
-export default CategoryMultiSelect;
