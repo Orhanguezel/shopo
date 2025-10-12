@@ -1,4 +1,3 @@
-// src/api-manage/api-call-functions/public/publicCart.api.js
 import { api } from "@/api-manage/MainApi";
 import { Extra } from "@/api-manage/ApiRoutes";
 import { pickData } from "@/api-manage/another-formated-api/shapeList";
@@ -15,7 +14,7 @@ const getSessionHeaders = (session) => (session ? { "x-session-id": session } : 
 /* ---------- product type normalize ---------- */
 const ALLOWED_PRODUCT_TYPES = ["product", "ensotekprod", "sparepart", "menuitem"];
 
-const normalizeProductType = (t) => {
+export const normalizeProductType = (t) => {          // <-- export eklendi
   const raw = String(t || "product").toLowerCase().trim();
   // yaygın eşanlamlılar / düzeltmeler
   const map = {

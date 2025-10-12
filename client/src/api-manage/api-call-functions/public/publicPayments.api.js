@@ -1,31 +1,28 @@
+// src/api-manage/api-call-functions/public/publicPayments.api.js
 import { api } from "@/api-manage/MainApi";
 import { R } from "@/api-manage/ApiRoutes.js";
 import { pickData } from "@/api-manage/another-formated-api/shapeList";
 
 /**
  * Public Payments:
- *  (LEGACY)  POST {public.payments}/checkout
- *  (LEGACY)  POST {public.payments}/capture
- *  (LEGACY)  POST {public.payments}/refund/provider
- *  (LEGACY)  POST {public.payments}/webhooks/:provider
- *
  *  (NEW)     POST {public.payments}/intents/checkout
  *  (NEW)     POST {public.payments}/intents/capture
  *  (NEW)     POST {public.payments}/intents/refund/provider
  *  (NEW)     POST {public.payments}/intents/webhooks/:provider
- *  (DEV)     POST {public.payments}/webhooks/:provider          (normalize payload)
+ *
+ *  (LEGACY alias) fonksiyon adları korunur ama aynı intents/* uçlarına post eder.
  */
 export const publicPaymentsApi = api
   .enhanceEndpoints({ addTagTypes: ["PaymentIntent", "Payment"] })
   .injectEndpoints({
     endpoints: (build) => ({
-      /* ------------------ LEGACY ------------------ */
+      /* ------------------ LEGACY (alias) ------------------ */
 
-      /** Init intent by amount OR order (legacy path) */
+      /** (alias) Init intent by amount/order – intents/checkout’a yollar */
       initIntentByAmount: build.mutation({
         // { data, idempotencyKey? }
         query: ({ data, idempotencyKey }) => ({
-          url: R.public.payments.$.custom("checkout"),
+          url: R.public.payments.$.custom("intents/checkout"), // <-- DÜZELTİLDİ
           method: "POST",
           body: data,
           headers: idempotencyKey
@@ -36,10 +33,10 @@ export const publicPaymentsApi = api
         invalidatesTags: [{ type: "PaymentIntent", id: "LAST" }],
       }),
 
-      /** Capture payment (legacy path) */
+      /** (alias) Capture – intents/capture */
       capturePayment: build.mutation({
         query: (data) => ({
-          url: R.public.payments.$.custom("capture"),
+          url: R.public.payments.$.custom("intents/capture"), // <-- DÜZELTİLDİ
           method: "POST",
           body: data,
         }),
@@ -47,10 +44,10 @@ export const publicPaymentsApi = api
         invalidatesTags: [{ type: "Payment", id: "LAST" }],
       }),
 
-      /** Refund via provider (legacy path) */
+      /** (alias) Refund via provider – intents/refund/provider */
       refundViaProvider: build.mutation({
         query: (data) => ({
-          url: R.public.payments.$.custom("refund/provider"),
+          url: R.public.payments.$.custom("intents/refund/provider"), // <-- DÜZELTİLDİ
           method: "POST",
           body: data,
         }),
@@ -58,10 +55,12 @@ export const publicPaymentsApi = api
         invalidatesTags: [{ type: "Payment", id: "LAST" }],
       }),
 
-      /** Simulate webhook (legacy path) */
+      /** (alias) Webhook simulate – intents/webhooks/:provider */
       simulateWebhook: build.mutation({
         query: ({ provider, event }) => ({
-          url: R.public.payments.$.child("webhooks").custom(encodeURIComponent(provider)),
+          url: R.public.payments.$
+            .child("intents/webhooks") // <-- DÜZELTİLDİ
+            .custom(encodeURIComponent(provider)),
           method: "POST",
           body: event,
         }),
@@ -72,7 +71,6 @@ export const publicPaymentsApi = api
 
       /** Initialize Checkout Intent (amount/order) */
       initCheckoutIntent: build.mutation({
-        // { data, idempotencyKey? }
         query: ({ data, idempotencyKey }) => ({
           url: R.public.payments.$.custom("intents/checkout"),
           method: "POST",
@@ -81,13 +79,12 @@ export const publicPaymentsApi = api
             ? { "Idempotency-Key": idempotencyKey }
             : undefined,
         }),
-        transformResponse: pickData, // {intentId, providerRef, status, hostedUrl?, ...}
+        transformResponse: pickData, // -> {intentId, providerRef, status, hostedUrl?, clientSecret? ...}
         invalidatesTags: [{ type: "PaymentIntent", id: "LAST" }],
       }),
 
       /** Capture (intents) */
       captureCheckoutIntent: build.mutation({
-        // { provider, providerRef, amount? }
         query: (data) => ({
           url: R.public.payments.$.custom("intents/capture"),
           method: "POST",
@@ -99,7 +96,6 @@ export const publicPaymentsApi = api
 
       /** Refund via provider (intents) */
       refundCheckoutIntentProvider: build.mutation({
-        // { provider, providerRef, amount?, reason? }
         query: (data) => ({
           url: R.public.payments.$.custom("intents/refund/provider"),
           method: "POST",
@@ -110,8 +106,7 @@ export const publicPaymentsApi = api
       }),
 
       /** Webhook (intents/*) – gerçek sağlayıcı payload */
-      simulateIntentWebhook: build.mutation({
-        // { provider, event }
+      useSimulateIntentWebhook: build.mutation({
         query: ({ provider, event }) => ({
           url: R.public.payments.$
             .child("intents/webhooks")
@@ -122,12 +117,11 @@ export const publicPaymentsApi = api
         transformResponse: pickData,
       }),
 
-      /** Webhook (dev normalized payload) */
+      /** Webhook (dev normalized) – aynı route */
       simulateDevWebhook: build.mutation({
-        // { provider, event }
         query: ({ provider, event }) => ({
           url: R.public.payments.$
-            .child("webhooks")
+            .child("intents/webhooks") // <-- DÜZELTİLDİ
             .custom(encodeURIComponent(provider)),
           method: "POST",
           body: event,
@@ -139,11 +133,12 @@ export const publicPaymentsApi = api
   });
 
 export const {
-  /* legacy */
+  /* legacy aliases (artık intents/*’e post ediyor) */
   useInitIntentByAmountMutation,
   useCapturePaymentMutation,
   useRefundViaProviderMutation,
   useSimulateWebhookMutation,
+
   /* new intents */
   useInitCheckoutIntentMutation,
   useCaptureCheckoutIntentMutation,

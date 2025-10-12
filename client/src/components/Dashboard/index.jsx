@@ -20,7 +20,7 @@ import AddressesTab from "./tabs/AddressesTab";
 import Dashboard from "./tabs/Dashboard";
 import OrderTab from "./tabs/OrderTab";
 import PasswordTab from "./tabs/PasswordTab";
-import Payment from "./tabs/Payment";
+import Payment from "./tabs/Payment/index";
 import ProfileTab from "./tabs/ProfileTab";
 import SupportTab from "./tabs/SupportTab";
 import SellerProductsTab from "./tabs/seller/products";

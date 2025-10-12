@@ -5,7 +5,9 @@ import { apiUrl } from "./config";
 /** build helper */
 const build = (tree) => {
   const out = {};
-  Object.entries(tree || {}).forEach(([k, base]) => { out[k] = rest(base); });
+  Object.entries(tree || {}).forEach(([k, base]) => {
+    out[k] = rest(base);
+  });
   return out;
 };
 
@@ -25,31 +27,42 @@ const users = (p = "") => apiUrl(`${USERS_PREFIX}/${String(p).replace(/^\/+/, ""
 /* ----------------------------
  * REGISTRY + FALLBACK MERGE
  * ---------------------------- */
-const ADMIN_TREE = { ...(REGISTRY.admin || {}) };
+const ADMIN_FALLBACKS = {
+  orders: "orders/admin",
+  payments: "payments/admin",
+};
+
+const ADMIN_TREE = { ...(REGISTRY.admin || {}), ...ADMIN_FALLBACKS };
 
 const PUBLIC_FALLBACKS = {
-  products: "product",
+  products:   "product",
   categories: "category",
-  brands: "brand",
-  reviews: "review",
-  variants: "variants",
-  cart: "cart",
-  wishlist: "wishlist",
-  compare: "compare",
-  coupon: "coupon",
-  company: "company",
-  reports: "reports/public",
-  comments: "comment",
-  address: "address",             // ✅ eklendi
-  about: "about", 
-  news: "news",
-  contact: "contact",
-  faqs: "faq",
-  sellers: "sellers",
+  brands:     "brand",
+  reviews:    "review",
+  variants:   "variants",
+  cart:       "cart",
+  wishlist:   "wishlist",
+  compare:    "compare",
+  coupon:     "coupon",
+  company:    "company",
+  reports:    "reports/public",
+  comments:   "comment",
+  address:    "address",
+  about:      "about",
+  news:       "news",
+  contact:    "contact",
+  faqs:       "faq",
+  sellers:    "sellers",
+  orders:     "orders",
+  order:     "orders",
+  webhooks:   "webhooks",
+  payments:   "payments",
 };
 
 const PUBLIC_TREE = { ...(REGISTRY.public || {}) };
-Object.entries(PUBLIC_FALLBACKS).forEach(([k, v]) => { if (!PUBLIC_TREE[k]) PUBLIC_TREE[k] = v; });
+Object.entries(PUBLIC_FALLBACKS).forEach(([k, v]) => {
+  if (!PUBLIC_TREE[k]) PUBLIC_TREE[k] = v;
+});
 
 export const R = {
   admin: build(ADMIN_TREE),
@@ -57,24 +70,24 @@ export const R = {
 
   /* ===================== AUTHLITE (users/authlite) ===================== */
   authlite: {
-    me: () => auth("me"),
-    logout: () => auth("logout"),
-    registerEmail: () => auth("register-email"),
-    loginEmail: () => auth("login-email"),
-    loginGoogle: () => auth("login-google"),
-    loginFacebook: () => auth("login-facebook"),
-    forgotPassword: () => auth("forgot-password"),
-    resetPassword: () => auth("reset-password"),
-    changePassword: () => auth("change-password"),
+    me:               () => auth("me"),
+    logout:           () => auth("logout"),
+    registerEmail:    () => auth("register-email"),
+    loginEmail:       () => auth("login-email"),
+    loginGoogle:      () => auth("login-google"),
+    loginFacebook:    () => auth("login-facebook"),
+    forgotPassword:   () => auth("forgot-password"),
+    resetPassword:    () => auth("reset-password"),
+    changePassword:   () => auth("change-password"),
     changeEmailStart: () => auth("change-email/start"),
     changeEmailConfirm: () => auth("change-email/confirm"),
-    updateProfile: () => auth("profile"),
-    identities: () => auth("identities"),
-    unlinkIdentity: (provider) => auth(`identities/${provider}`),
-    linkGoogle: () => auth("identities/google"),
-    linkFacebook: () => auth("identities/facebook"),
-    devPeekReset: () => auth("__dev/peek-reset"),
-    devPeekEmailChange: () => auth("__dev/peek-email-change"),
+    updateProfile:    () => auth("profile"),
+    identities:       () => auth("identities"),
+    unlinkIdentity:   (provider) => auth(`identities/${provider}`),
+    linkGoogle:       () => auth("identities/google"),
+    linkFacebook:     () => auth("identities/facebook"),
+    devPeekReset:         () => auth("__dev/peek-reset"),
+    devPeekEmailChange:   () => auth("__dev/peek-email-change"),
   },
 
   /* ======================== USERS (users/...) ========================== */
@@ -193,13 +206,12 @@ export const Extra = {
       },
     },
 
-    // ✅ ADDRESS short-hands (raporların DIŞINDA)
+    // ADDRESS
     address: {
       list:       () => R.public.address.list(),
       create:     () => R.public.address.create(),
       byId:       (id) => R.public.address.get(id),
 
-      // custom endpoints
       user:       () => R.public.address.$.custom("user"),
       replaceAll: () => R.public.address.$.custom("all/replace"),
       replaceAllUser: () => R.public.address.$.custom("user/all/replace"),
@@ -209,5 +221,10 @@ export const Extra = {
     },
   },
 
-  admin: { payments: { webhooks: () => R.admin.webhooks.list() } },
+  // örnek admin kısa yolu
+  admin: {
+    payments: {
+      webhooks: () => R.admin.payments?.$.custom("webhooks"),
+    },
+  },
 };

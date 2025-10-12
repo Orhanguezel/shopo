@@ -1,47 +1,85 @@
-// client/api-manage/api-call-functions/admin/payments.gateways.js
+// src/api-manage/api-call-functions/admin/adminGateways.api.js
 import { api } from "@/api-manage/MainApi";
-import { R } from "@/api-manage/ApiRoutes.js";
-import { pickData } from "@/api-manage/another-formated-api/shapeList";
 
 /**
- * Admin – Gateways
- *  GET  /payments/admin/gateways
- *  POST /payments/admin/gateways   (upsert)
+ * Admin Gateways
+ *  GET    payments/admin/gateways
+ *  GET    payments/admin/gateways/:id
+ *  POST   payments/admin/gateways
+ *  PUT    payments/admin/gateways/:id
+ *  DELETE payments/admin/gateways/:id
+ *  POST   payments/admin/gateways/:id/test
  */
-export const adminGatewaysApi = api
-  .enhanceEndpoints({ addTagTypes: ["PaymentGateway"] })
+export const gatewaysAdminApi = api
+  .enhanceEndpoints({ addTagTypes: ["Gateway", "GatewayList"] })
   .injectEndpoints({
     endpoints: (build) => ({
-      /** List gateways */
+      /** List all gateways (optional filters: provider, isActive) */
       listGateways: build.query({
-        query: (params = {}) => ({ url: R.admin.payments.$.custom("gateways"), params }),
-        transformResponse: (res) => {
-          const items = res?.data ?? (Array.isArray(res) ? res : []) ?? [];
-          const total = res?.total ?? (Array.isArray(items) ? items.length : 0);
-          return { items, total };
-        },
+        query: (params = {}) => ({
+          url: "payments/admin/gateways",
+          params,
+        }),
+        transformResponse: (res) => res?.data ?? [],
         providesTags: (result) =>
-          result?.items?.length
+          result?.length
             ? [
-              ...result.items.map((g) => ({
-                type: "PaymentGateway",
-                id: g?._id || g?.id || g?.provider,
-              })),
-              { type: "PaymentGateway", id: "LIST" },
-            ]
-            : [{ type: "PaymentGateway", id: "LIST" }],
+                ...result.map((g) => ({ type: "Gateway", id: g?._id })),
+                { type: "GatewayList", id: "ADMIN" },
+              ]
+            : [{ type: "GatewayList", id: "ADMIN" }],
       }),
 
-      /** Upsert gateway (create/update by provider) */
-      upsertGateway: build.mutation({
-        // data: { provider, isActive, testMode, credentials:{...} }
-        query: (data) => ({
-          url: R.admin.payments.$.custom("gateways"),
+      /** Get single gateway */
+      getGateway: build.query({
+        query: (id) => ({ url: `payments/admin/gateways/${id}` }),
+        transformResponse: (res) => res?.data,
+        providesTags: (_r, _e, id) => [{ type: "Gateway", id }],
+      }),
+
+      /** Create gateway */
+      createGateway: build.mutation({
+        // body: { provider,isActive?,testMode?,credentials?,title?,allowedMethods? }
+        query: (body) => ({
+          url: "payments/admin/gateways",
           method: "POST",
-          body: data,
+          body,
         }),
-        transformResponse: pickData,
-        invalidatesTags: [{ type: "PaymentGateway", id: "LIST" }],
+        transformResponse: (res) => res?.data,
+        invalidatesTags: [{ type: "GatewayList", id: "ADMIN" }],
+      }),
+
+      /** Update gateway */
+      updateGateway: build.mutation({
+        // args: { id, ...fields }
+        query: ({ id, ...body }) => ({
+          url: `payments/admin/gateways/${id}`,
+          method: "PUT",
+          body,
+        }),
+        transformResponse: (res) => res?.data,
+        invalidatesTags: (_r, _e, { id }) => [
+          { type: "Gateway", id },
+          { type: "GatewayList", id: "ADMIN" },
+        ],
+      }),
+
+      /** Delete gateway */
+      deleteGateway: build.mutation({
+        query: (id) => ({
+          url: `payments/admin/gateways/${id}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: [{ type: "GatewayList", id: "ADMIN" }],
+      }),
+
+      /** Test gateway (checks minimal credentials) */
+      testGateway: build.mutation({
+        query: (id) => ({
+          url: `payments/admin/gateways/${id}/test`,
+          method: "POST",
+        }),
+        transformResponse: (res) => res?.data,
       }),
     }),
     overrideExisting: true,
@@ -49,5 +87,9 @@ export const adminGatewaysApi = api
 
 export const {
   useListGatewaysQuery,
-  useUpsertGatewayMutation,
-} = adminGatewaysApi;
+  useGetGatewayQuery,
+  useCreateGatewayMutation,
+  useUpdateGatewayMutation,
+  useDeleteGatewayMutation,
+  useTestGatewayMutation,
+} = gatewaysAdminApi;

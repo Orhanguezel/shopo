@@ -1,12 +1,11 @@
-// client/api-manage/api-call-functions/public/checkout.js
+// src/api-manage/api-call-functions/public/publicCheckout.api.js
 import { api } from "@/api-manage/MainApi";
 import { R } from "@/api-manage/ApiRoutes.js";
 import { pickData } from "@/api-manage/another-formated-api/shapeList";
 
 /**
- * Checkout (calc + create/override)
+ * Checkout (calc)
  * - POST /payments/checkout/calc
- * - POST /payments/checkout
  */
 export const checkoutApi = api
   .enhanceEndpoints({ addTagTypes: ["Checkout", "CheckoutCalc"] })
@@ -24,15 +23,15 @@ export const checkoutApi = api
         invalidatesTags: [{ type: "CheckoutCalc", id: "LAST" }],
       }),
 
-      /** Checkout oluştur (shipping override / hosted intent dahil) */
+      /** (alias) createCheckout -> şu an calc ile aynı endpoint */
       createCheckout: build.mutation({
         query: ({ data, idempotencyKey } = {}) => ({
-          url: R.public.payments.$.custom("checkout"),
+          url: R.public.payments.$.custom("checkout/calc"), // <-- DÜZELTİLDİ
           method: "POST",
           body: data,
           headers: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : undefined,
         }),
-        transformResponse: pickData, // -> { summary, payment?{hostedUrl,intentId,status,...} }
+        transformResponse: pickData,
         invalidatesTags: [{ type: "Checkout", id: "LAST" }],
       }),
     }),
@@ -41,5 +40,5 @@ export const checkoutApi = api
 
 export const {
   useCalculateCheckoutTotalsMutation,
-  useCreateCheckoutMutation,
+  useCreateCheckoutMutation, // alias, calc’ı çağırır
 } = checkoutApi;

@@ -1,27 +1,31 @@
 import PropTypes from "prop-types";
+import { useId } from "react";
 
 export default function InputCom({
   label = "",
   type = "text",
-  name,
+  name,                    // artık opsiyonel: verilmezse otomatik id
   placeholder = "",
   children = null,
-  inputHandler = undefined,   // eski kullanım desteği
-  onChange = undefined,       // yaygın kullanım
-  value = undefined,          // controlled yapmak için
+  inputHandler = undefined,
+  onChange = undefined,
+  value = undefined,
   inputClasses = "",
   labelClasses = "text-qgray text-[13px] font-normal",
-  wrapperClasses = "h-[44px]", // YÜKSEKLİK artık wrapper'da
+  wrapperClasses = "h-[44px]",
   containerClasses = "",
   ...rest
 }) {
+  const rid = useId();
+  const autoId = `inp-${rid}`;
+  const id = name || autoId;
+
   const handleChange = inputHandler || onChange;
   const isControlled = value !== undefined;
-  const id = name;
 
   const commonProps = {
     id,
-    name,
+    name: name || id,
     placeholder,
     ...(isControlled ? { value: value ?? "" } : {}),
     onChange: handleChange,
@@ -31,10 +35,7 @@ export default function InputCom({
   return (
     <div className={`input-com w-full ${containerClasses}`}>
       {label && (
-        <label
-          className={`input-label block mb-2 ${labelClasses || ""}`}
-          htmlFor={id}
-        >
+        <label className={`input-label block mb-2 ${labelClasses || ""}`} htmlFor={id}>
           {label}
         </label>
       )}
@@ -63,7 +64,7 @@ export default function InputCom({
 InputCom.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   type: PropTypes.string,
-  name: PropTypes.string.isRequired,
+  name: PropTypes.string, // ⬅ zorunlu DEĞİL artık
   placeholder: PropTypes.string,
   children: PropTypes.node,
   inputHandler: PropTypes.func,

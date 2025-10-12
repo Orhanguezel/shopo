@@ -1,31 +1,58 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import BreadcrumbCom from "../BreadcrumbCom";
 import EmptyCardError from "../EmptyCardError";
 import InputCom from "@/components/Helpers/InputCom";
 import PageTitle from "@/components/Helpers/PageTitle";
 import Layout from "@/components/Partials/Layout";
 import ProductsTable from "./ProductsTable";
-import { useGetMyCartQuery } from "@/api-manage/api-call-functions/public/publicCart.api";
+import {
+  useGetMyCartQuery,
+  useUpdatePricingMutation,
+} from "@/api-manage/api-call-functions/public/publicCart.api";
 
 function getSessionId() {
   try { return localStorage.getItem("cart_session") || undefined; } catch { return undefined; }
 }
-const fmt = (n) => Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt = (n) =>
+  Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export default function CardPage({ cart = true }) {
+  const [coupon, setCoupon] = useState("");
   const session = getSessionId();
-  const { data } = useGetMyCartQuery(session ? { session } : {});
+
+  const { data, refetch } = useGetMyCartQuery(session ? { session } : {});
+  const [applyPricing, { isLoading: applying }] = useUpdatePricingMutation();
+
   const items = Array.isArray(data?.items) ? data.items : [];
+  const currency =
+    (data?.currency || data?.totals?.currency || "EUR").toUpperCase();
+
   const subtotal =
     data?._numbers?.subtotal ??
     data?.subtotal ??
     items.reduce((s, it) => {
       const qty = it?.quantity ?? it?.qty ?? 1;
       const unit =
-        it?.unitPrice ?? it?.price ?? it?.product?.price?.current ?? it?.product?.price ?? 0;
+        it?.unitPrice ??
+        it?.price ??
+        it?.product?.price?.current ??
+        it?.product?.price ??
+        0;
       return s + Number(unit || 0) * Number(qty || 0);
     }, 0);
+
+  const onApplyCoupon = async () => {
+    const code = String(coupon || "").trim();
+    if (!code) return;
+    try {
+      await applyPricing({ couponCode: code }).unwrap();
+      await refetch();
+    } catch (e) {
+      alert(e?.data?.message || "Coupon could not be applied.");
+    }
+  };
 
   return (
     <Layout childrenClasses={cart ? "pt-0 pb-0" : ""}>
@@ -52,10 +79,24 @@ export default function CardPage({ cart = true }) {
               <div className="w-full sm:flex justify-between">
                 <div className="discount-code sm:w-[270px] w-full mb-5 sm:mb-0 h-[50px] flex">
                   <div className="flex-1 h-full">
-                    <InputCom type="text" placeholder="Discount Code" />
+                    <InputCom
+                      label="Coupon Code"
+                      name="coupon_code"
+                      value={coupon}
+                      onChange={(e) => setCoupon(e.target.value)}
+                      placeholder="SAVE10"
+                      wrapperClasses="h-[50px]"
+                    />
                   </div>
-                  <button type="button" className="w-[90px] h-[50px] black-btn">
-                    <span className="text-sm font-semibold">Apply</span>
+                  <button
+                    type="button"
+                    className="w-[90px] h-[50px] black-btn disabled:opacity-60"
+                    onClick={onApplyCoupon}
+                    disabled={!coupon.trim() || applying}
+                  >
+                    <span className="text-sm font-semibold">
+                      {applying ? "Applying..." : "Apply"}
+                    </span>
                   </button>
                 </div>
 
@@ -78,7 +119,9 @@ export default function CardPage({ cart = true }) {
                   <div className="sub-total mb-6">
                     <div className="flex justify-between mb-6">
                       <p className="text-[15px] font-medium text-qblack">Subtotal</p>
-                      <p className="text-[15px] font-medium text-qred">€{fmt(subtotal)}</p>
+                      <p className="text-[15px] font-medium text-qred">
+                        {currency} {fmt(subtotal)}
+                      </p>
                     </div>
                     <div className="w-full h-[1px] bg-[#EDEDED]" />
                   </div>
@@ -87,39 +130,19 @@ export default function CardPage({ cart = true }) {
                   <div className="shipping mb-6">
                     <span className="text-[15px] font-medium text-qblack mb-[18px] block">Shipping</span>
                     <ul className="flex flex-col space-y-1">
-                      <li>
-                        <div className="flex justify-between items-center">
-                          <div className="flex space-x-2.5 items-center">
-                            <div className="input-radio">
-                              <input type="radio" name="price" className="accent-pink-500" />
+                      {["Free Shipping", "Flat Rate", "Local Delivery"].map((label) => (
+                        <li key={label}>
+                          <div className="flex justify-between items-center">
+                            <div className="flex space-x-2.5 items-center">
+                              <div className="input-radio">
+                                <input type="radio" name="shipping_price" className="accent-pink-500" />
+                              </div>
+                              <span className="text-[13px] text-normal text-qgraytwo">{label}</span>
                             </div>
-                            <span className="text-[13px] text-normal text-qgraytwo">Free Shipping</span>
+                            <span className="text-[13px] text-normal text-qgraytwo">+{currency} 00.00</span>
                           </div>
-                          <span className="text-[13px] text-normal text-qgraytwo">+€00.00</span>
-                        </div>
-                      </li>
-                      <li>
-                        <div className="flex justify-between items-center">
-                          <div className="flex space-x-2.5 items-center">
-                            <div className="input-radio">
-                              <input type="radio" name="price" className="accent-pink-500" />
-                            </div>
-                            <span className="text-[13px] text-normal text-qgraytwo">Flat Rate</span>
-                          </div>
-                          <span className="text-[13px] text-normal text-qgraytwo">+€00.00</span>
-                        </div>
-                      </li>
-                      <li>
-                        <div className="flex justify-between items-center">
-                          <div className="flex space-x-2.5 items-center">
-                            <div className="input-radio">
-                              <input type="radio" name="price" className="accent-pink-500" />
-                            </div>
-                            <span className="text-[13px] text-normal text-qgraytwo">Local Delivery</span>
-                          </div>
-                          <span className="text-[13px] text-normal text-qgraytwo">+€00.00</span>
-                        </div>
-                      </li>
+                        </li>
+                      ))}
                     </ul>
                   </div>
 
@@ -132,7 +155,9 @@ export default function CardPage({ cart = true }) {
                   <div className="total mb-6">
                     <div className="flex justify-between">
                       <p className="text-[18px] font-medium text-qblack">Total</p>
-                      <p className="text-[18px] font-medium text-qred">€{fmt(subtotal)}</p>
+                      <p className="text-[18px] font-medium text-qred">
+                        {currency} {fmt(subtotal)}
+                      </p>
                     </div>
                   </div>
 

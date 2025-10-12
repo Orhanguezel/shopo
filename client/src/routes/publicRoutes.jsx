@@ -7,6 +7,8 @@ import AllProductPage from "@/components/AllProductPage";
 import SingleProductPage from "@/components/SingleProductPage";
 import CardPage from "@/components/CartPage";
 import CheakoutPage from "@/components/CheakoutPage";
+import PaymentPage from "@/components/CheakoutPage/PaymentPage";
+import OrderSuccess from "@/components/CheakoutPage/OrderSuccess";
 import Wishlist from "@/components/Wishlist";
 import FlashSale from "@/components/FlashSale";
 import SallerPage from "@/components/SallerPage";
@@ -43,6 +45,8 @@ export const publicRoutes = [
 
   { path: "/cart", element: <CardPage /> },
   { path: "/checkout", element: <CheakoutPage /> },
+  { path: "/payment", element: <PaymentPage /> },
+  { path: "/order-success", element: <OrderSuccess /> },
   { path: "/wishlist", element: <Wishlist /> },
   { path: "/flash-sale", element: <FlashSale /> },
   { path: "/saller-page", element: <SallerPage /> },

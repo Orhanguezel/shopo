@@ -30,7 +30,7 @@ export const REGISTRY = {
     inventory:        "inventory/admin",
     loyalty:          "loyalty/admin",
     media:            "media/admin",
-    orders:           "order/admin",
+    orders:           "orders/admin",
 
     // payments / gateways / webhooks
     payments:         "payments/admin",
@@ -92,7 +92,7 @@ export const REGISTRY = {
 
     // ödeme, sipariş, medya
     payments:         "payments",
-    orders:           "order",
+    orders:           "orders",
     media:            "media",
 
     // sadakat, hediye, ücret/kupon/karşılaştırma

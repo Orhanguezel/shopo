@@ -1,3 +1,5 @@
+// src/api-manage/api-call-functions/public/publicProduct.api.js
+
 import { api } from "@/api-manage/MainApi";
 import { R, Extra } from "@/api-manage/ApiRoutes.js";
 import { shapeList } from "@/api-manage/another-formated-api/shapeList";
