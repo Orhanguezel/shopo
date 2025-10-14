@@ -1,4 +1,3 @@
-// src/components/BecomeSaller/CategoryMultiSelect.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { useGetPublicCategoriesQuery } from "@/api-manage/api-call-functions/public/publicCategories.api";
@@ -14,11 +13,12 @@ const guessName = (c) =>
   "Category";
 
 export default function CategoryMultiSelect({
-  value,
-  onChange,
-  required,
-  disabled,
-  label,
+  // ⚠️ defaultProps → varsayılan parametre
+  value = [],
+  onChange = () => {},
+  required = true,
+  disabled = false,
+  label = "Categories",
   placeholder = "Select categories",
   maxRender = 3,
 }) {
@@ -26,7 +26,6 @@ export default function CategoryMultiSelect({
   const [q, setQ] = useState("");
   const boxRef = useRef(null);
 
-  // ESC / dışarı tıklama ile kapat
   useEffect(() => {
     const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
     const onClick = (e) => {
@@ -41,13 +40,11 @@ export default function CategoryMultiSelect({
     };
   }, []);
 
-  // Aktif kategorileri çek (RTK Query)
   const { data, isLoading, isError } = useGetPublicCategoriesQuery({
     status: "active",
     pageSize: 1000,
   });
 
-  // options: [{id, name}]
   const options = useMemo(() => {
     const items = data?.items || [];
     return items.map((c) => ({
@@ -56,14 +53,12 @@ export default function CategoryMultiSelect({
     }));
   }, [data]);
 
-  // Map’ler
   const nameById = useMemo(() => {
     const map = new Map();
     options.forEach((o) => map.set(o.id, o.name));
     return map;
   }, [options]);
 
-  // Arama filtresi
   const filtered = useMemo(() => {
     const s = (q || "").toLowerCase();
     if (!s) return options;
@@ -75,22 +70,21 @@ export default function CategoryMultiSelect({
     const next = value.includes(id)
       ? value.filter((x) => x !== id)
       : [...value, id];
-    onChange?.(next);
+    onChange(next);
   };
 
   const selectAllVisible = () => {
     if (disabled) return;
     const ids = filtered.map((o) => o.id);
     const union = Array.from(new Set([...value, ...ids]));
-    onChange?.(union);
+    onChange(union);
   };
 
   const clearAll = () => {
     if (disabled) return;
-    onChange?.([]);
+    onChange([]);
   };
 
-  // Butonda görünen değer
   const selectedNames = useMemo(() => {
     const names = value.map((id) => nameById.get(id)).filter(Boolean);
     if (names.length <= maxRender) return names.join(", ");
@@ -103,7 +97,6 @@ export default function CategoryMultiSelect({
         {label} {required && <span className="text-qred">*</span>}
       </h3>
 
-      {/* Trigger */}
       <button
         type="button"
         disabled={disabled}
@@ -120,12 +113,8 @@ export default function CategoryMultiSelect({
         </svg>
       </button>
 
-      {/* Dropdown */}
       {open && (
-        <div
-          className="absolute z-20 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg"
-          role="listbox"
-        >
+        <div className="absolute z-20 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg" role="listbox">
           <div className="p-3 border-b border-gray-100">
             <InputCom
               label="Search"
@@ -137,53 +126,23 @@ export default function CategoryMultiSelect({
               disabled={disabled}
             />
             <div className="mt-2 flex gap-2">
-              <button
-                type="button"
-                onClick={selectAllVisible}
-                disabled={disabled || !filtered.length}
-                className="px-2 h-8 border rounded text-xs"
-              >
-                Select visible
-              </button>
-              <button
-                type="button"
-                onClick={clearAll}
-                disabled={disabled || !value.length}
-                className="px-2 h-8 border rounded text-xs"
-              >
-                Clear all
-              </button>
+              <button type="button" onClick={selectAllVisible} disabled={disabled || !filtered.length} className="px-2 h-8 border rounded text-xs">Select visible</button>
+              <button type="button" onClick={clearAll} disabled={disabled || !value.length} className="px-2 h-8 border rounded text-xs">Clear all</button>
             </div>
           </div>
 
           <div className="max-h-64 overflow-auto p-2">
-            {isLoading && (
-              <div className="text-sm text-qgraytwo px-2 py-1">Kategoriler yükleniyor…</div>
-            )}
-            {isError && (
-              <div className="text-sm text-qred px-2 py-1">
-                Kategori listesi alınamadı.
-              </div>
-            )}
+            {isLoading && <div className="text-sm text-qgraytwo px-2 py-1">Kategoriler yükleniyor…</div>}
+            {isError && <div className="text-sm text-qred px-2 py-1">Kategori listesi alınamadı.</div>}
             {!isLoading && filtered.length === 0 && (
-              <div className="text-sm text-qgraytwo px-2 py-1">
-                Aramanıza uygun kategori bulunamadı.
-              </div>
+              <div className="text-sm text-qgraytwo px-2 py-1">Aramanıza uygun kategori bulunamadı.</div>
             )}
+
             {filtered.map((c) => {
               const checked = value.includes(c.id);
               return (
-                <label
-                  key={c.id}
-                  className={`flex items-center gap-2 px-3 py-2 rounded cursor-pointer ${checked ? "bg-gray-50" : "hover:bg-gray-50"}`}
-                >
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4"
-                    checked={checked}
-                    onChange={() => toggle(c.id)}
-                    disabled={disabled}
-                  />
+                <label key={c.id} className={`flex items-center gap-2 px-3 py-2 rounded cursor-pointer ${checked ? "bg-gray-50" : "hover:bg-gray-50"}`}>
+                  <input type="checkbox" className="w-4 h-4" checked={checked} onChange={() => toggle(c.id)} disabled={disabled} />
                   <span className="text-sm">{c.name}</span>
                 </label>
               );
@@ -191,16 +150,8 @@ export default function CategoryMultiSelect({
           </div>
 
           <div className="flex items-center justify-between p-2 border-t border-gray-100">
-            <span className="text-xs text-qgraytwo">
-              {value.length} selected
-            </span>
-            <button
-              type="button"
-              className="text-sm px-3 h-8 rounded bg-qblack text-white disabled:opacity-60"
-              onClick={() => setOpen(false)}
-            >
-              Done
-            </button>
+            <span className="text-xs text-qgraytwo">{value.length} selected</span>
+            <button type="button" className="text-sm px-3 h-8 rounded bg-qblack text-white disabled:opacity-60" onClick={() => setOpen(false)}>Done</button>
           </div>
         </div>
       )}
@@ -209,23 +160,11 @@ export default function CategoryMultiSelect({
 }
 
 CategoryMultiSelect.propTypes = {
-  /** Selected category IDs (ObjectId strings) */
   value: PropTypes.arrayOf(PropTypes.string),
-  /** (ids: string[]) => void */
   onChange: PropTypes.func,
   required: PropTypes.bool,
   disabled: PropTypes.bool,
   label: PropTypes.string,
   placeholder: PropTypes.string,
-  /** Button’da kaç isim gösterilsin */
   maxRender: PropTypes.number,
-};
-
-CategoryMultiSelect.defaultProps = {
-  value: [],
-  required: true,
-  disabled: false,
-  label: "Categories",
-  placeholder: "Select categories",
-  maxRender: 3,
 };

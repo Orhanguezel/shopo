@@ -2,22 +2,20 @@ import { api } from "@/api-manage/MainApi";
 import { R } from "@/api-manage/ApiRoutes";
 
 // NOT: MainApi.tagTypes => ["User", "IDENTITIES", ...]
-// Cookie tabanlı oturum için fetchBaseQuery(credentials:'include') zaten aktif.
+// fetchBaseQuery({ credentials: 'include' }) zaten MainApi'de aktif olmalı.
 
 export const authApi = api.injectEndpoints({
   endpoints: (build) => ({
 
     /* ====================== SESSION ====================== */
     me: build.query({
-      // klasik: /users/account/me
       query: () => ({ url: R.users.account.me() }),
-      transformResponse: (res) => res?.user || res?.data || null,
+      transformResponse: (res) => res?.data ?? res?.user ?? res ?? null,
       providesTags: [{ type: "User", id: "ME" }],
     }),
     meAuthLite: build.query({
-      // alternatif: /users/authlite/me
       query: () => ({ url: R.authlite.me() }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       providesTags: [{ type: "User", id: "ME" }],
     }),
     logout: build.mutation({
@@ -44,7 +42,7 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         body: { email, password },
       }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
     changePasswordUser: build.mutation({
@@ -70,14 +68,14 @@ export const authApi = api.injectEndpoints({
       }),
     }),
 
-    /* ============ USERS / ACCOUNT (me/update/password/image/...) ============ */
+    /* ============ USERS / ACCOUNT ============ */
     accountUpdate: build.mutation({
       query: (payload) => ({
         url: R.users.account.update(),
         method: "PUT",
         body: payload,
       }),
-      transformResponse: (res) => res?.user ?? res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res?.user ?? res ?? null,
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
     accountPassword: build.mutation({
@@ -104,24 +102,18 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
-
     accountUploadProfileImage: build.mutation({
       query: ({ file }) => {
         const fd = new FormData();
-        // Sunucunun beklediği isim: avatar
-        fd.append("avatar", file);
+        fd.append("avatar", file); // backend 'avatar' bekliyor
         return {
           url: R.users.account.profileImage(),
-          method: "PUT", // backend POST istiyorsa 'POST' yapın
+          method: "PUT", // backend POST istiyorsa 'POST'
           body: fd,
-          // ÖNEMLİ: fetchBaseQuery 'multipart/form-data' header’ını **siz** set ETMEYİN
         };
       },
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
-
-
-
     accountRemoveProfileImage: build.mutation({
       query: () => ({ url: R.users.account.profileImage(), method: "DELETE" }),
       invalidatesTags: [{ type: "User", id: "ME" }],
@@ -135,7 +127,7 @@ export const authApi = api.injectEndpoints({
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
 
-    /* ====================== ADVANCED AUTH (users/advanced-auth) ====================== */
+    /* ====================== ADVANCED AUTH ====================== */
     sendVerification: build.mutation({
       query: () => ({ url: R.users.advancedAuth.sendVerification(), method: "POST" }),
     }),
@@ -170,14 +162,14 @@ export const authApi = api.injectEndpoints({
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
 
-    /* ====================== AUTHLITE (email/social/etc.) ====================== */
+    /* ====================== AUTHLITE ====================== */
     registerWithEmail: build.mutation({
       query: ({ email, password, name }) => ({
         url: R.authlite.registerEmail(),
         method: "POST",
         body: { email, password, name },
       }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
     loginWithEmail: build.mutation({
@@ -186,17 +178,17 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         body: { email, password },
       }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
     loginWithGoogle: build.mutation({
       query: ({ idToken }) => ({ url: R.authlite.loginGoogle(), method: "POST", body: { idToken } }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
     loginWithFacebook: build.mutation({
       query: ({ accessToken }) => ({ url: R.authlite.loginFacebook(), method: "POST", body: { accessToken } }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
 
@@ -209,7 +201,7 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         body: { email, code, token, newPassword },
       }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
     changePassword: build.mutation({
@@ -218,7 +210,7 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         body: { currentPassword, newPassword },
       }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
 
@@ -235,45 +227,51 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         body: { newEmail, code, token },
       }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
 
     updateProfileLite: build.mutation({
       query: (body) => ({ url: R.authlite.updateProfile(), method: "PATCH", body }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "User", id: "ME" }],
     }),
 
     // identities
     listIdentities: build.query({
       query: () => ({ url: R.authlite.identities() }),
-      transformResponse: (res) =>
-        res?.data ?? { providers: { local: false, google: false, facebook: false } },
+      transformResponse: (res) => {
+        const providers = res?.data?.providers ?? res?.data ?? res?.providers;
+        return providers
+          ? { providers }
+          : { providers: { local: false, google: false, facebook: false } };
+      },
       providesTags: [{ type: "IDENTITIES", id: "LIST" }],
     }),
     unlinkIdentity: build.mutation({
       query: ({ provider }) => ({ url: R.authlite.unlinkIdentity(provider), method: "DELETE" }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "IDENTITIES", id: "LIST" }],
     }),
     linkGoogle: build.mutation({
       query: ({ idToken }) => ({ url: R.authlite.linkGoogle(), method: "POST", body: { idToken } }),
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "IDENTITIES", id: "LIST" }],
     }),
     linkFacebook: build.mutation({
       query: ({ accessToken }) => ({ url: R.authlite.linkFacebook(), method: "POST", body: { accessToken } }),
+      transformResponse: (res) => res?.data ?? res ?? null,
       invalidatesTags: [{ type: "IDENTITIES", id: "LIST" }],
     }),
 
     // dev peeks
     devPeekReset: build.query({
       query: ({ email }) => ({ url: R.authlite.devPeekReset(), params: { email } }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
     }),
     devPeekEmailChange: build.query({
       query: ({ newEmail }) => ({ url: R.authlite.devPeekEmailChange(), params: { newEmail } }),
-      transformResponse: (res) => res?.data ?? null,
+      transformResponse: (res) => res?.data ?? res ?? null,
     }),
 
   }),

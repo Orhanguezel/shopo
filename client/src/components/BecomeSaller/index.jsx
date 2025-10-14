@@ -9,7 +9,7 @@ import Layout from "@/components/Partials/Layout";
 /* USER (owner) */
 import {
   useMeQuery,
-  useUpdateProfileLiteMutation,
+  useAccountUpdateMutation,
 } from "@/api-manage/api-call-functions/public/publicAuth.api";
 
 /* SELLER (shop) */
@@ -20,6 +20,8 @@ import {
   useUploadSellerAvatarMutation,
   useUploadSellerLogoMutation,
   useUploadSellerCoverMutation,
+  useUpdateMySellerAddressMutation,
+  // useRegisterSellerEmailMutation, // kullanılmıyor
 } from "@/api-manage/api-call-functions/public/publicSeller.api";
 
 /* NEW sections */
@@ -41,7 +43,7 @@ const pickFirstImageUrl = (images) => {
 };
 const isNonEmpty = (v) => (typeof v === "string" ? v.trim() !== "" : v != null);
 const toInt = (v) => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : undefined; };
-const clamp = (num, min, max) => typeof num === "number" ? Math.min(Math.max(num, min), max) : undefined;
+const clamp = (num, min, max) => (typeof num === "number" ? Math.min(Math.max(num, min), max) : undefined);
 const cleanIban = (v = "") => v.replace(/\s+/g, "").toUpperCase();
 const firstTruthy = (...vals) => {
   for (const v of vals) {
@@ -59,11 +61,19 @@ const getApiErrMsg = (err) => {
   return firstFieldErr || "İşlem başarısız.";
 };
 
+/* unwrap çıktısından id yakala */
+const getIdFromResult = (res) => {
+  const pickId = (o) => (o?._id || o?.id || undefined);
+  if (!res) return undefined;
+  const inner = res?.data?.data ?? res?.data ?? res;
+  if (Array.isArray(inner)) return pickId(inner[0]);
+  return pickId(inner);
+};
+
 export default function BecomeSaller() {
   /* ---------- OWNER (USER) ---------- */
   const { data: me, refetch: refetchMe } = useMeQuery();
-  const [updateProfile, { isLoading: isSavingOwner }] =
-    useUpdateProfileLiteMutation();
+  const [accountUpdate, { isLoading: isSavingOwner }] = useAccountUpdateMutation();
 
   const [firstName, setFirstName] = useState("");
   const [lastName,  setLastName]  = useState("");
@@ -92,20 +102,20 @@ export default function BecomeSaller() {
     refetch: refetchSeller,
   } = useGetMySellerQuery(undefined, {
     skip: !isLoggedIn,
-    refetchOnMountOrArgChange: true,
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
+    refetchOnMountOrArgChange: false,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
   });
 
-  const is404 = !!error && (error.status === 404 || error.originalStatus === 404);
   const myId = mySeller?._id || mySeller?.id;
   const hasMySeller = !!myId;
 
-  const [updateSeller, { isLoading: isSavingShop }] = useUpdateSellerPublicMutation();
-  const [applyAsSeller, { isLoading: isApplying }]  = useApplyAsSellerMutation();
+  const [updateSeller,     { isLoading: isSavingShop }]  = useUpdateSellerPublicMutation();
+  const [applyAsSeller,    { isLoading: isApplying }]    = useApplyAsSellerMutation();
+  const [updateSellerAddr, { isLoading: isSavingAddr }]  = useUpdateMySellerAddressMutation();
 
   const [shopName,       setShopName]       = useState("");
-  const [shopKind,       setShopKind]       = useState("person");
+  const [shopKind,       setShopKind]       = useState("person"); // 'person' | 'organization'
   const [shopContact,    setShopContact]    = useState("");
   const [shopEmail,      setShopEmail]      = useState("");
   const [shopPhone,      setShopPhone]      = useState("");
@@ -120,7 +130,7 @@ export default function BecomeSaller() {
   const [shopTags,       setShopTags]       = useState("");
   const [shopNotes,      setShopNotes]      = useState("");
 
-  const [selectedCatIds, setSelectedCatIds] = useState([]);  // string[]
+  const [selectedCatIds, setSelectedCatIds] = useState([]);
 
   // media
   const [logoImg,  setLogoImg]  = useState(null);
@@ -142,14 +152,19 @@ export default function BecomeSaller() {
       email:     u?.email || "",
       phone:     u?.phone,
       country:   u?.address?.country,
-      address:   u?.address?.line1 || u?.address?.street,
+      address:   u?.address?.addressLine || u?.address?.line1 || u?.address?.street,
       city:      u?.address?.city,
       zip:       u?.address?.zip || u?.address?.postalCode,
       avatarUrl: u?.profileImage?.url || u?.avatarUrl || null,
     };
 
     let overrides = {};
-    try { if (LS_KEY) { const raw = localStorage.getItem(LS_KEY); if (raw) overrides = JSON.parse(raw); } } catch {
+    try {
+      if (LS_KEY) {
+        const raw = localStorage.getItem(LS_KEY);
+        if (raw) overrides = JSON.parse(raw);
+      }
+    } catch {
       toast.error("Profil verisi okunamadı.");
     }
 
@@ -218,17 +233,14 @@ export default function BecomeSaller() {
     if (authRef.current !== uid) {
       authRef.current = uid;
       if (!uid) {
-        // logout
         setShopName(""); setShopKind("person"); setShopContact(""); setShopEmail(""); setShopPhone("");
         setShopCountry(""); setShopCity(""); setShopSlug("");
         setBillingTaxNo(""); setBillingIban(""); setBillingCurr(""); setBillingPTDays(""); setBillingDueDOM("");
         setShopTags(""); setShopNotes(""); setSelectedCatIds([]);
         setLogoImg(null); setCoverImg(null); setLogoFile(null); setCoverFile(null);
-      } else {
-        refetchSeller().catch(() => {});
       }
     }
-  }, [me, refetchSeller]);
+  }, [me]);
 
   /* inputs (images) */
   const validateImg = (file) => {
@@ -241,13 +253,26 @@ export default function BecomeSaller() {
     r.onload = (e) => setter(e.target?.result || null);
     r.readAsDataURL(file);
   };
-  const onProfileChange = (e) => { const f = e.target.files?.[0]; if (!f || !validateImg(f)) return; setAvatarFile(f); toDataURL(f, setProfileImg); };
-  const onLogoChange    = (e) => { const f = e.target.files?.[0]; if (!f || !validateImg(f)) return; setLogoFile(f);  toDataURL(f, setLogoImg); };
-  const onCoverChange   = (e) => { const f = e.target.files?.[0]; if (!f || !validateImg(f)) return; setCoverFile(f); toDataURL(f, setCoverImg); };
+  const onProfileChange = (e) => {
+    const f = e.target.files?.[0]; if (!f || !validateImg(f)) return;
+    setAvatarFile(f); toDataURL(f, setProfileImg);
+  };
+  const onLogoChange = (e) => {
+    const f = e.target.files?.[0]; if (!f || !validateImg(f)) return;
+    setLogoFile(f);  toDataURL(f, setLogoImg);
+  };
+  const onCoverChange = (e) => {
+    const f = e.target.files?.[0]; if (!f || !validateImg(f)) return;
+    setCoverFile(f); toDataURL(f, setCoverImg);
+  };
 
+  // Adres zorunlu
   const canSubmit = useMemo(
-    () => (email?.trim() && (shopName?.trim() || firstName?.trim())) && selectedCatIds.length > 0,
-    [email, shopName, firstName, selectedCatIds.length]
+    () =>
+      (email?.trim() && (shopName?.trim() || firstName?.trim())) &&
+      selectedCatIds.length > 0 &&
+      (address?.trim()?.length > 0),
+    [email, shopName, firstName, selectedCatIds, address]
   );
 
   const onReset = () => {
@@ -259,15 +284,36 @@ export default function BecomeSaller() {
   const onSubmit = async () => {
     try {
       if (!selectedCatIds.length) { toast.error("Lütfen en az bir kategori seçin."); return; }
+      if (!isLoggedIn) { toast.error("Devam etmek için giriş yapın."); return; }
 
-      // 1) OWNER (profil)
+      // === OWNER (profil) ===
+      const aLine = (address || "").trim();
+      const aCity = (city || "").trim();
+      const aZip  = (zip || "").trim();
+      const aCtry = (country || "").trim();
+
+      if (!aLine) {
+        toast.error("Address satırı zorunlu (Street, number...).");
+        return;
+      }
+
       const ownerPayload = {
-        name: `${firstName} ${lastName}`.trim(),
-        phone,
-        address: { line1: address, city, zip, country },
+        ...( `${(firstName||"").trim()} ${(lastName||"").trim()}`.trim()
+          ? { name: `${(firstName||"").trim()} ${(lastName||"").trim()}`.trim() }
+          : {}
+        ),
+        ...(phone?.trim() ? { phone: phone.trim() } : {}),
+        address: {
+          addressLine: aLine,
+          line1: aLine,
+          city: aCity || undefined,
+          postalCode: aZip || undefined,
+          zip: aZip || undefined,
+          country: aCtry || undefined,
+        },
       };
 
-      await toast.promise(updateProfile(ownerPayload).unwrap(), {
+      await toast.promise(accountUpdate(ownerPayload).unwrap(), {
         pending: "Kişisel profil güncelleniyor…",
         success: "Kişisel profil güncellendi.",
         error: "Kişisel profil güncellenemedi.",
@@ -281,15 +327,18 @@ export default function BecomeSaller() {
         });
       }
 
-      // 2) SHOP (seller)
+      // === SHOP (seller) ===
       const ptd = toInt(billingPTDays);
       const due = clamp(toInt(billingDueDOM), 1, 28);
+      const effectiveEmail = firstTruthy(shopEmail, email);
+      const effectivePhone = firstTruthy(shopPhone, phone);
+
       const payloadCommon = {
         companyName: shopName?.trim(),
         kind: shopKind,
         contactName: firstTruthy(shopContact, `${firstName} ${lastName}`),
-        email: firstTruthy(shopEmail, email),
-        phone: firstTruthy(shopPhone, phone),
+        email: effectiveEmail,
+        phone: effectivePhone,
         location: {
           country: firstTruthy(shopCountry),
           city: firstTruthy(shopCity),
@@ -306,7 +355,6 @@ export default function BecomeSaller() {
         categories: selectedCatIds,
       };
 
-      // boş nested'ları temizle
       if (!payloadCommon.location.country && !payloadCommon.location.city) delete payloadCommon.location;
       if (
         !payloadCommon.billing?.taxNumber &&
@@ -317,63 +365,128 @@ export default function BecomeSaller() {
       ) delete payloadCommon.billing;
       if (!payloadCommon.tags?.length) delete payloadCommon.tags;
 
-      if (hasMySeller) {
-        await toast.promise(updateSeller({ id: myId, ...payloadCommon }).unwrap(), {
+      // ---- create or reuse existing seller ----
+      let sellerId = myId;
+
+      if (!sellerId) {
+        const re = await refetchSeller().catch(() => ({}));
+        sellerId = getIdFromResult(re);
+      }
+
+      if (!sellerId) {
+        try {
+          const created = await toast.promise(
+            applyAsSeller({
+              shopName: shopName?.trim(),
+              phone: effectivePhone,
+              email: effectiveEmail,
+              notes: "Seller application",
+              categories: selectedCatIds,
+            }).unwrap(),
+            {
+              pending: "Başvurunuz gönderiliyor…",
+              success: "Başvurunuz alındı. Seller kaydınız oluşturuldu.",
+              error: "Seller başvurusu başarısız.",
+            }
+          );
+          sellerId = getIdFromResult(created);
+        } catch (e) {
+          const code = e?.data?.message || e?.message || "";
+          if (String(code).includes("seller_email_exists")) {
+            toast.error("Bu e-posta başka bir mağazada kayıtlı. Lütfen 'Seller Email' alanına farklı bir e-posta girin.");
+            return;
+          }
+          throw e;
+        }
+      }
+
+      if (!sellerId) {
+        console.error("Seller ID alınamadı; update çağrısı iptal edildi.");
+        toast.error("Seller ID alınamadı. Sayfayı yenileyip tekrar deneyin.");
+        return;
+      }
+
+      // ---- update seller core fields ----
+      await toast.promise(
+        updateSeller({ id: sellerId, ...payloadCommon }).unwrap(),
+        {
           pending: "Mağaza bilgileri güncelleniyor…",
           success: "Mağaza bilgileri güncellendi.",
           error: { render: ({ data }) => getApiErrMsg(data) },
-        });
+        }
+      );
 
-        if (logoFile) {
-          await toast.promise(uploadLogo({ file: logoFile }).unwrap(), {
-            pending: "Logo yükleniyor…",
-            success: "Logo güncellendi.",
-            error: "Logo yüklenemedi.",
-          });
-        }
-        if (coverFile && COVER_UPLOAD_ENABLED) {
-          await toast.promise(uploadCover({ file: coverFile }).unwrap(), {
-            pending: "Kapak görseli yükleniyor…",
-            success: "Kapak görseli güncellendi.",
-            error: "Kapak görseli yüklenemedi.",
-          });
-        }
-      } else {
-        // 1) seller oluştur (min alanlarla)
-        const created = await toast.promise(
-          applyAsSeller({
-            shopName: shopName?.trim(),
-            phone: firstTruthy(shopPhone, phone),
-            email: firstTruthy(shopEmail, email),
-            notes: "Seller application",
-            categories: selectedCatIds,
+      // === SELLER ADDRESS ===
+      // Hem tekli (/sellers/me/address) hem bulk (/addresses/seller/:sellerId/all/replace) ile uyumlu payload
+      const sellerCountryFinal = firstTruthy(shopCountry, aCtry);
+      const sellerCityFinal    = firstTruthy(shopCity, aCity);
+
+      if (aLine) {
+        const oneAddress = {
+          addressType: "seller",
+          addressLine: aLine,
+          city: sellerCityFinal || undefined,
+          postalCode: aZip || undefined,
+          country: sellerCountryFinal || undefined,
+          phone: effectivePhone,
+          email: effectiveEmail,
+        };
+
+        await toast.promise(
+          updateSellerAddr({
+            // — bulk yolu için —
+            sellerId,
+            addresses: [oneAddress],
+
+            // — tekli sellers/me/address yolu için —
+            addressType: "seller",
+            addressLine: aLine,
+            city: sellerCityFinal || undefined,
+            postalCode: aZip || undefined,
+            country: sellerCountryFinal || undefined,
+            phone: effectivePhone,
+            email: effectiveEmail,
+            address: { ...oneAddress }, // kritik: address.addressLine dolu
+
           }).unwrap(),
           {
-            pending: "Başvurunuz gönderiliyor…",
-            success: "Başvurunuz alındı. Seller kaydınız oluşturuldu.",
-            error: { render: ({ data }) => getApiErrMsg(data) },
+            pending: "Mağaza adresi kaydediliyor…",
+            success: "Mağaza adresi güncellendi.",
+            error: (err) => {
+              const msg = getApiErrMsg(err);
+              if (msg && /addressline/i.test(msg)) return "Adres satırı zorunlu.";
+              return "Mağaza adresi kaydedilemedi.";
+            },
           }
         );
-
-        const newId = created?.data?._id || created?.data?.id;
-        // 2) Detayları hemen güncelle
-        if (newId) {
-          await updateSeller({ id: newId, ...payloadCommon }).unwrap().catch(() => {});
-        }
-
-        if (logoFile)   await uploadLogo({ file: logoFile }).unwrap().catch(() => {});
-        if (coverFile && COVER_UPLOAD_ENABLED)
-          await uploadCover({ file: coverFile }).unwrap().catch(() => {});
       }
 
-      await Promise.all([refetchMe().catch(()=>{}), refetchSeller().catch(()=>{})]);
+      // medya
+      if (logoFile) {
+        await toast.promise(uploadLogo({ file: logoFile }).unwrap(), {
+          pending: "Logo yükleniyor…",
+          success: "Logo güncellendi.",
+          error: "Logo yüklenemedi.",
+        });
+      }
+      if (coverFile && COVER_UPLOAD_ENABLED) {
+        await toast.promise(uploadCover({ file: coverFile }).unwrap(), {
+          pending: "Kapak görseli yükleniyor…",
+          success: "Kapak görseli güncellendi.",
+          error: "Kapak görseli yüklenemedi.",
+        });
+      }
+
+      await Promise.allSettled([refetchMe(), refetchSeller()]);
     } catch (err) {
       console.error("Seller submit error:", err);
       toast.error(getApiErrMsg(err));
     }
   };
 
-  const isBusy = isFetching || isSavingOwner || isSavingShop || isApplying || upA || upL || upC;
+  const isBusy =
+    isFetching || isSavingOwner || isSavingShop || isSavingAddr ||
+    isApplying || upA || upL || upC;
 
   return (
     <Layout childrenClasses="pt-0 pb-0">
@@ -390,7 +503,6 @@ export default function BecomeSaller() {
 
         <div className="content-wrapper w-full mb-10">
           <div className="container-x mx-auto">
-            {/* BANNERLAR */}
             {!isLoggedIn && (
               <div className="w-full mb-4 p-4 rounded bg-yellow-50 border border-yellow-200">
                 <div className="flex items-center justify-between">
@@ -403,19 +515,19 @@ export default function BecomeSaller() {
               </div>
             )}
 
-            {isLoggedIn && !isFetching && is404 && (
+            {isLoggedIn && !hasMySeller && (
               <div className="w-full mb-4 p-4 rounded bg-blue-50 border border-blue-200">
                 <span>Henüz bir mağaza hesabınız yok. Aşağıdan oluşturabilirsiniz.</span>
               </div>
             )}
 
-            {isLoggedIn && !isFetching && isError && !is404 && (
+            {isLoggedIn && isError && !isFetching && (
               <div className="w-full mb-4 p-4 rounded bg-red-50 border border-red-200">
                 <span>Mağaza bilgileri yüklenemedi: {getApiErrMsg(error)}</span>
               </div>
             )}
 
-            {isFetching && (
+            {isLoggedIn && isFetching && (
               <div className="w-full mb-4 p-4 rounded bg-gray-50 border border-gray-200 animate-pulse">
                 Yükleniyor…
               </div>
@@ -425,7 +537,6 @@ export default function BecomeSaller() {
               <div className="flex xl:flex-row flex-col-reverse xl:space-x-11">
                 {/* LEFT – FORMS */}
                 <div className="xl:w-[824px]">
-                  {/* Seller (Owner) Information */}
                   <div className="flex items-center justify-between mb-4">
                     <h1 className="text-[22px] font-semibold text-qblack">Seller Information</h1>
                     <button
@@ -462,13 +573,12 @@ export default function BecomeSaller() {
                     </div>
 
                     <div className="flex sm:flex-row flex-col gap-5 mb-8">
-                      <InputCom label="Address" type="text" inputClasses="h-[50px]"
+                      <InputCom label="Address*" type="text" inputClasses="h-[50px]"
                                 name="address" value={address} onChange={(e)=>setAddress(e.target.value)} />
                       <InputCom label="Postcode / ZIP" type="text" inputClasses="h-[50px]"
                                 name="zip" value={zip} onChange={(e)=>setZip(e.target.value)} />
                     </div>
 
-                    {/* Shop (Seller) */}
                     <h2 className="text-[20px] font-semibold text-qblack mb-3">Shop Information</h2>
 
                     <div className="flex sm:flex-row flex-col gap-5 mb-5">
@@ -510,13 +620,8 @@ export default function BecomeSaller() {
                                 name="shop_city" value={shopCity} onChange={(e)=>setShopCity(e.target.value)} />
                     </div>
 
-                    {/* Categories */}
-                    <CategoryMultiSelect
-                      value={selectedCatIds}
-                      onChange={setSelectedCatIds}
-                    />
+                    <CategoryMultiSelect value={selectedCatIds} onChange={setSelectedCatIds} />
 
-                    {/* Billing */}
                     <div className="mt-8">
                       <BillingSection
                         taxNo={billingTaxNo} setTaxNo={setBillingTaxNo}
@@ -527,7 +632,6 @@ export default function BecomeSaller() {
                       />
                     </div>
 
-                    {/* Tags + Notes */}
                     <div className="mb-5">
                       <InputCom label="Tags (comma separated)" type="text" inputClasses="h-[50px]"
                                 name="tags" value={shopTags} onChange={(e)=>setShopTags(e.target.value)} />
@@ -600,8 +704,9 @@ export default function BecomeSaller() {
                         />
                         <input ref={logoImgInput} onChange={onLogoChange} type="file" className="hidden" accept="image/*" />
                         <button type="button" onClick={() => logoImgInput.current?.click()}
-                                className="w-8 h-8 absolute bottom-7 sm:right-0 right-[105px] bg-qblack text-white rounded-full grid place-items-center"
-                                title="Pick image">✎</button>
+                                className="w-8 h-8 absolute bottom-7 sm:right-0 right-[105px] bg-qblack text-white rounded-full grid place-items-center">
+                          ✎
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -619,8 +724,9 @@ export default function BecomeSaller() {
                         />
                         <input ref={coverImgInput} onChange={onCoverChange} type="file" className="hidden" accept="image/*" />
                         <button type="button" onClick={() => coverImgInput.current?.click()}
-                                className="w-8 h-8 absolute -bottom-4 right-4 bg-qblack text-white rounded-full grid place-items-center"
-                                title="Pick image">✎</button>
+                                className="w-8 h-8 absolute -bottom-4 right-4 bg-qblack text-white rounded-full grid place-items-center">
+                          ✎
+                        </button>
                       </div>
                     </div>
                   </div>

@@ -1,44 +1,93 @@
 // src/components/Profile/tabs/ProfileTab.jsx
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import InputCom from "@/components/Helpers/InputCom";
 import { toast } from "react-toastify";
 
-// API (AuthLite + Account)
+// ACCOUNT rotaları
 import {
   useMeQuery,
-  useUpdateProfileLiteMutation,
+  useAccountUpdateMutation,
   useAccountUploadProfileImageMutation,
-  // useAccountRemoveProfileImageMutation, // (ileride “remove” butonu eklersen aç)
+  useAccountRemoveProfileImageMutation,
 } from "@/api-manage/api-call-functions/public/publicAuth.api";
+
+// Adres modülü
+import {
+  useListUserAddressesQuery,
+  useCreateAddressMutation,
+  useUpdateAddressMutation, // ✅ eklendi (adı farklıysa sizdeki ada uyarlayın)
+} from "@/api-manage/api-call-functions/public/publicAddress.api";
 
 const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB
 const isNonEmpty = (v) => (typeof v === "string" ? v.trim() !== "" : v != null);
+const trimOrEmpty = (v) => (typeof v === "string" ? v.trim() : "");
+
+// Telefon normalizer
+const pickPhone = (m) => {
+  if (!m) return "";
+  return (
+    m.phone ||
+    m.phoneNumber ||
+    m.mobile ||
+    m.contact?.phone ||
+    m.contacts?.primaryPhone ||
+    (Array.isArray(m.phones)
+      ? (m.phones.find((p) => p?.isPrimary)?.number || m.phones[0]?.number)
+      : "") ||
+    ""
+  );
+};
+
+// Adres normalizer (me.address)
+const pickMeAddress = (m) => {
+  const a = m?.address ?? {};
+  return {
+    addressLine: a.addressLine || a.line1 || a.street || "",
+    city: a.city || "",
+    zip: a.zip || a.postalCode || a.postcode || "",
+    country: a.country || a.countryCode || "",
+  };
+};
 
 export default function ProfileTab() {
-  // Me verisi
+  /* -------- Me + Adresler -------- */
   const { data: me, refetch } = useMeQuery();
-  const [updateProfile, { isLoading }] = useUpdateProfileLiteMutation();
-  const [uploadProfileImage, { isLoading: isUploading }] =
-    useAccountUploadProfileImageMutation();
-  // const [removeProfileImage] = useAccountRemoveProfileImageMutation();
 
-  // Form state
+  const meId = me?.id || me?._id || null;
+  const isLoggedIn = !!meId;
+
+  const { data: addrRaw, refetch: refetchAddresses } = useListUserAddressesQuery(undefined, {
+    skip: !isLoggedIn,
+  });
+
+  const addresses = useMemo(
+    () => (Array.isArray(addrRaw?.data) ? addrRaw.data : addrRaw ?? []),
+    [addrRaw]
+  );
+
+  /* -------- Mutations -------- */
+  const [accountUpdate, { isLoading }] = useAccountUpdateMutation();
+  const [uploadProfileImage, { isLoading: isUploading }] = useAccountUploadProfileImageMutation();
+  const [removeProfileImage, { isLoading: isRemoving }] = useAccountRemoveProfileImageMutation();
+  const [createAddress, { isLoading: isCreatingAddr }] = useCreateAddressMutation();
+  const [updateAddress, { isLoading: isUpdatingAddr }] = useUpdateAddressMutation(); // ✅
+
+  /* -------- Form State -------- */
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName]   = useState("");
   const [email, setEmail]         = useState("");
   const [phone, setPhone]         = useState("");
   const [country, setCountry]     = useState("");
-  const [address, setAddress]     = useState("");
+  const [address, setAddress]     = useState(""); // addressLine
   const [city, setCity]           = useState("");
   const [zip, setZip]             = useState("");
 
   // Avatar preview & file
-  const [profileImg, setProfileImg] = useState(null);   // url veya dataURL
-  const [profileFile, setProfileFile] = useState(null); // File
+  const [profileImg, setProfileImg] = useState(null);
+  const [profileFile, setProfileFile] = useState(null);
   const profileImgInput = useRef(null);
 
-  // LocalStorage anahtarı (id veya _id)
-  const meId = me?.id || me?._id;
+  // LocalStorage anahtarı
   const LS_KEY = meId ? `profile_overrides:${meId}` : null;
 
   const splitName = (full = "") => {
@@ -48,26 +97,26 @@ export default function ProfileTab() {
     return [fn, ln];
   };
 
-  // me geldiğinde formu doldur + local overrides
+  /* -------- me geldiğinde formu doldur -------- */
   useEffect(() => {
     if (!me) return;
 
-    // Sunucu verisi
     const [fn, ln] = splitName(me?.name || "");
+    const serverPhone = pickPhone(me);
+    const a = pickMeAddress(me);
+
     const server = {
       firstName: fn,
-      lastName:  ln,
-      email:     me?.email || "",
-      phone:     me?.phone,
-      // AuthLite me minimal dönebilir; account/me kadar detaylı adres olmayabilir
-      country:   me?.address?.country,
-      address:   me?.address?.line1 || me?.address?.street,
-      city:      me?.address?.city,
-      zip:       me?.address?.zip || me?.address?.postalCode,
+      lastName: ln,
+      email: me?.email || "",
+      phone: serverPhone,
+      country: a.country,
+      address: a.addressLine,
+      city: a.city,
+      zip: a.zip,
       avatarUrl: me?.profileImage?.url || me?.avatarUrl || null,
     };
 
-    // Local overrides
     let overrides = {};
     try {
       if (LS_KEY) {
@@ -114,6 +163,7 @@ export default function ProfileTab() {
     }
   };
 
+  /* -------- Avatar handlers -------- */
   const browseProfileImg = () => profileImgInput.current?.click();
 
   const profileImgChangeHandler = (e) => {
@@ -130,23 +180,42 @@ export default function ProfileTab() {
     }
 
     setProfileFile(f);
-
     const reader = new FileReader();
     reader.onload = (ev) => setProfileImg(ev.target?.result || null);
     reader.readAsDataURL(f);
   };
 
+  const onRemovePhoto = async () => {
+    try {
+      await toast.promise(removeProfileImage().unwrap(), {
+        pending: "Fotoğraf kaldırılıyor...",
+        success: "Profil fotoğrafı kaldırıldı.",
+        error: "Profil fotoğrafı kaldırılamadı.",
+      });
+      setProfileImg(null);
+      setProfileFile(null);
+      if (profileImgInput.current) profileImgInput.current.value = "";
+      await refetch().catch(() => undefined);
+      saveLocalOverrides({ avatarUrl: null });
+    } catch (err) {
+      const msg = err?.data?.message || err?.error || err?.message || "Profil fotoğrafı kaldırılamadı.";
+      toast.error(msg);
+    }
+  };
+
+  /* -------- Reset -------- */
   const resetFromMe = () => {
     if (!me) return;
     const [fn, ln] = splitName(me?.name || "");
+    const a = pickMeAddress(me);
     setFirstName(fn || "");
     setLastName(ln || "");
     setEmail(me?.email || "");
-    setPhone(me?.phone || "");
-    setCountry(me?.address?.country || "");
-    setAddress(me?.address?.line1 || me?.address?.street || "");
-    setCity(me?.address?.city || "");
-    setZip(me?.address?.zip || me?.address?.postalCode || "");
+    setPhone(pickPhone(me) || "");
+    setCountry(a.country || "");
+    setAddress(a.addressLine || "");
+    setCity(a.city || "");
+    setZip(a.zip || "");
     setProfileImg(me?.profileImage?.url || me?.avatarUrl || null);
     setProfileFile(null);
     if (profileImgInput.current) profileImgInput.current.value = "";
@@ -157,46 +226,130 @@ export default function ProfileTab() {
     toast.info("Değişiklikler sıfırlandı.");
   };
 
+  /* -------- Address upsert helper -------- */
+  const upsertHomeAddress = async (addressPayload, { safeName, emailVal, phoneVal }) => {
+    // home -> primary -> first
+    const home =
+      addresses.find((a) => String(a?.addressType).toLowerCase() === "home") ||
+      addresses.find((a) => a?.isPrimary) ||
+      addresses[0];
+
+    // sadece dolu alanları gönder
+    const body = {
+      addressType: "home",
+      isPrimary: true,
+      ...(isNonEmpty(safeName)   ? { fullName: safeName, name: safeName } : {}),
+      ...(isNonEmpty(emailVal)   ? { email: emailVal } : {}),
+      ...(isNonEmpty(phoneVal)   ? { phone: phoneVal } : {}),
+      ...(addressPayload?.addressLine ? { addressLine: addressPayload.addressLine, line1: addressPayload.addressLine } : {}),
+      ...(addressPayload?.city       ? { city: addressPayload.city } : {}),
+      ...(addressPayload?.postalCode ? { postalCode: addressPayload.postalCode, zip: addressPayload.zip } : {}),
+      ...(addressPayload?.country    ? { country: addressPayload.country } : {}),
+    };
+
+    // hiçbir alan yoksa boşuna çağırma
+    const hasAny =
+      body.fullName || body.email || body.phone ||
+      body.addressLine || body.city || body.postalCode || body.country;
+    if (!hasAny) return;
+
+    try {
+      if (home && (home._id || home.id)) {
+        // UPDATE
+        await updateAddress({
+          id: home._id || home.id,
+          body,
+        }).unwrap();
+      } else {
+        // CREATE
+        await createAddress(body).unwrap();
+      }
+      await refetchAddresses().catch(() => undefined);
+    } catch (e) {
+      console.error("upsertHomeAddress failed:", e);
+      toast.error("Adres kaydedilemedi.");
+    }
+  };
+
+  /* -------- Update -------- */
   const getErrMsg = (err) =>
     err?.data?.message || err?.error || err?.message || "Profil güncellenemedi.";
 
+  const onUpdate = async () => {
+    const safeFirst = trimOrEmpty(firstName);
+    const safeLast  = trimOrEmpty(lastName);
+    const safeName  = `${safeFirst} ${safeLast}`.trim();
 
-const onUpdate = async () => {
-  const payload = {
-    name: `${firstName} ${lastName}`.trim(),
-    phone,
-    address: { line1: address, city, zip, country },
-  };
+    const aLine    = trimOrEmpty(address);
+    const aCity    = trimOrEmpty(city);
+    const aZip     = trimOrEmpty(zip);
+    const aCountry = trimOrEmpty(country);
+    const phoneVal = trimOrEmpty(phone);
+    const emailVal = trimOrEmpty(email);
 
-  try {
-    await toast.promise(updateProfile(payload).unwrap(), {
-      pending: "Profil güncelleniyor...",
-      success: "Profil güncellendi.",
-      error: { render: ({ data }) => getErrMsg(data) },
-    });
-
-    if (profileFile) {
-      // <-- TEK argüman: { file }
-      await toast.promise(
-        uploadProfileImage({ file: profileFile }).unwrap(),
-        {
-          pending: "Fotoğraf yükleniyor...",
-          success: "Profil fotoğrafı güncellendi.",
-          error: "Profil fotoğrafı yüklenemedi.",
-        }
-      );
+    // City/zip/country dolu ama addressLine boşsa uyar.
+    if (!aLine && (aCity || aZip || aCountry)) {
+      toast.error("Address satırı zorunludur (Street, number...).");
+      return;
     }
 
-    await refetch().catch(() => undefined);
-    saveLocalOverrides({
-      firstName, lastName, phone, country, address, city, zip,
-      avatarUrl: profileImg || null,
-    });
-  } catch (err) {
-    toast.error(getErrMsg(err));
-    console.error("Update profile failed:", err);
-  }
-};
+    const addressPayload = aLine
+      ? {
+          addressLine: aLine,
+          line1: aLine,
+          city: aCity || undefined,
+          postalCode: aZip || undefined,
+          zip: aZip || undefined,
+          country: aCountry || undefined,
+        }
+      : undefined;
+
+    const payload = {
+      ...(safeName ? { name: safeName } : {}),
+      ...(phoneVal ? { phone: phoneVal } : {}),
+      ...(addressPayload ? { address: addressPayload } : {}),
+    };
+
+    try {
+      await toast.promise(accountUpdate(payload).unwrap(), {
+        pending: "Profil güncelleniyor...",
+        success: "Profil güncellendi.",
+        error: { render: ({ data }) => getErrMsg(data) },
+      });
+
+      // Fotoğraf
+      if (profileFile) {
+        await toast.promise(
+          uploadProfileImage({ file: profileFile }).unwrap(),
+          {
+            pending: "Fotoğraf yükleniyor...",
+            success: "Profil fotoğrafı güncellendi.",
+            error: "Profil fotoğrafı yüklenemedi.",
+          }
+        );
+        if (profileImgInput.current) profileImgInput.current.value = "";
+      }
+
+      // ✅ Adres defterinde HOME kaydını oluştur/güncelle (eksik alanları tamamla)
+      await upsertHomeAddress(addressPayload, { safeName, emailVal, phoneVal });
+
+      await refetch().catch(() => undefined);
+
+      // Local override’ları güncelle
+      saveLocalOverrides({
+        firstName, lastName, phone, country, address, city, zip,
+        avatarUrl: profileImg || null,
+      });
+
+      toast.success("Adres defteriniz güncellendi.");
+    } catch (err) {
+      toast.error(getErrMsg(err));
+      console.error("Update profile failed:", err);
+    }
+  };
+
+  /* -------- Render -------- */
+  const isBusy = isLoading || isUploading || isRemoving || isCreatingAddr || isUpdatingAddr;
 
   return (
     <>
@@ -238,7 +391,7 @@ const onUpdate = async () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
-                readOnly // e-posta değişimi ayrı akış (change-email)
+                readOnly
               />
             </div>
             <div className="w-1/2 h-full">
@@ -270,7 +423,7 @@ const onUpdate = async () => {
           <div className="input-item mb-8">
             <InputCom
               label="Address*"
-              placeholder="your address here"
+              placeholder="Street, number, etc."
               type="text"
               inputClasses="h-[50px]"
               name="address"
@@ -322,6 +475,7 @@ const onUpdate = async () => {
               Profile of at least <span className="ml-1 text-qblack">300x300</span>. GIFs work too.
               <span className="ml-1 text-qblack">Max 5MB</span>.
             </p>
+
             <div className="flex xl:justify-center justify-start">
               <div className="relative">
                 <div className="sm:w-[198px] sm:h-[198px] w-[199px] h-[199px] rounded-full overflow-hidden relative">
@@ -334,6 +488,7 @@ const onUpdate = async () => {
                     className="object-cover w-full h-full"
                   />
                 </div>
+
                 <input
                   ref={profileImgInput}
                   onChange={profileImgChangeHandler}
@@ -341,17 +496,31 @@ const onUpdate = async () => {
                   className="hidden"
                   accept="image/*"
                 />
-                <div
-                  onClick={browseProfileImg}
-                  className="w-[32px] h-[32px] absolute bottom-7 sm:right-0 right-[105px] bg-qblack rounded-full cursor-pointer"
-                >
-                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16.5147 11.5C17.7284 12.7137 18.9234 13.9087 20.1296 15.115C19.9798 15.2611 19.8187 15.4109 19.6651 15.5683C17.4699 17.7635 15.271 19.9587 13.0758 22.1539C12.9334 22.2962 12.7948 22.4386 12.6524 22.5735C12.6187 22.6034 12.5663 22.6296 12.5213 22.6296C11.3788 22.6334 10.2362 22.6297 9.09365 22.6334C9.01498 22.6334 9 22.6034 9 22.536C9 21.4009 9 20.2621 9.00375 19.1271C9.00375 19.0746 9.02997 19.0109 9.06368 18.9772C10.4123 17.6249 11.7609 16.2763 13.1095 14.9277C14.2295 13.8076 15.3459 12.6913 16.466 11.5712C16.4884 11.5487 16.4997 11.5187 16.5147 11.5Z" fill="white"/>
-                    <path d="M20.9499 14.2904C19.7436 13.0842 18.5449 11.8854 17.3499 10.6904C17.5634 10.4694 17.7844 10.2446 18.0054 10.0199C18.2639 9.76139 18.5261 9.50291 18.7884 9.24443C19.118 8.91852 19.5713 8.91852 19.8972 9.24443C20.7251 10.0611 21.5492 10.8815 22.3771 11.6981C22.6993 12.0165 22.7105 12.4698 22.3996 12.792C21.9238 13.2865 21.4443 13.7772 20.9686 14.2717C20.9648 14.2792 20.9536 14.2867 20.9499 14.2904Z" fill="white"/>
-                  </svg>
+
+                <div className="flex items-center gap-3 mt-4">
+                  <button
+                    onClick={browseProfileImg}
+                    type="button"
+                    className="px-3 py-2 bg-qblack text-white text-xs rounded disabled:opacity-60"
+                    disabled={isUploading}
+                    title="Change photo"
+                  >
+                    {isUploading ? "Uploading..." : "Change Photo"}
+                  </button>
+
+                  <button
+                    onClick={onRemovePhoto}
+                    type="button"
+                    className="px-3 py-2 bg-qred text-white text-xs rounded disabled:opacity-60"
+                    disabled={isRemoving}
+                    title="Remove photo"
+                  >
+                    {isRemoving ? "Removing..." : "Remove Photo"}
+                  </button>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -364,9 +533,9 @@ const onUpdate = async () => {
           type="button"
           className="w-[164px] h-[50px] bg-qblack text-white text-sm disabled:opacity-60"
           onClick={onUpdate}
-          disabled={isLoading || isUploading}
+          disabled={isBusy}
         >
-          {isLoading || isUploading ? "Updating..." : "Update Profile"}
+          {isBusy ? "Updating..." : "Update Profile"}
         </button>
       </div>
     </>

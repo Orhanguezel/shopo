@@ -1,13 +1,19 @@
 import PropTypes from "prop-types";
 import InputCom from "@/components/Helpers/InputCom";
 
+// ⚠️ defaultProps yerine JS varsayılan parametreleri
 export default function BillingSection({
-  taxNo, setTaxNo,
-  iban, setIban,
-  curr, setCurr,
-  ptDays, setPtDays,
-  dueDom, setDueDom,
-  disabled,
+  taxNo = "",
+  setTaxNo,
+  iban = "",
+  setIban,
+  curr = "",
+  setCurr,
+  ptDays = "",
+  setPtDays,
+  dueDom = "",
+  setDueDom,
+  disabled = false,
 }) {
   return (
     <>
@@ -90,13 +96,4 @@ BillingSection.propTypes = {
   dueDom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   setDueDom: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-};
-
-BillingSection.defaultProps = {
-  taxNo: "",
-  iban: "",
-  curr: "",
-  ptDays: "",
-  dueDom: "",
-  disabled: false,
 };

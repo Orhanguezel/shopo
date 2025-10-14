@@ -20,6 +20,7 @@ const ADDRESS_TYPE_OPTIONS = [
   "warehouse",
   "showroom",
   "branch",
+  "seller",
   "other",
 ];
 

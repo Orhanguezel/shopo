@@ -3,34 +3,110 @@ import { useMeQuery } from "@/api-manage/api-call-functions/public/publicAuth.ap
 import { useListUserAddressesQuery } from "@/api-manage/api-call-functions/public/publicAddress.api";
 import { useGetMySellerQuery } from "@/api-manage/api-call-functions/public/publicSeller.api";
 
+/* ---------- helpers ---------- */
+// Genel telefon okuyucu (hem düz objeden hem nested contact/phones dizisinden okur)
+const readPhone = (obj) => {
+  if (!obj) return "";
+  return (
+    obj.phone ||
+    obj.phoneNumber ||
+    obj.mobile ||
+    obj.contact?.phone ||
+    obj.contacts?.primaryPhone ||
+    obj.contactPhone ||
+    obj.addressPhone ||
+    (Array.isArray(obj.phones)
+      ? (obj.phones.find((p) => p?.isPrimary)?.number || obj.phones[0]?.number)
+      : "") ||
+    ""
+  );
+};
+
+// Adres objesini normalize et (bazı kayıtlarda { address: {...} } olabilir)
+const normalizeAddress = (a) => (a?.address ? a.address : a) ?? null;
+
+const toCityCountry = (addrInput) => {
+  const a = normalizeAddress(addrInput);
+  if (!a) return "—";
+  const city    = a.city || a.town || a.locality;
+  const country = a.country || a.countryCode;
+  if (city && country) return `${city}, ${country}`;
+  return city || country || "—";
+};
+
+const toZip = (addrInput) => {
+  const a = normalizeAddress(addrInput);
+  return a?.postalCode || a?.zip || a?.postcode || "—";
+};
+
+// Kullanıcı telefonu: me → me.address → adres listesi (home → isPrimary → shipping → billing → herhangi)
+const getUserPhone = (me, addresses) => {
+  const fromMe = readPhone(me) || readPhone(me?.address);
+  if (fromMe) return fromMe;
+
+  if (!Array.isArray(addresses) || addresses.length === 0) return "";
+
+  const getAddrPhone = (a) => readPhone(a) || readPhone(a?.address) || "";
+  const pickBy = (pred) => addresses.find((a) => pred(a) && getAddrPhone(a));
+
+  const candidate =
+    pickBy((a) => a?.addressType === "home") ||
+    pickBy((a) => a?.isPrimary) ||
+    pickBy((a) => a?.addressType === "shipping") ||
+    pickBy((a) => a?.addressType === "billing") ||
+    addresses.find((a) => getAddrPhone(a));
+
+  return candidate ? getAddrPhone(candidate) : "";
+};
+
 export default function Dashboard() {
-  /* USER */
-  const { data: me, isLoading: meLoading, isError: meError } = useMeQuery();
-  const isLoggedIn = !!(me?.id || me?._id);
-  //const roles = Array.isArray(me?.roles) ? me.roles : (me?.role ? [me.role] : []);
-  //const mayBeSeller = roles.includes("seller"); // ipucu; asıl doğrulama /sellers/me
+  /* USER (account/me) */
+  const { data: meRaw, isLoading: meLoading, isError: meError } = useMeQuery();
+  const me = meRaw?.data ?? meRaw ?? null;
+
+  const isLoggedIn = !!(me?.id || me?._id || me?.email);
+
+  // ROLLER
+  const roles = Array.isArray(me?.roles) ? me.roles : (me?.role ? [me.role] : []);
+  const isSeller = roles.includes("seller");
 
   /* USER addresses */
   const {
-    data: addresses = [],
+    data: addrRaw,
     isLoading: addrLoading,
     isError: addrError,
   } = useListUserAddressesQuery(undefined, { skip: !isLoggedIn });
 
-  /* SELLER (shop) */
+  const addresses = Array.isArray(addrRaw?.data) ? addrRaw.data : (addrRaw ?? []);
+
+  /* SELLER (shop) – sadece seller ise çağır */
   const {
-    data: mySeller,
+    data: sellerRaw,
     isLoading: sellerLoading,
     isError: sellerError,
   } = useGetMySellerQuery(undefined, {
-    skip: !isLoggedIn, // login yoksa çağırma
+    skip: !isLoggedIn || !isSeller,
     refetchOnFocus: true,
     refetchOnReconnect: true,
   });
 
+  const mySeller = sellerRaw?.data ?? sellerRaw ?? null;
   const hasShop = !!(mySeller?._id || mySeller?.id);
 
-  /* ---- helpers ---- */
+  /* ---- localStorage override (ProfileTab ile aynı anahtar) ---- */
+  const meId = me?.id || me?._id || me?.userId || me?.email || null;
+  const LS_KEY = meId ? `profile_overrides:${meId}` : null;
+  let overrides = null;
+  try {
+    if (typeof window !== "undefined" && LS_KEY) {
+      const raw = localStorage.getItem(LS_KEY);
+      overrides = raw ? JSON.parse(raw) : null;
+    }
+  } catch {
+    overrides = null;
+  }
+
+  /* ---- USER helpers ---- */
   const fullName =
     me?.name ||
     [me?.firstName, me?.lastName].filter(Boolean).join(" ") ||
@@ -42,54 +118,70 @@ export default function Dashboard() {
       (fullName !== "—" ? fullName : "there")) || "there";
 
   const email = me?.email || "—";
-  const phone = me?.phone || "—";
 
-  // user address helpers
+  // ✔ telefon: me / addresses / localStorage sırasıyla
+  const phone = getUserPhone(me, addresses) || overrides?.phone || "—";
+
   const pickUserPrimary = () => {
-    const shipping = addresses.find((a) => a.addressType === "shipping");
-    const billing  = addresses.find((a) => a.addressType === "billing");
+    if (!Array.isArray(addresses)) {
+      return { shipping: null, billing: null, primary: null };
+    }
+    const shipping = addresses.find((a) => a?.addressType === "shipping");
+    const billing  = addresses.find((a) => a?.addressType === "billing");
     return {
       shipping: shipping || null,
-      billing: billing || null,
-      primary: shipping || billing || addresses[0] || null,
+      billing:  billing  || null,
+      primary:  shipping || billing || addresses[0] || null,
     };
   };
-  const toCityCountry = (a) =>
-    a ? (a.city && a.country ? `${a.city}, ${a.country}` : a.city || a.country || "—") : "—";
-  const toZip = (a) => (a?.postalCode || a?.zip || a?.postcode || "—");
 
   const { primary: userPrimary } = pickUserPrimary();
-  const personalCityCountry = toCityCountry(userPrimary);
-  const personalZip = toZip(userPrimary);
+  const meAddress = normalizeAddress(me?.address);
 
-  // seller address helpers (mySeller.addresses backend’de populate ediliyor)
+  const personalCityCountry =
+    addrError
+      ? "—"
+      : userPrimary
+        ? toCityCountry(userPrimary)
+        : meAddress
+          ? toCityCountry(meAddress)
+          : "—";
+
+  const personalZip =
+    addrError
+      ? "—"
+      : userPrimary
+        ? toZip(userPrimary)
+        : meAddress
+          ? toZip(meAddress)
+          : "—";
+
+  /* ---- SELLER helpers ---- */
   const sellerAddresses = Array.isArray(mySeller?.addresses) ? mySeller.addresses : [];
+
   const pickSellerPrimary = () => {
-    const billing = sellerAddresses.find((a) => a.addressType === "billing");
-    const shipping = sellerAddresses.find((a) => a.addressType === "shipping");
+    const billing  = sellerAddresses.find((a) => a?.addressType === "billing");
+    const shipping = sellerAddresses.find((a) => a?.addressType === "shipping");
     return {
-      billing: billing || null,
+      billing:  billing || null,
       shipping: shipping || null,
-      primary: billing || shipping || sellerAddresses[0] || null,
+      primary:  billing || shipping || sellerAddresses[0] || null,
     };
   };
   const { primary: shopPrimary } = pickSellerPrimary();
 
-  // Shop info fields
-  const shopName = mySeller?.companyName || mySeller?.displayName || "—";
+  const shopName    = mySeller?.companyName || mySeller?.displayName || mySeller?.shopName || "—";
   const shopContact = mySeller?.contactName || "—";
-  const shopEmail = mySeller?.email || "—";
-  const shopPhone = mySeller?.phone || "—";
-  const shopCityCountry =
-    (mySeller?.location?.city || mySeller?.location?.country)
-      ? toCityCountry(mySeller?.location)
-      : toCityCountry(shopPrimary);
-  const shopZip =
-    (mySeller?.location?.postalCode || mySeller?.location?.zip)
-      ? (mySeller?.location?.postalCode || mySeller?.location?.zip)
-      : toZip(shopPrimary);
+  const shopEmail   = mySeller?.email || "—";
+  const shopPhone   =
+    mySeller?.phone ||
+    mySeller?.contact?.phone ||
+    (Array.isArray(mySeller?.phones)
+      ? (mySeller.phones.find((p) => p?.isPrimary)?.number || mySeller.phones[0]?.number)
+      : "") ||
+    "—";
 
-  const loadingAny = meLoading || addrLoading || sellerLoading;
+  const loadingAny = meLoading || addrLoading || (isSeller && sellerLoading);
   const loadingText = loadingAny ? "Loading..." : (meError ? "Hello" : `Hello, ${greetName}`);
 
   return (
@@ -101,7 +193,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick stats – örnek, değişmedi */}
+      {/* Quick stats – örnek */}
       <div className="quick-view-grid w-full flex justify-between items-center mt-3">
         <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-qyellow transition-all duration-300 ease-in-out p-6">
           <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center"><span /></div>
@@ -110,13 +202,13 @@ export default function Dashboard() {
         </div>
         <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-qyellow transition-all duration-300 ease-in-out p-6">
           <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center"><span /></div>
-          <p className="text-xl text-white group-hover:text-qblacktext mt-5">New Orders</p>
-          <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">656</span>
+          <p className="text-xl text-white group-hover:text-qblacktext mt-5">Pending</p>
+          <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">12</span>
         </div>
         <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-qyellow transition-all duration-300 ease-in-out p-6">
           <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center"><span /></div>
-          <p className="text-xl text-white group-hover:text-qblacktext mt-5">New Orders</p>
-          <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">656</span>
+          <p className="text-xl text-white group-hover:text-qblacktext mt-5">Messages</p>
+          <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">3</span>
         </div>
       </div>
 
@@ -185,13 +277,13 @@ export default function Dashboard() {
                     <tr className="align-top h-8">
                       <td className="text-base text-qgraytwo w-[120px] pr-4">City:</td>
                       <td className="text-base text-qblack font-medium">
-                        {sellerError ? "—" : shopCityCountry}
+                        {sellerError ? "—" : toCityCountry(shopPrimary)}
                       </td>
                     </tr>
                     <tr className="align-top h-8">
                       <td className="text-base text-qgraytwo w-[120px] pr-4">Zip:</td>
                       <td className="text-base text-qblack font-medium">
-                        {sellerError ? "—" : shopZip}
+                        {sellerError ? "—" : toZip(shopPrimary)}
                       </td>
                     </tr>
                   </tbody>

@@ -1,12 +1,14 @@
-// client/tsconfig.json  (veya jsconfig.json)
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0",
+    "checkJs": false,
     "paths": {
-      "@/*": ["src/*"],
-      "@api/*": ["api-manage/*"],
-      "@i18n/*": ["i18n/*"],
-      "@assets/*": ["src/assets/*"]
+      "@/*": ["./src/*"],
+      "@api/*": ["./api-manage/*"],
+      "@i18n/*": ["./i18n/*"],
+      "@assets/*": ["./src/assets/*"]
     }
-  }
+  },
+  "include": ["src", "api-manage", "i18n", "vite.config.ts"]
 }
