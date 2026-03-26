@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+vendor/
+bun.lock
+
+# Environment files
+.env
+.env.local
+.env.backup
+
+# Next.js
+.next/
+out/
+
+# Build
+build/
+dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Laravel
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*.log
+bootstrap/cache/*.php
+
+# Package locks (keep one per tool)
+package-lock.json
+
+# SQL dumps & backups
+*.sql
+database/yedek/
+
+# Misc
+*.pem
