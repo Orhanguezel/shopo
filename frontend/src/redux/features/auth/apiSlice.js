@@ -224,8 +224,36 @@ export const authApis = apiSlice.injectEndpoints({
     }),
     returnRequestsApi: builder.query({
       query: (data) => {
+        const params = new URLSearchParams({
+          token: data.token,
+        });
+
+        if (data.status !== undefined && data.status !== null && data.status !== "all") {
+          params.set("status", data.status);
+        }
+
+        if (data.reason) {
+          params.set("reason", data.reason);
+        }
+
+        if (data.search) {
+          params.set("search", data.search);
+        }
+
+        if (data.dateFrom) {
+          params.set("date_from", data.dateFrom);
+        }
+
+        if (data.dateTo) {
+          params.set("date_to", data.dateTo);
+        }
+
+        if (data.perPage) {
+          params.set("per_page", data.perPage);
+        }
+
         return {
-          url: `${apiRoutes.returnRequests}?token=${data.token}`,
+          url: `${apiRoutes.returnRequests}?${params.toString()}`,
           method: "GET",
         };
       },

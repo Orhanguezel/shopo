@@ -369,6 +369,14 @@ Route::group([], function () {
         Route::put('return-requests/{id}/reject', [SellerReturnRequestController::class, 'reject']);
         Route::put('return-requests/{id}/update-status', [SellerReturnRequestController::class, 'updateStatus']);
 
+        // Stock Alerts
+        Route::get('products/low-stock', [\App\Http\Controllers\Seller\StockAlertController::class, 'lowStockProducts']);
+
+        // Notifications
+        Route::get('notifications', [\App\Http\Controllers\Seller\NotificationController::class, 'index']);
+        Route::put('notifications/{id}/read', [\App\Http\Controllers\Seller\NotificationController::class, 'markAsRead']);
+        Route::put('notifications/read-all', [\App\Http\Controllers\Seller\NotificationController::class, 'markAllAsRead']);
+
     });
 
     //delivery man routes
@@ -746,6 +754,11 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
     Route::put('return-requests/{id}/mark-received', [AdminReturnRequestController::class, 'markReceived']);
     Route::put('return-requests/{id}/refund', [AdminReturnRequestController::class, 'refund']);
     Route::put('return-requests/{id}/update-status', [AdminReturnRequestController::class, 'updateStatus']);
+
+    // Stock Alerts
+    Route::get('stock-alerts/settings', [\App\Http\Controllers\Admin\StockAlertController::class, 'settings']);
+    Route::put('stock-alerts/settings', [\App\Http\Controllers\Admin\StockAlertController::class, 'updateSettings']);
+    Route::get('products/low-stock', [\App\Http\Controllers\Admin\StockAlertController::class, 'lowStockProducts']);
 
     Route::resource('coupon', CouponController::class);
     Route::put('coupon-status/{id}',[CouponController::class,'changeStatus'])->name('coupon-status');

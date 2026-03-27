@@ -224,7 +224,7 @@ Acik noktalar:
 
 ## 4. Faz 3 - SMS / OTP
 
-**Durum:** Kismi uygulandi
+**Durum:** Buyuk oranda tamamlandi
 
 Yapilanlar:
 
@@ -237,6 +237,10 @@ Yapilanlar:
 - Signup akisina `OtpVerifyStep` komponenti eklendi ve `SignupWidget` icine OTP adimi baglandi.
 - `store-register` endpoint'i, telefon zorunluysa `otp_verified_token` kontrol edecek sekilde guncellendi.
 - Kayit sonrasi eski register-SMS gonderimi kaldirildi; boylece tek SMS dogrulama kaynagi yeni OTP akisidir.
+- `send-forget-password` endpoint'i telefon tabanli `password_reset` OTP akisini destekleyecek sekilde guncellendi.
+- `store-reset-password/{token}` endpoint'i dogrulanmis `otp_verified_token` ile sifre sifirlama yapacak sekilde guncellendi.
+- Forgot password frontend ekrani phone-first olacak sekilde `sendOtp -> verifyOtp -> resetPassword` zincirine baglandi.
+- Password reset OTP akisi icin feature test dosyasi eklendi.
 
 Referanslar:
 
@@ -247,17 +251,22 @@ Referanslar:
 - [backend/app/Services/IletimMerkeziService.php](/home/orhan/Documents/Projeler/shopo/backend/app/Services/IletimMerkeziService.php)
 - [backend/config/sms.php](/home/orhan/Documents/Projeler/shopo/backend/config/sms.php)
 - [backend/app/Http/Controllers/Auth/RegisterController.php](/home/orhan/Documents/Projeler/shopo/backend/app/Http/Controllers/Auth/RegisterController.php)
+- [backend/app/Http/Controllers/Auth/LoginController.php](/home/orhan/Documents/Projeler/shopo/backend/app/Http/Controllers/Auth/LoginController.php)
 - [backend/routes/api.php](/home/orhan/Documents/Projeler/shopo/backend/routes/api.php)
 - [frontend/src/components/Auth/Signup/OtpVerifyStep.jsx](/home/orhan/Documents/Projeler/shopo/frontend/src/components/Auth/Signup/OtpVerifyStep.jsx)
 - [frontend/src/components/Auth/Signup/SignupWidget.jsx](/home/orhan/Documents/Projeler/shopo/frontend/src/components/Auth/Signup/SignupWidget.jsx)
+- [frontend/src/components/Auth/ForgotPass/index.jsx](/home/orhan/Documents/Projeler/shopo/frontend/src/components/Auth/ForgotPass/index.jsx)
 - [frontend/src/redux/features/auth/apiSlice.js](/home/orhan/Documents/Projeler/shopo/frontend/src/redux/features/auth/apiSlice.js)
 - [frontend/src/appConfig/apiRoutes.js](/home/orhan/Documents/Projeler/shopo/frontend/src/appConfig/apiRoutes.js)
+- [backend/tests/Feature/Auth/PasswordResetOtpTest.php](/home/orhan/Documents/Projeler/shopo/backend/tests/Feature/Auth/PasswordResetOtpTest.php)
 
 Acik noktalar:
 
 - Gercek Iletimerkezi credentials ile uc uca SMS gonderim testi yapilmadi.
 - `shopo_db` veritabani olusturuldu ve `otp_verifications` migration'i uygulandi.
-- Frontend component dosyalari mevcut ESLint config nedeniyle dogrudan lint kapsaminda degil; JSX gozden gecirildi ancak tam build dogrulamasi yapilmadi.
+- Lokal HTTP dogrulamada `send-forget-password -> auth/otp/verify -> store-reset-password` zinciri calisti, cooldown da `429` verdi.
+- `PasswordResetOtpTest` eklendi; bu makinede `pdo_sqlite` olmadigi icin test kosusu skip oldu.
+- Frontend component dosyalari mevcut ESLint config nedeniyle dogrudan lint kapsaminda degil; JSX syntax dogrulamasi yapildi ancak tam build dogrulamasi yapilmadi.
 - OTP feature testleri eklendi, ancak bu ortamda `pdo_sqlite` kurulu olmadigi icin testler skip olarak calisiyor.
 
 Test referansi:
@@ -369,10 +378,8 @@ Tamamlananlar:
 - Return request akisi lokal ortamda uçtan uca dogrulandi: user create -> seller approve -> admin approve -> admin refund -> commission ledger negatif kayit.
 - Seller web paneline return request liste/detay ekranlari eklendi.
 - Admin web return request detay ekrani yeni state machine'e gore aksiyon bazli hale getirildi.
-
-Hala eksik olanlar:
-
-- Return request icin frontend App Router / dashboard tarafinda daha kapsamli filtreleme ve istatistik ekranlari
+- Kullanici profile dashboard icin return request stats kartlari ve server-side filtreleme eklendi.
+- User `return-requests` API endpoint'i artik `status`, `reason`, `search`, `date_from`, `date_to` filtreleri ve ozet `stats` payload'i donduruyor.
 
 Mevcut ama typo ile bulunan sayfa:
 
@@ -391,6 +398,8 @@ Referans:
 - [frontend/src/components/ProductsCompare/index.jsx](/home/orhan/Documents/Projeler/shopo/frontend/src/components/ProductsCompare/index.jsx)
 - [frontend/src/components/OrderCom/index.js](/home/orhan/Documents/Projeler/shopo/frontend/src/components/OrderCom/index.js)
 - [frontend/src/components/OrderCom/ReturnModal.jsx](/home/orhan/Documents/Projeler/shopo/frontend/src/components/OrderCom/ReturnModal.jsx)
+- [frontend/src/components/Auth/Profile/index.jsx](/home/orhan/Documents/Projeler/shopo/frontend/src/components/Auth/Profile/index.jsx)
+- [frontend/src/components/Auth/Profile/tabs/ReturnRequestsTab.jsx](/home/orhan/Documents/Projeler/shopo/frontend/src/components/Auth/Profile/tabs/ReturnRequestsTab.jsx)
 - [frontend/src/components/Blog/BlogDetails.jsx](/home/orhan/Documents/Projeler/shopo/frontend/src/components/Blog/BlogDetails.jsx)
 - [frontend/src/components/Blog/BlogCategoryPage.jsx](/home/orhan/Documents/Projeler/shopo/frontend/src/components/Blog/BlogCategoryPage.jsx)
 - [backend/routes/api.php](/home/orhan/Documents/Projeler/shopo/backend/routes/api.php)
@@ -400,6 +409,7 @@ Referans:
 - [backend/app/Http/Controllers/User/ReturnRequestController.php](/home/orhan/Documents/Projeler/shopo/backend/app/Http/Controllers/User/ReturnRequestController.php)
 - [backend/app/Http/Controllers/Seller/ReturnRequestController.php](/home/orhan/Documents/Projeler/shopo/backend/app/Http/Controllers/Seller/ReturnRequestController.php)
 - [backend/app/Http/Controllers/Admin/ReturnRequestController.php](/home/orhan/Documents/Projeler/shopo/backend/app/Http/Controllers/Admin/ReturnRequestController.php)
+- [frontend/src/redux/features/auth/apiSlice.js](/home/orhan/Documents/Projeler/shopo/frontend/src/redux/features/auth/apiSlice.js)
 - [backend/app/Http/Controllers/WEB/Seller/ReturnRequestController.php](/home/orhan/Documents/Projeler/shopo/backend/app/Http/Controllers/WEB/Seller/ReturnRequestController.php)
 - [backend/app/Http/Controllers/WEB/Admin/ReturnRequestController.php](/home/orhan/Documents/Projeler/shopo/backend/app/Http/Controllers/WEB/Admin/ReturnRequestController.php)
 - [backend/app/Models/ReturnRequest.php](/home/orhan/Documents/Projeler/shopo/backend/app/Models/ReturnRequest.php)

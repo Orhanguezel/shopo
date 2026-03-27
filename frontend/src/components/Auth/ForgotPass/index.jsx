@@ -14,7 +14,9 @@ import InputCom from "../../Helpers/InputCom";
 import LoaderStyleOne from "../../Helpers/Loaders/LoaderStyleOne";
 import ServeLangItem from "../../Helpers/ServeLangItem";
 import {
-  useUserForgotApiMutation,
+  useResendOtpApiMutation,
+  useSendOtpApiMutation,
+  useVerifyOtpApiMutation,
   useUserResetApiMutation,
 } from "@/redux/features/auth/apiSlice";
 import appConfig from "@/appConfig";
@@ -65,7 +67,7 @@ export default function ForgotPass() {
 
   // Component state management
   const [fields, setFields] = useState({
-    email: "",
+    phone: "",
     otp: "",
     newPass: "",
     confirmPassword: "",
@@ -101,29 +103,36 @@ export default function ForgotPass() {
   };
 
   /**
-   * Handle forgot password request (send OTP to email)
-   * @Initialization Forgot Api @const userForgotApi
+   * Handle forgot password request (send OTP to phone)
+   * @Initialization OTP send API
    * @func forgotSuccessHandler @param data @param statusCode
    * @func forgotErrorHandler @param error
    * @func doForgot
    */
-  const [userForgotApi, { isLoading: isForgotLoading }] =
-    useUserForgotApiMutation();
+  const [sendOtpApi, { isLoading: isForgotLoading }] = useSendOtpApiMutation();
   const forgotSuccessHandler = (data, statusCode) => {
     if (statusCode === 200 || statusCode === 201) {
       setResetpass(true);
       setForgotUser(false);
       setErrors(null);
+      toast.success(
+        data?.notification || data?.message || "Verification code sent."
+      );
     } else {
-      toast.error(data?.data?.notification);
+      toast.error(data?.notification || data?.message);
     }
   };
   const forgotErrorHandler = (error) => {
-    if (error?.data?.notification) toast.error(error?.data.notification);
+    toast.error(
+      error?.data?.notification ||
+        error?.data?.message ||
+        "Verification code could not be sent."
+    );
   };
   const doForgot = async () => {
-    await userForgotApi({
-      email: fields.email.trim(),
+    await sendOtpApi({
+      phone: fields.phone.trim(),
+      purpose: "password_reset",
       success: forgotSuccessHandler,
       error: forgotErrorHandler,
     });
@@ -131,7 +140,7 @@ export default function ForgotPass() {
 
   /**
    * Handle password reset with OTP verification
-   * @Initialization Reset Api @const userResetApi
+   * @Initialization Verify OTP and reset APIs
    * @func resetSuccessHandler @param data @param statusCode
    * @func resetErrorHandler @param error
    * @func doReset
@@ -139,6 +148,10 @@ export default function ForgotPass() {
 
   const [userResetApi, { isLoading: isResetLoading }] =
     useUserResetApiMutation();
+  const [verifyOtpApi, { isLoading: isVerifyLoading }] =
+    useVerifyOtpApiMutation();
+  const [resendOtpApi, { isLoading: isResendLoading }] =
+    useResendOtpApiMutation();
 
   const resetSuccessHandler = (data, statusCode) => {
     if (statusCode === 200 || statusCode === 201) {
@@ -154,22 +167,66 @@ export default function ForgotPass() {
   };
 
   const doReset = async () => {
-    await userResetApi({
-      otp: fields.otp,
-      email: fields.email.trim(),
-      password: fields.newPass,
-      password_confirmation: fields.confirmPassword,
-      success: resetSuccessHandler,
-      error: resetErrorHandler,
+    setErrors(null);
+
+    await verifyOtpApi({
+      phone: fields.phone.trim(),
+      otp_code: fields.otp.trim(),
+      purpose: "password_reset",
+      success: async (data, statusCode) => {
+        if (statusCode !== 200 || !data?.token) {
+          toast.error(data?.message || "Verification failed.");
+          return;
+        }
+
+        await userResetApi({
+          otp_verified_token: data.token,
+          phone: fields.phone.trim(),
+          password: fields.newPass,
+          password_confirmation: fields.confirmPassword,
+          success: resetSuccessHandler,
+          error: resetErrorHandler,
+        });
+      },
+      error: (error) => {
+        setErrors(error);
+        toast.error(
+          error?.data?.message ||
+            error?.data?.notification ||
+            "Verification failed."
+        );
+      },
+    });
+  };
+
+  const doResend = async () => {
+    await resendOtpApi({
+      phone: fields.phone.trim(),
+      purpose: "password_reset",
+      success: (data, statusCode) => {
+        if (statusCode === 200 || statusCode === 201) {
+          toast.success(data?.message || "Verification code sent again.");
+          return;
+        }
+
+        toast.error(data?.message || "Verification code could not be resent.");
+      },
+      error: (error) => {
+        toast.error(
+          error?.data?.message ||
+            error?.data?.notification ||
+            "Verification code could not be resent."
+        );
+      },
     });
   };
 
   // Render Methods
   /**
-   * Render the email input form (Step 1)
-   * @returns {JSX.Element} Email form component
+   * Render the phone input form (Step 1)
+   * @returns {JSX.Element} Phone form component
    */
-  const renderEmailForm = () => (
+  const renderPhoneForm = () => (
     <div className="w-full">
       {/* Form Title */}
       <div className="title-area flex flex-col justify-center items-center relative text-center mb-7">
@@ -183,16 +240,16 @@ export default function ForgotPass() {
 
       {/* Form Inputs */}
       <div className="input-area">
-        {/* Email Input Field */}
+        {/* Phone Input Field */}
         <div className="input-item mb-5">
           <InputCom
-            placeholder={ServeLangItem()?.Email_Address}
-            label={ServeLangItem()?.Email_Address + "*"}
-            name="email"
-            type="email"
+            placeholder="+905551234567"
+            label={(ServeLangItem()?.Phone_Number || "Phone Number") + "*"}
+            name="phone"
+            type="tel"
             inputClasses="h-[50px]"
             inputHandler={handleInput}
-            value={fields.email}
+            value={fields.phone}
           />
         </div>
 
@@ -202,7 +259,7 @@ export default function ForgotPass() {
             <button
               onClick={doForgot}
               type="button"
-              disabled={!fields.email || isForgotLoading}
+              disabled={!fields.phone || isForgotLoading}
               className="black-btn disabled:bg-opacity-50 disabled:cursor-not-allowed mb-6 text-sm text-white w-full h-[50px] font-semibold flex justify-center bg-purple items-center"
             >
               <span>{ServeLangItem()?.Send}</span>
@@ -272,6 +329,10 @@ export default function ForgotPass() {
           )}
         </div>
 
+        <div className="mb-5 text-sm text-qgraytwo">
+          A verification code was sent to {fields.phone}.
+        </div>
+
         {/* Confirm Password Input Field */}
         <div className="input-item mb-5">
           <InputCom
@@ -302,18 +363,48 @@ export default function ForgotPass() {
               type="button"
               disabled={
                 !(fields.otp && fields.confirmPassword && fields.newPass) ||
-                isResetLoading
+                isResetLoading ||
+                isVerifyLoading
               }
               className="black-btn disabled:bg-opacity-50 disabled:cursor-not-allowed mb-6 text-sm text-white w-full h-[50px] font-semibold flex justify-center bg-purple items-center"
             >
               <span>{ServeLangItem()?.Reset}</span>
-              {isResetLoading && (
+              {(isResetLoading || isVerifyLoading) && (
                 <span className="w-5 " style={{ transform: "scale(0.3)" }}>
                   <LoaderStyleOne />
                 </span>
               )}
             </button>
           </div>
+        </div>
+
+        <div className="flex justify-between items-center text-sm">
+          <button
+            type="button"
+            onClick={() => {
+              setForgotUser(true);
+              setResetpass(false);
+              setErrors(null);
+              setFields((prev) => ({
+                ...prev,
+                otp: "",
+                newPass: "",
+                confirmPassword: "",
+              }));
+            }}
+            className="text-qgraytwo underline"
+          >
+            Change phone number
+          </button>
+
+          <button
+            type="button"
+            onClick={doResend}
+            disabled={!fields.phone || isResendLoading}
+            className="text-qblack underline disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Resend code
+          </button>
         </div>
       </div>
     </div>
@@ -327,7 +418,7 @@ export default function ForgotPass() {
           {/* Main Form Card */}
           <div className="lg:w-[572px] w-full h-[783px] bg-white flex flex-col justify-center sm:p-10 p-5 border border-[#E0E0E0]">
             {forgotUser
-              ? renderEmailForm()
+              ? renderPhoneForm()
               : resetPass
               ? renderResetForm()
               : ""}

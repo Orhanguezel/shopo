@@ -28,13 +28,61 @@ class ReturnRequestController extends Controller
     public function index(Request $request)
     {
         $user = Auth::guard('api')->user();
-        $returns = ReturnRequest::with(['order', 'orderProduct.product', 'images'])
+        $query = ReturnRequest::with(['order', 'orderProduct.product', 'images'])
             ->where('user_id', $user->id)
-            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
+            ->when($request->filled('status'), fn ($builder) => $builder->where('status', $request->status))
+            ->when($request->filled('reason'), fn ($builder) => $builder->where('reason', $request->reason))
+            ->when($request->filled('date_from'), fn ($builder) => $builder->whereDate('created_at', '>=', $request->date_from))
+            ->when($request->filled('date_to'), fn ($builder) => $builder->whereDate('created_at', '<=', $request->date_to))
+            ->when($request->filled('search'), function ($builder) use ($request) {
+                $search = trim((string) $request->search);
+
+                $builder->where(function ($nested) use ($search) {
+                    $nested->where('reason', 'like', '%' . $search . '%')
+                        ->orWhere('details', 'like', '%' . $search . '%')
+                        ->orWhereHas('order', fn ($orderQuery) => $orderQuery->where('order_id', 'like', '%' . $search . '%'))
+                        ->orWhereHas('orderProduct', function ($orderProductQuery) use ($search) {
+                            $orderProductQuery->where('product_name', 'like', '%' . $search . '%')
+                                ->orWhereHas('product', fn ($productQuery) => $productQuery->where('name', 'like', '%' . $search . '%'));
+                        });
+                });
+            });
+
+        $returns = (clone $query)
             ->orderByDesc('id')
             ->paginate((int) $request->get('per_page', 20));
 
-        return response()->json(['returns' => $returns]);
+        $statsBaseQuery = ReturnRequest::where('user_id', $user->id)
+            ->when($request->filled('date_from'), fn ($builder) => $builder->whereDate('created_at', '>=', $request->date_from))
+            ->when($request->filled('date_to'), fn ($builder) => $builder->whereDate('created_at', '<=', $request->date_to));
+
+        $stats = [
+            'total' => (clone $statsBaseQuery)->count(),
+            'pending' => (clone $statsBaseQuery)->where('status', ReturnRequest::STATUS_PENDING)->count(),
+            'approved' => (clone $statsBaseQuery)->whereIn('status', [
+                ReturnRequest::STATUS_SELLER_APPROVED,
+                ReturnRequest::STATUS_ADMIN_APPROVED,
+                ReturnRequest::STATUS_ITEM_RECEIVED,
+            ])->count(),
+            'refunded' => (clone $statsBaseQuery)->where('status', ReturnRequest::STATUS_REFUNDED)->count(),
+            'rejected' => (clone $statsBaseQuery)->whereIn('status', [
+                ReturnRequest::STATUS_SELLER_REJECTED,
+                ReturnRequest::STATUS_ADMIN_REJECTED,
+            ])->count(),
+            'cancelled' => (clone $statsBaseQuery)->where('status', ReturnRequest::STATUS_USER_CANCELLED)->count(),
+        ];
+
+        return response()->json([
+            'returns' => $returns,
+            'stats' => $stats,
+            'filters' => [
+                'status' => $request->get('status'),
+                'reason' => $request->get('reason'),
+                'search' => $request->get('search'),
+                'date_from' => $request->get('date_from'),
+                'date_to' => $request->get('date_to'),
+            ],
+        ]);
     }
 
     public function returnableItems($id)

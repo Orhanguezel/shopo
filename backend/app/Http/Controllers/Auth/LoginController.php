@@ -17,15 +17,18 @@ use Hash;
 use App\Mail\UserForgetPassword;
 use App\Helpers\MailHelper;
 use App\Models\EmailTemplate;
+use App\Models\OtpVerification;
 use App\Models\SocialLoginInformation;
 use App\Models\TwilioSms;
 use App\Models\SmsTemplate;
 use App\Models\BiztechSms;
+use App\Services\SmsServiceInterface;
 use Mail;
 use Str;
 use Validator,Redirect,Response,File;
 use Socialite;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Twilio\Rest\Client;
 use Exception;
 
@@ -146,14 +149,123 @@ class LoginController extends Controller
 
     public function sendForgetPassword(Request $request){
         $rules = [
+            'email' => 'nullable|email|required_without:phone',
+            'phone' => 'nullable|string|max:20|required_without:email',
+        ];
+        $customMessages = [
+            'email.required_without' => trans('user_validation.Email is required'),
+            'phone.required_without' => 'Phone is required',
+        ];
+        $this->validate($request, $rules, $customMessages);
+
+        if ($request->filled('phone')) {
+            return $this->sendPasswordResetOtp($request);
+        }
+
+        return $this->sendLegacyEmailPasswordReset($request);
+    }
+
+
+    public function resetPasswordPage($token){
+        $user = User::where('forget_password_token', $token)->first();
+        $banner = BreadcrumbImage::where(['id' => 5])->first();
+        $recaptchaSetting = GoogleRecaptcha::first();
+
+        return response()->json(['user' => $user, 'banner' => $banner, 'recaptchaSetting' => $recaptchaSetting],200);
+
+        return view('reset_password', compact('banner','recaptchaSetting','user','token'));
+    }
+
+    public function storeResetPasswordPage(Request $request, $token){
+        if ($request->filled('phone')) {
+            return $this->storeOtpResetPassword($request, $token);
+        }
+
+        $rules = [
             'email'=>'required',
+            'password'=>'required|min:4|confirmed',
             'g-recaptcha-response'=>new Captcha()
         ];
         $customMessages = [
             'email.required' => trans('user_validation.Email is required'),
+            'password.required' => trans('user_validation.Password is required'),
+            'password.min' => trans('user_validation.Password must be 4 characters'),
+            'password.confirmed' => trans('user_validation.Confirm password does not match'),
         ];
         $this->validate($request, $rules,$customMessages);
 
+        $user = User::where(['email' => $request->email, 'forget_password_token' => $token])->first();
+        if($user){
+            $user->password=Hash::make($request->password);
+            $user->forget_password_token=null;
+            $user->save();
+
+            $notification = trans('user_validation.Password Reset successfully');
+            return response()->json(['notification' => $notification],200);
+        }else{
+            $notification = trans('user_validation.Email or token does not exist');
+            return response()->json(['notification' => $notification],402);
+        }
+    }
+
+    protected function sendPasswordResetOtp(Request $request)
+    {
+        $phone = trim((string) $request->phone);
+        $notification = 'If an account exists for that phone number, a verification code has been sent.';
+        $user = User::where('phone', $phone)->first();
+
+        if (!$user) {
+            return response()->json(['notification' => $notification], 200);
+        }
+
+        $latestOtp = OtpVerification::where('phone', $phone)
+            ->where('purpose', 'password_reset')
+            ->latest('id')
+            ->first();
+
+        $cooldownSeconds = (int) config('sms.otp.cooldown_seconds', 60);
+        if ($latestOtp && $latestOtp->created_at->diffInSeconds(now()) < $cooldownSeconds) {
+            return response()->json([
+                'notification' => 'Please wait before requesting a new code.',
+                'retry_after' => $cooldownSeconds - $latestOtp->created_at->diffInSeconds(now()),
+            ], 429);
+        }
+
+        OtpVerification::where('phone', $phone)
+            ->where('purpose', 'password_reset')
+            ->whereNull('verified_at')
+            ->delete();
+
+        $otp = OtpVerification::create([
+            'phone' => $phone,
+            'otp_code' => $this->generateOtpCode(),
+            'purpose' => 'password_reset',
+            'attempts' => 0,
+            'max_attempts' => (int) config('sms.otp.max_attempts', 3),
+            'expires_at' => Carbon::now()->addMinutes((int) config('sms.otp.expire_minutes', 5)),
+            'ip_address' => $request->ip(),
+        ]);
+
+        $message = sprintf(
+            'Your Shopo password reset code is %s. It expires in %d minutes.',
+            $otp->otp_code,
+            (int) config('sms.otp.expire_minutes', 5)
+        );
+
+        if (!app(SmsServiceInterface::class)->send($phone, $message)) {
+            return response()->json([
+                'notification' => 'OTP could not be sent at this time.',
+            ], 500);
+        }
+
+        return response()->json([
+            'notification' => $notification,
+            'expires_in' => (int) config('sms.otp.expire_minutes', 5) * 60,
+        ], 200);
+    }
+
+    protected function sendLegacyEmailPasswordReset(Request $request)
+    {
         $user = User::where('email', $request->email)->first();
         if($user){
             $user->forget_password_token = random_int(100000, 999999);
@@ -197,9 +309,9 @@ class LoginController extends Controller
                         $senderid = $biztech->sender_id;
                         $senderid = urlencode($senderid);
                         $message = $message;
-                        $msg_type = true;  // true or false for unicode message
+                        $msg_type = true;
                         $message  = urlencode($message);
-                        $mobilenumbers = $user->phone; //8801700000000 or 8801700000000,9100000000
+                        $mobilenumbers = $user->phone;
                         $url = "https://api.smsq.global/api/v2/SendSMS?ApiKey=$apikey&ClientId=$clientid&SenderId=$senderid&Message=$message&MobileNumbers=$mobilenumbers&Is_Unicode=$msg_type";
                         $ch = curl_init();
                         curl_setopt ($ch, CURLOPT_URL, $url);
@@ -224,43 +336,55 @@ class LoginController extends Controller
         }
     }
 
-
-    public function resetPasswordPage($token){
-        $user = User::where('forget_password_token', $token)->first();
-        $banner = BreadcrumbImage::where(['id' => 5])->first();
-        $recaptchaSetting = GoogleRecaptcha::first();
-
-        return response()->json(['user' => $user, 'banner' => $banner, 'recaptchaSetting' => $recaptchaSetting],200);
-
-        return view('reset_password', compact('banner','recaptchaSetting','user','token'));
-    }
-
-    public function storeResetPasswordPage(Request $request, $token){
+    protected function storeOtpResetPassword(Request $request, $token)
+    {
         $rules = [
-            'email'=>'required',
-            'password'=>'required|min:4|confirmed',
-            'g-recaptcha-response'=>new Captcha()
+            'phone' => 'required|string|max:20',
+            'password' => 'required|min:4|confirmed',
+            'otp_verified_token' => 'nullable|string',
         ];
         $customMessages = [
-            'email.required' => trans('user_validation.Email is required'),
+            'phone.required' => 'Phone is required',
             'password.required' => trans('user_validation.Password is required'),
             'password.min' => trans('user_validation.Password must be 4 characters'),
             'password.confirmed' => trans('user_validation.Confirm password does not match'),
         ];
-        $this->validate($request, $rules,$customMessages);
+        $this->validate($request, $rules, $customMessages);
 
-        $user = User::where(['email' => $request->email, 'forget_password_token' => $token])->first();
-        if($user){
-            $user->password=Hash::make($request->password);
-            $user->forget_password_token=null;
-            $user->save();
+        $verifiedToken = $request->otp_verified_token ?: $token;
+        $payload = Cache::get('otp_verified_token:' . $verifiedToken);
 
-            $notification = trans('user_validation.Password Reset successfully');
-            return response()->json(['notification' => $notification],200);
-        }else{
-            $notification = trans('user_validation.Email or token does not exist');
-            return response()->json(['notification' => $notification],402);
+        if (!$payload || ($payload['purpose'] ?? null) !== 'password_reset' || ($payload['phone'] ?? null) !== trim((string) $request->phone)) {
+            return response()->json([
+                'notification' => 'The password reset session is invalid or expired.',
+            ], 422);
         }
+
+        $user = User::where('phone', trim((string) $request->phone))->first();
+        if (!$user) {
+            return response()->json([
+                'notification' => 'The password reset session is invalid or expired.',
+            ], 422);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->forget_password_token = null;
+        $user->save();
+
+        Cache::forget('otp_verified_token:' . $verifiedToken);
+
+        return response()->json([
+            'notification' => trans('user_validation.Password Reset successfully'),
+        ], 200);
+    }
+
+    protected function generateOtpCode(): string
+    {
+        $length = (int) config('sms.otp.length', 6);
+        $min = (int) str_pad('1', $length, '0');
+        $max = (int) str_repeat('9', $length);
+
+        return (string) random_int($min, $max);
     }
 
     public function userLogout(){

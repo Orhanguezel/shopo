@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Product;
+use App\Observers\ProductObserver;
 use App\Services\IletimMerkeziService;
 use App\Services\SmsServiceInterface;
 use Illuminate\Support\ServiceProvider;
@@ -31,6 +33,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        Product::observe(ProductObserver::class);
     }
 }

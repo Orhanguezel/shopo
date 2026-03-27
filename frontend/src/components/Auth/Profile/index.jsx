@@ -64,6 +64,14 @@ function ProfileContent() {
   const [switchDashboard, setSwitchDashboard] = useState(false);
   // State for active tab (dashboard, profile, order, etc.)
   const [active, setActive] = useState("dashboard");
+  const [returnRequestFilters, setReturnRequestFilters] = useState({
+    status: "all",
+    search: "",
+    reason: "",
+    dateFrom: "",
+    dateTo: "",
+    perPage: 20,
+  });
 
   // Set active tab based on URL hash (e.g., #dashboard, #profile, etc.)
   useEffect(() => {
@@ -152,6 +160,7 @@ function ProfileContent() {
     useReturnRequestsApiQuery(
       {
         token: auth()?.access_token,
+        ...returnRequestFilters,
       },
       {
         skip: !auth(),
@@ -473,7 +482,14 @@ function ProfileContent() {
                   ) : active === "returns" ? (
                     <>
                       {!isReturnRequestsFetching && returnRequestsApi ? (
-                        <ReturnRequestsTab returns={returnRequestsApi?.returns?.data} />
+                        <ReturnRequestsTab
+                          returns={returnRequestsApi?.returns?.data}
+                          stats={returnRequestsApi?.stats}
+                          pagination={returnRequestsApi?.returns}
+                          filters={returnRequestFilters}
+                          onFiltersChange={setReturnRequestFilters}
+                          isLoading={isReturnRequestsFetching}
+                        />
                       ) : (
                         <div className="flex justify-center items-center h-full">
                           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
