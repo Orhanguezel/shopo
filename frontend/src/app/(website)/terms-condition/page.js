@@ -1,13 +1,16 @@
 import getTermsCondition from "@/api/getTermsCondition";
 import TermsCondition from "@/components/TermsCondition/index";
 
-export const dynamic = 'force-dynamic'; // Static export için gerekli
+export const dynamic = 'force-dynamic';
 
 // generate seo metadata
 export async function generateMetadata() {
   return {
-    title: "Term and Conditions",
-    description: "Term and Conditions",
+    title: "Kullanım Koşulları | Seyfibaba",
+    description: "Seyfibaba pazaryerinin kullanım koşulları ve şartlarını inceleyin.",
+    alternates: {
+      canonical: "/terms-condition",
+    },
   };
 }
 

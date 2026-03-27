@@ -39,12 +39,8 @@ const GET_GUEST_CHECKOUT_DATA = "user/checkout/guest/without-token";
 const GET_CHECKOUT_DATA = "user/checkout";
 const CASH_ON_DELIVERY = "user/checkout/cash-on-delivery";
 const CASH_ON_DELIVERY_GUEST = "user/checkout/guest/cash-on-delivery";
-const STRIPE_PAY_GUEST = "user/checkout/guest/pay-with-stripe";
-const STRIPE_PAY = "user/checkout/pay-with-stripe";
 const BANK_PAYMENT = "user/checkout/pay-with-bank";
 const BANK_PAYMENT_GUEST = "user/checkout/guest/pay-with-bank";
-const RAZORPAY_ORDER = "user/checkout/razorpay-order";
-const RAZORPAY_ORDER_GUEST = "user/checkout/guest/razorpay-order";
 const DRAFT_ORDER = "user/checkout/store-draft-order";
 const DRAFT_ORDER_GUEST = "user/checkout/guest/store-draft-order";
 const ORDERS = "user/order";
@@ -56,6 +52,8 @@ const REMOVE_COMPARE_ITEM = "user/delete-compare-product";
 const WEBSITE_SETUP = "website-setup";
 const LOGOUT = "user/logout";
 const FAQ = "faq";
+const BLOGS = "blogs";
+const BLOG_CATEGORY = "blog-category";
 const FLASH_SALE = "flash-sale";
 const SELLER_TERMS_CONDITION = "seller-terms-conditoins";
 const PRIVACY_POLICY = "privacy-policy";
@@ -104,6 +102,10 @@ const apiRoutes = {
   updatePassword: combinedUrl(UPDATE_PASSWORD),
   resetPassword: combinedUrl(STORE_RESET_PASSWORD),
 
+  sendOtp: combinedUrl("auth/otp/send"),
+  verifyOtp: combinedUrl("auth/otp/verify"),
+  resendOtp: combinedUrl("auth/otp/resend"),
+
   // User Dashboard
   dashboard: combinedUrl(USER_DASHBOARD),
   profileInfo: combinedUrl(USER_MY_PROFILE),
@@ -120,6 +122,8 @@ const apiRoutes = {
   contactUs: combinedUrl(CONTACT_US),
   subscribeRequest: combinedUrl(SUBSCRIBE_REQUEST),
   faq: combinedUrl(FAQ),
+  blogDetails: combinedUrl(BLOGS),
+  blogCategoryDetails: combinedUrl(BLOG_CATEGORY),
 
   // Cart
   addToCart: combinedUrl(ADD_TO_CART),
@@ -142,17 +146,16 @@ const apiRoutes = {
   getCheckoutData: combinedUrl(GET_CHECKOUT_DATA),
   cashOnDelivery: combinedUrl(CASH_ON_DELIVERY),
   cashOnDeliveryGuest: combinedUrl(CASH_ON_DELIVERY_GUEST),
-  stripePayGuest: combinedUrl(STRIPE_PAY_GUEST),
-  stripePay: combinedUrl(STRIPE_PAY),
   bankPayment: combinedUrl(BANK_PAYMENT),
   bankPaymentGuest: combinedUrl(BANK_PAYMENT_GUEST),
   draftOrder: combinedUrl(DRAFT_ORDER),
   draftOrderGuest: combinedUrl(DRAFT_ORDER_GUEST),
-  razorpayOrder: combinedUrl(RAZORPAY_ORDER),
-  razorpayOrderGuest: combinedUrl(RAZORPAY_ORDER_GUEST),
 
+  iyzicoCheckout: combinedUrl("user/checkout/pay-with-iyzico"),
+  iyzicoCheckoutGuest: combinedUrl("user/checkout/guest/pay-with-iyzico"),
   // Orders
   orders: combinedUrl(ORDERS),
+  returnRequests: combinedUrl("user/return-requests"),
   orderTrack: combinedUrl(ORDER_TRACK),
   orderDetails: combinedUrl(ORDER_DETAILS),
   liveTrackOrder: combinedUrl(LIVE_TRACK_ORDER),
@@ -207,6 +210,16 @@ const apiRoutes = {
   googleCallback: combinedUrl(GOOGLE_CALLBACK),
   facebookCallback: combinedUrl(FACEBOOK_CALLBACK),
   twitterCallback: combinedUrl(TWITTER_CALLBACK),
+
+  // Blogs
+  blogs: combinedUrl("blogs"),
+  blogCategory: combinedUrl("blog-category"),
+  blogComment: combinedUrl("blog-comment"),
+
+  // Sitemaps
+  productSitemap: combinedUrl("products/sitemap"),
+  productCount: combinedUrl("products/active-count"),
+  sellerSitemap: combinedUrl("sellers/sitemap"),
 };
 
 export default apiRoutes;

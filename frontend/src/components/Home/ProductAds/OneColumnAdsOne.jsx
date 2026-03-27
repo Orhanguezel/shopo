@@ -27,9 +27,9 @@ function OneColumnAdsOne({ data }) {
                   </span>
                 </div>
                 <div className="flex justify-center">
-                  <h1 className="w-[300px] md:text-[30px] text-[20px] md:leading-[40px] leading-1 text-qblack font-semibold text-center">
+                  <h2 className="w-[300px] md:text-[30px] text-[20px] md:leading-[40px] leading-1 text-qblack font-semibold text-center">
                     {data.title_two}
-                  </h1>
+                  </h2>
                 </div>
               </div>
               <div>

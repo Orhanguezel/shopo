@@ -37,9 +37,9 @@ function TwoColumnAds({ bannerOne, bannerTwo }) {
                         <p className="lg:text-[30px] text-[20px] leading-none text-qblack font-semibold lg:mb-3">
                           {bannerOne.title_one}
                         </p>
-                        <h1 className="lg:text-[30px] text-[20px] lg:leading-[40px] text-qblack font-semibold">
+                        <h2 className="lg:text-[30px] text-[20px] lg:leading-[40px] text-qblack font-semibold">
                           {bannerOne.title_two}
-                        </h1>
+                        </h2>
                       </div>
                     </div>
                     <div>
@@ -79,9 +79,9 @@ function TwoColumnAds({ bannerOne, bannerTwo }) {
                         <p className="lg:text-[30px] leading-none text-qblack font-semibold lg:mb-3">
                           {bannerTwo.title_one}
                         </p>
-                        <h1 className="lg:text-[30px] text-[20px] lg:leading-[40px] text-qblack font-semibold">
+                        <h2 className="lg:text-[30px] text-[20px] lg:leading-[40px] text-qblack font-semibold">
                           {bannerTwo.title_two}
-                        </h1>
+                        </h2>
                       </div>
                     </div>
                     <div>

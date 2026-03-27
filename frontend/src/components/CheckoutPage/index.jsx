@@ -116,11 +116,6 @@ export default function CheckoutPage() {
     selectPayment,
     setPaymentMethod,
 
-    // Stripe state
-    stripeData,
-    setStripeData,
-    updateStripeData,
-
     // Coupon state
     couponData,
     setCouponData,
@@ -298,20 +293,6 @@ export default function CheckoutPage() {
       errors,
       setErrors,
     },
-    stripeFields: {
-      cardNumber: stripeData.cardNumber,
-      cardHolderName: stripeData.cardHolderName,
-      expireDate: stripeData.expireDate,
-      cvv: stripeData.cvv,
-    },
-    setStripeError: (error) => updateStripeData("error", error),
-    resetStripeInputs: () => {
-      updateStripeData("cardHolderName", "");
-      updateStripeData("expireDate", null);
-      updateStripeData("cvv", "");
-      updateStripeData("cardNumber", "");
-      setPaymentMethod("");
-    },
     setNewAddress: () => setActiveAddress("shipping"),
     ServeLangItem,
   });
@@ -474,41 +455,24 @@ export default function CheckoutPage() {
      * use updatePaymentStatuses to set payment statuses
      */
     const getWays = [
-      "sslcommerz",
-      "paypalPaymentInfo",
-      "mollie",
-      "paystackAndMollie",
-      "instamojo",
-      "myfatoorah",
-      "flutterwavePaymentInfo",
-      "razorpayPaymentInfo",
-      "stripePaymentInfo",
-      "bkash",
       "cash_on_delivery_status",
       "bankPaymentInfo",
+      "iyzico",
     ];
 
-    // Payment gateway status mapping with special cases
+    // Payment gateway status mapping
     const gatewayStatusMap = {
-      mollie: () =>
-        Number(response.data?.paystackAndMollie?.mollie_status) === 1,
-      paystackAndMollie: () =>
-        Number(response.data?.paystackAndMollie?.paystack_status) === 1,
       cash_on_delivery_status: () =>
         Number(response.data?.bankPaymentInfo?.cash_on_delivery_status) === 1,
+      bankPaymentInfo: () =>
+        Number(response.data?.bankPaymentInfo?.status) === 1,
+      iyzico: () =>
+        Number(response.data?.iyzico?.status) === 1,
     };
 
     // Update payment statuses for all gateways
     getWays.forEach((way) => {
-      /* 
-          How getStatus() works ?
-          1. Using a custom mapping function from gatewayStatusMap if defined for that payment method
-          2. Or falling back to checking if response.data[way].status equals 1
-        */
-      const getStatus =
-        gatewayStatusMap[way] ||
-        (() => Number(response.data[way]?.status) === 1);
-
+      const getStatus = gatewayStatusMap[way] || (() => false);
       updatePaymentStatuses(way, getStatus());
     });
 
@@ -669,8 +633,6 @@ export default function CheckoutPage() {
                     selectPayment={selectPayment}
                     setPaymentMethod={setPaymentMethod}
                     paymentStatuses={paymentStatuses}
-                    stripeData={stripeData}
-                    updateStripeData={updateStripeData}
                     bankInfo={bankInfo}
                     transactionInfo={transactionInfo}
                     setTransactionInfo={setTransactionInfo}

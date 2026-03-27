@@ -29,10 +29,12 @@ function CategorySection({ sectionTitle, categories }) {
                       <div className="w-full h-[120px] relative rounded bg-white flex justify-center items-center">
                         <div className="w-full h-full flex justify-center items-center relative transform scale-100 group-hover:scale-110 transition duration-300 ease-in-out">
                           {item.image && (
-                            <img
-                              className="w-[57px] h-[57px] object-contain "
+                            <Image
+                              width={57}
+                              height={57}
+                              className="object-contain"
                               src={appConfig.BASE_URL + item.image}
-                              alt=""
+                              alt={item.name}
                             />
                           )}
                         </div>

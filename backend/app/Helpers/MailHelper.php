@@ -3,13 +3,30 @@
 namespace App\Helpers;
 
 use App\Models\EmailConfiguration;
+use Illuminate\Support\Facades\Schema;
 
 class MailHelper
 {
 
     public static function setMailConfig(){
+        if (app()->environment('local', 'testing')) {
+            config(['mail.default' => 'array']);
+            config(['mail.from.address' => 'no-reply@shopo.local']);
+            return;
+        }
+
+        if (!Schema::hasTable('email_configurations')) {
+            config(['mail.default' => 'array']);
+            config(['mail.from.address' => 'no-reply@shopo.local']);
+            return;
+        }
 
         $email_setting=EmailConfiguration::first();
+        if (!$email_setting) {
+            config(['mail.default' => 'array']);
+            config(['mail.from.address' => 'no-reply@shopo.local']);
+            return;
+        }
 
         $mailConfig = [
             'transport' => 'smtp',

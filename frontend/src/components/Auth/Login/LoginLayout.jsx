@@ -2,7 +2,14 @@ import React from "react";
 import Image from "next/image";
 import appConfig from "@/appConfig";
 
+const IMAGE_FALLBACK = "/assets/images/server-error.png";
+
 function LoginLayout({ imgThumb, children }) {
+  const loginImage =
+    imgThumb && imgThumb !== IMAGE_FALLBACK
+      ? `${appConfig.BASE_URL + imgThumb}`
+      : IMAGE_FALLBACK;
+
   return (
     <div className="login-page-wrapper w-full py-10">
       <div className="container-x mx-auto">
@@ -16,14 +23,7 @@ function LoginLayout({ imgThumb, children }) {
               className="absolute ltr:xl:-right-20 ltr:-right-[138px] rtl::xl:-left-20 rtl:-left-[138px]"
               style={{ top: "calc(50% - 258px)" }}
             >
-              {imgThumb && (
-                <Image
-                  width={608}
-                  height={480}
-                  src={`${appConfig.BASE_URL + imgThumb}`}
-                  alt="login"
-                />
-              )}
+              <Image width={608} height={480} src={loginImage} alt="login" />
             </div>
           </div>
         </div>

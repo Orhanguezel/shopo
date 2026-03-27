@@ -19,6 +19,8 @@ import {
 } from "@/redux/features/auth/apiSlice";
 import appConfig from "@/appConfig";
 
+const IMAGE_FALLBACK = "/assets/images/server-error.png";
+
 // SVG Components for decorative shapes
 const LineShape = () => (
   <svg
@@ -72,12 +74,18 @@ export default function ForgotPass() {
   const [forgotUser, setForgotUser] = useState(true);
   const [errors, setErrors] = useState(null);
   const [imgThumb, setImgThumb] = useState(null);
+  const loginImage =
+    imgThumb && imgThumb !== IMAGE_FALLBACK
+      ? `${appConfig.BASE_URL + imgThumb}`
+      : IMAGE_FALLBACK;
 
   // Effects
   // Set login image from website setup when component mounts or websiteSetup changes
   useEffect(() => {
     if (websiteSetup) {
-      setImgThumb(websiteSetup.payload.image_content.login_image);
+      setImgThumb(
+        websiteSetup.payload?.image_content?.login_image || IMAGE_FALLBACK
+      );
     }
   }, [websiteSetup]);
 
@@ -331,14 +339,7 @@ export default function ForgotPass() {
               className="absolute ltr:xl:-right-20 ltr:-right-[138px] rtl:-left-20 rtl:-left-[138px]"
               style={{ top: "calc(50% - 258px)" }}
             >
-              {imgThumb && (
-                <Image
-                  width={608}
-                  height={480}
-                  src={`${appConfig.BASE_URL + imgThumb}`}
-                  alt="login"
-                />
-              )}
+              <Image width={608} height={480} src={loginImage} alt="login" />
             </div>
           </div>
         </div>

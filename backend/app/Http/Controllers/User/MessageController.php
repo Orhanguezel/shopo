@@ -1,19 +1,18 @@
 <?php
 
 namespace App\Http\Controllers\User;
+
 use Auth;
-use Pusher;
-use App\Models\User;
-use App\Models\Order;
-use App\Models\Vendor;
-use App\Models\Message;
-use App\Models\BannerImage;
-use Illuminate\Http\Request;
-use App\Models\DeliveryMessage;
-use App\Providers\PusherConfig;
-use App\Models\PusherCredentail;
+use Throwable;
 use App\Events\UserToSellerMessage;
 use App\Http\Controllers\Controller;
+use App\Models\BannerImage;
+use App\Models\DeliveryMessage;
+use App\Models\Message;
+use App\Models\Order;
+use App\Models\User;
+use App\Models\Vendor;
+use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
@@ -77,7 +76,11 @@ class MessageController extends Controller
         $messages = Message::with('product')->where(['customer_id' => $auth_user->id, 'seller_id' => $request->seller_id])->get();
 
         $data = $update_message;
-        event(new UserToSellerMessage($data, $user));
+        try {
+            event(new UserToSellerMessage($data, $user));
+        } catch (Throwable $exception) {
+            report($exception);
+        }
 
         return response()->json(['message' => $update_message, 'messages' => $messages]);
     }
@@ -105,15 +108,22 @@ class MessageController extends Controller
         $message->seller_id = $request->seller_id;
         $message->customer_id = $auth->id;
         $message->message = $request->message;
-        $message->send_customer = $auth->id;
+        $message->customer_read_msg = 1;
+        $message->seller_read_msg = 0;
+        $message->send_by = 'customer';
+        $message->product_id = 0;
         $message->save();
 
-        $data = ['seller_id' => $request->seller_id, 'customer_id' => $auth->id];
+        $data = Message::with('product')->find($message->id);
         $user = User::find($request->seller_id);
-        event(new UserToSellerMessage($user, $data));
+        try {
+            event(new UserToSellerMessage($data, $user));
+        } catch (Throwable $exception) {
+            report($exception);
+        }
         $id = $request->seller_id;
         $seller = User::find($id);
-        $messages = Message::where(['customer_id' => $auth->id, 'seller_id'=> $request->seller_id])->get();
+        $messages = Message::with('product')->where(['customer_id' => $auth->id, 'seller_id'=> $request->seller_id])->get();
         $defaultProfile = BannerImage::whereId('15')->first();
 
         return view('user.chat_message_list', compact('seller','auth','messages','defaultProfile'));
@@ -152,7 +162,10 @@ class MessageController extends Controller
             $message->seller_id = $seller->user_id;
             $message->customer_id = $auth->id;
             $message->message = $seller->greeting_msg;
-            $message->send_seller = $seller->user_id;
+            $message->customer_read_msg = 1;
+            $message->seller_read_msg = 1;
+            $message->send_by = 'seller';
+            $message->product_id = 0;
             $message->save();
             return redirect()->route('user.message');
         }

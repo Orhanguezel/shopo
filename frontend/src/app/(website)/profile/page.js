@@ -1,6 +1,14 @@
-"use client";
 import React from "react";
 import Profile from "@/components/Auth/Profile";
+
+export const metadata = {
+  title: "Profile | Shopo",
+  robots: { index: false, follow: false },
+  alternates: {
+    canonical: "/profile",
+  },
+};
+
 function ProfilePage() {
   return <Profile />;
 }

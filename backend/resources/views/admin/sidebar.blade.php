@@ -48,6 +48,8 @@
               <li class="{{ Route::is('admin.declined-order') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.declined-order') }}">{{__('admin.Declined Orders')}}</a></li>
 
               <li class="{{ Route::is('admin.cash-on-delivery') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.cash-on-delivery') }}">{{__('admin.Cash On Delivery')}}</a></li>
+              
+              <li class="{{ Route::is('admin.return-requests.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.return-requests.index') }}">{{__('admin.Return Requests')}}</a></li>
 
             </ul>
 
@@ -177,6 +179,14 @@
                 <li class="{{ Route::is('admin.coupon.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.coupon.index') }}">{{__('admin.Coupon')}}</a></li>
 
                 <li class="{{ Route::is('admin.payment-method') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.payment-method') }}">{{__('admin.Payment Method')}}</a></li>
+
+                <li class="nav-item dropdown {{ Route::is('admin.commission-settings') || Route::is('admin.commission-report') ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown"><i class="fas fa-coins"></i><span>{{__('admin.Commission')}}</span></a>
+                    <ul class="dropdown-menu">
+                        <li class="{{ Route::is('admin.commission-settings') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.commission-settings') }}">{{__('admin.Settings')}}</a></li>
+                        <li class="{{ Route::is('admin.commission-report') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.commission-report') }}">{{__('admin.Report')}}</a></li>
+                    </ul>
+                </li>
             </ul>
 
           </li>
@@ -398,18 +408,6 @@
               $logedInAdmin = Auth::guard('admin')->user();
           @endphp
 
-          @if ($logedInAdmin->admin_type == 1)
-
-            <li  class="{{ Route::is('admin.clear-database') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.clear-database') }}">
-             <div class="icon">
-             <i class="fas fa-trash"></i>
-             </div>
-             <span>{{__('admin.Clear Database')}}</span></a></li>
-
-          @endif
-
-
-
           <li class="{{ Route::is('admin.contact-message') || Route::is('admin.show-contact-message') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.contact-message') }}">
            <div class="icon">
            <i class="fas fa-fa fa-envelope"></i>
@@ -431,4 +429,3 @@
     </aside>
 
   </div>
-

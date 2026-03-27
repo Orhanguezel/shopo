@@ -6,9 +6,9 @@ import Star from "../Helpers/icons/Star";
 import ServeLangItem from "../Helpers/ServeLangItem";
 import appConfig from "@/appConfig";
 export default function SallerInfo({ products, sellerInfo }) {
-  const { seller } = sellerInfo;
+  const seller = sellerInfo?.seller;
   const rs =
-    products.length > 0 &&
+    products?.length > 0 &&
     products.map((item) => {
       return {
         id: item.id,
@@ -28,7 +28,7 @@ export default function SallerInfo({ products, sellerInfo }) {
       <div className="saller-info sm:flex justify-between items-center pb-[30px] border-b border-[#E8E8E8]">
         <div className="sm:flex sm:space-x-5 items-center sm:w-1/4">
           <div className="saller w-[73px] h-[73px] rounded-full overflow-hidden relative">
-            {seller.user && (
+            {seller?.user && (
               <Image
                 layout="fill"
                 src={`${
@@ -43,25 +43,25 @@ export default function SallerInfo({ products, sellerInfo }) {
           </div>
           <div>
             <h6 className="text-[18px] font-medium leading-[30px]">
-              {seller.user.name}
+              {seller?.user?.name || ""}
             </h6>
             <p className="text-[13px] font-normal text-qgray leading-[30px]">
-              {seller.address}
+              {seller?.address}
             </p>
             <div className="flex items-center mt-4">
               <div className="flex">
-                {Array.from(Array(parseInt(seller.averageRating)), () => (
-                  <span key={parseInt(seller.averageRating) + Math.random()}>
+                {Array.from(Array(parseInt(seller?.averageRating) || 0), () => (
+                  <span key={parseInt(seller?.averageRating) + Math.random()}>
                     <Star />
                   </span>
                 ))}
-                {parseInt(seller.averageRating) < 5 && (
+                {(parseInt(seller?.averageRating) || 0) < 5 && (
                   <>
                     {Array.from(
-                      Array(5 - parseInt(seller.averageRating)),
+                      Array(5 - (parseInt(seller?.averageRating) || 0)),
                       () => (
                         <span
-                          key={parseInt(seller.averageRating) + Math.random()}
+                          key={parseInt(seller?.averageRating) + Math.random()}
                           className="text-gray-500"
                         >
                           <Star defaultValue={false} />
@@ -72,7 +72,7 @@ export default function SallerInfo({ products, sellerInfo }) {
                 )}
               </div>
               <span className="text-[13px] font-normal ml-1 leading-none">
-                ({parseInt(seller.averageRating)})
+                ({parseInt(seller?.averageRating) || 0})
               </span>
             </div>
           </div>
@@ -84,19 +84,19 @@ export default function SallerInfo({ products, sellerInfo }) {
                 <span className="text-[15px] text-qblack font-medium capitalize">
                   {ServeLangItem()?.products}
                 </span>
-                : {seller.sellerTotalProducts}
+                : {seller?.sellerTotalProducts}
               </li>
               <li className="text-qgray leading-[30px]">
                 <span className="text-[15px] text-qblack font-medium capitalize">
                   {ServeLangItem()?.Shop_Name}
                 </span>
-                : {seller.shop_name}
+                : {seller?.shop_name}
               </li>
               <li className="text-qgray leading-[30px]">
                 <span className="text-[15px] text-qblack font-medium capitalize">
                   {ServeLangItem()?.phone}
                 </span>
-                : {seller.phone}
+                : {seller?.phone}
               </li>
             </ul>
           </div>
@@ -122,10 +122,7 @@ export default function SallerInfo({ products, sellerInfo }) {
       </div>
       <div className="mt-[40px] w-full flex justify-center">
         <Link
-          href={{
-            pathname: "/seller-products",
-            query: { seller: seller.slug },
-          }}
+          href={`/seller/${seller?.slug}`}
         >
           <div className="lg:w-[300px] w-full h-[50px]">
             <div

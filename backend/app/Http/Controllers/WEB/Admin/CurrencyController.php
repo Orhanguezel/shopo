@@ -4,14 +4,8 @@ namespace App\Http\Controllers\WEB\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Flutterwave;
 use App\Models\MultiCurrency;
-use App\Models\PaypalPayment;
-use App\Models\StripePayment;
-use App\Models\RazorpayPayment;
-use App\Models\InstamojoPayment;
-use App\Models\PaystackAndMollie;
-use App\Models\SslcommerzPayment;
+use App\Models\IyzicoPayment;
 use Illuminate\Support\Facades\DB;
 
 class CurrencyController extends Controller
@@ -177,16 +171,9 @@ class CurrencyController extends Controller
     public function destroy($id)
     {
         $currency = MultiCurrency::find($id);
-        $is_flutterwave = Flutterwave::where('currency_id', $id)->first();
-        $is_instamojo = InstamojoPayment::where('currency_id', $id)->first();
-        $is_paypal = PaypalPayment::where('currency_id', $id)->first();
-        $is_paystack = PaystackAndMollie::where('paystack_currency_id', $id)->first();
-        $is_mollie = PaystackAndMollie::where('mollie_currency_id', $id)->first();
-        $is_razorpay = RazorpayPayment::where('currency_id', $id)->first();
-        $is_sslcommerz = SslcommerzPayment::where('currency_id', $id)->first();
-        $is_stripe = StripePayment::where('currency_id', $id)->first();
+        $is_iyzico = IyzicoPayment::where('currency_id', $id)->first();
 
-        if($is_flutterwave || $is_instamojo || $is_paypal || $is_paystack || $is_mollie || $is_razorpay || $is_sslcommerz || $is_stripe){
+        if($is_iyzico){
             $notification = trans('admin_validation.You can not delete this currency. Because there are one or more payment method has been created in this currency.');
             $notification = array('messege'=>$notification,'alert-type'=>'error');
             return redirect()->route('admin.currency.index')->with($notification);

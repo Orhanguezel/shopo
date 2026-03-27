@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect } from "react";
 import settings from "../../utils/settings";
 import ServeLangItem from "../Helpers/ServeLangItem";
@@ -7,6 +8,9 @@ import FontAwesomeCom from "../Helpers/icons/FontAwesomeCom";
 import { getCookie } from "cookies-next";
 import appConfig from "@/appConfig";
 import HomeSlider from "../Slider/HomeSlider";
+
+const IMAGE_FALLBACK = "/assets/images/server-error.png";
+
 export default function Banner({
   className,
   images = [],
@@ -14,6 +18,13 @@ export default function Banner({
   sidebarImgTwo,
   services = [],
 }) {
+  const sidebarImageOne = sidebarImgOne?.image
+    ? appConfig.BASE_URL + sidebarImgOne.image
+    : IMAGE_FALLBACK;
+  const sidebarImageTwo = sidebarImgTwo?.image
+    ? appConfig.BASE_URL + sidebarImgTwo.image
+    : IMAGE_FALLBACK;
+
   const settingBanner = {
     pagination: {
       clickable: true,
@@ -53,6 +64,7 @@ export default function Banner({
       <div className={`w-full ${className || ""}`}>
         <div className="container-x mx-auto">
           <div className="main-wrapper w-full">
+            <h1 className="sr-only">Seyfibaba Pazaryeri - En Uygun Fiyatlı Alışverişin Adresi</h1>
             <div className="banner-card xl:flex xl:space-x-[30px] rtl:space-x-0 xl:h-[600px]  mb-[30px] ">
               <div
                 data-aos="fade-right"
@@ -72,16 +84,16 @@ export default function Banner({
               >
                 {sidebarImgOne && (
                   <div
-                    className="w-full xl:h-1/2 xl:mr-0 mr-2 relative flex items-center group rtl:md:pr-[40px] ltr:md:pl-[40px] rtl:pr-[30] ltr:pl-[30px]"
-                    style={{
-                      backgroundImage: `url(${
-                        appConfig.BASE_URL + sidebarImgOne.image
-                      })`,
-                      backgroundSize: "cover",
-                      backgroundRepeat: "no-repeat",
-                    }}
+                    className="w-full xl:h-1/2 xl:mr-0 mr-2 relative flex items-center group rtl:md:pr-[40px] ltr:md:pl-[40px] rtl:pr-[30] ltr:pl-[30px] overflow-hidden"
                   >
-                    <div className="flex flex-col justify-between">
+                    <Image
+                      src={sidebarImageOne}
+                      alt={sidebarImgOne.title_two || "Banner image"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1200px) 100vw, 400px"
+                    />
+                    <div className="flex flex-col justify-between relative z-10">
                       <div>
                         <div className="inline-block md:w-[112px] w-[100px] shadow md:h-[25px] h-[18px] flex items-center justify-center  bg-white rounded-full md:mb-[22px] mb-[15px]">
                           <span className="text-qblack uppercase md:text-xs text-[10px] font-semibold">
@@ -92,9 +104,9 @@ export default function Banner({
                           <p className="md:text-[30px] leading-none text-qblack font-semibold md:mb-3">
                             {sidebarImgOne.title_one}
                           </p>
-                          <h1 className="md:text-[30px] md:leading-[40px] text-qblack font-semibold">
+                          <h2 className="md:text-[30px] md:leading-[40px] text-qblack font-semibold">
                             {sidebarImgOne.title_two}
-                          </h1>
+                          </h2>
                         </div>
                       </div>
                       <div className="w-auto">
@@ -147,16 +159,16 @@ export default function Banner({
 
                 {sidebarImgTwo && (
                   <div
-                    style={{
-                      backgroundImage: `url(${
-                        appConfig.BASE_URL + sidebarImgTwo.image
-                      })`,
-                      backgroundSize: "cover",
-                      backgroundRepeat: "no-repeat",
-                    }}
-                    className="w-full xl:h-1/2 relative flex items-center rtl:md:pr-[40px] ltr:md:pl-[40px] rtl:pr-[30] ltr:pl-[30px] group"
+                    className="w-full xl:h-1/2 relative flex items-center rtl:md:pr-[40px] ltr:md:pl-[40px] rtl:pr-[30] ltr:pl-[30px] group overflow-hidden"
                   >
-                    <div className="flex flex-col justify-between">
+                    <Image
+                      src={sidebarImageTwo}
+                      alt={sidebarImgTwo.title_two || "Banner image"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1200px) 100vw, 400px"
+                    />
+                    <div className="flex flex-col justify-between relative z-10">
                       <div>
                         <div className="inline-block md:w-[112px] w-[100px] shadow md:h-[25px] h-[18px] flex items-center justify-center  bg-white rounded-full md:mb-[22px] mb-[15px]">
                           <span className="text-qblack uppercase md:text-xs text-[10px] font-semibold">
@@ -167,9 +179,9 @@ export default function Banner({
                           <p className="md:text-[30px] leading-none text-qblack font-semibold md:mb-3">
                             {sidebarImgTwo.title_one}
                           </p>
-                          <h1 className="md:text-[30px] md:leading-[40px] text-qblack font-semibold">
+                          <h2 className="md:text-[30px] md:leading-[40px] text-qblack font-semibold">
                             {sidebarImgTwo.title_two}
-                          </h1>
+                          </h2>
                         </div>
                       </div>
                       <div className="w-auto">

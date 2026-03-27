@@ -26,6 +26,7 @@ return [
         'http://www.seyfibaba.com',
         'http://213.238.181.47:3000',
         'http://localhost:3000',
+        'http://localhost:3001',
     ],
 
     'allowed_origins_patterns' => [],

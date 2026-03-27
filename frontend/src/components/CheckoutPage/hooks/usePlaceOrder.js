@@ -8,13 +8,11 @@ import {
   useBankPaymentApiMutation,
   useCashOnDeliveryGuestApiMutation,
   useCashOnDeliveryApiMutation,
-  useStripePayApiMutation,
-  useStripePayGuestApiMutation,
   useBankPaymentGuestApiMutation,
   useDraftOrderApiMutation,
   useDraftOrderGuestApiMutation,
-  useRazorpayOrderApiMutation,
-  useRazorpayOrderGuestApiMutation,
+  useIyzicoCheckoutApiMutation,
+  useIyzicoCheckoutGuestApiMutation,
 } from "@/redux/features/order/paymentGetways/apiSlice";
 import guestFormValidation from "../utils/guestFormValidation";
 
@@ -29,9 +27,6 @@ export default function usePlaceOrder({
   selectPayment,
   transactionInfo,
   guestFields = {},
-  stripeFields = {},
-  setStripeError = () => {},
-  resetStripeInputs = () => {},
   setNewAddress = () => {},
   ServeLangItem = () => ({}),
 }) {
@@ -40,16 +35,12 @@ export default function usePlaceOrder({
 
   /**
    * @Initialization Payment Getway Apis
-   * @const cashOnDeliveryApi, @const cashOnDeliveryGuestApi, @const stripePayApi, @const stripePayGuestApi, @const bankPaymentApi, @const bankPaymentGuestApi, @const razorpayOrderApi, @const razorpayOrderGuestApi, @const draftOrderApi, @const draftOrderGuestApi
+   * @const cashOnDeliveryApi, @const cashOnDeliveryGuestApi, @const bankPaymentApi, @const bankPaymentGuestApi, @const draftOrderApi, @const draftOrderGuestApi
    */
   const [cashOnDeliveryApi, { isLoading: isCashOnDeliveryLoading }] =
     useCashOnDeliveryApiMutation();
   const [cashOnDeliveryGuestApi, { isLoading: isCashOnDeliveryGuestLoading }] =
     useCashOnDeliveryGuestApiMutation();
-  const [stripePayApi, { isLoading: isStripePayLoading }] =
-    useStripePayApiMutation();
-  const [stripePayGuestApi, { isLoading: isStripePayGuestLoading }] =
-    useStripePayGuestApiMutation();
   const [bankPaymentApi, { isLoading: isBankPaymentLoading }] =
     useBankPaymentApiMutation();
   const [bankPaymentGuestApi, { isLoading: isBankPaymentGuestLoading }] =
@@ -58,10 +49,10 @@ export default function usePlaceOrder({
     useDraftOrderApiMutation();
   const [draftOrderGuestApi, { isLoading: isDraftOrderGuestLoading }] =
     useDraftOrderGuestApiMutation();
-  const [razorpayOrderApi, { isLoading: isRazorpayOrderLoading }] =
-    useRazorpayOrderApiMutation();
-  const [razorpayOrderGuestApi, { isLoading: isRazorpayOrderGuestLoading }] =
-    useRazorpayOrderGuestApiMutation();
+  const [iyzicoCheckoutApi, { isLoading: isIyzicoLoading }] =
+    useIyzicoCheckoutApiMutation();
+  const [iyzicoCheckoutGuestApi, { isLoading: isIyzicoGuestLoading }] =
+    useIyzicoCheckoutGuestApiMutation();
 
   const removeCouponFromStorage = () => {
     localStorage.removeItem("coupon_set_date");
@@ -72,7 +63,7 @@ export default function usePlaceOrder({
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     return `&order_id=${orderId}&request_from=react_web&frontend_success_url=${JSON.stringify(
       origin + "/order/"
-    )}&frontend_faild_url=${JSON.stringify(origin + "/payment-faild")}`;
+    )}&frontend_faild_url=${JSON.stringify(origin + "/payment-failed")}`;
   };
 
   const buildGuestAddressObject = () => ({
@@ -160,165 +151,6 @@ export default function usePlaceOrder({
                 token: auth()?.access_token,
               }).unwrap()
         ),
-      stripe: async () => {
-        const stripePayload = {
-          ...basePayload,
-          agree_terms_condition: 1,
-          card_number: stripeFields.cardNumber,
-          year: stripeFields.expireDate?.formatted?.year,
-          month: stripeFields.expireDate?.formatted?.month,
-          cvv: stripeFields.cvv,
-          card_holder_name: stripeFields.cardHolderName,
-        };
-
-        try {
-          const res = isGuest
-            ? await stripePayGuestApi({
-                data: stripePayload,
-              }).unwrap()
-            : await stripePayApi({
-                data: stripePayload,
-                token: auth()?.access_token,
-              }).unwrap();
-          toast.success(res.message);
-          router.push(`/order/${res.order_id}`);
-          dispatch(clearCartAction());
-          removeCouponFromStorage();
-          setStripeError(null);
-          resetStripeInputs();
-        } catch (error) {
-          if (error.status === 403) {
-            toast.error(error?.data?.error);
-          }
-          console.log(error);
-        }
-      },
-      paypal: () =>
-        handleDraftOrderAndRedirect(
-          () =>
-            isGuest
-              ? draftOrderGuestApi({
-                  data: basePayload,
-                })
-              : draftOrderApi({
-                  data: basePayload,
-                  token: auth()?.access_token,
-                }),
-          `user/checkout/${isGuest ? "guest/" : ""}paypal-react-web-view`,
-          `&coupon=${couponCode?.code}`,
-          isGuest
-        ),
-      razorpay: async () => {
-        const res = isGuest
-          ? await razorpayOrderGuestApi({
-              data: basePayload,
-            })
-          : await razorpayOrderApi({
-              data: basePayload,
-              token: auth()?.access_token,
-            });
-        dispatch(clearCartAction());
-        const { order_id, amount, db_order_id } = res.data;
-        const finalUrl = `${appConfig.BASE_URL}user/checkout/${
-          isGuest ? "guest/" : ""
-        }razorpay-web-view?${
-          isGuest ? "" : "token=" + auth().access_token
-        }&amount=${amount}&order_id=${order_id}&db_order_id=${db_order_id}${getSuccessFailUrlParams(
-          order_id
-        )}`;
-        router.push(finalUrl);
-        removeCouponFromStorage();
-      },
-      flutterWave: () =>
-        handleDraftOrderAndRedirect(
-          () =>
-            isGuest
-              ? draftOrderGuestApi({
-                  data: basePayload,
-                })
-              : draftOrderApi({
-                  data: basePayload,
-                  token: auth()?.access_token,
-                }),
-          `user/checkout/${isGuest ? "guest/" : ""}flutterwave-web-view`,
-          `&coupon=${couponCode?.code}`,
-          isGuest
-        ),
-      mollie: () =>
-        handleDraftOrderAndRedirect(
-          () =>
-            isGuest
-              ? draftOrderGuestApi({
-                  data: basePayload,
-                })
-              : draftOrderApi({
-                  data: basePayload,
-                  token: auth()?.access_token,
-                }),
-          `user/checkout/${isGuest ? "guest/" : ""}pay-with-mollie`,
-          `&coupon=${couponCode?.code}`,
-          isGuest
-        ),
-      bkash: () =>
-        handleDraftOrderAndRedirect(
-          () =>
-            isGuest
-              ? draftOrderGuestApi({
-                  data: basePayload,
-                })
-              : draftOrderApi({
-                  data: basePayload,
-                  token: auth()?.access_token,
-                }),
-          `user/checkout/${isGuest ? "guest/" : ""}pay-with-bkash`,
-          `&coupon=${couponCode?.code}`,
-          isGuest
-        ),
-      myfatoorah: () =>
-        handleDraftOrderAndRedirect(
-          () =>
-            isGuest
-              ? draftOrderGuestApi({
-                  data: basePayload,
-                })
-              : draftOrderApi({
-                  data: basePayload,
-                  token: auth()?.access_token,
-                }),
-          `user/checkout/${isGuest ? "guest/" : ""}myfatoorah-webview`,
-          `&coupon=${couponCode?.code}`,
-          isGuest
-        ),
-      instamojo: () =>
-        handleDraftOrderAndRedirect(
-          () =>
-            isGuest
-              ? draftOrderGuestApi({
-                  data: basePayload,
-                })
-              : draftOrderApi({
-                  data: basePayload,
-                  token: auth()?.access_token,
-                }),
-          `user/checkout/${isGuest ? "guest/" : ""}pay-with-instamojo`,
-          `&coupon=${couponCode?.code}`,
-          isGuest
-        ),
-      paystack: () =>
-        handleDraftOrderAndRedirect(
-          () =>
-            isGuest
-              ? draftOrderGuestApi({
-                  data: basePayload,
-                })
-              : draftOrderApi({
-                  data: basePayload,
-                  token: auth()?.access_token,
-                }),
-          `user/checkout/${isGuest ? "guest/" : ""}paystack-web-view`,
-          `&coupon=${couponCode?.code}`,
-          isGuest
-        ),
       bankpayment: () =>
         handleApiResponse(
           isGuest
@@ -336,21 +168,25 @@ export default function usePlaceOrder({
                 token: auth()?.access_token,
               }).unwrap()
         ),
-      sslcommerce: () =>
-        handleDraftOrderAndRedirect(
-          () =>
-            isGuest
-              ? draftOrderGuestApi({
-                  data: basePayload,
-                })
-              : draftOrderApi({
-                  data: basePayload,
-                  token: auth()?.access_token,
-                }),
-          `user/checkout/${isGuest ? "guest/" : ""}sslcommerz-web-view`,
-          `&coupon=${couponCode?.code}`,
-          isGuest
-        ),
+      iyzico: async () => {
+        try {
+          const apiCall = isGuest
+            ? iyzicoCheckoutGuestApi({ data: basePayload })
+            : iyzicoCheckoutApi({
+                data: basePayload,
+                token: auth()?.access_token,
+              });
+          const res = await apiCall.unwrap();
+          if (res.success && res.data.checkout_url) {
+            router.push(res.data.checkout_url);
+            removeCouponFromStorage();
+          } else {
+            toast.error(res.message || "Iyzico session failed");
+          }
+        } catch (err) {
+          toast.error(err?.data?.message || "Something went wrong with Iyzico");
+        }
+      },
     };
 
     if (isGuest) {

@@ -10,7 +10,22 @@ class Vendor extends Model
     use HasFactory;
 
 
+    protected $guarded = [];
+
+    protected $casts = [
+        'commission_rate' => 'decimal:2',
+    ];
+
     protected $appends = ['averageRating'];
+
+    public function getEffectiveCommissionRate()
+    {
+        if ($this->commission_rate !== null) {
+            return (float) $this->commission_rate;
+        }
+
+        return (float) (Setting::first()->default_commission_rate ?? 0);
+    }
 
     public function getAverageRatingAttribute()
     {

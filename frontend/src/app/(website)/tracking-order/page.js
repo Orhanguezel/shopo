@@ -1,12 +1,16 @@
 import TrackingOrder from "@/components/TrackingOrder/index";
 
-export const dynamic = 'force-dynamic'; // Static export için gerekli
+export const dynamic = 'force-dynamic';
 
 // generate seo metadata
 export async function generateMetadata() {
   return {
-    title: "Tracking Order",
-    description: "Tracking Order",
+    title: "Sipariş Takibi | Seyfibaba",
+    description: "Sipariş numaranız ile siparişinizin güncel durumunu takip edin.",
+    alternates: {
+      canonical: "/tracking-order",
+    },
+    robots: { index: false, follow: true },
   };
 }
 

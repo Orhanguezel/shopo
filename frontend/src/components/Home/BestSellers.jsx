@@ -13,16 +13,15 @@ export default function BestSellers({ className, sallers = [] }) {
             className="item w-full flex flex-col items-center"
           >
             <Link
-              href={{
-                pathname: "/seller-products",
-                query: { seller: saller.slug },
-              }}
+              href={`/seller/${saller.slug}`}
             >
               <div className="sm:w-[170px] p-[30px] sm:h-[170px] w-[140px] h-[140px] rounded-full bg-white flex justify-center items-center overflow-hidden mb-2 relative">
-                <img
+                <Image
+                  width={170}
+                  height={170}
                   className="w-full h-full object-contain"
                   src={`${appConfig.BASE_URL + saller.logo}`}
-                  alt={saller.slug}
+                  alt={saller.shop_name || "Seller Logo"}
                 />
               </div>
               <p className="text-base font-500 text-center cursor-pointer">

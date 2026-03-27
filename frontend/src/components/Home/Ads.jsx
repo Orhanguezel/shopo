@@ -93,9 +93,9 @@ export default function Ads() {
                     />
                   </Link>
                 </div>
-                <h1 className="md:text-[30px] text-xl font-bold text-qblack mb-1">
+                <h2 className="md:text-[30px] text-xl font-bold text-qblack mb-1">
                   {announcment.title}
-                </h1>
+                </h2>
                 <p className="text-qgray md:w-[480px] w-full md:text-base text-sm">
                   {announcment.description}
                 </p>

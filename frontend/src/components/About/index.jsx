@@ -9,7 +9,15 @@ import ServeLangItem from "../Helpers/ServeLangItem";
 import settings from "../../utils/settings";
 import appConfig from "@/appConfig";
 import AboutUsSlider from "../Slider/AboutUsSlider";
+
+const IMAGE_FALLBACK = "/assets/images/server-error.png";
+
 export default function About({ aboutData }) {
+  const aboutBanner =
+    aboutData?.aboutUs?.banner_image
+      ? `${appConfig.BASE_URL + aboutData.aboutUs.banner_image}`
+      : IMAGE_FALLBACK;
+
   const settingTestimonial = {
     autoplay: {
       delay: 2500,
@@ -61,7 +69,7 @@ export default function About({ aboutData }) {
             <div className="md:w-[570px] w-full md:h-[560px] h-auto rounded overflow-hidden my-5 lg:my-0 relative">
               <Image
                 layout="fill"
-                src={`${appConfig.BASE_URL + aboutData.aboutUs.banner_image}`}
+                src={aboutBanner}
                 alt="about"
                 className="w-full h-full"
               />

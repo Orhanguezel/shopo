@@ -11,14 +11,18 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\OrderProductVariant;
 use App\Http\Controllers\Controller;
+use App\Services\CommissionService;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Country;
 
 class OrderController extends Controller
 {
-    public function __construct()
+    protected $commissionService;
+
+    public function __construct(CommissionService $commissionService)
     {
+        $this->commissionService = $commissionService;
         $this->middleware('auth:admin');
     }
 
@@ -113,6 +117,9 @@ class OrderController extends Controller
             $order->order_status = 3;
             $order->order_completed_date = date('Y-m-d');
             $order->save();
+
+            // settle commission
+            $this->commissionService->settleCommissions($order);
         }else if($request->order_status == 4){
             $order->order_status = 4;
             $order->order_declined_date = date('Y-m-d');

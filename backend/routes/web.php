@@ -4,7 +4,6 @@
 use App\Models\Setting;
 
 
-use App\Models\BakshPayment;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
@@ -13,7 +12,6 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\User\AddressCotroller;
-use App\Http\Controllers\User\PaypalController;
 use App\Http\Controllers\User\MessageController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -23,13 +21,11 @@ use App\Http\Controllers\WEB\Admin\PosController;
 use App\Http\Controllers\WEB\Admin\CityController;
 use App\Http\Controllers\WEB\Admin\AdminController;
 use App\Http\Controllers\WEB\Admin\OrderController;
-use App\Http\Controllers\User\GuestPaypalController;
 use App\Http\Controllers\User\UserProfileController;
 use App\Http\Controllers\WEB\Admin\CouponController;
 use App\Http\Controllers\WEB\Admin\FooterController;
 use App\Http\Controllers\WEB\Admin\SellerController;
 use App\Http\Controllers\WEB\Admin\SliderController;
-use App\Http\Controllers\User\BkashPaymentController;
 use App\Http\Controllers\WEB\Admin\AboutUsController;
 use App\Http\Controllers\WEB\Admin\ContentController;
 use App\Http\Controllers\WEB\Admin\CountryController;
@@ -47,6 +43,7 @@ use App\Http\Controllers\WEB\Admin\ErrorPageController;
 use App\Http\Controllers\WEB\Admin\FlashSaleController;
 use App\Http\Controllers\WEB\Admin\InventoryController;
 use App\Http\Controllers\WEB\Seller\WithdrawController;
+use App\Http\Controllers\WEB\Seller\ReturnRequestController as SellerReturnRequestController;
 use App\Http\Controllers\WEB\Admin\BreadcrumbController;
 use App\Http\Controllers\WEB\Admin\CustomPageController;
 use App\Http\Controllers\WEB\Admin\FooterLinkController;
@@ -54,7 +51,6 @@ use App\Http\Controllers\WEB\Admin\SubscriberController;
 use App\Http\Controllers\WEB\Admin\ContactPageController;
 use App\Http\Controllers\WEB\Admin\DeliveryManController;
 use App\Http\Controllers\WEB\Admin\TestimonialController;
-use App\Http\Controllers\User\BkashPaymentControllerGuest;
 use App\Http\Controllers\WEB\Admin\AdminProfileController;
 use App\Http\Controllers\WEB\Admin\CountryStateController;
 use App\Http\Controllers\WEB\Admin\NotificationController;
@@ -65,6 +61,7 @@ use App\Http\Controllers\WEB\Admin\AdvertisementController;
 use App\Http\Controllers\WEB\Admin\EmailTemplateController;
 use App\Http\Controllers\WEB\Admin\PaymentMethodController;
 use App\Http\Controllers\WEB\Admin\PrivacyPolicyController;
+use App\Http\Controllers\WEB\Admin\CommissionController;
 
 use App\Http\Controllers\WEB\Admin\ProductReportController;
 use App\Http\Controllers\WEB\Admin\ProductReviewController;
@@ -131,7 +128,7 @@ Route::group([
 
 ], function ($router) {
 
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:auth-login');
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
@@ -139,54 +136,6 @@ Route::group([
 
 Route::group(['as' => 'user.', 'prefix' => 'user'], function () {
     Route::group(['as' => 'checkout.', 'prefix' => 'checkout'], function () {
-
-        // Route::get('/paypal-web-view', [PaypalController::class, 'paypalWebView'])->name('paypal-web-view');
-        // Route::get('/pay-with-paypal', [PaypalController::class, 'payWithPaypal'])->name('pay-with-paypal');
-        // Route::get('/paypal-payment-success', [PaypalController::class, 'paypalPaymentSuccess'])->name('paypal-payment-success');
-        // Route::get('/paypal-payment-cancled', [PaypalController::class, 'paypalPaymentCancled'])->name('paypal-payment-cancled');
-
-
-        Route::get('/paypal-react-web-view', [PaypalController::class, 'paypalReactWebView'])->name('paypal-react-web-view');
-        Route::get('/paypal-payment-success-from-react', [PaypalController::class, 'paypalPaymentSuccessFromReact'])->name('paypal-payment-success-from-react');
-        Route::get('/paypal-payment-cancled-from-react', [PaypalController::class, 'paypalPaymentCancledFromReact'])->name('paypal-payment-cancled-from-react');
-
-
-        Route::post('/razorpay-order', [PaymentController::class, 'razorpayOrder'])->name('razorpay-order');
-        Route::get('/razorpay-web-view', [PaymentController::class, 'razorpayWebView'])->name('razorpay-web-view');
-        Route::post('razorpay/pay/verify', [PaymentController::class, 'razorpayVerify'])->name('razorpay-pay-verify');
-
-
-        Route::get('/flutterwave-web-view', [PaymentController::class, 'flutterwaveWebView'])->name('flutterwave-web-view');
-        Route::post('/pay-with-flutterwave', [PaymentController::class, 'payWithFlutterwave'])->name('pay-with-flutterwave');
-
-        Route::get('/pay-with-mollie', [PaymentController::class, 'payWithMollie'])->name('pay-with-mollie');
-        Route::get('/mollie-payment-success', [PaymentController::class, 'molliePaymentSuccess'])->name('mollie-payment-success');
-
-        Route::get('/pay-with-instamojo', [PaymentController::class, 'payWithInstamojo'])->name('pay-with-instamojo');
-        Route::get('/instamojo-response', [PaymentController::class, 'instamojoResponse'])->name('instamojo-response');
-
-
-        Route::get('/paystack-web-view', [PaymentController::class, 'paystackWebView'])->name('paystack-web-view');
-        Route::post('/pay-with-paystack', [PaymentController::class, 'payWithPayStack'])->name('pay-with-paystack');
-
-
-        Route::get('/sslcommerz-web-view', [PaymentController::class,   'sslcommerzWebView'])->name('sslcommerz-web-view');
-        Route::post('/sslcommerz-pay',     [PaymentController::class,   'sslcommerz'])->name('sslcommerz-pay');
-        Route::post('/sslcommerz-success', [PaymentController::class,   'sslcommerz_success'])->name('sslcommerz-success');
-
-        Route::post('/sslcommerz-failed', [PaymentController::class,   'sslcommerz_failed'])->name('sslcommerz-failed');
-        // Route::post('/sslcommerz-cancel', [PaymentController::class,   'sslcommerz_failed'])->name('sslcommerz-cancel');
-
-
-        Route::get('/myfatoorah-webview', [PaymentController::class, 'myfatoorah_webview'])->name('myfatoorah-webview');
-        Route::get('/myfatoorah-webview-callback', [PaymentController::class, 'myfatoorah_webview_callback'])->name('myfatoorah-webview-callback');
-
-        Route::get('/pay-with-bkash', [BkashPaymentController::class, 'payWithBkash'])->name('pay-with-bkash');
-        Route::get('/bkash-payment-success', [BkashPaymentController::class, 'BkashPaymentSuccess'])->name('bkash-payment-success');
-        Route::get('/bkash-payment-cancled', [BkashPaymentController::class, 'BkashPaymentCancled'])->name('bkash-payment-cancled');
-
-
-
         Route::get('order-success-url-for-mobile-app', function () {
             return response()->json(['message' => 'order success']);
         })->name('order-success-url-for-mobile-app');
@@ -201,55 +150,6 @@ Route::group(['as' => 'user.', 'prefix' => 'user'], function () {
 
 Route::group(['as' => 'user.', 'prefix' => 'user'], function () {
     Route::group(['as' => 'checkout.guest.', 'prefix' => 'checkout/guest'], function () {
-
-        // Route::get('/paypal-web-view', [GuestPaypalController::class, 'paypalWebView'])->name('paypal-web-view');
-        // Route::get('/pay-with-paypal', [GuestPaypalController::class, 'payWithPaypal'])->name('pay-with-paypal');
-        // Route::get('/paypal-payment-success', [GuestPaypalController::class, 'paypalPaymentSuccess'])->name('paypal-payment-success');
-        // Route::get('/paypal-payment-cancled', [GuestPaypalController::class, 'paypalPaymentCancled'])->name('paypal-payment-cancled');
-
-        Route::get('/paypal-react-web-view', [GuestPaypalController::class, 'paypalReactWebView'])->name('paypal-react-web-view');
-        Route::get('/paypal-payment-success-from-react', [GuestPaypalController::class, 'paypalPaymentSuccessFromReact'])->name('paypal-payment-success-from-react');
-        Route::get('/paypal-payment-cancled-from-react', [GuestPaypalController::class, 'paypalPaymentCancledFromReact'])->name('paypal-payment-cancled-from-react');
-
-        Route::post('/razorpay-order', [CheckoutWithoutTokenController::class, 'razorpayOrder'])->name('razorpay-order');
-        Route::get('/razorpay-web-view', [CheckoutWithoutTokenController::class, 'razorpayWebView'])->name('razorpay-web-view');
-        Route::post('razorpay/pay/verify', [CheckoutWithoutTokenController::class, 'razorpayVerify'])->name('razorpay-pay-verify');
-
-        Route::get('/flutterwave-web-view', [CheckoutWithoutTokenController::class, 'flutterwaveWebView'])->name('flutterwave-web-view');
-        Route::post('/pay-with-flutterwave', [CheckoutWithoutTokenController::class, 'payWithFlutterwave'])->name('pay-with-flutterwave');
-
-        Route::get('/pay-with-mollie', [CheckoutWithoutTokenController::class, 'payWithMollie'])->name('pay-with-mollie');
-        Route::get('/mollie-payment-success', [CheckoutWithoutTokenController::class, 'molliePaymentSuccess'])->name('mollie-payment-success');
-
-        Route::get('/pay-with-instamojo', [CheckoutWithoutTokenController::class, 'payWithInstamojo'])->name('pay-with-instamojo');
-        Route::get('/instamojo-response', [CheckoutWithoutTokenController::class, 'instamojoResponse'])->name('instamojo-response');
-
-        Route::get('/paystack-web-view', [CheckoutWithoutTokenController::class, 'paystackWebView'])->name('paystack-web-view');
-        Route::post('/pay-with-paystack', [CheckoutWithoutTokenController::class, 'payWithPayStack'])->name('pay-with-paystack');
-
-        Route::get('/sslcommerz-web-view', [CheckoutWithoutTokenController::class,   'sslcommerzWebView'])->name('sslcommerz-web-view');
-        Route::post('/sslcommerz-pay',     [CheckoutWithoutTokenController::class,   'sslcommerz'])->name('sslcommerz-pay');
-        Route::post('/sslcommerz-success', [CheckoutWithoutTokenController::class,   'sslcommerz_success'])->name('sslcommerz-success');
-
-        Route::post('/sslcommerz-failed', [CheckoutWithoutTokenController::class,   'sslcommerz_failed'])->name('sslcommerz-failed');
-
-
-
-        Route::get('/pay-with-bkash', [BkashPaymentControllerGuest::class, 'payWithBkash'])->name('pay-with-bkash');
-        Route::get('/bkash-payment-success', [BkashPaymentControllerGuest::class, 'BkashPaymentSuccess'])->name('bkash-payment-success');
-        Route::get('/bkash-payment-cancled', [BkashPaymentControllerGuest::class, 'BkashPaymentCancled'])->name('bkash-payment-cancled');
-
-
-
-
-        // Route::post('/sslcommerz-cancel', [PaymentController::class,   'sslcommerz_failed'])->name('sslcommerz-cancel');
-
-
-        // Route::get('/myfatoorah-webview', [PaymentController::class, 'myfatoorah_webview'])->name('myfatoorah-webview');
-        // Route::get('/myfatoorah-webview-callback', [PaymentController::class, 'myfatoorah_webview_callback'])->name('myfatoorah-webview-callback');
-
-
-
         Route::get('order-success-url-for-mobile-app', function () {
             return response()->json(['message' => 'order success']);
         })->name('order-success-url-for-mobile-app');
@@ -341,6 +241,9 @@ Route::group(['middleware' => ['XSS']], function () {
 
             Route::resource('my-withdraw', WithdrawController::class);
             Route::get('get-withdraw-account-info/{id}', [WithdrawController::class, 'getWithDrawAccountInfo'])->name('get-withdraw-account-info');
+            Route::get('return-requests', [SellerReturnRequestController::class, 'index'])->name('return-requests.index');
+            Route::get('show-return-request/{id}', [SellerReturnRequestController::class, 'show'])->name('return-requests.show');
+            Route::put('update-return-request/{id}', [SellerReturnRequestController::class, 'updateStatus'])->name('return-requests.update-status');
 
             Route::get('all-order', [SellerOrderController::class, 'index'])->name('all-order');
             Route::get('pending-order', [SellerOrderController::class, 'pendingOrder'])->name('pending-order');
@@ -422,14 +325,15 @@ Route::group(['middleware' => ['XSS']], function () {
 
         // start auth route
         Route::get('login', [AdminLoginController::class, 'adminLoginPage'])->name('login');
-        Route::post('login', [AdminLoginController::class, 'storeLogin'])->name('login');
-        Route::post('logout', [AdminLoginController::class, 'adminLogout'])->name('logout');
+        Route::post('login', [AdminLoginController::class, 'storeLogin'])->middleware('throttle:auth-login')->name('login');
         Route::get('forget-password', [AdminForgotPasswordController::class, 'forgetPassword'])->name('forget-password');
-        Route::post('send-forget-password', [AdminForgotPasswordController::class, 'sendForgetEmail'])->name('send.forget.password');
+        Route::post('send-forget-password', [AdminForgotPasswordController::class, 'sendForgetEmail'])->middleware('throttle:password-reset')->name('send.forget.password');
         Route::get('reset-password/{token}', [AdminForgotPasswordController::class, 'resetPassword'])->name('reset.password');
         Route::post('password-store/{token}', [AdminForgotPasswordController::class, 'storeResetData'])->name('store.reset.password');
         // end auth route
 
+        Route::group(['middleware' => ['auth:admin']], function () {
+        Route::post('logout', [AdminLoginController::class, 'adminLogout'])->name('logout');
         Route::get('/', [DashboardController::class, 'dashobard'])->name('dashboard');
         Route::get('dashboard', [DashboardController::class, 'dashobard'])->name('dashboard');
         Route::get('profile', [AdminProfileController::class, 'index'])->name('profile');
@@ -509,13 +413,7 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::resource('privacy-policy', PrivacyPolicyController::class);
 
 
-
-
         Route::put('update-database', [SettingController::class, 'update_database'])->name('update-database');
-
-
-        Route::get('clear-database', [SettingController::class, 'showClearDatabasePage'])->name('clear-database');
-        Route::delete('clear-database', [SettingController::class, 'clearDatabase'])->name('clear-database');
 
         Route::get('subscriber', [SubscriberController::class, 'index'])->name('subscriber');
         Route::delete('delete-subscriber/{id}', [SubscriberController::class, 'destroy'])->name('delete-subscriber');
@@ -707,18 +605,9 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::post('city-import', [CityController::class, 'city_import'])->name('city-import');
 
         Route::get('payment-method', [PaymentMethodController::class, 'index'])->name('payment-method');
-        Route::put('update-paypal', [PaymentMethodController::class, 'updatePaypal'])->name('update-paypal');
-        Route::put('update-baksh', [PaymentMethodController::class, 'updateBaksh'])->name('update-baksh');
-        Route::put('update-stripe', [PaymentMethodController::class, 'updateStripe'])->name('update-stripe');
-        Route::put('update-razorpay', [PaymentMethodController::class, 'updateRazorpay'])->name('update-razorpay');
         Route::put('update-bank', [PaymentMethodController::class, 'updateBank'])->name('update-bank');
-        Route::put('update-mollie', [PaymentMethodController::class, 'updateMollie'])->name('update-mollie');
-        Route::put('update-paystack', [PaymentMethodController::class, 'updatePayStack'])->name('update-paystack');
-        Route::put('update-flutterwave', [PaymentMethodController::class, 'updateflutterwave'])->name('update-flutterwave');
-        Route::put('update-instamojo', [PaymentMethodController::class, 'updateInstamojo'])->name('update-instamojo');
         Route::put('update-cash-on-delivery', [PaymentMethodController::class, 'updateCashOnDelivery'])->name('update-cash-on-delivery');
-        Route::put('update-sslcommerz', [PaymentMethodController::class, 'updateSslcommerz'])->name('update-sslcommerz');
-        Route::put('update-myfatoorah', [PaymentMethodController::class, 'update_myfatoorah'])->name('update-myfatoorah');
+        Route::put('update-iyzico', [PaymentMethodController::class, 'updateIyzico'])->name('update-iyzico');
 
         Route::resource('mega-menu-category', MegaMenuController::class);
         Route::put('mega-menu-category-status/{id}', [MegaMenuController::class, 'changeStatus'])->name('mega-menu-category-status');
@@ -791,6 +680,18 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::get('order-show/{id}', [OrderController::class, 'show'])->name('order-show');
         Route::delete('delete-order/{id}', [OrderController::class, 'destroy'])->name('delete-order');
         Route::put('update-order-status/{id}', [OrderController::class, 'updateOrderStatus'])->name('update-order-status');
+
+        // Commission Routes
+        Route::get('commission-settings', [CommissionController::class, 'settings'])->name('commission-settings');
+        Route::put('update-global-commission-rate', [CommissionController::class, 'updateGlobalRate'])->name('update-global-commission-rate');
+        Route::put('update-vendor-commission-rate/{id}', [CommissionController::class, 'updateVendorRate'])->name('update-vendor-commission-rate');
+        Route::delete('reset-vendor-commission-rate/{id}', [CommissionController::class, 'resetVendorRate'])->name('reset-vendor-commission-rate');
+        Route::get('commission-report', [CommissionController::class, 'report'])->name('commission-report');
+
+        // Return Request Routes
+        Route::get('return-requests', [App\Http\Controllers\WEB\Admin\ReturnRequestController::class, 'index'])->name('return-requests.index');
+        Route::get('show-return-request/{id}', [App\Http\Controllers\WEB\Admin\ReturnRequestController::class, 'show'])->name('return-requests.show');
+        Route::put('update-return-request/{id}', [App\Http\Controllers\WEB\Admin\ReturnRequestController::class, 'updateStatus'])->name('return-requests.update-status');
 
         Route::resource('coupon', CouponController::class);
         Route::put('coupon-status/{id}', [CouponController::class, 'changeStatus'])->name('coupon-status');
@@ -893,6 +794,7 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::get('/increment-order-quantity/{id}/{order_id}', [OrderController::class, 'incrementOrderQuantity'])->name('order-quantity-increment');
         Route::get('/decrement-order-quantity/{id}/{order_id}', [OrderController::class, 'decrementOrderQuantity'])->name('order-quantity-decrement');
         Route::delete('/delete-order-product/{id}/{order_id}', [OrderController::class, 'deleteOrderProduct'])->name('delete-order-product');
+        });
     });
 });
 

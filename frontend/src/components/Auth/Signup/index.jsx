@@ -6,6 +6,9 @@ import { useSelector } from "react-redux";
 import VerifyWidget from "./VerifyWidget";
 import SignupWidget from "./SignupWidget";
 import appConfig from "@/appConfig";
+
+const IMAGE_FALLBACK = "/assets/images/server-error.png";
+
 export default function Signup() {
   const { websiteSetup } = useSelector((state) => state.websiteSetup);
   const [verify, setVerify] = useState(false);
@@ -13,9 +16,16 @@ export default function Signup() {
   const [imgThumb, setImgThumb] = useState(null);
   useEffect(() => {
     if (websiteSetup) {
-      setImgThumb(websiteSetup.payload.image_content.login_image);
+      setImgThumb(
+        websiteSetup.payload?.image_content?.login_image || IMAGE_FALLBACK
+      );
     }
   }, [websiteSetup]);
+
+  const signupImage =
+    imgThumb && imgThumb !== IMAGE_FALLBACK
+      ? `${appConfig.BASE_URL + imgThumb}`
+      : IMAGE_FALLBACK;
 
   const pathname = usePathname();
   useEffect(() => {
@@ -46,14 +56,7 @@ export default function Signup() {
               className="absolute ltr:xl:-right-20 ltr:-right-[138px] rtl:xl:-left-20 rtl:-left-[138px]"
               style={{ top: "calc(50% - 258px)" }}
             >
-              {imgThumb && (
-                <Image
-                  width={608}
-                  height={480}
-                  src={`${appConfig.BASE_URL + imgThumb}`}
-                  alt="login"
-                />
-              )}
+              <Image width={608} height={480} src={signupImage} alt="login" />
             </div>
           </div>
         </div>

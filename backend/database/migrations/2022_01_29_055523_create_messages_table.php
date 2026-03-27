@@ -15,11 +15,17 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->integer('to');
-            $table->integer('from');
+            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('seller_id');
             $table->text('message');
-            $table->integer('read')->default(0);
+            $table->string('send_by')->default('customer');
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->tinyInteger('customer_read_msg')->default(0);
+            $table->tinyInteger('seller_read_msg')->default(0);
             $table->timestamps();
+
+            $table->index(['customer_id', 'seller_id']);
+            $table->index('product_id');
         });
     }
 

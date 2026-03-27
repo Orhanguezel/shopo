@@ -1,6 +1,7 @@
 import faq from "@/api/faq";
 import FaqComponent from "@/components/Faq";
 import { cache } from "react";
+import JsonLd, { generateFAQSchema, generateBreadcrumbSchema } from "@/components/Helpers/JsonLd";
 
 export const dynamic = 'force-dynamic'; // Static export için gerekli
 
@@ -13,13 +14,34 @@ export async function generateMetadata() {
   const data = await getFaqData();
   const { seoSetting } = data;
   return {
-    title: seoSetting?.seo_title,
+    title: seoSetting?.seo_title || "Sıkça Sorulan Sorular",
     description: seoSetting?.seo_description,
+    alternates: {
+      canonical: "/faq",
+    },
   };
 }
 
 // main page
 export default async function FaqPage() {
   const data = await getFaqData();
-  return <FaqComponent datas={data} />;
+  
+  const faqs = data?.faqs?.map(item => ({
+    question: item.question,
+    answer: item.answer
+  })) || [];
+  
+  const faqSchema = generateFAQSchema(faqs);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Anasayfa", item: "/" },
+    { name: "S.S.S." }
+  ]);
+
+  return (
+    <>
+      <JsonLd data={faqSchema} />
+      <JsonLd data={breadcrumbSchema} />
+      <FaqComponent datas={data} />
+    </>
+  );
 }

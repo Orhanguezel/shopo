@@ -8,11 +8,15 @@ use App\Models\WithdrawMethod;
 use App\Models\SellerWithdraw;
 use App\Models\OrderProduct;
 use App\Models\Setting;
+use App\Services\CommissionService;
 use Auth;
 class WithdrawController extends Controller
 {
-    public function __construct()
+    protected $commissionService;
+
+    public function __construct(CommissionService $commissionService)
     {
+        $this->commissionService = $commissionService;
         $this->middleware('auth:web');
     }
 
@@ -65,17 +69,9 @@ class WithdrawController extends Controller
 
         $user = Auth::guard('web')->user();
         $seller = $user->seller;
-        $totalAmount = 0;
-        $orderProducts = OrderProduct::with('order')->where('seller_id',$seller->id)->get();
-        foreach($orderProducts as $orderProduct){
-            if($orderProduct->order->payment_status == 1 && $orderProduct->order->order_status == 3){
-                $price = ($orderProduct->unit_price * $orderProduct->qty) + $orderProduct->vat;
-                $totalAmount = $totalAmount + $price;
-            }
-        }
+        
+        $currentAmount = $this->commissionService->getSellerBalance($seller->id);
 
-        $totalWithdraw = SellerWithdraw::where('seller_id',$seller->id)->where('status',1)->sum('withdraw_amount');
-        $currentAmount = $totalAmount - $totalWithdraw;
         if($request->withdraw_amount > $currentAmount){
             $notification = trans('admin_validation.Sorry! Your Payment request is more then your current balance');
             return response()->json(['notification' => $notification], 400);

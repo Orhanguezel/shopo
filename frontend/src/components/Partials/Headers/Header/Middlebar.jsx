@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,7 +13,7 @@ import SearchBox from "../../../Helpers/SearchBox";
 import ServeLangItem from "../../../Helpers/ServeLangItem";
 import auth from "@/utils/auth";
 import appConfig from "@/appConfig";
-import { setWishlistData } from "@/redux/features/whishlist/whishlistSlice";
+import { setWishlistData } from "@/redux/features/wishlist/wishlistSlice";
 import { useLazyLogoutApiQuery } from "@/redux/features/auth/apiSlice";
 import { toast } from "react-toastify";
 import { deleteCookie } from "cookies-next";
@@ -91,10 +92,13 @@ export default function Middlebar({ className, settings }) {
             <div className="relative">
               <Link href="/">
                 {settings?.logo && (
-                  <img
+                  <Image
+                    width={153}
+                    height={44}
                     className="w-[153px] h-[44px] object-contain"
                     src={`${appConfig.BASE_URL}${settings.logo}`}
-                    alt="logo"
+                    alt="Seyfibaba Logo"
+                    priority
                   />
                 )}
               </Link>
@@ -109,7 +113,7 @@ export default function Middlebar({ className, settings }) {
             <div className="flex space-x-6 rtl:space-x-reverse items-center relative">
               {/* Compare Products */}
               <div className="compaire relative">
-                <Link href={auth() ? "/products-compaire" : "/login"}>
+                <Link href={auth() ? "/products-compare" : "/login"}>
                   <span className="cursor-pointer">
                     <Compair className="fill-current" />
                   </span>

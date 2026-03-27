@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Models\PusherCredentail;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\ServiceProvider;
+
 class PusherConfig extends ServiceProvider
 {
     /**
@@ -24,10 +26,20 @@ class PusherConfig extends ServiceProvider
     public function boot()
     {
         $this->app->booted(function () {
-            $shouldSetCustomConfig = true;
-            if($shouldSetCustomConfig) {
-                
+            if ($this->app->environment('testing')) {
+                return;
+            }
+
+            try {
+                if (!Schema::hasTable('pusher_credentails')) {
+                    return;
+                }
+
                 $pusher = PusherCredentail::first();
+                if (!$pusher) {
+                    return;
+                }
+
                 $pusherConfig = [
                     'driver' => 'pusher',
                     'key' => $pusher->app_key,
@@ -39,8 +51,10 @@ class PusherConfig extends ServiceProvider
                         'encrypted' => true
                     ],
                 ];
-                
-                // config(['broadcasting.connections.pusher' => $pusherConfig]);
+
+                config(['broadcasting.connections.pusher' => $pusherConfig]);
+            } catch (\Throwable $exception) {
+                return;
             }
         });
 

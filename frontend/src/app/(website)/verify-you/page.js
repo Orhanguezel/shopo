@@ -5,6 +5,9 @@ export async function generateMetadata() {
   return {
     title: "Verify You",
     description: "Verify You",
+    alternates: {
+      canonical: "/verify-you",
+    },
   };
 }
 

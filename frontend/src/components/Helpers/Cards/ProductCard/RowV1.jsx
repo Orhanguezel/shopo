@@ -8,6 +8,8 @@ import QuickViewIco from "../../icons/QuickViewIco";
 import ThinLove from "../../icons/ThinLove";
 import Compair from "../../icons/Compair";
 
+const PRODUCT_IMAGE_FALLBACK = "/assets/images/server-error.png";
+
 function RowV1({
   styleType,
   datas,
@@ -22,6 +24,8 @@ function RowV1({
   wishlisted,
   addToCompare,
 }) {
+  const productImage = datas?.image || PRODUCT_IMAGE_FALLBACK;
+
   return (
     <div className={`w-full relative`}>
       <div
@@ -32,11 +36,12 @@ function RowV1({
           <div className="lg:w-1/2 w-1/3 h-full relative transform scale-100 group-hover:scale-110 transition duration-300 ease-in-ou">
             <Image
               fill
-              sizes="100%"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               style={{ objectFit: "scale-down" }}
-              src={`${datas.image}`}
-              alt={datas.title}
+              src={productImage}
+              alt={datas.title || "Product image"}
               className="w-full h-full object-contain"
+              loading="lazy"
             />
           </div>
           <div className="flex-1 flex flex-col justify-center h-full">

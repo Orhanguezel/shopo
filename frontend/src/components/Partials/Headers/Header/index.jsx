@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -67,10 +68,13 @@ export default function Header({
           <div className="w-[200px] h-full relative">
             <Link href="/">
               {settings && (
-                <img
+                <Image
+                  width={153}
+                  height={44}
                   className="w-[153px] h-[44px] object-contain"
                   src={`${appConfig.BASE_URL}${settings.logo}`}
-                  alt="logo"
+                  alt="Seyfibaba Logo"
+                  priority
                 />
               )}
             </Link>

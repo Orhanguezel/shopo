@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import DataIteration from "../Helpers/DataIteration";
 import appConfig from "@/appConfig";
@@ -27,7 +28,9 @@ export default function BrandSection({ className, sectionTitle, brands = [] }) {
                   }}
                 >
                   <div className="w-full h-[130px] p-[30px] bg-white border border-primarygray flex justify-center items-center relative cursor-pointer">
-                    <img
+                    <Image
+                      width={200}
+                      height={70}
                       className="w-full h-full object-contain"
                       src={`${appConfig.BASE_URL + datas.logo}`}
                       alt={datas.name}

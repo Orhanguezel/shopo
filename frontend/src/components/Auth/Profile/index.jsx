@@ -6,7 +6,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 // Internal utility and middleware imports
 import auth from "../../../utils/auth";
-import { setWishlistData } from "../../../redux/features/whishlist/whishlistSlice";
+import { setWishlistData } from "../../../redux/features/wishlist/wishlistSlice";
 // Shared and helper imports
 import Multivendor from "../../Shared/Multivendor";
 import ServeLangItem from "../../Helpers/ServeLangItem";
@@ -20,8 +20,10 @@ import IcoLove from "./icons/IcoLove";
 import IcoPassword from "./icons/IcoPassword";
 import IcoPeople from "./icons/IcoPeople";
 import IcoReviewHand from "./icons/IcoReviewHand";
+import IcoSupport from "./icons/IcoSupport";
 // Tab component imports
 import AddressesTab from "./tabs/AddressesTab";
+import ReturnRequestsTab from "./tabs/ReturnRequestsTab";
 import Dashboard from "./tabs/Dashboard";
 import OrderTab from "./tabs/OrderTab";
 import PasswordTab from "./tabs/PasswordTab";
@@ -31,6 +33,7 @@ import WishlistTab from "./tabs/WishlistTab";
 import {
   useDashboardApiQuery,
   useOrderListApiQuery,
+  useReturnRequestsApiQuery,
   useReviewListApiQuery,
   useProfileInfoApiQuery,
   useLazyLogoutApiQuery,
@@ -138,6 +141,15 @@ function ProfileContent() {
     );
   const { data: orderListApi, isFetching: isOrderListFetching } =
     useOrderListApiQuery(
+      {
+        token: auth()?.access_token,
+      },
+      {
+        skip: !auth(),
+      }
+    );
+  const { data: returnRequestsApi, isFetching: isReturnRequestsFetching } =
+    useReturnRequestsApiQuery(
       {
         token: auth()?.access_token,
       },
@@ -353,6 +365,19 @@ function ProfileContent() {
                       </div>
                     </Link>
                   </div>
+                  {/* Return Requests tab */}
+                  <div className="item group">
+                    <Link href="/profile#returns">
+                      <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
+                        <span>
+                          <IcoSupport />
+                        </span>
+                        <span className=" font-normal text-base capitalize cursor-pointer">
+                          Iade Taleplerim
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
                   {/* Change password tab */}
                   <div className="item group">
                     <Link href="/profile#password">
@@ -439,6 +464,16 @@ function ProfileContent() {
                     <>
                       {!isReviewListFetching && reviewListApi ? (
                         <ReviewTab reviews={reviewListApi?.reviews?.data} />
+                      ) : (
+                        <div className="flex justify-center items-center h-full">
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+                        </div>
+                      )}
+                    </>
+                  ) : active === "returns" ? (
+                    <>
+                      {!isReturnRequestsFetching && returnRequestsApi ? (
+                        <ReturnRequestsTab returns={returnRequestsApi?.returns?.data} />
                       ) : (
                         <div className="flex justify-center items-center h-full">
                           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>

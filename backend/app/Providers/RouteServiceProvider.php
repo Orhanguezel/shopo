@@ -39,5 +39,37 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
         });
+
+        RateLimiter::for('auth-login', function (Request $request) {
+            return Limit::perMinute(5)->by(($request->input('email') ?: 'guest').'|'.$request->ip());
+        });
+
+        RateLimiter::for('auth-register', function (Request $request) {
+            return Limit::perMinute(3)->by(($request->input('email') ?: 'guest').'|'.$request->ip());
+        });
+
+        RateLimiter::for('auth-otp', function (Request $request) {
+            return Limit::perMinute(5)->by(($request->input('email') ?: $request->input('phone') ?: 'guest').'|'.$request->ip());
+        });
+
+        RateLimiter::for('otp-send', function (Request $request) {
+            return Limit::perMinutes(15, 3)->by(($request->input('phone') ?: 'guest').'|'.$request->ip());
+        });
+
+        RateLimiter::for('otp-verify', function (Request $request) {
+            return Limit::perMinutes(5, 5)->by($request->ip());
+        });
+
+        RateLimiter::for('otp-resend', function (Request $request) {
+            return Limit::perMinute(1)->by($request->input('phone') ?: $request->ip());
+        });
+
+        RateLimiter::for('password-reset', function (Request $request) {
+            return Limit::perMinute(4)->by(($request->input('email') ?: 'guest').'|'.$request->ip());
+        });
+
+        RateLimiter::for('public-form', function (Request $request) {
+            return Limit::perMinute(10)->by($request->ip());
+        });
     }
 }

@@ -78,37 +78,6 @@ class Product extends Model
     }
 
 
-    protected $fillable = [
-        'name',
-        'short_name',
-        'slug',
-        'thumb_image',
-        'vendor_id',
-        'category_id',
-        'sub_category_id',
-        'child_category_id',
-        'brand_id',
-        'qty',
-        'weight',
-        'sold_qty',
-        'short_description',
-        'long_description',
-        'video_link',
-        'sku',
-        'seo_title',
-        'seo_description',
-        'price',
-        'offer_price',
-        'tags',
-        'show_homepage',
-        'is_undefine',
-        'is_featured',
-        'new_product',
-        'is_top',
-        'is_best',
-        'status',
-        'is_specification',
-        'approve_by_admin'
-    ];
+    protected $guarded = [];
 
 }

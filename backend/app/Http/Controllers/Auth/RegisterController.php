@@ -10,19 +10,15 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Rules\Captcha;
+use Illuminate\Support\Facades\Cache;
 use Auth;
 use App\Mail\UserRegistration;
 use App\Helpers\MailHelper;
 use App\Models\EmailTemplate;
-use App\Models\SmsTemplate;
-use App\Models\TwilioSms;
 use App\Models\Setting;
-use App\Models\BiztechSms;
 use Mail;
 use Str;
 use Exception;
-
-use Twilio\Rest\Client;
 
 class RegisterController extends Controller
 {
@@ -39,7 +35,6 @@ class RegisterController extends Controller
     }
 
     public function storeRegister(Request $request){
-        // return response()->json($request->email);
         $setting = Setting::first();
         $enable_phone_required = $setting->phone_number_required;
 
@@ -62,7 +57,27 @@ class RegisterController extends Controller
             'password.confirmed' => trans('user_validation.Confirm password does not match'),
             'agree.required' => trans('user_validation.Consent filed is required'),
         ];
-        $this->validate($request, $rules,$customMessages);
+
+        // OTP verification required when phone is required
+        if ($enable_phone_required == 1) {
+            $rules['otp_verified_token'] = 'required|string';
+        }
+
+        $this->validate($request, $rules, $customMessages);
+
+        // Verify OTP token if phone is required
+        if ($enable_phone_required == 1 && $request->phone && $request->otp_verified_token) {
+            $cached = Cache::get('otp_verified_token:' . $request->otp_verified_token);
+
+            if (!$cached || $cached['phone'] !== $request->phone || $cached['purpose'] !== 'register') {
+                return response()->json([
+                    'message' => trans('user_validation.Phone number not verified'),
+                ], 422);
+            }
+
+            // Consume the token so it can't be reused
+            Cache::forget('otp_verified_token:' . $request->otp_verified_token);
+        }
 
         $user = new User();
         $user->name = $request->name;
@@ -70,163 +85,56 @@ class RegisterController extends Controller
         $user->phone = $request->phone ? $request->phone : '';
         $user->agree_policy = $request->agree ? 1 : 0;
         $user->password = Hash::make($request->password);
-        $user->verify_token = random_int(100000, 999999);;
+        $user->verify_token = random_int(100000, 999999);
+        // If phone verified via OTP, auto-verify the user
+        if ($enable_phone_required == 1 && $request->otp_verified_token) {
+            $user->status = 1;
+            $user->email_verified = 1;
+        }
         $user->save();
-        
-        
-       
 
         MailHelper::setMailConfig();
 
-        $template=EmailTemplate::where('id',4)->first();
-        $subject=$template->subject;
-        $message=$template->description;
-        $message = str_replace('{{user_name}}',$request->name,$message);
-        Mail::to($user->email)->send(new UserRegistration($message,$subject,$user));
-
-        if($enable_phone_required == 1){
-            $template=SmsTemplate::where('id',1)->first();
-            $message=$template->description;
-            $message = str_replace('{{user_name}}',$user->name,$message);
-            $message = str_replace('{{otp_code}}',$user->verify_token,$message);
-
-            $twilio = TwilioSms::first();
-            if($twilio->enable_register_sms == 1){
-                try{
-                    $account_sid = $twilio->account_sid;
-                    $auth_token = $twilio->auth_token;
-                    $twilio_number = $twilio->twilio_phone_number;
-                    $recipients = $user->phone;
-                    $client = new Client($account_sid, $auth_token);
-                    $client->messages->create($recipients,
-                            ['from' => $twilio_number, 'body' => $message] );
-                }catch(Exception $ex){
-
-                }
-            }
-
-
-            $biztech = BiztechSms::first();
-            if($biztech->enable_register_sms == 1){
-                if($user->phone){
-                    try{
-                        $apikey = $biztech->api_key;
-                        $clientid = $biztech->client_id;
-                        $senderid = $biztech->sender_id;
-                        $senderid = urlencode($senderid);
-                        $message = $message;
-                        $msg_type = true;  // true or false for unicode message
-                        $message  = urlencode($message);
-                        $mobilenumbers = $user->phone; //8801700000000 or 8801700000000,9100000000
-                        $url = "https://api.smsq.global/api/v2/SendSMS?ApiKey=$apikey&ClientId=$clientid&SenderId=$senderid&Message=$message&MobileNumbers=$mobilenumbers&Is_Unicode=$msg_type";
-                        $ch = curl_init();
-                        curl_setopt ($ch, CURLOPT_URL, $url);
-                        curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                        curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                        curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
-                        curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
-                        curl_setopt($ch, CURLOPT_NOBODY, false);
-                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                        $response = curl_exec($ch);
-                        $response = json_decode($response);
-                    }catch(Exception $ex){}
-                }
-            }
-        }
-
-
+        $template = EmailTemplate::where('id', 4)->first();
+        $subject = $template->subject;
+        $message = $template->description;
+        $message = str_replace('{{user_name}}', $request->name, $message);
+        Mail::to($user->email)->send(new UserRegistration($message, $subject, $user));
 
         $notification = trans('user_validation.Register Successfully. Please Verify your email');
         return response()->json(['notification' => $notification]);
     }
 
     public function resendRegisterCode(Request $request){
-        $setting = Setting::first();
-        $enable_phone_required = $setting->phone_number_required;
-
         $rules = [
             'email'=>'required',
-            'phone'=> $enable_phone_required == 1 ? 'required' : '',
         ];
         $customMessages = [
             'email.required' => trans('user_validation.Email is required'),
-            'phone.required' => trans('user_validation.Phone number is required'),
-            'phone.unique' => trans('user_validation.Phone number already exist'),
         ];
-        $this->validate($request, $rules,$customMessages);
+        $this->validate($request, $rules, $customMessages);
 
         $user = User::where('email', $request->email)->first();
-        if($user){
-            if($user->email_verified == 0){
+        if ($user) {
+            if ($user->email_verified == 0) {
                 MailHelper::setMailConfig();
 
-                $template=EmailTemplate::where('id',4)->first();
-                $subject=$template->subject;
-                $message=$template->description;
-                $message = str_replace('{{user_name}}',$user->name,$message);
-                Mail::to($user->email)->send(new UserRegistration($message,$subject,$user));
-
-                if($enable_phone_required == 1){
-                    $template=SmsTemplate::where('id',1)->first();
-                    $message=$template->description;
-                    $message = str_replace('{{user_name}}',$user->name,$message);
-                    $message = str_replace('{{otp_code}}',$user->verify_token,$message);
-
-                    $twilio = TwilioSms::first();
-                    if($twilio->enable_register_sms == 1){
-                        try{
-                            $account_sid = $twilio->account_sid;
-                            $auth_token = $twilio->auth_token;
-                            $twilio_number = $twilio->twilio_phone_number;
-                            $recipients = $user->phone;
-                            $client = new Client($account_sid, $auth_token);
-                            $client->messages->create($recipients,
-                                    ['from' => $twilio_number, 'body' => $message] );
-                        }catch(Exception $ex){
-
-                        }
-                    }
-
-                    $biztech = BiztechSms::first();
-                    if($biztech->enable_register_sms == 1){
-                        if($user->phone){
-                            try{
-                                $apikey = $biztech->api_key;
-                                $clientid = $biztech->client_id;
-                                $senderid = $biztech->sender_id;
-                                $senderid = urlencode($senderid);
-                                $message = $message;
-                                $msg_type = true;  // true or false for unicode message
-                                $message  = urlencode($message);
-                                $mobilenumbers = $user->phone; //8801700000000 or 8801700000000,9100000000
-                                $url = "https://api.smsq.global/api/v2/SendSMS?ApiKey=$apikey&ClientId=$clientid&SenderId=$senderid&Message=$message&MobileNumbers=$mobilenumbers&Is_Unicode=$msg_type";
-                                $ch = curl_init();
-                                curl_setopt ($ch, CURLOPT_URL, $url);
-                                curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                                curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                                curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
-                                curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
-                                curl_setopt($ch, CURLOPT_NOBODY, false);
-                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                                $response = curl_exec($ch);
-                                $response = json_decode($response);
-                            }catch(Exception $ex){}
-                        }
-                    }
-                }
+                $template = EmailTemplate::where('id', 4)->first();
+                $subject = $template->subject;
+                $message = $template->description;
+                $message = str_replace('{{user_name}}', $user->name, $message);
+                Mail::to($user->email)->send(new UserRegistration($message, $subject, $user));
 
                 $notification = trans('user_validation.Register Successfully. Please Verify your email');
                 return response()->json(['notification' => $notification]);
-
-            }else{
+            } else {
                 $notification = trans('user_validation.Already verfied your account');
-                return response()->json(['notification' => $notification],402);
+                return response()->json(['notification' => $notification], 402);
             }
-        }else{
+        } else {
             $notification = trans('user_validation.Email does not exist');
-            return response()->json(['notification' => $notification],402);
+            return response()->json(['notification' => $notification], 402);
         }
-
     }
 
 

@@ -4,6 +4,9 @@ import Image from "next/image";
 import ServeLangItem from "../Helpers/ServeLangItem";
 import { useRouter } from "next/navigation";
 import appConfig from "@/appConfig";
+
+const IMAGE_FALLBACK = "/assets/images/server-error.png";
+
 export default function EmptyWishlistError() {
   const router = useRouter();
   const { websiteSetup } = useSelector((state) => state.websiteSetup);
@@ -11,7 +14,9 @@ export default function EmptyWishlistError() {
   useEffect(() => {
     if (!emptyWis) {
       if (websiteSetup) {
-        setEmptyWis(websiteSetup.payload?.image_content.empty_wishlist);
+        setEmptyWis(
+          websiteSetup.payload?.image_content?.empty_wishlist || IMAGE_FALLBACK
+        );
       }
     }
   }, [emptyWis, websiteSetup]);
@@ -20,16 +25,18 @@ export default function EmptyWishlistError() {
       <div className="flex justify-center items-center w-full">
         <div>
           <div className="sm:mb-10 mb-0 transform sm:scale-100 scale-50">
-            {emptyWis && (
-              <div className="w-[429px] h-[412px] relative">
-                <Image
-                  fill
-                  style={{ objectFit: "scale-down" }}
-                  src={appConfig.BASE_URL + emptyWis}
-                  alt="404"
-                />
-              </div>
-            )}
+            <div className="w-[429px] h-[412px] relative">
+              <Image
+                fill
+                style={{ objectFit: "scale-down" }}
+                src={
+                  emptyWis === IMAGE_FALLBACK
+                    ? IMAGE_FALLBACK
+                    : appConfig.BASE_URL + emptyWis
+                }
+                alt="Empty wishlist"
+              />
+            </div>
           </div>
           <div data-aos="fade-up" className="wishlist-content w-full">
             <h1 className="sm:text-xl text-base font-semibold text-center mb-5">

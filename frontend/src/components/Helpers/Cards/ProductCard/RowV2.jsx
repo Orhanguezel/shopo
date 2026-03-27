@@ -3,7 +3,11 @@ import CurrencyConvert from "@/components/Shared/CurrencyConvert";
 import Image from "next/image";
 import Link from "next/link";
 
+const PRODUCT_IMAGE_FALLBACK = "/assets/images/server-error.png";
+
 function RowV2({ styleType, datas, offerPrice, price, isProductInFlashSale }) {
+  const productImage = datas?.image || PRODUCT_IMAGE_FALLBACK;
+
   return (
     <div className={`product-card-${styleType} w-full`}>
       <div className="w-full h-[105px] bg-white border border-primarygray px-5 ">
@@ -12,7 +16,7 @@ function RowV2({ styleType, datas, offerPrice, price, isProductInFlashSale }) {
             <Image
               fill
               sizes="100%"
-              src={`${datas.image}`}
+              src={productImage}
               alt={datas.title || "Product Image"}
               style={{ objectFit: "scale-down" }}
               className="w-full h-full"

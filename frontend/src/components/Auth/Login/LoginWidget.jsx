@@ -20,7 +20,7 @@ import GoogleLoginUrlIcon from "@/components/Helpers/icons/GoogleLoginUrlIcon";
 import FacebookLoginUrlIcon from "@/components/Helpers/icons/FacebookLoginUrlIcon";
 
 // Redux action imports
-import { setWishlistData } from "../../../redux/features/whishlist/whishlistSlice";
+import { setWishlistData } from "../../../redux/features/wishlist/wishlistSlice";
 import {
   useFacebookGetLoginUrlApiQuery,
   useGoogleGetLoginUrlApiQuery,

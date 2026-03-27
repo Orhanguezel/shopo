@@ -43,46 +43,6 @@ export const paymentGetwaysApis = apiSlice.injectEndpoints({
         };
       },
     }),
-    // stripe pay for user
-    stripePayApi: builder.mutation({
-      query: (data) => {
-        return {
-          url: `${apiRoutes.stripePay}?token=${data.token}`,
-          method: "POST",
-          body: data.data,
-        };
-      },
-    }),
-    // stripe pay for guest
-    stripePayGuestApi: builder.mutation({
-      query: (data) => {
-        return {
-          url: `${apiRoutes.stripePayGuest}`,
-          method: "POST",
-          body: data.data,
-        };
-      },
-    }),
-    // razorpay order for user
-    razorpayOrderApi: builder.mutation({
-      query: (data) => {
-        return {
-          url: `${apiRoutes.razorpayOrder}?token=${data.token}`,
-          method: "POST",
-          body: data.data,
-        };
-      },
-    }),
-    // razorpay order for guest
-    razorpayOrderGuestApi: builder.mutation({
-      query: (data) => {
-        return {
-          url: `${apiRoutes.razorpayOrderGuest}`,
-          method: "POST",
-          body: data.data,
-        };
-      },
-    }),
     // draft order for user
     draftOrderApi: builder.mutation({
       query: (data) => {
@@ -103,6 +63,26 @@ export const paymentGetwaysApis = apiSlice.injectEndpoints({
         };
       },
     }),
+    // iyzico checkout
+    iyzicoCheckoutApi: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${apiRoutes.iyzicoCheckout}?token=${data.token}`,
+          method: "POST",
+          body: data.data,
+        };
+      },
+    }),
+    // iyzico checkout for guest
+    iyzicoCheckoutGuestApi: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${apiRoutes.iyzicoCheckoutGuest}`,
+          method: "POST",
+          body: data.data,
+        };
+      },
+    }),
   }),
 });
 
@@ -113,8 +93,6 @@ export const {
   useCashOnDeliveryGuestApiMutation,
   useDraftOrderApiMutation,
   useDraftOrderGuestApiMutation,
-  useStripePayApiMutation,
-  useStripePayGuestApiMutation,
-  useRazorpayOrderApiMutation,
-  useRazorpayOrderGuestApiMutation,
+  useIyzicoCheckoutApiMutation,
+  useIyzicoCheckoutGuestApiMutation,
 } = paymentGetwaysApis;

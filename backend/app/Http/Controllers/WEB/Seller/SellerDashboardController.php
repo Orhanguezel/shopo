@@ -42,7 +42,7 @@ class SellerDashboardController extends Controller
         foreach ($todayOrders as $key => $todayOrder) {
             $orderProducts = $todayOrder->orderProducts->where('seller_id',$seller->id);
             foreach ($orderProducts as $key => $orderProduct) {
-                $price = ($orderProduct->unit_price * $orderProduct->qty);
+                $price = $orderProduct->seller_net_amount > 0 ? $orderProduct->seller_net_amount : ($orderProduct->unit_price * $orderProduct->qty);
                 $todayEarning = $todayEarning + $price;
                 $todayProductSale = $todayProductSale + $orderProduct->qty;
             }
@@ -53,7 +53,7 @@ class SellerDashboardController extends Controller
         foreach ($todayOrders->where('order_status',0) as $key => $todayOrder) {
             $orderProducts = $todayOrder->orderProducts->where('seller_id',$seller->id);
             foreach ($orderProducts as $key => $orderProduct) {
-                $price = ($orderProduct->unit_price * $orderProduct->qty);
+                $price = $orderProduct->seller_net_amount > 0 ? $orderProduct->seller_net_amount : ($orderProduct->unit_price * $orderProduct->qty);
                 $todayPendingEarning = $todayPendingEarning + $price;
             }
         }
@@ -75,7 +75,7 @@ class SellerDashboardController extends Controller
         foreach ($totalOrders as $key => $totalOrder) {
             $orderProducts = $totalOrder->orderProducts->where('seller_id',$seller->id);
             foreach ($orderProducts as $key => $orderProduct) {
-                $price = ($orderProduct->unit_price * $orderProduct->qty);
+                $price = $orderProduct->seller_net_amount > 0 ? $orderProduct->seller_net_amount : ($orderProduct->unit_price * $orderProduct->qty);
                 $totalEarning = $totalEarning + $price;
                 $totalProductSale = $totalProductSale + $orderProduct->qty;
             }
@@ -91,7 +91,7 @@ class SellerDashboardController extends Controller
         foreach ($monthlyOrders as $key => $monthlyOrder) {
             $orderProducts = $monthlyOrder->orderProducts->where('seller_id',$seller->id);
             foreach ($orderProducts as $key => $orderProduct) {
-                $price = ($orderProduct->unit_price * $orderProduct->qty);
+                $price = $orderProduct->seller_net_amount > 0 ? $orderProduct->seller_net_amount : ($orderProduct->unit_price * $orderProduct->qty);
                 $thisMonthEarning = $thisMonthEarning + $price;
                 $thisMonthProductSale = $thisMonthProductSale + $orderProduct->qty;
             }
@@ -107,7 +107,7 @@ class SellerDashboardController extends Controller
         foreach ($yearlyOrders as $key => $yearlyOrder) {
             $orderProducts = $yearlyOrder->orderProducts->where('seller_id',$seller->id);
             foreach ($orderProducts as $key => $orderProduct) {
-                $price = ($orderProduct->unit_price * $orderProduct->qty);
+                $price = $orderProduct->seller_net_amount > 0 ? $orderProduct->seller_net_amount : ($orderProduct->unit_price * $orderProduct->qty);
                 $thisYearEarning = $thisYearEarning + $price;
                 $thisYearProductSale = $thisYearProductSale + $orderProduct->qty;
             }

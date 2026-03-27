@@ -10,6 +10,8 @@ import Compair from "../../icons/Compair";
 import ServeLangItem from "../../ServeLangItem";
 import AddToCardIco from "../../icons/AddToCardIco";
 
+const PRODUCT_IMAGE_FALLBACK = "/assets/images/server-error.png";
+
 function ColumnV1({
   styleType,
   datas,
@@ -24,10 +26,8 @@ function ColumnV1({
   wishlisted,
   addToCompare,
 }) {
-  const [imgSrc, setImgSrc] = useState(null);
-  const loadImg = (value) => {
-    setImgSrc(value);
-  };
+  const productImage = datas?.image || PRODUCT_IMAGE_FALLBACK;
+
   return (
     <div className={`product-card-${styleType} relative`}>
       <div
@@ -37,15 +37,13 @@ function ColumnV1({
         <div className="product-card-img w-full h-[300px] -mt-2">
           <div className="w-full h-full relative flex justify-center items-center transform scale-100 group-hover:scale-110 transition duration-300 ease-in-out">
             <Image
-              src={`${imgSrc ? imgSrc : "/assets/images/spinner.gif"}`}
-              alt=""
+              src={productImage}
+              alt={datas.title || "Product image"}
               fill
-              sizes="100%"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               style={{ objectFit: "scale-down" }}
-              onLoad={() => loadImg(datas.image)}
               className="object-contain"
               loading="lazy"
-              unoptimized={!imgSrc} // Disable optimization for spinner gif only
             />
           </div>
         </div>

@@ -17,8 +17,12 @@ class DeliveryManApi
      */
     public function handle(Request $request, Closure $next)
     {
-        if(Auth::guard('deliveryman-api')->check()){
+        if (Auth::guard('deliveryman-api')->check()) {
             return $next($request);
         }
+
+        return response()->json([
+            'notification' => trans('Authentication required'),
+        ], 401);
     }
 }

@@ -105,18 +105,6 @@ export const checkProductExistsInFlashSale = (
 };
 
 /**
- * Format date for expiration date input
- * @param {Event} event - Date input change event
- * @returns {Object} Formatted date object with value and formatted properties
- */
-export const formatExpirationDate = (event) => {
-  return {
-    value: event.target.value,
-    formatted: DateFormat(event.target.value, false),
-  };
-};
-
-/**
  * Calculate location-based shipping price
  * @param {Object} address - Address object with distance and price range
  * @returns {number} Calculated shipping price
@@ -203,21 +191,6 @@ export const getInitialDropdownData = () => {
     state: null,
     cityDropdown: null,
     city: null,
-  };
-};
-
-/**
- * Reset stripe data to initial state
- * @returns {Object} Initial stripe data state
- */
-export const getInitialStripeData = () => {
-  return {
-    cardNumber: "",
-    expireDate: null,
-    cvv: "",
-    cardHolderName: "",
-    error: null,
-    loading: false,
   };
 };
 

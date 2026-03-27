@@ -1,6 +1,18 @@
 import orderDetails from "@/api/orderDetails";
 import OrderCom from "@/components/OrderCom";
 
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+
+  return {
+    title: `Order #${id} | Shopo`,
+    robots: { index: false, follow: false },
+    alternates: {
+      canonical: `/order/${id}`,
+    },
+  };
+}
+
 // Static export için gerekli
 export async function generateStaticParams() {
   // Dinamik route olduğu için boş array döndürüyoruz

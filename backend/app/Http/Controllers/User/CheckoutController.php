@@ -13,19 +13,11 @@ use App\Models\Address;
 use App\Models\Vendor;
 use App\Models\Setting;
 use App\Models\Wishlist;
-use App\Models\StripePayment;
-use App\Models\RazorpayPayment;
-use App\Models\Flutterwave;
-use App\Models\PaystackAndMollie;
 use App\Models\BankPayment;
-use App\Models\InstamojoPayment;
-use App\Models\PaypalPayment;
-use App\Models\SslcommerzPayment;
 use App\Models\ShoppingCart;
 use App\Models\Coupon;
 use App\Models\Shipping;
-use App\Models\MyfatoorahPayment;
-use App\Models\BakshPayment;
+use App\Models\IyzicoPayment;
 use Cart;
 use Session;
 class CheckoutController extends Controller
@@ -120,34 +112,16 @@ class CheckoutController extends Controller
 
 
 
-        $stripePaymentInfo = StripePayment::first();
-        $razorpayPaymentInfo = RazorpayPayment::first();
-        $flutterwavePaymentInfo = Flutterwave::first();
-        $paypalPaymentInfo = PaypalPayment::first();
         $bankPaymentInfo = BankPayment::first();
-
-        $paystackAndMollie = PaystackAndMollie::first();
-        $instamojo = InstamojoPayment::first();
-        $sslcommerz = SslcommerzPayment::first();
-        $myfatoorah = MyfatoorahPayment::first();
-        $bkash = BakshPayment::select('image','status')->first();
-
+        $iyzico = IyzicoPayment::select('status','marketplace_mode','is_test_mode')->first();
 
         return response()->json([
             'cartProducts' => $cartProducts,
             'addresses' => $addresses,
             'shippings' => $shippings,
             'couponOffer' => $couponOffer,
-            'stripePaymentInfo' => $stripePaymentInfo,
-            'razorpayPaymentInfo' => $razorpayPaymentInfo,
-            'flutterwavePaymentInfo' => $flutterwavePaymentInfo,
-            'paypalPaymentInfo' => $paypalPaymentInfo,
             'bankPaymentInfo' => $bankPaymentInfo,
-            'paystackAndMollie' => $paystackAndMollie,
-            'instamojo' => $instamojo,
-            'sslcommerz' => $sslcommerz,
-            'myfatoorah' => $myfatoorah,
-            'bkash' => $bkash,
+            'iyzico' => $iyzico,
         ],200);
 
     }

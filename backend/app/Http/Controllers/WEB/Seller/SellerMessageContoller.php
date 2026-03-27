@@ -1,16 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\WEB\Seller;
-use App\Providers\PusherConfig;
+
+use Throwable;
+use App\Events\SellerToUser;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\BannerImage;
 use App\Models\Message;
-use App\Models\PusherCredentail;
-use Pusher;
+use App\Models\User;
 use Auth;
-use App\Events\SellerToUser;
+use Illuminate\Http\Request;
 
 class SellerMessageContoller extends Controller
 {
@@ -88,7 +87,11 @@ class SellerMessageContoller extends Controller
         $messages = Message::with('product')->where(['customer_id' => $request->customer_id, 'seller_id' => $auth_user->id])->get();
 
         $data = $update_message;
-        event(new SellerToUser($data, $user));
+        try {
+            event(new SellerToUser($data, $user));
+        } catch (Throwable $exception) {
+            report($exception);
+        }
 
         return response()->json(['message' => $update_message, 'messages' => $messages]);
     }

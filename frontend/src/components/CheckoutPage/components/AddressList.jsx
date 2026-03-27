@@ -126,7 +126,7 @@ const AddressList = ({
                   {ServeLangItem()?.Country}:
                 </td>
                 <td className="text-base text-qblack line-clamp-1 font-medium">
-                  {address.country.name}
+                  {address.country?.name}
                 </td>
               </tr>
 
@@ -136,7 +136,7 @@ const AddressList = ({
                   {ServeLangItem()?.State}:
                 </td>
                 <td className="text-base text-qblack line-clamp-1 font-medium">
-                  {address.country_state.name}
+                  {address.country_state?.name}
                 </td>
               </tr>
 
@@ -146,7 +146,7 @@ const AddressList = ({
                   {ServeLangItem()?.City}:
                 </td>
                 <td className="text-base text-qblack line-clamp-1 font-medium">
-                  {address.city.name}
+                  {address.city?.name}
                 </td>
               </tr>
 

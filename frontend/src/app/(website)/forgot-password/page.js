@@ -3,8 +3,12 @@ import ForgotPass from "@/components/Auth/ForgotPass";
 // generate seo metadata
 export async function generateMetadata() {
   return {
-    title: "Forgot Password",
-    description: "Forgot Password",
+    title: "Şifremi Unuttum | Seyfibaba",
+    description: "Şifrenizi mi unuttunuz? E-posta adresinizi girerek şifrenizi sıfırlayın.",
+    alternates: {
+      canonical: "/forgot-password",
+    },
+    robots: { index: false, follow: true },
   };
 }
 

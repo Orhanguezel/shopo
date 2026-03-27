@@ -173,7 +173,7 @@ export default function ProductCard({ datas, styleType = "column-v1" }) {
           ...v,
           product_variant_name: varients.find(
             (item) => Number(item.id) === Number(v.product_variant_id)
-          ).name,
+          )?.name,
         }))
       : null;
     // Build product object for cart

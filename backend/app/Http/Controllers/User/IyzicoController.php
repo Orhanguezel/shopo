@@ -1,0 +1,604 @@
+<?php
+
+namespace App\Http\Controllers\User;
+
+use App\Http\Controllers\Controller;
+use App\Models\Address;
+use App\Models\IyzicoPayment;
+use App\Models\Order;
+use App\Models\ProductVariantItem;
+use App\Models\ShoppingCart;
+use App\Services\IyzicoService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
+class IyzicoController extends Controller
+{
+    private IyzicoService $iyzicoService;
+
+    public function __construct(IyzicoService $iyzicoService)
+    {
+        $this->iyzicoService = $iyzicoService;
+        $this->middleware('auth:api')->except(['callback', 'createGuestCheckoutSession']);
+    }
+
+    public function createCheckoutSession(Request $request)
+    {
+        $request->validate([
+            'shipping_address_id' => 'required|integer',
+            'billing_address_id' => 'required|integer',
+            'shipping_method_id' => 'required|integer',
+        ]);
+
+        $user = Auth::guard('api')->user();
+        $cartProducts = ShoppingCart::with('product', 'variants.variantItem')
+            ->where('user_id', $user->id)
+            ->select('id', 'product_id', 'qty')
+            ->get();
+
+        if ($cartProducts->count() == 0) {
+            return response()->json(['message' => trans('user_validation.Your shopping cart is empty')], 403);
+        }
+
+        $iyzicoConfig = IyzicoPayment::first();
+        if (!$iyzicoConfig || !$iyzicoConfig->status) {
+            return response()->json(['message' => 'Iyzico ödeme yöntemi aktif değil.'], 422);
+        }
+
+        try {
+            $paymentController = app(PaymentController::class);
+            $totalInfo = $paymentController->calculateCartTotal(
+                $user,
+                $cartProducts,
+                $request->coupon,
+                $request->shipping_method_id,
+                $request->shipping_address_id
+            );
+
+            if ($totalInfo instanceof \Illuminate\Http\JsonResponse) {
+                return $totalInfo;
+            }
+
+            $totalPrice = $totalInfo['total_price'];
+            $shippingFee = $totalInfo['shipping_fee'];
+            $couponPrice = $totalInfo['coupon_price'];
+            $totalProduct = $cartProducts->count();
+
+            $orderResult = $paymentController->orderStore(
+                $user,
+                $totalPrice,
+                $cartProducts,
+                $totalProduct,
+                'Iyzico',
+                null,
+                0,
+                $totalInfo['shipping'],
+                $shippingFee,
+                $couponPrice,
+                0,
+                $request->billing_address_id,
+                $request->shipping_address_id,
+                'yes'
+            );
+
+            if ($orderResult instanceof \Illuminate\Http\JsonResponse) {
+                return $orderResult;
+            }
+
+            $order = $orderResult['order'];
+            $shippingAddress = Address::with('country', 'countryState', 'city')->findOrFail($request->shipping_address_id);
+            $billingAddress = Address::with('country', 'countryState', 'city')->findOrFail($request->billing_address_id);
+
+            $conversationId = 'order_' . $order->id;
+            $amount = number_format((float)$totalPrice, 2, '.', '');
+
+            $callbackUrl = route('iyzico.callback', ['order_id' => $order->id]);
+            $basketItems = $this->buildBasketItems($order, $cartProducts, $iyzicoConfig);
+
+            $addressText = (string)($shippingAddress->address ?? 'Adres belirtilmedi');
+            $city = (string)($shippingAddress->city->name ?? $shippingAddress->countryState->name ?? 'Istanbul');
+            $country = (string)($shippingAddress->country->name ?? 'Turkey');
+            $zipCode = '34000';
+
+            $session = $this->iyzicoService->createCheckoutForm([
+                'locale' => 'tr',
+                'conversation_id' => $conversationId,
+                'price' => $amount,
+                'paid_price' => $amount,
+                'currency' => 'TRY',
+                'basket_id' => (string)$order->id,
+                'callback_url' => $callbackUrl,
+                'buyer' => [
+                    'id' => (string)$user->id,
+                    'name' => (string)($this->extractFirstName($user->name) ?: 'Musteri'),
+                    'surname' => (string)($this->extractLastName($user->name) ?: 'User'),
+                    'gsm_number' => (string)($user->phone ?? $shippingAddress->phone ?? '+900000000000'),
+                    'email' => (string)($user->email ?? 'musteri@seyfibaba.com'),
+                    'identity_number' => '00000000000',
+                    'last_login_date' => now()->format('Y-m-d H:i:s'),
+                    'registration_date' => ($user->created_at ?? now())->format('Y-m-d H:i:s'),
+                    'registration_address' => $addressText,
+                    'ip' => (string)$request->ip(),
+                    'city' => $city,
+                    'country' => $country,
+                    'zip_code' => $zipCode,
+                ],
+                'shipping_address' => [
+                    'contact_name' => (string)($shippingAddress->name ?? $user->name ?? 'Musteri'),
+                    'city' => $city,
+                    'country' => $country,
+                    'address' => $addressText,
+                    'zip_code' => $zipCode,
+                ],
+                'billing_address' => [
+                    'contact_name' => (string)($billingAddress->name ?? $user->name ?? 'Musteri'),
+                    'city' => (string)($billingAddress->city->name ?? $billingAddress->countryState->name ?? 'Istanbul'),
+                    'country' => (string)($billingAddress->country->name ?? 'Turkey'),
+                    'address' => (string)($billingAddress->address ?? 'Adres belirtilmedi'),
+                    'zip_code' => $zipCode,
+                ],
+                'basket_items' => $basketItems,
+            ]);
+
+            if ($session->getStatus() !== 'success' || !$session->getPaymentPageUrl()) {
+                Log::error('Iyzico checkout init failed', [
+                    'order_id' => $order->id,
+                    'status' => $session->getStatus(),
+                    'error_code' => $session->getErrorCode(),
+                    'error_message' => $session->getErrorMessage(),
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Iyzico ödeme oturumu oluşturulamadı.',
+                    'error' => $session->getErrorMessage(),
+                ], 422);
+            }
+
+            // Transaction ref'i kaydet
+            $order->transection_id = $session->getToken();
+            $order->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Odeme oturumu olusturuldu.',
+                'data' => [
+                    'checkout_url' => $session->getPaymentPageUrl(),
+                    'token' => $session->getToken(),
+                    'order_id' => $order->order_id,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Iyzico checkout session exception', [
+                'user_id' => $user->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Odeme oturumu olusturulurken hata olustu.',
+            ], 500);
+        }
+    }
+
+    public function createGuestCheckoutSession(Request $request)
+    {
+        $request->validate([
+            'address' => 'required|array',
+            'address.name' => 'required|string',
+            'address.email' => 'required|email',
+            'address.phone' => 'required|string',
+            'address.address' => 'required|string',
+            'address.city' => 'required|string',
+            'address.country' => 'required|string',
+            'cart_products' => 'required|array|min:1',
+            'shipping_method_id' => 'required|integer',
+        ]);
+
+        $iyzicoConfig = IyzicoPayment::first();
+        if (!$iyzicoConfig || !$iyzicoConfig->status) {
+            return response()->json(['message' => 'Iyzico ödeme yöntemi aktif değil.'], 422);
+        }
+
+        try {
+            $guestController = app(CheckoutWithoutTokenController::class);
+            $cartProducts = collect($request->input('cart_products', []));
+
+            if ($cartProducts->count() == 0) {
+                return response()->json(['message' => trans('user_validation.Your shopping cart is empty')], 403);
+            }
+
+            $totalInfo = $guestController->calculateCartTotal(
+                null,
+                $cartProducts,
+                $request->coupon,
+                $request->shipping_method_id,
+                (object) $request->address
+            );
+
+            if ($totalInfo instanceof \Illuminate\Http\JsonResponse) {
+                return $totalInfo;
+            }
+
+            $totalPrice = $totalInfo['total_price'];
+            $shippingFee = $totalInfo['shipping_fee'];
+            $couponPrice = $totalInfo['coupon_price'];
+            $totalProduct = $cartProducts->count();
+
+            $orderResult = $guestController->orderStore(
+                $totalPrice,
+                $cartProducts,
+                $totalProduct,
+                'Iyzico',
+                null,
+                0,
+                $totalInfo['shipping'],
+                $shippingFee,
+                $couponPrice,
+                0,
+                $request->address,
+                'yes'
+            );
+
+            if ($orderResult instanceof \Illuminate\Http\JsonResponse) {
+                return $orderResult;
+            }
+
+            $order = $orderResult['order'];
+            $addr = $request->address;
+            $conversationId = 'order_' . $order->id;
+            $amount = number_format((float)$totalPrice, 2, '.', '');
+
+            $callbackUrl = route('iyzico.callback', ['order_id' => $order->id]);
+            $basketItems = $this->buildGuestBasketItems($order, $cartProducts, $iyzicoConfig);
+
+            $addressText = (string)($addr['address'] ?? 'Adres belirtilmedi');
+            $city = (string)($addr['city'] ?? 'Istanbul');
+            $country = (string)($addr['country'] ?? 'Turkey');
+            $zipCode = (string)($addr['zip_code'] ?? '34000');
+
+            $session = $this->iyzicoService->createCheckoutForm([
+                'locale' => 'tr',
+                'conversation_id' => $conversationId,
+                'price' => $amount,
+                'paid_price' => $amount,
+                'currency' => 'TRY',
+                'basket_id' => (string)$order->id,
+                'callback_url' => $callbackUrl,
+                'buyer' => [
+                    'id' => 'GUEST-' . $order->id,
+                    'name' => (string)($this->extractFirstName($addr['name'] ?? '') ?: 'Misafir'),
+                    'surname' => (string)($this->extractLastName($addr['name'] ?? '') ?: 'Kullanici'),
+                    'gsm_number' => (string)($addr['phone'] ?? '+900000000000'),
+                    'email' => (string)($addr['email'] ?? 'misafir@seyfibaba.com'),
+                    'identity_number' => '00000000000',
+                    'last_login_date' => now()->format('Y-m-d H:i:s'),
+                    'registration_date' => now()->format('Y-m-d H:i:s'),
+                    'registration_address' => $addressText,
+                    'ip' => (string)$request->ip(),
+                    'city' => $city,
+                    'country' => $country,
+                    'zip_code' => $zipCode,
+                ],
+                'shipping_address' => [
+                    'contact_name' => (string)($addr['name'] ?? 'Misafir'),
+                    'city' => $city,
+                    'country' => $country,
+                    'address' => $addressText,
+                    'zip_code' => $zipCode,
+                ],
+                'billing_address' => [
+                    'contact_name' => (string)($addr['name'] ?? 'Misafir'),
+                    'city' => $city,
+                    'country' => $country,
+                    'address' => $addressText,
+                    'zip_code' => $zipCode,
+                ],
+                'basket_items' => $basketItems,
+            ]);
+
+            if ($session->getStatus() !== 'success' || !$session->getPaymentPageUrl()) {
+                Log::error('Iyzico guest checkout init failed', [
+                    'order_id' => $order->id,
+                    'status' => $session->getStatus(),
+                    'error_code' => $session->getErrorCode(),
+                    'error_message' => $session->getErrorMessage(),
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Iyzico ödeme oturumu oluşturulamadı.',
+                    'error' => $session->getErrorMessage(),
+                ], 422);
+            }
+
+            $order->transection_id = $session->getToken();
+            $order->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Odeme oturumu olusturuldu.',
+                'data' => [
+                    'checkout_url' => $session->getPaymentPageUrl(),
+                    'token' => $session->getToken(),
+                    'order_id' => $order->order_id,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Iyzico guest checkout session exception', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Odeme oturumu olusturulurken hata olustu.',
+            ], 500);
+        }
+    }
+
+    public function callback(Request $request)
+    {
+        $orderId = (int)$request->get('order_id');
+        $token = (string)$request->get('token', '');
+        $conversationId = 'order_' . $orderId;
+
+        $frontendUrl = rtrim(config('app.frontend_url', config('app.url')), '/');
+        $cancelUrl = $this->buildFailedPaymentUrl($frontendUrl, $orderId);
+
+        if ($token === '' || $orderId <= 0) {
+            Log::warning('Iyzico callback missing token/order_id', [
+                'order_id' => $orderId,
+                'has_token' => $token !== '',
+            ]);
+            return redirect()->to(
+                $this->buildFailedPaymentUrl($frontendUrl, $orderId, [
+                    'reason' => 'missing_callback_params',
+                ])
+            );
+        }
+
+        $order = Order::find($orderId);
+        if (!$order) {
+            return redirect()->to(
+                $this->buildFailedPaymentUrl($frontendUrl, $orderId, [
+                    'reason' => 'order_not_found',
+                ])
+            );
+        }
+
+        $successUrl = $frontendUrl . '/order/' . $order->order_id . '?payment_status=success';
+
+        // Replay protection: if already paid, redirect to success without reprocessing
+        if ($order->payment_status == 1) {
+            Log::info('Iyzico callback replay blocked — order already paid', ['order_id' => $orderId]);
+            return redirect()->to($successUrl);
+        }
+
+        try {
+            $result = $this->iyzicoService->retrieveCheckoutForm($token, $conversationId);
+
+            Log::info('Iyzico callback result', [
+                'order_id' => $order->id,
+                'status' => $result->getStatus(),
+                'payment_status' => $result->getPaymentStatus(),
+                'payment_id' => $result->getPaymentId(),
+            ]);
+
+            if ($result->getStatus() === 'success' && strtoupper((string)$result->getPaymentStatus()) === 'SUCCESS') {
+                $order->payment_status = 1;
+                $order->payment_method = 'Iyzico';
+                $order->transection_id = (string)($result->getPaymentId() ?: $token);
+                $order->is_draft = 'no';
+                $order->payment_approval_date = now()->toDateTimeString();
+
+                // Store payment transaction IDs per item (needed for refunds)
+                $paymentItems = $result->getPaymentItems();
+                if ($paymentItems) {
+                    $itemData = [];
+                    foreach ($paymentItems as $item) {
+                        $itemData[] = [
+                            'item_id' => $item->getItemId(),
+                            'payment_transaction_id' => $item->getPaymentTransactionId(),
+                            'price' => $item->getPrice(),
+                            'paid_price' => $item->getPaidPrice(),
+                        ];
+                    }
+                    $order->iyzico_payment_data = json_encode([
+                        'payment_id' => $result->getPaymentId(),
+                        'items' => $itemData,
+                    ]);
+                }
+
+                $order->save();
+
+                try {
+                    $user = $order->user;
+                    if ($user) {
+                        $paymentController = app(PaymentController::class);
+                        $paymentController->sendOrderSuccessMail(
+                            $user,
+                            $order->total_amount,
+                            'Iyzico',
+                            1,
+                            $order,
+                            ''
+                        );
+                        $paymentController->sendOrderSuccessSms($user, $order);
+                    }
+                } catch (\Throwable $e) {
+                    Log::warning('Iyzico success mail failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                }
+
+                Log::info('Iyzico payment verified', [
+                    'order_id' => $order->id,
+                    'payment_id' => $result->getPaymentId(),
+                ]);
+
+                return redirect()->to($successUrl);
+            }
+
+            $order->payment_status = 0;
+            $order->save();
+
+            Log::warning('Iyzico payment not completed', [
+                'order_id' => $order->id,
+                'status' => $result->getStatus(),
+                'payment_status' => $result->getPaymentStatus(),
+                'error_code' => $result->getErrorCode(),
+                'error_message' => $result->getErrorMessage(),
+            ]);
+
+            return redirect()->to(
+                $this->buildFailedPaymentUrl($frontendUrl, $orderId, [
+                    'reason' => 'payment_declined',
+                    'code' => $result->getErrorCode(),
+                ])
+            );
+        } catch (\Throwable $e) {
+            Log::error('Iyzico callback exception', [
+                'order_id' => $orderId,
+                'message' => $e->getMessage(),
+            ]);
+
+            return redirect()->to(
+                $this->buildFailedPaymentUrl($frontendUrl, $orderId, [
+                    'reason' => 'payment_processing_error',
+                ])
+            );
+        }
+    }
+
+    private function buildFailedPaymentUrl(string $frontendUrl, int $orderId, array $params = []): string
+    {
+        $query = array_filter([
+            'order_id' => $orderId > 0 ? $orderId : null,
+            'reason' => $params['reason'] ?? null,
+            'code' => $params['code'] ?? null,
+        ], static fn ($value) => $value !== null && $value !== '');
+
+        $queryString = http_build_query($query);
+
+        return $frontendUrl . '/payment-failed' . ($queryString ? '?' . $queryString : '');
+    }
+
+    private function buildBasketItems(Order $order, $cartProducts, IyzicoPayment $config): array
+    {
+        $basketItems = [];
+        $marketplaceMode = (bool)$config->marketplace_mode;
+        $storeSubMerchantKeys = json_decode($config->store_sub_merchant_keys ?? '{}', true) ?: [];
+
+        foreach ($cartProducts as $cartProduct) {
+            $product = $cartProduct->product;
+            if (!$product) continue;
+
+            $variantPrice = 0;
+            foreach (($cartProduct->variants ?? []) as $variant) {
+                $variantItemId = $variant['variant_item_id'] ?? $variant->variant_item_id ?? null;
+                if ($variantItemId) {
+                    $variantPrice += (float) ProductVariantItem::where('id', $variantItemId)->value('price');
+                }
+            }
+
+            $price = (float)($product->offer_price ?: $product->price) + $variantPrice;
+            $linePrice = number_format($price * $cartProduct->qty, 2, '.', '');
+
+            $item = [
+                'id' => 'PROD-' . $product->id,
+                'name' => (string)($product->name ?? 'Urun #' . $product->id),
+                'category_1' => 'Ecommerce',
+                'category_2' => 'Urun',
+                'item_type' => 'PHYSICAL',
+                'price' => $linePrice,
+            ];
+
+            if ($marketplaceMode && $product->vendor_id) {
+                $vendorId = (string)$product->vendor_id;
+                $subMerchantKey = $storeSubMerchantKeys[$vendorId]
+                    ?? $storeSubMerchantKeys[(int)$vendorId]
+                    ?? $config->sub_merchant_key
+                    ?? null;
+
+                if ($subMerchantKey) {
+                    $item['sub_merchant_key'] = $subMerchantKey;
+                    $item['sub_merchant_price'] = $linePrice;
+                }
+            }
+
+            $basketItems[] = $item;
+        }
+
+        return $basketItems;
+    }
+
+    private function buildGuestBasketItems(Order $order, $cartProducts, IyzicoPayment $config): array
+    {
+        $basketItems = [];
+        $marketplaceMode = (bool)$config->marketplace_mode;
+        $storeSubMerchantKeys = json_decode($config->store_sub_merchant_keys ?? '{}', true) ?: [];
+
+        foreach ($cartProducts as $cartProduct) {
+            $product = \App\Models\Product::find($cartProduct['product_id']);
+            if (!$product) continue;
+
+            $variantPrice = 0;
+            if (!empty($cartProduct['variants']) && is_array($cartProduct['variants'])) {
+                foreach ($cartProduct['variants'] as $variant) {
+                    $variantItemId = $variant['variant_item_id'] ?? null;
+                    if ($variantItemId) {
+                        $variantPrice += (float) ProductVariantItem::where('id', $variantItemId)->value('price');
+                    }
+                }
+            }
+
+            $qty = (int)($cartProduct['qty'] ?? 1);
+            $price = (float)($product->offer_price ?: $product->price) + $variantPrice;
+            $linePrice = number_format($price * $qty, 2, '.', '');
+
+            $item = [
+                'id' => 'PROD-' . $product->id,
+                'name' => (string)($product->name ?? 'Urun #' . $product->id),
+                'category_1' => 'Ecommerce',
+                'category_2' => 'Urun',
+                'item_type' => 'PHYSICAL',
+                'price' => $linePrice,
+            ];
+
+            if ($marketplaceMode && $product->vendor_id) {
+                $vendorId = (string)$product->vendor_id;
+                $subMerchantKey = $storeSubMerchantKeys[$vendorId]
+                    ?? $storeSubMerchantKeys[(int)$vendorId]
+                    ?? $config->sub_merchant_key
+                    ?? null;
+
+                if ($subMerchantKey) {
+                    $item['sub_merchant_key'] = $subMerchantKey;
+                    $item['sub_merchant_price'] = $linePrice;
+                }
+            }
+
+            $basketItems[] = $item;
+        }
+
+        return $basketItems;
+    }
+
+    private function extractFirstName(?string $fullName): string
+    {
+        $parts = preg_split('/\s+/', trim((string) $fullName));
+        return $parts[0] ?? 'Musteri';
+    }
+
+    private function extractLastName(?string $fullName): string
+    {
+        $parts = preg_split('/\s+/', trim((string) $fullName));
+        if (count($parts) <= 1) {
+            return 'User';
+        }
+
+        array_shift($parts);
+        return implode(' ', $parts);
+    }
+}

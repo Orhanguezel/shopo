@@ -17,7 +17,7 @@ function ProductQuickView({ quickViewModal, quickViewData, setQuickView }) {
         <div className="w-full h-full overflow-y-scroll overflow-style-none">
           <ProductView
             images={
-              quickViewData.gellery.length > 0 ? quickViewData.gellery : []
+              quickViewData?.gellery?.length > 0 ? quickViewData.gellery : []
             }
             product={quickViewData.product}
           />

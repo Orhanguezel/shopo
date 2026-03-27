@@ -1,0 +1,48 @@
+# Seyfibaba - E-Ticaret Pazaryeri
+# https://seyfibaba.com
+
+> Seyfibaba, Türkiye merkezli bir e-ticaret pazaryeridir. Birden fazla satıcının ürünlerini sergilediği, alıcıların güvenli alışveriş yapabildiği bir online mağaza platformudur.
+
+## Hakkında
+
+Seyfibaba, satıcıları ve alıcıları bir araya getiren çok satıcılı bir pazaryeri platformudur. Platformda elektronik, moda, ev & yaşam, spor ve daha birçok kategoride ürünler bulunmaktadır.
+
+## Site Yapısı
+
+- Ana Sayfa: https://seyfibaba.com/
+- Ürünler: https://seyfibaba.com/products
+- Satıcılar: https://seyfibaba.com/sellers
+- Fırsat Ürünleri: https://seyfibaba.com/flash-sale
+- Blog: https://seyfibaba.com/blogs
+- Hakkımızda: https://seyfibaba.com/about
+- İletişim: https://seyfibaba.com/contact
+- SSS: https://seyfibaba.com/faq
+
+## API Bilgileri
+
+Seyfibaba, REST API üzerinden çalışan bir Next.js + Laravel mimarisi kullanmaktadır. Tüm ürün verileri, kategoriler ve satıcı bilgileri API üzerinden sunulmaktadır.
+
+- API Base: https://admin.seyfibaba.com/api/
+- Ürün Detayı: /api/product/{slug}
+- Kategoriler: /api/ (ana endpoint içinde)
+- Satıcılar: /api/sellers
+- Blog: /api/blogs
+
+## İçerik Politikası
+
+- Ürün sayfaları dinamik olarak oluşturulur ve her ürün için benzersiz SEO metadata içerir.
+- Blog içerikleri editöryal olarak hazırlanır.
+- Satıcı profilleri satıcılar tarafından yönetilir.
+
+## Crawling Rehberi
+
+- Sitemap: https://seyfibaba.com/sitemap.xml
+- Robots: https://seyfibaba.com/robots.txt
+- Ürün sayfaları: /single-product?slug={product-slug}
+- Satıcı profilleri: /seller/{seller-slug}
+- Blog detay: /blogs/{blog-slug}
+
+## İletişim
+
+- Web: https://seyfibaba.com
+- İletişim Formu: https://seyfibaba.com/contact

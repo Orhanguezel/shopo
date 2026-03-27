@@ -1,28 +1,12 @@
 import React from "react";
 import ServeLangItem from "@/components/Helpers/ServeLangItem";
 import CheckoutTickIco from "@/components/Helpers/icons/CheckoutTickIco";
-import LoaderStyleOne from "@/components/Helpers/Loaders/LoaderStyleOne";
-import InputCom from "@/components/Helpers/InputCom";
-import Sslcommerce from "@/components/Helpers/icons/Sslcommerce";
-import Bkash from "@/components/Helpers/icons/Bkash";
-import StripeLogo from "@/components/Helpers/icons/StripeLogo";
-import FlutterWaveLogo from "@/components/Helpers/icons/FlutterWaveLogo";
-import FatoorahLogo from "@/components/Helpers/icons/FatoorahLogo";
-import InstamojoLogo from "@/components/Helpers/icons/InstamojoLogo";
-import PaystackLogo from "@/components/Helpers/icons/PaystackLogo";
-import PaypalLogo from "@/components/Helpers/icons/PaypalLogo";
-import RezorPayLogo from "@/components/Helpers/icons/RezorPay";
-import { formatExpirationDate } from "../utils/checkoutUtils";
 
 const PaymentMethods = ({
   // Payment state
   selectPayment,
   setPaymentMethod,
   paymentStatuses,
-
-  // Stripe data
-  stripeData,
-  updateStripeData,
 
   // Bank data
   bankInfo,
@@ -38,39 +22,6 @@ const PaymentMethods = ({
    */
   const handlePaymentMethodSelect = (method) => {
     setPaymentMethod(method);
-  };
-
-  /**
-   * Handle stripe form field changes
-   * @param {string} field - Field name
-   * @param {Event} event - Input change event
-   */
-  const handleStripeFieldChange = (field, event) => {
-    if (field === "expireDate") {
-      updateStripeData(field, formatExpirationDate(event));
-    } else {
-      updateStripeData(field, event.target.value);
-    }
-  };
-
-  /**
-   * Check if field has stripe error
-   * @param {string} fieldName - Field name to check
-   * @returns {boolean} Whether field has error
-   */
-  const hasStripeError = (fieldName) => {
-    return !!(stripeData.error && Object.hasOwn(stripeData.error, fieldName));
-  };
-
-  /**
-   * Get stripe error message for field
-   * @param {string} fieldName - Field name to get error for
-   * @returns {string} Error message
-   */
-  const getStripeErrorMessage = (fieldName) => {
-    return stripeData.error && Object.hasOwn(stripeData.error, fieldName)
-      ? stripeData.error[fieldName][0]
-      : "";
   };
 
   /**
@@ -124,70 +75,6 @@ const PaymentMethods = ({
             paymentStatuses.cash_on_delivery_status
           )}
 
-          {/* Stripe */}
-          {renderPaymentMethod(
-            "stripe",
-            null,
-            paymentStatuses.stripePaymentInfo,
-            <StripeLogo />
-          )}
-
-          {/* RazorPay */}
-          {renderPaymentMethod(
-            "razorpay",
-            null,
-            paymentStatuses.razorpayPaymentInfo,
-            <RezorPayLogo />
-          )}
-
-          {/* FlutterWave */}
-          {renderPaymentMethod(
-            "flutterWave",
-            null,
-            paymentStatuses.flutterwavePaymentInfo,
-            <FlutterWaveLogo />
-          )}
-
-          {/* Mollie */}
-          {renderPaymentMethod(
-            "mollie",
-            null,
-            paymentStatuses.mollie,
-            <div className="text-qblack font-bold text-base">Mollie</div>
-          )}
-
-          {/* MyFatoorah */}
-          {renderPaymentMethod(
-            "myfatoorah",
-            null,
-            paymentStatuses.myfatoorah,
-            <FatoorahLogo />
-          )}
-
-          {/* Instamojo */}
-          {renderPaymentMethod(
-            "instamojo",
-            null,
-            paymentStatuses.instamojo,
-            <InstamojoLogo />
-          )}
-
-          {/* Paystack */}
-          {renderPaymentMethod(
-            "paystack",
-            null,
-            paymentStatuses.paystackAndMollie,
-            <PaystackLogo />
-          )}
-
-          {/* PayPal */}
-          {renderPaymentMethod(
-            "paypal",
-            null,
-            paymentStatuses.paypalPaymentInfo,
-            <PaypalLogo />
-          )}
-
           {/* Bank Payment */}
           {renderPaymentMethod(
             "bankpayment",
@@ -195,123 +82,14 @@ const PaymentMethods = ({
             paymentStatuses.bankPaymentInfo
           )}
 
-          {/* SSL Commerce */}
+          {/* Iyzico */}
           {renderPaymentMethod(
-            "sslcommerce",
-            null,
-            paymentStatuses.sslcommerz,
-            <Sslcommerce />
+            "iyzico",
+            "Iyzico (Kredi Kartı)",
+            paymentStatuses.iyzico
           )}
-
-          {/* bKash */}
-          {renderPaymentMethod("bkash", null, paymentStatuses.bkash, <Bkash />)}
         </div>
       </div>
-
-      {/* Stripe Payment Form */}
-      {selectPayment === "stripe" && (
-        <>
-          <div
-            onClick={() => setPaymentMethod("")}
-            className="w-full h-full fixed left-0 top-0 z-10"
-          ></div>
-          <div
-            style={{ zIndex: "999" }}
-            data-aos="zoom-in"
-            className="w-[359px] bg-white shadow-2xl p-2 rounded absolute -left-10 top-0"
-          >
-            <div className="stripe-inputs">
-              {/* Card Number */}
-              <div className="input-item mb-5">
-                <InputCom
-                  placeholder="Number"
-                  name="number"
-                  type="text"
-                  inputClasses="h-[50px]"
-                  value={stripeData.cardNumber}
-                  inputHandler={(e) => handleStripeFieldChange("cardNumber", e)}
-                  error={hasStripeError("card_number")}
-                />
-                {hasStripeError("card_number") && (
-                  <span className="text-sm mt-1 text-qred">
-                    {getStripeErrorMessage("card_number")}
-                  </span>
-                )}
-              </div>
-
-              {/* Expiry Date and CVV */}
-              <div className="flex space-x-2 items-center">
-                <div className="input-item mb-5">
-                  <InputCom
-                    placeholder="Expire Date"
-                    name="date"
-                    type="date"
-                    inputClasses="h-[50px]"
-                    value={stripeData.expireDate?.value || ""}
-                    inputHandler={(e) =>
-                      handleStripeFieldChange("expireDate", e)
-                    }
-                    error={hasStripeError("month") || hasStripeError("year")}
-                  />
-                  {(hasStripeError("month") || hasStripeError("year")) && (
-                    <span className="text-sm mt-1 text-qred">
-                      {ServeLangItem()?.Date_in_required}
-                    </span>
-                  )}
-                </div>
-                <div className="input-item mb-5">
-                  <InputCom
-                    placeholder="CVV"
-                    name="cvv"
-                    type="text"
-                    inputClasses="h-[50px]"
-                    value={stripeData.cvv}
-                    inputHandler={(e) => handleStripeFieldChange("cvv", e)}
-                    error={hasStripeError("cvv")}
-                  />
-                  {hasStripeError("cvv") && (
-                    <span className="text-sm mt-1 text-qred">
-                      {getStripeErrorMessage("cvv")}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Card Holder Name */}
-              <div className="input-item mb-5">
-                <InputCom
-                  placeholder="Card Holder"
-                  name="card"
-                  type="text"
-                  inputClasses="h-[50px]"
-                  value={stripeData.cardHolderName}
-                  inputHandler={(e) =>
-                    handleStripeFieldChange("cardHolderName", e)
-                  }
-                />
-              </div>
-
-              {/* Place Order Button */}
-              <button
-                type="button"
-                onClick={placeOrderHandler}
-                className="w-full"
-              >
-                <div className="w-full h-[50px] black-btn flex justify-center items-center">
-                  <span className="text-sm font-semibold">
-                    {ServeLangItem()?.Place_Order_Now}
-                  </span>
-                  {stripeData.loading && (
-                    <span className="w-5" style={{ transform: "scale(0.3)" }}>
-                      <LoaderStyleOne />
-                    </span>
-                  )}
-                </div>
-              </button>
-            </div>
-          </div>
-        </>
-      )}
 
       {/* Bank Payment Form */}
       {selectPayment === "bankpayment" && (

@@ -1,7 +1,7 @@
 "use client";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import websiteSetup from "./features/websiteSetup/websiteSetupSlice";
-import whishlistData from "./features/whishlist/whishlistSlice";
+import wishlistData from "./features/wishlist/wishlistSlice";
 import cart from "./features/cart/cartSlice";
 import compareProduct from "./features/compareProduct/compareProductSlice";
 import { persistReducer, persistStore } from "redux-persist";
@@ -22,7 +22,7 @@ const persistConfig = {
 // Combine reducers
 const rootReducer = combineReducers({
   websiteSetup: websiteSetup,
-  wishlistData: whishlistData,
+  wishlistData: wishlistData,
   cart: cart,
   compareProducts: compareProduct,
   [apiSlice.reducerPath]: apiSlice.reducer,

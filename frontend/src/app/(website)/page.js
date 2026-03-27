@@ -16,11 +16,24 @@ export async function generateMetadata() {
   return {
     title: seoSetting?.seo_title,
     description: seoSetting?.seo_description,
+    alternates: {
+      canonical: "/",
+    },
   };
 }
+
+import JsonLd, { generateOrganizationSchema, generateWebSiteSchema } from "@/components/Helpers/JsonLd";
 
 // main page
 export default async function HomePage() {
   const data = await getHomeData();
-  return <Home homepageData={data} />;
+  const orgSchema = generateOrganizationSchema();
+  const websiteSchema = generateWebSiteSchema();
+  return (
+    <>
+      <JsonLd data={orgSchema} />
+      <JsonLd data={websiteSchema} />
+      <Home homepageData={data} />
+    </>
+  );
 }

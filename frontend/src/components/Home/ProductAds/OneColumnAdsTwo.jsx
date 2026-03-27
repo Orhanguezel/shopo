@@ -19,9 +19,9 @@ function OneColumnAdsTwo({ data }) {
           <div className="w-full h-full flex flex-col justify-evenly">
             <div>
               <div className="">
-                <h1 className="md:text-[30px] text-[20px] md:leading-[40px] font-semibold">
+                <h2 className="md:text-[30px] text-[20px] md:leading-[40px] font-semibold">
                   {data.title_one}
-                </h1>
+                </h2>
               </div>
             </div>
             <div className="w-auto">

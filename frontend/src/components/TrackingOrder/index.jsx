@@ -14,7 +14,7 @@ import LoaderStyleOne from "../Helpers/Loaders/LoaderStyleOne";
 function TrackingOrder() {
   const router = useRouter();
   // local state
-  const [form, setForm] = useState({ orderNumber: "", date: "" });
+  const [form, setForm] = useState({ orderNumber: "" });
 
   /**
    * track order functionality
@@ -27,9 +27,12 @@ function TrackingOrder() {
     useLazyTrackOrderApiQuery();
 
   const trackOrderSuccessHandler = (data, statusCode) => {
-    if (statusCode === 200 || statusCode === 201) {
-      router.push(`order/${data?.order?.order_id}`);
+    if ((statusCode === 200 || statusCode === 201) && data?.order?.order_id) {
+      router.push(`/order/${data.order.order_id}`);
+      return;
     }
+
+    toast.error(data?.message || "Order not found");
   };
 
   const trackOrderErrorHandler = (error) => {
@@ -42,9 +45,11 @@ function TrackingOrder() {
 
   const trackOrder = () => {
     const userToken = auth()?.access_token;
-    if (form.orderNumber) {
+    const normalizedOrderNumber = form.orderNumber?.trim();
+
+    if (normalizedOrderNumber) {
       trackOrderApi({
-        data: form.orderNumber,
+        data: normalizedOrderNumber,
         token: userToken,
         success: trackOrderSuccessHandler,
         error: trackOrderErrorHandler,
@@ -75,11 +80,7 @@ function TrackingOrder() {
             {ServeLangItem()?.Track_Your_Order}
           </h1>
           <p className="text-[15px] text-qgraytwo leading-8 mb-5">
-            {
-              ServeLangItem()
-                ?.Enter_your_order_tracking_number_and_your_secret_id
-            }
-            .
+            Enter your order tracking number to see the latest order status.
           </p>
 
           {/* Form and Thumbnail Section */}
@@ -101,19 +102,6 @@ function TrackingOrder() {
                   inputClasses="w-full h-[50px]"
                 />
               </div>
-              {/* Delivery Date Input */}
-              <div className="mb-[30px]">
-                <InputCom
-                  value={form.date}
-                  inputHandler={(e) =>
-                    setForm((prev) => ({ ...prev, date: e.target.value }))
-                  }
-                  placeholder="23/09/2022"
-                  label="Delivery Date"
-                  inputClasses="w-full h-[50px]"
-                />
-              </div>
-
               {/* Track Order Button */}
               <button
                 onClick={trackOrder}

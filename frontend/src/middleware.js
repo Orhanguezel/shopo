@@ -14,7 +14,7 @@ export function middleware(request) {
     "/profile",
     "/tracking-order",
     "/wishlist",
-    "/products-compaire",
+    "/products-compare",
   ];
 
   // Check if the current path is a private route
@@ -46,7 +46,7 @@ export const config = {
     // Only protect the private routes that need authentication
     "/profile/:path*",
     "/wishlist",
-    "/products-compaire",
+    "/products-compare",
     "/become-seller",
     "/tracking-order",
   ],

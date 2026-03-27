@@ -801,6 +801,11 @@ return array (
   'Baksh Status' => 'Baksh Durumu',
   'Others' => 'Diğerleri',
   'Sale' => 'Satış',
+  'Commission' => 'Komisyon',
+  'Report' => 'Rapor',
+  'Return Requests' => 'İade Talepleri',
+  'Commission Settings' => 'Komisyon Ayarları',
+  'Commission Report' => 'Komisyon Raporu',
 );
 ?>
 

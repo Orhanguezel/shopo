@@ -16,9 +16,12 @@ import FacebookLoginUrlIcon from "@/components/Helpers/icons/FacebookLoginUrlIco
 // Utilities and data
 import settings from "../../../utils/settings";
 import countries from "../../../data/CountryCodes.json";
-import { useFacebookGetLoginUrlApiQuery } from "@/redux/features/socialLogin/apiSlice";
-import { useGoogleGetLoginUrlApiQuery } from "@/redux/features/socialLogin/apiSlice";
-import { useUserSignupApiMutation } from "@/redux/features/auth/apiSlice";
+import { useUserSignupApiMutation, useSendOtpApiMutation } from "@/redux/features/auth/apiSlice";
+import {
+  useFacebookGetLoginUrlApiQuery,
+  useGoogleGetLoginUrlApiQuery,
+} from "@/redux/features/socialLogin/apiSlice";
+import OtpVerifyStep from "./OtpVerifyStep";
 
 /**
  * Signup shape SVG component for the title decoration
@@ -86,6 +89,8 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
   // UI state
   const [checked, setCheck] = useState(false);
   const [errors, setErrors] = useState(null);
+  const [currentStep, setCurrentStep] = useState("form"); // steps: 'form', 'otp', 'success'
+  const [otpToken, setOtpToken] = useState("");
 
   /**
    * Handles input field changes
@@ -156,6 +161,7 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
    */
   const [userSignupApi, { isLoading: isSignupLoading }] =
     useUserSignupApiMutation();
+  const [sendOtpApi, { isLoading: isOtpSending }] = useSendOtpApiMutation();
 
   const signupSuccessHandler = (data, statusCode) => {
     if (statusCode === 200) {
@@ -182,13 +188,59 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
       toast.error(data.message);
     }
   };
+
   const signupErrorHandler = (error) => {
     if (error.status === 403) {
       toast.error(error.data.message);
     }
     setErrors(error && error.data.errors);
   };
-  const doSignup = async () => {
+  /**
+   * Triggers the OTP sending process
+   */
+  const handleSendOtpAndNext = async () => {
+    // Basic frontend validation before sending OTP
+    if (!formData.fname || !formData.lname || !formData.email || !formData.password) {
+      toast.error(ServeLangItem()?.Please_fill_all_required_fields || "Lütfen tüm zorunlu alanları doldurun");
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      toast.error(ServeLangItem()?.Confirm_password_does_not_match || "Şifreler uyuşmuyor");
+      return;
+    }
+    if (!formData.phone) {
+      toast.error(ServeLangItem()?.Phone_number_is_required || "Telefon numarası zorunludur");
+      return;
+    }
+
+    try {
+      const result = await sendOtpApi({
+        phone: formData.phone,
+        purpose: "register"
+      }).unwrap();
+
+      if (result.success) {
+        toast.success(result.message);
+        setCurrentStep("otp");
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || "OTP gönderilirken hata oluştu");
+    }
+  };
+
+  /**
+   * Final registration after OTP verified
+   * @param {string} token - The OTP verified token returned from OtpVerifyStep
+   */
+  const onOtpVerified = async (token) => {
+    setOtpToken(token);
+    // Proceed directly to final signup
+    await doSignup(token);
+  };
+
+  const doSignup = async (token) => {
     if (checked) {
       await userSignupApi({
         name: formData.fname + " " + formData.lname,
@@ -196,6 +248,7 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
         password: formData.password,
         password_confirmation: formData.confirmPassword,
         phone: formData.phone ? formData.phone : "",
+        otp_verified_token: token || otpToken,
         agree: checked ? 1 : "",
         success: signupSuccessHandler,
         error: signupErrorHandler,
@@ -212,6 +265,28 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
    */
   const { data: facebookGetLoginUrl } = useFacebookGetLoginUrlApiQuery();
   const { data: googleGetLoginUrl } = useGoogleGetLoginUrlApiQuery();
+
+  if (currentStep === "otp") {
+    return (
+      <div className="w-full">
+        <div className="title-area flex flex-col justify-center items-center relative text-center mb-7">
+          <h1 className="text-[34px] font-bold leading-[74px] text-qblack">
+            {ServeLangItem()?.Verify_OTP || "Doğrula"}
+          </h1>
+          <div className="shape -mt-6">
+            <SignupShape />
+          </div>
+        </div>
+        <div className="bg-[#FAFAFA] border border-qgray-border p-6 rounded-lg">
+          <OtpVerifyStep
+            phone={formData.phone}
+            onVerified={onOtpVerified}
+            onCancel={() => setCurrentStep("form")}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -456,21 +531,39 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
             =========================================== */}
         <div className="signin-area mb-5">
           <div className="flex justify-center">
-            <button
-              onClick={doSignup}
-              type="button"
-              disabled={!checked || isSignupLoading}
-              className="black-btn disabled:bg-opacity-50 disabled:cursor-not-allowed  w-full h-[50px] font-semibold flex justify-center bg-purple items-center"
-            >
-              <span className="text-sm text-white block">
-                {ServeLangItem()?.Create_Account}
-              </span>
-              {isSignupLoading && (
-                <span className="w-5 " style={{ transform: "scale(0.3)" }}>
-                  <LoaderStyleOne />
+            {Number(phone_number_required) === 1 ? (
+              <button
+                onClick={handleSendOtpAndNext}
+                type="button"
+                disabled={!checked || isOtpSending}
+                className="black-btn disabled:bg-opacity-50 disabled:cursor-not-allowed  w-full h-[50px] font-semibold flex justify-center bg-purple items-center"
+              >
+                <span className="text-sm text-white block">
+                  {ServeLangItem()?.Get_OTP || "Doğrulama Kodu Al"}
                 </span>
-              )}
-            </button>
+                {isOtpSending && (
+                  <span className="ml-2 w-5 scale-50">
+                    <LoaderStyleOne />
+                  </span>
+                )}
+              </button>
+            ) : (
+              <button
+                onClick={doSignup}
+                type="button"
+                disabled={!checked || isSignupLoading}
+                className="black-btn disabled:bg-opacity-50 disabled:cursor-not-allowed  w-full h-[50px] font-semibold flex justify-center bg-purple items-center"
+              >
+                <span className="text-sm text-white block">
+                  {ServeLangItem()?.Create_Account}
+                </span>
+                {isSignupLoading && (
+                  <span className="ml-2 w-5 scale-50">
+                    <LoaderStyleOne />
+                  </span>
+                )}
+              </button>
+            )}
           </div>
         </div>
 

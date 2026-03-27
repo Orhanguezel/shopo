@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import ServeLangItem from "../Helpers/ServeLangItem";
 
@@ -11,9 +12,11 @@ export default function ApplicationErrorTemp() {
             <div>
               <div className="sm:mb-10 mb-0 transform sm:scale-100 scale-50">
                 <div className="aspect-[700/417] relative">
-                  <img
+                  <Image
+                    width={700}
+                    height={417}
                     src="/assets/images/server-error.svg"
-                    alt="404"
+                    alt="Application Error"
                     className="w-full h-full object-contain"
                   />
                 </div>

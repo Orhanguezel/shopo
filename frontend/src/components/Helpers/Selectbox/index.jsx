@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import ServeLangItem from "../ServeLangItem";
 import appConfig from "@/appConfig";
@@ -60,9 +61,11 @@ export default function Selectbox({
                   {value.image ? (
                     <div className="flex space-x-5 items-center p-2">
                       <div className="w-10 h-10">
-                        <img
+                        <Image
+                          width={40}
+                          height={40}
                           src={appConfig.BASE_URL + value.image}
-                          alt=""
+                          alt={value.name || "option image"}
                           className="w-full h-full object-cover"
                         />
                       </div>

@@ -13,8 +13,11 @@ export async function generateMetadata() {
   const { privacyPolicy } = await getPrivacyPolicyData();
   const { seoSetting } = privacyPolicy;
   return {
-    title: seoSetting?.seo_title,
+    title: seoSetting?.seo_title || "Gizlilik Politikası | Seyfibaba",
     description: seoSetting?.seo_description,
+    alternates: {
+      canonical: "/privacy-policy",
+    },
   };
 }
 

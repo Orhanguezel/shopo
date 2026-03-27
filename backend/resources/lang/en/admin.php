@@ -805,6 +805,9 @@
   'Baksh Status' => 'Baksh Status',
   'Others' => 'Others',
   'Sale' => 'Sale',
-
+  'Commission' => 'Commission',
+  'Report' => 'Report',
+  'Return Requests' => 'Return Requests',
+  'Commission Settings' => 'Commission Settings',
+  'Commission Report' => 'Commission Report',
 );
- ?>

@@ -8,13 +8,16 @@ import ServeLangItem from "../Helpers/ServeLangItem";
 import CurrencyConvert from "../Shared/CurrencyConvert";
 import PrintBtn from "./PrintBtn";
 import ReviewModal from "./ReviewModal";
+import ReturnModal from "./ReturnModal";
 import TrackDeliveryMan from "./TrackDeliveryMan";
 import { clearCartAction } from "@/redux/features/cart/cartSlice";
 import { useDispatch } from "react-redux";
+import appConfig from "@/appConfig";
 function OrderComContent({ resData, orderStatus, orderId }) {
   const webSettings = settings();
   const urlQuery = useSearchParams();
   const dispatch = useDispatch();
+  const [returnableItems, setReturnableItems] = useState({});
 
   // review modal
   const [reviewModal, setReviewModal] = useState(false);
@@ -24,13 +27,59 @@ function OrderComContent({ resData, orderStatus, orderId }) {
     setProductId(Number(id));
   };
 
+  // return modal
+  const [returnModal, setReturnModal] = useState(false);
+  const [orderProductId, setOrderProductId] = useState(null);
+  const returnModalHandler = (id) => {
+    setReturnModal(!returnModal);
+    setOrderProductId(Number(id));
+  };
+
   // check order status and clear cart
 
   useEffect(() => {
     if (urlQuery.get("payment_status") === "success") {
       dispatch(clearCartAction());
     }
-  }, [urlQuery]);
+  }, [urlQuery, dispatch]);
+
+  useEffect(() => {
+    const loadReturnableItems = async () => {
+      if (!auth() || !orderId) {
+        setReturnableItems({});
+        return;
+      }
+
+      try {
+        const token = auth()?.access_token;
+        const response = await fetch(
+          `${appConfig.BASE_URL}api/user/orders/${orderId}/returnable-items?token=${token}`,
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+
+        const data = await response.json();
+        if (!response.ok) {
+          setReturnableItems({});
+          return;
+        }
+
+        const nextItems = (data?.items || []).reduce((accumulator, item) => {
+          accumulator[item.order_product_id] = item;
+          return accumulator;
+        }, {});
+
+        setReturnableItems(nextItems);
+      } catch (error) {
+        setReturnableItems({});
+      }
+    };
+
+    loadReturnableItems();
+  }, [orderId]);
 
   return (
     <div className="w-full pt-[30px] pb-[60px]">
@@ -230,19 +279,32 @@ function OrderComContent({ resData, orderStatus, orderId }) {
                               </span>
                             </div>
                           </td>
-                          <td className="text-center py-4 px-2 print:hidden">
-                            {auth() && (
-                              <button
-                                onClick={() =>
-                                  reviewModalHandler(item.product_id)
-                                }
-                                type="button"
-                                className="text-green-500 text-sm font-semibold capitalize"
-                              >
-                                {ServeLangItem()?.review}
-                              </button>
-                            )}
-                          </td>
+                          <td className="py-4 whitespace-nowrap text-center print:hidden space-x-2">
+                        {auth() && (
+                          <button
+                            onClick={() =>
+                              reviewModalHandler(item.product_id)
+                            }
+                            type="button"
+                            className="text-green-500 text-sm font-semibold capitalize"
+                          >
+                            {ServeLangItem()?.review}
+                          </button>
+                        )}
+                        {auth() &&
+                          [ "Delivered", "Completed" ].includes(orderStatus) &&
+                          returnableItems[item.id]?.is_returnable && (
+                          <button
+                            onClick={() =>
+                              returnModalHandler(item.id)
+                            }
+                            type="button"
+                            className="text-qred text-sm font-semibold capitalize"
+                          >
+                            Return
+                          </button>
+                        )}
+                      </td>
                         </tr>
                       ))}
                   </tbody>
@@ -315,6 +377,14 @@ function OrderComContent({ resData, orderStatus, orderId }) {
       </div>
       {auth() && reviewModal && (
         <ReviewModal productId={productId} setReviewModal={setReviewModal} />
+      )}
+      {auth() && returnModal && (
+        <ReturnModal 
+          orderId={resData.id} 
+          orderProductId={orderProductId} 
+          maxQty={returnableItems[orderProductId]?.max_returnable_qty}
+          setReturnModal={setReturnModal} 
+        />
       )}
     </div>
   );

@@ -3,12 +3,14 @@
     <section class="section">
         <div class="auth-section-wrapper">
                 <div class="login-thumb">
+                    @if(isset($banner) && $banner->image)
                     <img class="img" src="{{ asset($banner->image) }}" alt="login-thumb"/>
+                    @endif
                 </div>
                 <div class="form-area-wrapper">
                         <div class="form-content-wrapper">
                         <div class="logo">
-                          <img src="{{ asset($setting->logo) }}" alt="logo"/>
+                          <img src="{{ asset($setting->logo ?? '') }}" alt="logo"/>
                         </div>
                             <div class="card card-primary card-wrapper-auth">
                                 <div class="card-body">
@@ -50,7 +52,7 @@
                         </div>
                 </div>
                 <div class="simple-footer">
-                    {{ $setting->copyright }}
+                    {{ $setting->copyright ?? '' }}
                 </div>
         </div>
     </section>

@@ -13,8 +13,11 @@ export async function generateMetadata() {
   const data = await getFlashSaleData();
   const { seoSetting } = data;
   return {
-    title: seoSetting?.seo_title,
+    title: seoSetting?.seo_title || "Fırsat Ürünleri | Seyfibaba",
     description: seoSetting?.seo_description,
+    alternates: {
+      canonical: "/flash-sale",
+    },
   };
 }
 

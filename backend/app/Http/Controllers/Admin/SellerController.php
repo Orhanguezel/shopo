@@ -67,7 +67,7 @@ class SellerController extends Controller
             $orderProducts = OrderProduct::with('order')->where('seller_id',$id)->get();
             foreach($orderProducts as $orderProduct){
                 if($orderProduct->order->payment_status == 1 && $orderProduct->order->order_status == 3){
-                    $price = ($orderProduct->unit_price * $orderProduct->qty) + $orderProduct->vat;
+                    $price = $orderProduct->seller_net_amount > 0 ? $orderProduct->seller_net_amount : (($orderProduct->unit_price * $orderProduct->qty) + $orderProduct->vat);
                     $totalAmount = $totalAmount + $price;
                     $totalSoldProduct = $totalSoldProduct + $orderProduct->qty;
                 }

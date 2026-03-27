@@ -93,6 +93,9 @@ class SettingController extends Controller
     }
 
     public function clearDatabase(){
+        if (app()->environment('production')) {
+            abort(403, 'Database clear is disabled in production environment.');
+        }
         Address::truncate();
         AboutUs::truncate();
         ShoppingCart::truncate();

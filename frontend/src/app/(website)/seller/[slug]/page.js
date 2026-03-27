@@ -1,0 +1,60 @@
+import SellerProfile from "@/components/Sellers/SellerProfile";
+import sellerDetails from "@/api/sellerDetails";
+import JsonLd, { generateSellerSchema, generateBreadcrumbSchema } from "@/components/Helpers/JsonLd";
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+
+  try {
+    const data = await sellerDetails(slug);
+    return {
+      title: `${data.seller?.shop_name || "Satıcı"} | Seyfibaba Pazaryeri`,
+      description:
+        data.seller?.seo_description ||
+        `${data.seller?.shop_name || "Satıcı"} mağazasını Seyfibaba'da ziyaret edin.`,
+      openGraph: {
+        title: data.seller?.shop_name || "Satıcı Mağazası",
+        images: data.seller?.logo ? [data.seller.logo] : [],
+      },
+      alternates: {
+        canonical: `/seller/${slug}`,
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Satıcı Mağazası | Seyfibaba Pazaryeri",
+      alternates: {
+        canonical: `/seller/${slug}`,
+      },
+    };
+  }
+}
+
+export default async function SellerPage({ params }) {
+  const { slug } = await params;
+
+  let sellerSchema = null;
+  let breadcrumbSchema = null;
+
+  try {
+    const data = await sellerDetails(slug);
+    if (data?.seller) {
+      sellerSchema = generateSellerSchema(data.seller);
+      breadcrumbSchema = generateBreadcrumbSchema([
+        { name: "Anasayfa", item: "/" },
+        { name: "Satıcılar", item: "/sellers" },
+        { name: data.seller.shop_name || slug },
+      ]);
+    }
+  } catch (error) {
+    // Fail silently — schemas are non-critical
+  }
+
+  return (
+    <>
+      {sellerSchema && <JsonLd data={sellerSchema} />}
+      {breadcrumbSchema && <JsonLd data={breadcrumbSchema} />}
+      <SellerProfile slug={slug} />
+    </>
+  );
+}

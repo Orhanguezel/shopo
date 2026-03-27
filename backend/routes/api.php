@@ -51,6 +51,7 @@ use App\Http\Controllers\Admin\WithdrawMethodController;
 use App\Http\Controllers\Admin\SellerWithdrawController;
 use App\Http\Controllers\Admin\ProductReportController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\CommissionController as AdminCommissionController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\WEB\Admin\BreadcrumbController;
 use App\Http\Controllers\Admin\FooterController;
@@ -73,6 +74,7 @@ use App\Http\Controllers\Seller\SellerProductVariantController;
 use App\Http\Controllers\Seller\SellerProductVariantItemController;
 use App\Http\Controllers\Seller\SellerProductReviewController;
 use App\Http\Controllers\Seller\WithdrawController;
+use App\Http\Controllers\Seller\EarningsController as SellerEarningsController;
 use App\Http\Controllers\Seller\SellerProductReportControler;
 use App\Http\Controllers\Seller\SellerOrderController;
 use App\Http\Controllers\Seller\SellerMessageContoller;
@@ -82,11 +84,12 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\User\UserProfileController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\PaymentController;
-use App\Http\Controllers\User\PaypalController;
+use App\Http\Controllers\User\IyzicoController;
 use App\Http\Controllers\User\MessageController;
 use App\Http\Controllers\User\AddressCotroller;
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Auth\RegisterController;
 
 use App\Http\Controllers\Deliveryman\MyReviewController;
@@ -102,16 +105,22 @@ use App\Http\Controllers\Deliveryman\DeliveryManRegistrationController;
 use App\Http\Controllers\Deliveryman\Auth\DeliveryManResetPasswordController;
 use App\Http\Controllers\User\CheckoutWithoutTokenController;
 use App\Http\Controllers\User\CountryGetController;
+use App\Http\Controllers\User\ReturnRequestController as UserReturnRequestController;
+use App\Http\Controllers\Seller\ReturnRequestController as SellerReturnRequestController;
+use App\Http\Controllers\Admin\ReturnRequestController as AdminReturnRequestController;
 
 Route::group([
     'prefix' => 'auth'
 
 ], function ($router) {
 
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:auth-login');
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
+    Route::post('otp/send', [OtpController::class, 'send'])->middleware('throttle:otp-send');
+    Route::post('otp/verify', [OtpController::class, 'verify'])->middleware('throttle:otp-verify');
+    Route::post('otp/resend', [OtpController::class, 'resend'])->middleware('throttle:otp-resend');
 
 });
 
@@ -135,7 +144,7 @@ Route::group([], function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about-us');
     Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('contact-us');
-    Route::post('/send-contact-message', [HomeController::class, 'sendContactMessage'])->name('send-contact-message');
+    Route::post('/send-contact-message', [HomeController::class, 'sendContactMessage'])->middleware('throttle:public-form')->name('send-contact-message');
 
     Route::get('/track-order-response/{id}', [HomeController::class, 'trackOrderResponse'])->name('track-order-response');
     Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
@@ -157,12 +166,21 @@ Route::group([], function () {
     Route::get('/add-to-compare/{id}', [HomeController::class, 'addToCompare'])->name('add-to-compare');
     Route::get('/remove-compare/{id}', [HomeController::class, 'removeCompare'])->name('remove-compare');
     Route::get('/flash-sale', [HomeController::class, 'flashSale'])->name('flash-sale');
-    Route::post('subscribe-request', [HomeController::class, 'subscribeRequest'])->name('subscribe-request');
-    Route::get('subscriber-verification/{token}', [HomeController::class, 'subscriberVerifcation'])->name('subscriber-verification');
+
+    Route::get('/products/sitemap', [HomeController::class, 'productSitemap'])->name('products.sitemap');
+    Route::get('/products/active-count', [HomeController::class, 'productCount'])->name('products.count');
+    Route::get('/sellers/sitemap', [HomeController::class, 'sellerSitemap'])->name('sellers.sitemap');
+    Route::post('subscribe-request', [HomeController::class, 'subscribeRequest'])->middleware('throttle:public-form', 'XSS')->name('subscribe-request');
 
     // Route::get('live-track-order/{id}', [HomeController::class, 'liveTrackOrder'])->name('live-track-order');
 
     Route::get('live-track-order', [HomeController::class, 'liveTrackOrder'])->name('live-track-order');
+
+    Route::get('/blogs', [App\Http\Controllers\BlogController::class, 'index'])->name('blogs');
+    Route::get('/blog-category', [App\Http\Controllers\BlogController::class, 'blogCategory'])->name('blog-category');
+    Route::get('/blog-category/{slug}', [App\Http\Controllers\BlogController::class, 'blogCategoryDetail'])->name('blog-category-detail');
+    Route::get('/blogs/{slug}', [App\Http\Controllers\BlogController::class, 'blogDetail'])->name('blog-detail');
+    Route::post('/blog-comment', [App\Http\Controllers\BlogController::class, 'blogComment'])->name('blog-comment');
 
     Route::get('/cart', [CartController::class, 'cart'])->name('cart');
     Route::get('/add-to-cart', [CartController::class, 'addToCart'])->name('add-to-cart');
@@ -184,12 +202,13 @@ Route::group([], function () {
     Route::get('/callback/mobile-app',[LoginController::class,'callback_mobileapp'])->name('callback-mobile-app');
 
     Route::get('/login', [LoginController::class, 'loginPage'])->name('login');
-    Route::post('/store-login', [LoginController::class, 'storeLogin'])->name('store-login');
-    Route::post('/resend-register-code', [RegisterController::class, 'resendRegisterCode'])->name('resend-register-code');
-    Route::post('/store-register', [RegisterController::class, 'storeRegister'])->name('store-register');
+    Route::post('/store-login', [LoginController::class, 'storeLogin'])->middleware('throttle:auth-login')->name('store-login');
+    Route::post('/resend-register-code', [RegisterController::class, 'resendRegisterCode'])->middleware('throttle:auth-otp')->name('resend-register-code');
+    Route::post('/store-register', [RegisterController::class, 'storeRegister'])->middleware('throttle:auth-register')->name('store-register');
     Route::get('/user-verification/{token}', [RegisterController::class, 'userVerification'])->name('user-verification');
+
     Route::get('/forget-password', [LoginController::class, 'forgetPage'])->name('forget-password');
-    Route::post('/send-forget-password', [LoginController::class, 'sendForgetPassword'])->name('send-forget-password');
+    Route::post('/send-forget-password', [LoginController::class, 'sendForgetPassword'])->middleware('throttle:password-reset')->name('send-forget-password');
     Route::get('/reset-password/{token}', [LoginController::class, 'resetPasswordPage'])->name('reset-password');
     Route::post('/store-reset-password/{token}', [LoginController::class, 'storeResetPasswordPage'])->name('store-reset-password');
     Route::get('/user/logout', [LoginController::class, 'userLogout'])->name('user.logout');
@@ -242,15 +261,25 @@ Route::group([], function () {
             Route::get('/', [CheckoutController::class, 'checkout'])->name('checkout');
 
             Route::post('/cash-on-delivery', [PaymentController::class, 'cashOnDelivery'])->name('cash-on-delivery');
-            Route::post('/pay-with-stripe', [PaymentController::class, 'payWithStripe'])->name('pay-with-stripe');
             Route::post('/pay-with-bank', [PaymentController::class, 'payWithBank'])->name('pay-with-bank');
 
             Route::post('/store-draft-order', [PaymentController::class, 'store_draft_order'])->name('store-draft-order');
 
+            Route::post('/pay-with-iyzico', [IyzicoController::class, 'createCheckoutSession'])->name('pay-with-iyzico');
         });
+
+        // Return Request Routes
+        Route::get('orders/{id}/returnable-items', [UserReturnRequestController::class, 'returnableItems']);
+        Route::get('return-requests', [UserReturnRequestController::class, 'index']);
+        Route::get('return-requests/{id}', [UserReturnRequestController::class, 'show']);
+        Route::post('return-requests', [UserReturnRequestController::class, 'store']);
+        Route::put('return-requests/{id}/cancel', [UserReturnRequestController::class, 'cancel']);
 
 
     });
+
+    // Iyzico callback — auth disinda, Iyzico redirect ile gelir, rate limited
+    Route::match(['get', 'post'], 'user/iyzico/callback', [IyzicoController::class, 'callback'])->middleware('throttle:10,1')->name('iyzico.callback');
 
 
     Route::group(['as'=> 'seller.', 'prefix' => 'seller','middleware' => ['checkseller']],function (){
@@ -316,6 +345,8 @@ Route::group([], function () {
 
         Route::resource('my-withdraw', WithdrawController::class);
         Route::get('get-withdraw-account-info/{id}', [WithdrawController::class, 'getWithDrawAccountInfo'])->name('get-withdraw-account-info');
+        Route::get('earnings', [SellerEarningsController::class, 'summary'])->name('earnings');
+        Route::get('earnings/orders', [SellerEarningsController::class, 'orders'])->name('earnings-orders');
 
         Route::get('all-order', [SellerOrderController::class, 'index'])->name('all-order');
         Route::get('pending-order', [SellerOrderController::class, 'pendingOrder'])->name('pending-order');
@@ -330,6 +361,13 @@ Route::group([], function () {
         Route::get('load-chat-box/{id}', [SellerMessageContoller::class, 'loadChatBox'])->name('load-chat-box');
         Route::get('load-new-message/{id}', [SellerMessageContoller::class, 'loadNewMessage'])->name('load-new-message');
         Route::get('send-message', [SellerMessageContoller::class, 'sendMessage'])->name('send-message');
+
+        // Return Request Routes
+        Route::get('return-requests', [SellerReturnRequestController::class, 'index']);
+        Route::get('return-requests/{id}', [SellerReturnRequestController::class, 'show']);
+        Route::put('return-requests/{id}/approve', [SellerReturnRequestController::class, 'approve']);
+        Route::put('return-requests/{id}/reject', [SellerReturnRequestController::class, 'reject']);
+        Route::put('return-requests/{id}/update-status', [SellerReturnRequestController::class, 'updateStatus']);
 
     });
 
@@ -378,14 +416,15 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
 
     // start auth route
     Route::get('login', [AdminLoginController::class,'adminLoginPage'])->name('login');
-    Route::post('login', [AdminLoginController::class,'storeLogin'])->name('login');
-    Route::post('logout', [AdminLoginController::class,'adminLogout'])->name('logout');
+    Route::post('login', [AdminLoginController::class,'storeLogin'])->middleware('throttle:auth-login')->name('login');
     Route::get('forget-password', [AdminForgotPasswordController::class,'forgetPassword'])->name('forget-password');
-    Route::post('send-forget-password', [AdminForgotPasswordController::class,'sendForgetEmail'])->name('send.forget.password');
+    Route::post('send-forget-password', [AdminForgotPasswordController::class,'sendForgetEmail'])->middleware('throttle:password-reset')->name('send.forget.password');
     Route::get('reset-password/{token}', [AdminForgotPasswordController::class,'resetPassword'])->name('reset.password');
     Route::post('password-store/{token}', [AdminForgotPasswordController::class,'storeResetData'])->name('store.reset.password');
     // end auth route
 
+    Route::group(['middleware' => ['auth:admin-api']], function () {
+    Route::post('logout', [AdminLoginController::class,'adminLogout'])->name('logout');
     Route::get('/', [DashboardController::class,'dashobard'])->name('dashboard');
     Route::get('dashboard', [DashboardController::class,'dashobard'])->name('dashboard');
     Route::get('profile', [AdminProfileController::class,'index'])->name('profile');
@@ -457,12 +496,6 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
 
     Route::resource('terms-and-condition', TermsAndConditionController::class);
     Route::resource('privacy-policy', PrivacyPolicyController::class);
-
-
-
-
-    Route::get('clear-database',[SettingController::class,'showClearDatabasePage'])->name('clear-database');
-    Route::delete('clear-database',[SettingController::class,'clearDatabase'])->name('clear-database');
 
     Route::get('subscriber',[SubscriberController::class,'index'])->name('subscriber');
     Route::delete('delete-subscriber/{id}',[SubscriberController::class,'destroy'])->name('delete-subscriber');
@@ -635,15 +668,9 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
     Route::put('city-status/{id}',[CityController::class,'changeStatus'])->name('city-status');
 
     Route::get('payment-method',[PaymentMethodController::class,'index'])->name('payment-method');
-    Route::put('update-paypal',[PaymentMethodController::class,'updatePaypal'])->name('update-paypal');
-    Route::put('update-stripe',[PaymentMethodController::class,'updateStripe'])->name('update-stripe');
-    Route::put('update-razorpay',[PaymentMethodController::class,'updateRazorpay'])->name('update-razorpay');
     Route::put('update-bank',[PaymentMethodController::class,'updateBank'])->name('update-bank');
-    Route::put('update-mollie',[PaymentMethodController::class,'updateMollie'])->name('update-mollie');
-    Route::put('update-paystack',[PaymentMethodController::class,'updatePayStack'])->name('update-paystack');
-    Route::put('update-flutterwave',[PaymentMethodController::class,'updateflutterwave'])->name('update-flutterwave');
-    Route::put('update-instamojo',[PaymentMethodController::class,'updateInstamojo'])->name('update-instamojo');
     Route::put('update-cash-on-delivery',[PaymentMethodController::class,'updateCashOnDelivery'])->name('update-cash-on-delivery');
+    Route::put('update-iyzico',[PaymentMethodController::class,'updateIyzico'])->name('update-iyzico');
 
     Route::resource('mega-menu-category', MegaMenuController::class);
     Route::put('mega-menu-category-status/{id}',[MegaMenuController::class,'changeStatus'])->name('mega-menu-category-status');
@@ -691,6 +718,14 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
     Route::delete('delete-seller-withdraw/{id}', [SellerWithdrawController::class, 'destroy'])->name('delete-seller-withdraw');
     Route::put('approved-seller-withdraw/{id}', [SellerWithdrawController::class, 'approvedWithdraw'])->name('approved-seller-withdraw');
 
+    Route::get('commission/settings', [AdminCommissionController::class, 'settings'])->name('commission.settings');
+    Route::put('commission/settings', [AdminCommissionController::class, 'updateSettings'])->name('commission.settings.update');
+    Route::get('commission/vendors', [AdminCommissionController::class, 'vendors'])->name('commission.vendors');
+    Route::put('commission/vendors/{id}', [AdminCommissionController::class, 'updateVendorRate'])->name('commission.vendors.update');
+    Route::delete('commission/vendors/{id}', [AdminCommissionController::class, 'resetVendorRate'])->name('commission.vendors.reset');
+    Route::get('commission/report', [AdminCommissionController::class, 'report'])->name('commission.report');
+    Route::get('commission/ledger', [AdminCommissionController::class, 'ledger'])->name('commission.ledger');
+
     Route::get('all-order', [OrderController::class, 'index'])->name('all-order');
     Route::get('pending-order', [OrderController::class, 'pendingOrder'])->name('pending-order');
     Route::get('pregress-order', [OrderController::class, 'pregressOrder'])->name('pregress-order');
@@ -701,6 +736,16 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
     Route::get('order-show/{id}', [OrderController::class, 'show'])->name('order-show');
     Route::delete('delete-order/{id}', [OrderController::class, 'destroy'])->name('delete-order');
     Route::put('update-order-status/{id}', [OrderController::class, 'updateOrderStatus'])->name('update-order-status');
+
+    // Return Request Routes
+    Route::get('return-requests/stats', [AdminReturnRequestController::class, 'stats']);
+    Route::get('return-requests', [AdminReturnRequestController::class, 'index']);
+    Route::get('return-requests/{id}', [AdminReturnRequestController::class, 'show']);
+    Route::put('return-requests/{id}/approve', [AdminReturnRequestController::class, 'approve']);
+    Route::put('return-requests/{id}/reject', [AdminReturnRequestController::class, 'reject']);
+    Route::put('return-requests/{id}/mark-received', [AdminReturnRequestController::class, 'markReceived']);
+    Route::put('return-requests/{id}/refund', [AdminReturnRequestController::class, 'refund']);
+    Route::put('return-requests/{id}/update-status', [AdminReturnRequestController::class, 'updateStatus']);
 
     Route::resource('coupon', CouponController::class);
     Route::put('coupon-status/{id}',[CouponController::class,'changeStatus'])->name('coupon-status');
@@ -730,6 +775,7 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
 
 
 });
+    });
 
 });
 
@@ -745,7 +791,7 @@ Route::group(['as'=> 'user.', 'prefix' => 'user'],function (){
         Route::get('/without-token', [CheckoutWithoutTokenController::class, 'checkout'])->name('without-token');
         Route::post('/cash-on-delivery', [CheckoutWithoutTokenController::class, 'cashOnDelivery'])->name('cash-on-delivery');
         Route::post('/store-draft-order', [CheckoutWithoutTokenController::class, 'store_draft_order'])->name('store-draft-order');
-        Route::post('/pay-with-stripe', [CheckoutWithoutTokenController::class, 'payWithStripe'])->name('pay-with-stripe');
         Route::post('/pay-with-bank', [CheckoutWithoutTokenController::class, 'payWithBank'])->name('pay-with-bank');
+        Route::post('/pay-with-iyzico', [IyzicoController::class, 'createGuestCheckoutSession'])->name('pay-with-iyzico');
     });
 });

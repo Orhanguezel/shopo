@@ -23,27 +23,60 @@ import MessageIco from "../Helpers/icons/MessageIco";
 import { useFlyingCart } from "../Contexts/FlyingCartContext";
 import appConfig from "@/appConfig";
 
-const StarRating = ({ rating }) => (
-  <div className="flex">
-    {Array.from(Array(parseInt(rating)), () => (
-      <span key={parseInt(rating) + Math.random()}>
-        <Star />
-      </span>
-    ))}
-    {parseInt(rating) < 5 && (
-      <>
-        {Array.from(Array(5 - parseInt(rating)), () => (
-          <span
-            key={parseInt(rating) + Math.random()}
-            className="text-gray-500"
-          >
-            <Star defaultValue={false} />
-          </span>
-        ))}
-      </>
-    )}
-  </div>
-);
+const PRODUCT_IMAGE_FALLBACK = "/assets/images/server-error.png";
+
+const parseAmount = (value) => {
+  const parsedValue = parseInt(value, 10);
+  return Number.isNaN(parsedValue) ? 0 : parsedValue;
+};
+
+const getInitialVariantItems = (variants = []) => {
+  return variants
+    .map((variant) => variant?.active_variant_items?.[0] || null)
+    .filter(Boolean);
+};
+
+const calculateVariantPricing = (product, selectedVariantItems = []) => {
+  const basePrice = parseAmount(product?.price);
+  const baseOfferPrice = product?.offer_price
+    ? parseAmount(product.offer_price)
+    : null;
+  const variantTotal = selectedVariantItems.reduce(
+    (total, item) => total + parseAmount(item?.price),
+    0
+  );
+
+  return {
+    price: basePrice + variantTotal,
+    offerPrice:
+      baseOfferPrice !== null ? baseOfferPrice + variantTotal : null,
+  };
+};
+
+const StarRating = ({ rating }) => {
+  const numericRating = isNaN(parseInt(rating)) ? 0 : Math.min(5, Math.max(0, parseInt(rating)));
+  return (
+    <div className="flex">
+      {Array.from(Array(numericRating), (_, i) => (
+        <span key={`star-filled-${i}`}>
+          <Star />
+        </span>
+      ))}
+      {numericRating < 5 && (
+        <>
+          {Array.from(Array(5 - numericRating), (_, i) => (
+            <span
+              key={`star-empty-${i}`}
+              className="text-gray-500"
+            >
+              <Star defaultValue={false} />
+            </span>
+          ))}
+        </>
+      )}
+    </div>
+  );
+};
 
 const ProductImage = ({ src, alt, className = "", onClick }) => (
   <div
@@ -55,7 +88,7 @@ const ProductImage = ({ src, alt, className = "", onClick }) => (
     <Image
       fill
       style={{ objectFit: "scale-down" }}
-      src={`${appConfig.BASE_URL + src}`}
+      src={src ? `${appConfig.BASE_URL + src}` : PRODUCT_IMAGE_FALLBACK}
       alt={alt}
       className={`w-full h-full object-contain transform scale-110 ${className}`}
     />
@@ -128,19 +161,20 @@ const VariantSelector = ({ variants, onSelectVariant }) => {
 };
 
 const SocialShareButtons = ({ product }) => {
+  const safeProduct = product || {};
   const shareUrl =
     typeof window !== "undefined" && window.location.origin
-      ? `${window.location.origin}/single-product?slug=${product.slug}`
+      ? `${window.location.origin}/single-product?slug=${safeProduct.slug || ""}`
       : "";
 
   return (
     <div className="flex space-x-5 items-center">
-      <FacebookShareButton url={shareUrl} quotes={product.name}>
+      <FacebookShareButton url={shareUrl} quotes={safeProduct.name || ""}>
         <span className="cursor-pointer">
           <FbIco />
         </span>
       </FacebookShareButton>
-      <TwitterShareButton url={shareUrl} title={product.name}>
+      <TwitterShareButton url={shareUrl} title={safeProduct.name || ""}>
         <span className="cursor-pointer">
           <TwiterIco />
         </span>
@@ -156,6 +190,10 @@ export default function ProductView({
   product,
   seller,
 }) {
+  const safeProduct = product || {};
+  const safeVariants = safeProduct?.active_variants || [];
+  const safeImages = Array.isArray(images) ? images : [];
+
   // Redux and Context
   const { cart } = useSelector((state) => state.cart);
   const { websiteSetup } = useSelector((state) => state.websiteSetup);
@@ -176,75 +214,65 @@ export default function ProductView({
   // State Management
   const [more, setMore] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [src, setSrc] = useState(product.thumb_image);
+  const [src, setSrc] = useState(safeProduct?.thumb_image || "");
   const [price, setPrice] = useState(null);
   const [offerPrice, setOffer] = useState(null);
   const [pricePercent, setPricePercent] = useState("");
 
-  // Initialize variants state properly
-  const [varients, setVarients] = useState(product?.active_variants || []);
-
-  const [getFirstVarients, setFirstVarients] = useState([]);
+  const [varients, setVarients] = useState(safeVariants);
+  const [selectedVariantItems, setSelectedVariantItems] = useState(
+    getInitialVariantItems(safeVariants)
+  );
 
   // State Management
-  const [productsImg, setProductsImg] = useState(
-    images && images.length > 0 ? images : []
-  );
-  const tags = product && JSON.parse(product.tags);
+  const [productsImg, setProductsImg] = useState(safeImages);
+
+  const tags = useMemo(() => {
+    if (!safeProduct?.tags) return [];
+    try {
+      return typeof safeProduct.tags === "string"
+        ? JSON.parse(safeProduct.tags)
+        : safeProduct.tags;
+    } catch (e) {
+      console.error("Tags parse error", e);
+      return [];
+    }
+  }, [safeProduct?.tags]);
+
   const { map_status, commission_type } = settings();
 
   // Update state when props change - improved synchronization
   useEffect(() => {
-    if (product?.active_variants && product.active_variants.length > 0) {
-      const initialVariants = product.active_variants
-        .map((v) =>
-          v.active_variant_items.length > 0 ? v.active_variant_items[0] : {}
-        )
-        .filter((v) => Object.keys(v).length > 0);
+    const nextVariants = safeVariants;
+    const initialVariants = getInitialVariantItems(nextVariants);
 
-      setVarients(product.active_variants);
-      setFirstVarients(initialVariants);
-
-      // Also set initial prices when variants are available
-      if (initialVariants.length > 0) {
-        const prices = initialVariants.map((v) =>
-          v.price ? parseInt(v.price) : 0
-        );
-        if (prices.length > 0) {
-          const sumPrice =
-            prices.reduce((prev, curr) => prev + curr, 0) +
-            parseInt(product.price || 0);
-          setPrice(sumPrice);
-          if (product.offer_price) {
-            const sumOfferPrice =
-              prices.reduce((prev, curr) => prev + curr, 0) +
-              parseInt(product.offer_price);
-            setOffer(sumOfferPrice);
-          }
-        }
-      }
-    } else {
-      setVarients([]);
-      setFirstVarients([]);
-
-      // Set base product prices when no variants
-      setPrice(product?.price);
-      setOffer(product?.offer_price);
-    }
-  }, [product]);
+    setVarients(nextVariants);
+    setSelectedVariantItems(initialVariants);
+    setSrc(safeProduct?.thumb_image || "");
+    setQuantity(1);
+  }, [safeProduct?.id, safeProduct?.thumb_image, safeVariants]);
 
   useEffect(() => {
-    setProductsImg(images && images.length > 0 ? images : []);
-  }, [images]);
+    setProductsImg(safeImages);
+  }, [safeImages]);
+
+  useEffect(() => {
+    const pricing = calculateVariantPricing(safeProduct, selectedVariantItems);
+    setPrice(pricing.price);
+    setOffer(pricing.offerPrice);
+  }, [safeProduct, selectedVariantItems]);
 
   // Memoized Values
   const isFlashSaleProduct = useMemo(() => {
-    if (!websiteSetup) return false;
+    if (!websiteSetup?.payload?.flashSaleProducts || !safeProduct?.id) {
+      return false;
+    }
+
     const flashSaleProducts = websiteSetup.payload.flashSaleProducts;
     return flashSaleProducts.find(
-      (item) => parseInt(item.product_id) === product.id
+      (item) => parseInt(item.product_id, 10) === parseInt(safeProduct.id, 10)
     );
-  }, [websiteSetup, product.id]);
+  }, [websiteSetup, safeProduct?.id]);
 
   // Event Handlers
   const changeImgHandler = useCallback((current) => {
@@ -263,7 +291,7 @@ export default function ProductView({
 
   const selectVarient = useCallback(
     (value) => {
-      if (!value || !varients || !getFirstVarients) {
+      if (!value || !varients?.length) {
         return;
       }
 
@@ -271,54 +299,45 @@ export default function ProductView({
         changeImgHandler(value.image);
       }
 
-      if (varients?.length && getFirstVarients?.length) {
-        const replacePrice = getFirstVarients.map((v) => {
+      setSelectedVariantItems((previousItems) => {
+        const baselineItems = previousItems.length
+          ? previousItems
+          : getInitialVariantItems(varients);
+
+        return baselineItems.map((item) => {
           if (
-            parseInt(v.product_variant_id) ===
-            parseInt(value.product_variant_id)
+            parseInt(item?.product_variant_id, 10) ===
+            parseInt(value?.product_variant_id, 10)
           ) {
             return value;
           }
-          return v;
+          return item;
         });
-
-        setFirstVarients(replacePrice);
-
-        // Update prices when variant changes
-        if (replacePrice.length > 0) {
-          const prices = replacePrice.map((v) =>
-            v.price ? parseInt(v.price) : 0
-          );
-          if (prices.length > 0) {
-            const sumPrice =
-              prices.reduce((prev, curr) => prev + curr, 0) +
-              parseInt(product.price || 0);
-            setPrice(sumPrice);
-            if (product.offer_price) {
-              const sumOfferPrice =
-                prices.reduce((prev, curr) => prev + curr, 0) +
-                parseInt(product.offer_price);
-              setOffer(sumOfferPrice);
-            }
-          }
-        }
-      }
+      });
     },
-    [varients, getFirstVarients, changeImgHandler, product]
+    [varients, changeImgHandler]
   );
 
   const addToCard = useCallback(
     (id, event) => {
-      const vendor_id = product?.vendor_id;
+      if (!safeProduct?.id) {
+        toast.error("Product is not available.");
+        return;
+      }
+
+      const vendor_id = safeProduct?.vendor_id;
       const parentVarients =
-        getFirstVarients?.length > 0
-          ? getFirstVarients.map((v) => ({
-              ...v,
-              product_variant_name: varients.find(
+        selectedVariantItems?.length > 0
+          ? selectedVariantItems.map((v) => {
+              const variantObj = varients.find(
                 (item) => Number(item.id) === Number(v.product_variant_id)
-              ).name,
-            }))
-          : null;
+              );
+              return {
+                ...v,
+                product_variant_name: variantObj ? variantObj.name : "Variant",
+              };
+            })
+          : [];
 
       const productShort = {
         product_id: id,
@@ -326,11 +345,11 @@ export default function ProductView({
         product: {
           id: id,
           vendor_id: vendor_id,
-          name: product?.name,
-          price: product?.price,
-          offer_price: product?.offer_price,
-          thumb_image: product?.thumb_image,
-          slug: product?.slug,
+          name: safeProduct?.name,
+          price: safeProduct?.price,
+          offer_price: safeProduct?.offer_price,
+          thumb_image: safeProduct?.thumb_image,
+          slug: safeProduct?.slug,
         },
         variants: parentVarients?.length
           ? parentVarients.map((item) => ({
@@ -387,8 +406,8 @@ export default function ProductView({
     },
     [
       cart,
-      product,
-      getFirstVarients,
+      safeProduct,
+      selectedVariantItems,
       varients,
       quantity,
       map_status,
@@ -422,14 +441,14 @@ export default function ProductView({
           };
 
           triggerFlyingCart(
-            product.thumb_image?.replace(appConfig.BASE_URL, ""),
+            safeProduct?.thumb_image?.replace(appConfig.BASE_URL, ""),
             startPosition,
             endPosition
           );
         }
       }, 100);
     },
-    [triggerFlyingCart, product.thumb_image]
+    [triggerFlyingCart, safeProduct?.thumb_image]
   );
 
   const popupMessageHandler = useCallback(() => {
@@ -440,102 +459,49 @@ export default function ProductView({
     }
   }, [messageHandler, seller, loginPopupBoard]);
 
-  // Effects
   useEffect(() => {
-    setSrc(product.thumb_image);
-  }, [product]);
-
-  useEffect(() => {
-    if (varients && getFirstVarients && getFirstVarients.length > 0) {
-      const prices =
-        getFirstVarients?.map((v) => (v.price ? v.price : 0)) || [];
-
-      // Ensure prices array has values before using reduce
-      if (prices.length > 0) {
-        const sumPrice = parseInt(
-          prices.reduce((prev, curr) => parseInt(prev) + parseInt(curr), 0) +
-            parseInt(product.price)
-        );
-        setPrice(sumPrice);
-        if (product.offer_price) {
-          const sumOfferPrice = parseInt(
-            prices.reduce((prev, curr) => parseInt(prev) + parseInt(curr), 0) +
-              parseInt(product.offer_price)
+    if (websiteSetup && safeProduct?.price) {
+      if (isFlashSaleProduct) {
+        const offerFlashSale = websiteSetup.payload?.flashSale;
+        const offer = parseAmount(offerFlashSale?.offer || 0);
+        const basePrice = parseAmount(safeProduct?.price || 0);
+        if (basePrice > 0) {
+          const effectivePrice = safeProduct?.offer_price
+            ? parseAmount(safeProduct.offer_price)
+            : basePrice;
+          const discountPrice = (offer / 100) * effectivePrice;
+          const mainPrice = effectivePrice - discountPrice;
+          setPricePercent(
+            Math.trunc(((mainPrice - basePrice) / basePrice) * 100)
           );
-          setOffer(sumOfferPrice);
-        } else {
-          setOffer(null);
         }
       } else {
-        // No variant prices, use base product prices
-        setPrice(product?.price);
-        setOffer(product?.offer_price);
-      }
-    }
-  }, [getFirstVarients, varients, product]);
-
-  useEffect(() => {
-    if (varients && varients.length > 0) {
-      const prices = varients.map((v) =>
-        v.active_variant_items.length > 0 && v.active_variant_items[0].price
-          ? parseInt(v.active_variant_items[0].price)
-          : 0
-      );
-
-      // Ensure prices array has values and add initial value to reduce
-      if (prices.length > 0) {
-        if (product.offer_price) {
-          const sumCalc = prices.reduce(
-            (prev, curr) => parseInt(prev) + parseInt(curr),
-            0
+        const basePrice = parseAmount(safeProduct?.price || 0);
+        if (basePrice > 0 && safeProduct?.offer_price) {
+          setPricePercent(
+            Math.trunc(
+              ((parseAmount(safeProduct.offer_price) - basePrice) / basePrice) *
+                100
+            )
           );
-          const sumPrice = parseInt(sumCalc) + parseInt(product.price);
-          const sumOfferPrice =
-            parseInt(sumCalc) + parseInt(product.offer_price);
-          setPrice(sumPrice);
-          setOffer(sumOfferPrice);
         } else {
-          const sumCalc = prices.reduce(
-            (prev, curr) => parseInt(prev) + parseInt(curr),
-            0
-          );
-          const sumPrice = parseInt(sumCalc) + parseInt(product.price);
-          setPrice(sumPrice);
-          setOffer(null);
+          setPricePercent("");
         }
-      } else {
-        // No variant prices, use base product prices
-        setPrice(product?.price);
-        setOffer(product?.offer_price);
       }
     } else {
-      setPrice(product?.price);
-      setOffer(product?.offer_price);
+      setPricePercent("");
     }
-  }, [product, varients]);
+  }, [websiteSetup, isFlashSaleProduct, safeProduct]);
 
-  useEffect(() => {
-    if (websiteSetup) {
-      if (isFlashSaleProduct) {
-        const offerFlashSale = websiteSetup.payload.flashSale;
-        const offer = parseInt(offerFlashSale.offer);
-        const price = product.offer_price
-          ? parseInt(product.offer_price)
-          : parseInt(product.price);
-        const discountPrice = (offer / 100) * price;
-        const mainPrice = price - discountPrice;
-        setPricePercent(
-          Math.trunc(((mainPrice - product.price) / product.price) * 100)
-        );
-      } else {
-        setPricePercent(
-          Math.trunc(
-            ((product.offer_price - product.price) / product.price) * 100
-          )
-        );
-      }
-    }
-  }, [websiteSetup, isFlashSaleProduct, product]);
+  if (!safeProduct?.id) {
+    return (
+      <div className={`product-view w-full ${className || ""}`}>
+        <div className="w-full rounded border border-qgray-border p-8 text-center text-qgray">
+          Product details are not available.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -550,11 +516,11 @@ export default function ProductView({
             <Image
               fill
               style={{ objectFit: "scale-down" }}
-              src={`${appConfig.BASE_URL + src}`}
-              alt=""
+              src={src ? `${appConfig.BASE_URL + src}` : PRODUCT_IMAGE_FALLBACK}
+              alt={product?.name || "Product image"}
               className="object-contain transform scale-110"
             />
-            {product.offer_price && (
+            {safeProduct?.offer_price && (
               <div className="w-[80px] h-[80px] rounded-full bg-qyellow text-qblack flex justify-center items-center text-xl font-medium absolute left-[30px] top-[30px]">
                 <span className="text-tblack">{pricePercent}%</span>
               </div>
@@ -562,10 +528,10 @@ export default function ProductView({
           </div>
           <div className="flex gap-2 flex-wrap">
             <ProductImage
-              src={product.thumb_image}
+              src={safeProduct?.thumb_image}
               alt=""
-              className={src !== product.thumb_image ? "opacity-50" : ""}
-              onClick={() => changeImgHandler(product.thumb_image)}
+              className={src !== safeProduct?.thumb_image ? "opacity-50" : ""}
+              onClick={() => changeImgHandler(safeProduct?.thumb_image || "")}
             />
             {productsImg &&
               productsImg.length > 0 &&
@@ -586,31 +552,31 @@ export default function ProductView({
       <div className="flex-1">
         <div className="product-details w-full mt-10 lg:mt-0">
           {/* Brand */}
-          {product.brand && (
+          {safeProduct?.brand && (
             <span
               data-aos="fade-up"
               className="text-qgray text-xs font-normal uppercase tracking-wider mb-2 inline-block"
             >
-              {product.brand.name}
+              {safeProduct?.brand?.name}
             </span>
           )}
 
           {/* Product Name */}
-          <p
+          <h1
             data-aos="fade-up"
             className="text-xl font-medium text-qblack mb-4 notranslate"
           >
-            {product.name}
-          </p>
+            {safeProduct?.name}
+          </h1>
 
           {/* Rating */}
           <div
             data-aos="fade-up"
             className="flex space-x-[10px] items-center mb-6"
           >
-            <StarRating rating={product.averageRating} />
+            <StarRating rating={safeProduct?.averageRating} />
             <span className="text-[13px] font-normal text-qblack">
-              {parseInt(product.averageRating)} {ServeLangItem()?.Reviews}
+              {parseInt(safeProduct?.averageRating || 0, 10)} {ServeLangItem()?.Reviews}
             </span>
           </div>
 
@@ -619,9 +585,9 @@ export default function ProductView({
             data-aos="fade-up"
             className="flex space-x-2 items-baseline mb-7"
           >
-            <span
-              suppressHydrationWarning
-              className={`main-price font-600 ${
+              <span
+                suppressHydrationWarning
+                className={`main-price font-600 ${
                 offerPrice
                   ? "line-through text-qgray text-[15px]"
                   : "text-qred text-[24px]"
@@ -631,7 +597,7 @@ export default function ProductView({
                 <CurrencyConvert price={price} />
               ) : (
                 <CheckProductIsExistsInFlashSale
-                  id={product.id}
+                  id={safeProduct.id}
                   price={price}
                 />
               )}
@@ -642,7 +608,7 @@ export default function ProductView({
                 className="offer-price text-qred font-600 text-[24px] ml-2"
               >
                 <CheckProductIsExistsInFlashSale
-                  id={product.id}
+                  id={safeProduct.id}
                   price={offerPrice}
                 />
               </span>
@@ -656,7 +622,7 @@ export default function ProductView({
                 more ? "" : "line-clamp-2"
               }`}
             >
-              {product.short_description}
+              {safeProduct?.short_description || ""}
             </div>
             <button
               onClick={() => setMore(!more)}
@@ -673,8 +639,8 @@ export default function ProductView({
               {ServeLangItem()?.Availability} :
             </span>
             <span className="text-base font-bold text-qyellow">
-              {product.qty !== "0"
-                ? `${product.qty} Products Available`
+              {safeProduct?.qty !== "0"
+                ? `${safeProduct.qty} Products Available`
                 : `Products not Available`}
             </span>
           </div>
@@ -700,7 +666,7 @@ export default function ProductView({
                 <button
                   disabled={addToWishlistLoading}
                   type="button"
-                  onClick={() => addToWishlist(product.id)}
+                  onClick={() => addToWishlist(safeProduct.id)}
                 >
                   <span className="w-10 h-10 flex justify-center items-center">
                     <ThinLove className="fill-current" />
@@ -721,7 +687,7 @@ export default function ProductView({
             {/* Add to Cart Button */}
             <div className="flex-1 h-full">
               <button
-                onClick={(e) => addToCard(product.id, e)}
+                onClick={(e) => addToCard(safeProduct.id, e)}
                 type="button"
                 className="black-btn text-sm font-semibold w-full h-full"
               >
@@ -735,7 +701,7 @@ export default function ProductView({
         <div data-aos="fade-up" className="mb-[20px]">
           <p className="text-[13px] text-qgray leading-7">
             <span className="text-qblack">Category :</span>{" "}
-            {product.category.name}
+            {safeProduct?.category?.name || ""}
           </p>
           {tags && (
             <p className="text-[13px] text-qgray leading-7">
@@ -748,7 +714,7 @@ export default function ProductView({
             <span className="text-qblack uppercase">
               {ServeLangItem()?.SKU}:
             </span>{" "}
-            {product.sku}
+            {safeProduct?.sku || ""}
           </p>
         </div>
 
@@ -777,7 +743,7 @@ export default function ProductView({
           <span className="text-qblack text-[13px] mr-[17px] inline-block">
             {ServeLangItem()?.Share_This}
           </span>
-          <SocialShareButtons product={product} />
+          <SocialShareButtons product={safeProduct} />
         </div>
 
         {/* Chat with Seller */}

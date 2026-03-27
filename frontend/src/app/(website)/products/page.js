@@ -1,51 +1,93 @@
 import products from "@/api/products";
 import AllProductPage from "@/components/AllProductPage";
 import { cache } from "react";
+import JsonLd, { generateItemListSchema, generateBreadcrumbSchema } from "@/components/Helpers/JsonLd";
 
 export const dynamic = 'force-dynamic'; // Static export için gerekli
 
-export const getProductsData = cache(async (searchType) => {
-  return await products(searchType.type, searchType.slug);
+const resolveProductsQuery = (searchParamsObj = {}) => {
+  const query = {};
+
+  [
+    "category",
+    "sub_category",
+    "child_category",
+    "highlight",
+    "brand",
+    "search",
+    "brands",
+    "categories",
+    "variantItems",
+    "min_price",
+    "max_price",
+    "shorting_id",
+  ].forEach((key) => {
+    if (searchParamsObj?.[key] !== undefined) {
+      query[key] = searchParamsObj[key];
+    }
+  });
+
+  return query;
+};
+
+const resolvePrimarySearchType = (query = {}) => {
+  const orderedKeys = [
+    "category",
+    "sub_category",
+    "child_category",
+    "highlight",
+    "brand",
+    "search",
+  ];
+
+  const activeKey = orderedKeys.find((key) => query?.[key]);
+  return {
+    type: activeKey || "allProducts",
+    slug: activeKey ? query[activeKey] : "",
+  };
+};
+
+export const getProductsData = cache(async (query) => {
+  return await products(query);
 });
 
 // generate seo metadata
 export async function generateMetadata({ searchParams }) {
-  const searchParamsObj = await new Promise((resolve) => {
-    resolve(searchParams);
-  });
-  const searchType = {
-    type: searchParamsObj.type,
-    slug: searchParamsObj.slug,
-  };
-  const data = await getProductsData(searchType);
+  const searchParamsObj = await searchParams;
+  const query = resolveProductsQuery(searchParamsObj);
+  const data = await getProductsData(query);
   const { seoSetting } = data;
   return {
-    title: seoSetting?.seo_title,
+    title: seoSetting?.seo_title || "Ürünler",
     description: seoSetting?.seo_description,
+    alternates: {
+      canonical: "/products",
+    },
   };
 }
 
 // main page
 export default async function Products({ searchParams }) {
-  const searchParamsObj = await new Promise((resolve) => {
-    resolve(searchParams);
-  });
+  const searchParamsObj = await searchParams;
+  const query = resolveProductsQuery(searchParamsObj);
+  const searchType = resolvePrimarySearchType(query);
+  const data = await getProductsData(query);
+  
+  const itemListSchema = generateItemListSchema(data?.products?.data || []);
+  const breadcrumbItems = [
+    { name: "Anasayfa", item: "/" },
+    { name: "Ürünler", item: "/products" }
+  ];
+  if (searchType.slug && searchType.type !== 'allProducts') {
+    breadcrumbItems.push({ name: searchType.slug });
+  }
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 
-  // Find first key-value pair where value exists, or default to ["allProducts", ""]
-  // This handles cases like ?category=shoes or ?brand=nike
-  const params = Object.entries(searchParamsObj).find(
-    ([key, value]) => value
-  ) || ["allProducts", ""];
-
-  // Create searchType object with type (e.g. "category") and slug (e.g. "shoes")
-  // Used to determine what products to fetch from API
-  const searchType = {
-    type: params[0],
-    slug: params[1],
-  };
-
-  //   call api to get products data
-  const data = await getProductsData(searchType);
-
-  return <AllProductPage response={data} />;
+  return (
+    <>
+      <JsonLd data={itemListSchema} />
+      <JsonLd data={breadcrumbSchema} />
+      <AllProductPage response={data} />
+    </>
+  );
 }

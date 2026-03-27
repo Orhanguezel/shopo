@@ -5,8 +5,12 @@ export const dynamic = 'force-dynamic'; // Static export için gerekli
 // generate seo metadata
 export async function generateMetadata() {
   return {
-    title: "Checkout",
-    description: "Checkout",
+    title: "Sipariş Tamamla | Seyfibaba",
+    description: "Siparişinizi güvenle tamamlayın. Adres ve ödeme bilgilerinizi girin.",
+    alternates: {
+      canonical: "/checkout",
+    },
+    robots: { index: false, follow: true },
   };
 }
 

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -91,7 +92,17 @@ function AllProductPageContent({ response, sellerInfo }) {
 
       // Preserve original page parameters (category, brand, type, slug, seller, etc.)
       // These are used by the page component to determine what products to load
-      const originalParams = ["category", "brand", "type", "slug", "seller"];
+      const originalParams = [
+        "category",
+        "sub_category",
+        "child_category",
+        "brand",
+        "highlight",
+        "search",
+        "type",
+        "slug",
+        "seller",
+      ];
       originalParams.forEach((param) => {
         try {
           const value = searchParams.get(param);
@@ -551,7 +562,7 @@ function AllProductPageContent({ response, sellerInfo }) {
       count += selectedBrandsFilterItem.length;
 
     // Check if price range is different from original
-    if (response) {
+    if (response?.products?.data?.length > 0) {
       const min = Math.min(
         ...response.products.data.map((item) => parseInt(item.price))
       );
@@ -613,7 +624,7 @@ function AllProductPageContent({ response, sellerInfo }) {
     }
 
     // Reset price range to original values
-    if (response) {
+    if (response?.products?.data?.length > 0) {
       const min = Math.min(
         ...response.products.data.map((item) => parseInt(item.price))
       );
@@ -627,7 +638,17 @@ function AllProductPageContent({ response, sellerInfo }) {
     const params = new URLSearchParams();
 
     // Preserve original page parameters
-    const originalParams = ["category", "brand", "type", "slug", "seller"];
+    const originalParams = [
+      "category",
+      "sub_category",
+      "child_category",
+      "brand",
+      "highlight",
+      "search",
+      "type",
+      "slug",
+      "seller",
+    ];
     originalParams.forEach((param) => {
       const value = searchParams.get(param);
       if (value) {
@@ -650,52 +671,56 @@ function AllProductPageContent({ response, sellerInfo }) {
     if (!response) return;
 
     // Set products and pagination data
-    setProducts(response.products.data);
-    setNxtPage(response.products.next_page_url);
+    setProducts(response.products?.data || []);
+    setNxtPage(response.products?.next_page_url);
 
     // Parse URL parameters for initial filter states
     const urlParams = parseURLParams();
 
     // Initialize categories filter with selection state from URL
     setCategoriesFilter(
-      response.categories.length > 0 &&
-        response.categories.map((item) => ({
+      response.categories?.length > 0
+        ? response.categories.map((item) => ({
           ...item,
           selected: urlParams.categories.includes(item.id.toString()),
         }))
+        : []
     );
 
     // Initialize variants filter with selection state from URL
     setVariantsFilter(
-      response.activeVariants.length > 0 &&
-        response.activeVariants.map((varient) => ({
+      response.activeVariants?.length > 0
+        ? response.activeVariants.map((varient) => ({
           ...varient,
           active_variant_items:
-            varient.active_variant_items &&
-            varient.active_variant_items.length > 0 &&
-            varient.active_variant_items.map((variant_item) => ({
-              ...variant_item,
-              selected: urlParams.variantItems.includes(variant_item.name),
-            })),
+            varient.active_variant_items?.length > 0
+              ? varient.active_variant_items.map((variant_item) => ({
+                ...variant_item,
+                selected: urlParams.variantItems.includes(variant_item.name),
+              }))
+              : [],
         }))
+        : []
     );
 
     // Initialize brands filter with selection state from URL
     setBrands(
-      response.brands.length > 0 &&
-        response.brands.map((item) => ({
+      response.brands?.length > 0
+        ? response.brands.map((item) => ({
           ...item,
           selected: urlParams.brands.includes(item.id.toString()),
         }))
+        : []
     );
 
     // Calculate and set price range
-    const min = Math.min(
-      ...response.products.data.map((item) => parseInt(item.price))
-    );
-    const max = Math.max(
-      ...response.products.data.map((item) => parseInt(item.price))
-    );
+    const productData = response.products?.data || [];
+    const min = productData.length > 0
+      ? Math.min(...productData.map((item) => parseInt(item.price)))
+      : 0;
+    const max = productData.length > 0
+      ? Math.max(...productData.map((item) => parseInt(item.price)))
+      : 0;
 
     // Use URL price range if available, otherwise use calculated range
     const initialVolume = [
@@ -725,14 +750,15 @@ function AllProductPageContent({ response, sellerInfo }) {
    * Handle filter changes and trigger API calls
    */
   useEffect(() => {
-    if (!response) return;
+    if (!response?.products?.data) return;
 
-    const min = Math.min(
-      ...response.products.data.map((item) => parseInt(item.price))
-    );
-    const max = Math.max(
-      ...response.products.data.map((item) => parseInt(item.price))
-    );
+    const pData = response.products.data;
+    const min = pData.length > 0
+      ? Math.min(...pData.map((item) => parseInt(item.price)))
+      : 0;
+    const max = pData.length > 0
+      ? Math.max(...pData.map((item) => parseInt(item.price)))
+      : 0;
 
     // Check if any filters are applied
     const hasActiveFilters =
@@ -783,12 +809,12 @@ function AllProductPageContent({ response, sellerInfo }) {
         const productsData = products?.products?.data;
         productsData && productsData?.length > 0
           ? setProducts(productsData)
-          : setProducts(response.products.data);
+          : setProducts(response?.products?.data || []);
       };
       fetchProducts(query);
     } else {
       // Reset to original products if no filters
-      setProducts(response.products.data);
+      setProducts(response?.products?.data || []);
     }
   }, [
     selectedVarientFilterItem,
@@ -912,10 +938,12 @@ function AllProductPageContent({ response, sellerInfo }) {
         <div className="saller-logo mt-5 sm:mt-5">
           <div className="flex sm:justify-center justify-start">
             <div className="w-[170px] h-[170px] p-[30px] flex justify-center items-center rounded-full bg-white relative mb-1 overflow-hidden">
-              <img
+              <Image
+                width={170}
+                height={170}
                 className="w-full h-full object-contain"
                 src={`${appConfig.BASE_URL + sellerInfo.seller.logo}`}
-                alt="logo"
+                alt={sellerInfo.seller.shop_name || "Seller Logo"}
               />
             </div>
           </div>
@@ -1003,8 +1031,8 @@ function AllProductPageContent({ response, sellerInfo }) {
         <div>
           <p className="font-400 text-[13px]">
             <span className="text-qgray">{ServeLangItem()?.Showing}</span> 1–
-            {response.products.data.length} {ServeLangItem()?.of}{" "}
-            {response.products.total} {ServeLangItem()?.results}
+            {response?.products?.data?.length || 0} {ServeLangItem()?.of}{" "}
+            {response?.products?.total || 0} {ServeLangItem()?.results}
           </p>
         </div>
 
@@ -1136,16 +1164,14 @@ function AllProductPageContent({ response, sellerInfo }) {
               brandsHandler={brandsHandler}
               volume={volume}
               priceMax={
-                response &&
-                Math.max(
-                  ...response.products.data.map((item) => parseInt(item.price))
-                )
+                response?.products?.data?.length > 0
+                  ? Math.max(...response.products.data.map((item) => parseInt(item.price)))
+                  : 0
               }
               priceMin={
-                response &&
-                Math.min(
-                  ...response.products.data.map((item) => parseInt(item.price))
-                )
+                response?.products?.data?.length > 0
+                  ? Math.min(...response.products.data.map((item) => parseInt(item.price)))
+                  : 0
               }
               volumeHandler={volumeHandler}
               className="mb-[30px]"
@@ -1159,7 +1185,7 @@ function AllProductPageContent({ response, sellerInfo }) {
 
           {/* Main Content Area */}
           <div className="flex-1">
-            {response && response.products.data.length > 0 ? (
+            {response?.products?.data?.length > 0 ? (
               <div className="w-full">
                 {/* Product Controls */}
                 {renderProductControls()}

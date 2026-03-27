@@ -95,6 +95,51 @@ export const authApis = apiSlice.injectEndpoints({
         }
       },
     }),
+    sendOtpApi: builder.mutation({
+      query: (data) => ({
+        url: apiRoutes.sendOtp,
+        method: "POST",
+        body: data,
+      }),
+      async onQueryStarted(info, { queryFulfilled }) {
+        try {
+          const { data, meta } = await queryFulfilled;
+          info.success(data, meta.response.status);
+        } catch (error) {
+          info.error(error?.error);
+        }
+      },
+    }),
+    verifyOtpApi: builder.mutation({
+      query: (data) => ({
+        url: apiRoutes.verifyOtp,
+        method: "POST",
+        body: data,
+      }),
+      async onQueryStarted(info, { queryFulfilled }) {
+        try {
+          const { data, meta } = await queryFulfilled;
+          info.success(data, meta.response.status);
+        } catch (error) {
+          info.error(error?.error);
+        }
+      },
+    }),
+    resendOtpApi: builder.mutation({
+      query: (data) => ({
+        url: apiRoutes.resendOtp,
+        method: "POST",
+        body: data,
+      }),
+      async onQueryStarted(info, { queryFulfilled }) {
+        try {
+          const { data, meta } = await queryFulfilled;
+          info.success(data, meta.response.status);
+        } catch (error) {
+          info.error(error?.error);
+        }
+      },
+    }),
     userForgotApi: builder.mutation({
       query: (data) => {
         return {
@@ -167,6 +212,20 @@ export const authApis = apiSlice.injectEndpoints({
       query: (data) => {
         return {
           url: `${apiRoutes.orders}?token=${data.token}`,
+          method: "GET",
+        };
+      },
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
+    }),
+    returnRequestsApi: builder.query({
+      query: (data) => {
+        return {
+          url: `${apiRoutes.returnRequests}?token=${data.token}`,
           method: "GET",
         };
       },
@@ -312,4 +371,8 @@ export const {
   useUpdateProfileApiMutation,
   useUpdatePasswordApiMutation,
   useSellerRequestApiMutation,
+  useSendOtpApiMutation,
+  useVerifyOtpApiMutation,
+  useResendOtpApiMutation,
+  useReturnRequestsApiQuery,
 } = authApis;

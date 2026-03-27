@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 class XSSProtection
 {
+    private const ALLOWED_TAGS = '<p><br><strong><b><em><i><u><ul><ol><li><a><span><h1><h2><h3><h4><h5><h6><blockquote><code><pre>';
+
     /**
      * Handle an incoming request.
      *
@@ -18,8 +20,20 @@ class XSSProtection
     {
         $input = array_filter($request->all());
 
-        array_walk_recursive($input, function(&$input) {
-            $input = strip_tags(str_replace(array("&lt;", "&gt;"), '', $input), '<span><p><a><b><i><u><strong><br><hr><table><tr><th><td><ul><ol><li><h1><h2><h3><h4><h5><h6><del><ins><sup><sub><pre><address><img><figure><embed><iframe><video><style>');
+        array_walk_recursive($input, function (&$value) {
+            if (! is_string($value)) {
+                return;
+            }
+
+            $sanitized = str_replace(['&lt;', '&gt;'], '', $value);
+            $sanitized = strip_tags($sanitized, self::ALLOWED_TAGS);
+            $sanitized = preg_replace('/<\s*script[^>]*>.*?<\s*\/\s*script\s*>/is', '', $sanitized);
+            $sanitized = preg_replace('/\s+on\w+\s*=\s*(["\']).*?\1/iu', '', $sanitized);
+            $sanitized = preg_replace('/\s+on\w+\s*=\s*[^\s>]+/iu', '', $sanitized);
+            $sanitized = preg_replace('/\s+style\s*=\s*(["\']).*?\1/iu', '', $sanitized);
+            $sanitized = preg_replace('/(href|src)\s*=\s*(["\'])\s*(javascript:|data:).*?\2/iu', '$1=$2#$2', $sanitized);
+
+            $value = $sanitized;
         });
 
         $request->merge($input);

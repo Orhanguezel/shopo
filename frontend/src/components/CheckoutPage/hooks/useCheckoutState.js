@@ -39,16 +39,6 @@ export const useCheckoutState = () => {
   // Payment method state
   const [selectPayment, setPaymentMethod] = useState(null);
 
-  // Stripe payment state
-  const [stripeData, setStripeData] = useState({
-    cardNumber: "",
-    expireDate: null,
-    cvv: "",
-    cardHolderName: "",
-    error: null,
-    loading: false,
-  });
-
   // Coupon state
   const [couponData, setCouponData] = useState({
     inputCoupon: "",
@@ -62,24 +52,10 @@ export const useCheckoutState = () => {
 
   // Payment method status state - consolidated all payment statuses
   const [paymentStatuses, setPaymentStatuses] = useState({
-    sslcommerz: null,
-    paypalPaymentInfo: null,
-    mollie: null,
-    paystackAndMollie: null,
-    instamojo: null,
-    myfatoorah: null,
-    flutterwavePaymentInfo: null,
-    razorpayPaymentInfo: null,
-    stripePaymentInfo: null,
-    bkash: null,
     cash_on_delivery_status: null,
     bankPaymentInfo: null,
+    iyzico: null, // Placeholder for Iyzico
   });
-
-  // Helper functions to update stripe data
-  const updateStripeData = (field, value) => {
-    setStripeData((prev) => ({ ...prev, [field]: value }));
-  };
 
   // Helper functions to update coupon data
   const updateCouponData = (field, value) => {
@@ -158,11 +134,6 @@ export const useCheckoutState = () => {
     selectPayment,
     setPaymentMethod,
 
-    // Stripe state
-    stripeData,
-    setStripeData,
-    updateStripeData,
-
     // Coupon state
     couponData,
     setCouponData,
@@ -180,3 +151,4 @@ export const useCheckoutState = () => {
     updatePaymentStatuses,
   };
 };
+

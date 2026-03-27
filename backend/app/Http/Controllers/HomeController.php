@@ -252,7 +252,7 @@ class HomeController extends Controller
 
         // VarsayÄ±lan dili Ã¶nce gelecek ÅŸekilde sÄ±rala
         $language_list = Language::where('status', 1)
-            ->orderByRaw("CASE WHEN is_default = 'yes' THEN 0 ELSE 1 END")
+            ->orderByDesc('is_default')
             ->orderBy('lang_name', 'asc')
             ->get();
         
@@ -770,7 +770,7 @@ class HomeController extends Controller
 
             $message = trans('user_validation.Order id is required');
 
-            return response()->json(['status'=> 0, 'message' => $message]);
+            return response()->json(['status'=> 0, 'message' => $message], 422);
 
         }
 
@@ -780,13 +780,13 @@ class HomeController extends Controller
 
 
 
-            return response()->json(['order'=> $order]);
+            return response()->json(['order'=> $order], 200);
 
         }else{
 
             $message = trans('user_validation.Order not found');
 
-            return response()->json(['status'=> 0, 'message' => $message]);
+            return response()->json(['status'=> 0, 'message' => $message], 404);
 
         }
 
@@ -910,9 +910,10 @@ class HomeController extends Controller
 
             $category = Category::where('slug',$request->category)->first();
 
-            $products = $products->where('category_id', $category->id);
-
-            $searchCategoryArr[] = $category->id;
+            if($category){
+                $products = $products->where('category_id', $category->id);
+                $searchCategoryArr[] = $category->id;
+            }
 
         }
 
@@ -922,9 +923,10 @@ class HomeController extends Controller
 
             $sub_category = SubCategory::where('slug',$request->sub_category)->first();
 
-            $products = $products->where('sub_category_id', $sub_category->id);
-
-            $searchCategoryArr[] = $sub_category->category_id;
+            if($sub_category){
+                $products = $products->where('sub_category_id', $sub_category->id);
+                $searchCategoryArr[] = $sub_category->category_id;
+            }
 
         }
 
@@ -934,9 +936,10 @@ class HomeController extends Controller
 
             $child_category = ChildCategory::where('slug',$request->child_category)->first();
 
-            $products = $products->where('child_category_id', $child_category->id);
-
-            $searchCategoryArr[] = $child_category->category_id;
+            if($child_category){
+                $products = $products->where('child_category_id', $child_category->id);
+                $searchCategoryArr[] = $child_category->category_id;
+            }
 
         }
 
@@ -946,10 +949,50 @@ class HomeController extends Controller
 
             $brand = Brand::where('slug',$request->brand)->first();
 
-            $products = $products->where('brand_id', $brand->id);
+            if($brand){
+                $products = $products->where('brand_id', $brand->id);
+                $searchBrandArr[] = $brand->id;
+            }
 
-            $searchBrandArr[] = $brand->id;
+        }
 
+        if($request->variantItems){
+            $variantItems = is_array($request->variantItems) ? $request->variantItems : explode(',', $request->variantItems);
+            $variantItems = array_values(array_filter($variantItems));
+
+            if(!empty($variantItems)){
+                $products = $products->whereHas('variantItems', function($query) use ($variantItems){
+                    $query->whereIn('name', $variantItems);
+                });
+            }
+        }
+
+        if($request->brands){
+            $brandIds = is_array($request->brands) ? $request->brands : explode(',', $request->brands);
+            $brandIds = array_values(array_filter($brandIds));
+
+            if(!empty($brandIds)){
+                $products = $products->whereIn('brand_id', $brandIds);
+                $searchBrandArr = array_values(array_unique(array_merge($searchBrandArr, $brandIds)));
+            }
+        }
+
+        if($request->categories){
+            $categoryIds = is_array($request->categories) ? $request->categories : explode(',', $request->categories);
+            $categoryIds = array_values(array_filter($categoryIds));
+
+            if(!empty($categoryIds)){
+                $products = $products->whereIn('category_id', $categoryIds);
+                $searchCategoryArr = array_values(array_unique(array_merge($searchCategoryArr, $categoryIds)));
+            }
+        }
+
+        if($request->filled('min_price') && is_numeric($request->min_price)){
+            $products = $products->where('price', '>=', $request->min_price);
+        }
+
+        if($request->filled('max_price') && is_numeric($request->max_price)){
+            $products = $products->where('price', '<=', $request->max_price);
         }
 
 
@@ -1060,9 +1103,10 @@ class HomeController extends Controller
 
             $category = Category::where('slug',$request->category)->first();
 
-            $products = $products->where('category_id', $category->id);
-
-            $searchCategoryArr[] = $category->id;
+            if($category){
+                $products = $products->where('category_id', $category->id);
+                $searchCategoryArr[] = $category->id;
+            }
 
         }
 
@@ -1072,9 +1116,10 @@ class HomeController extends Controller
 
             $sub_category = SubCategory::where('slug',$request->sub_category)->first();
 
-            $products = $products->where('sub_category_id', $sub_category->id);
-
-            $searchCategoryArr[] = $sub_category->category_id;
+            if($sub_category){
+                $products = $products->where('sub_category_id', $sub_category->id);
+                $searchCategoryArr[] = $sub_category->category_id;
+            }
 
         }
 
@@ -1084,9 +1129,10 @@ class HomeController extends Controller
 
             $child_category = ChildCategory::where('slug',$request->child_category)->first();
 
-            $products = $products->where('child_category_id', $child_category->id);
-
-            $searchCategoryArr[] = $child_category->category_id;
+            if($child_category){
+                $products = $products->where('child_category_id', $child_category->id);
+                $searchCategoryArr[] = $child_category->category_id;
+            }
 
         }
 
@@ -1158,10 +1204,50 @@ class HomeController extends Controller
 
             $brand = Brand::where('slug',$request->brand)->first();
 
-            $products = $products->where('brand_id', $brand->id);
+            if($brand){
+                $products = $products->where('brand_id', $brand->id);
+                $searchBrandArr[] = $brand->id;
+            }
 
-            $searchBrandArr[] = $brand->id;
+        }
 
+        if($request->variantItems){
+            $variantItems = is_array($request->variantItems) ? $request->variantItems : explode(',', $request->variantItems);
+            $variantItems = array_values(array_filter($variantItems));
+
+            if(!empty($variantItems)){
+                $products = $products->whereHas('variantItems', function($query) use ($variantItems){
+                    $query->whereIn('name', $variantItems);
+                });
+            }
+        }
+
+        if($request->brands){
+            $brandIds = is_array($request->brands) ? $request->brands : explode(',', $request->brands);
+            $brandIds = array_values(array_filter($brandIds));
+
+            if(!empty($brandIds)){
+                $products = $products->whereIn('brand_id', $brandIds);
+                $searchBrandArr = array_values(array_unique(array_merge($searchBrandArr, $brandIds)));
+            }
+        }
+
+        if($request->categories){
+            $categoryIds = is_array($request->categories) ? $request->categories : explode(',', $request->categories);
+            $categoryIds = array_values(array_filter($categoryIds));
+
+            if(!empty($categoryIds)){
+                $products = $products->whereIn('category_id', $categoryIds);
+                $searchCategoryArr = array_values(array_unique(array_merge($searchCategoryArr, $categoryIds)));
+            }
+        }
+
+        if($request->filled('min_price') && is_numeric($request->min_price)){
+            $products = $products->where('price', '>=', $request->min_price);
+        }
+
+        if($request->filled('max_price') && is_numeric($request->max_price)){
+            $products = $products->where('price', '<=', $request->max_price);
         }
 
 
@@ -1336,6 +1422,14 @@ class HomeController extends Controller
             $products = $products->whereIn('category_id', $categorySortArr);
 
         }
+
+        if ($request->shop_name) {
+            $vendor = Vendor::where('slug', $request->shop_name)->first();
+            if ($vendor) {
+                $products = $products->where('vendor_id', $vendor->id);
+            }
+        }
+
 
 
 

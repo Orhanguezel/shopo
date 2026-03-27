@@ -42,7 +42,7 @@ class UserProfileController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api')->except('orderShow');
+        $this->middleware('auth:api');
     }
 
     public function remove_account(){
@@ -138,7 +138,14 @@ class UserProfileController extends Controller
 
     public function orderShow($orderId){
         $user = Auth::guard('api')->user();
-        $order = Order::with('orderProducts.orderProductVariants','orderAddress','deliveryman')->where('order_id',$orderId)->first();
+        $order = Order::with('orderProducts.orderProductVariants','orderAddress','deliveryman')
+            ->where('user_id', $user->id)
+            ->where('order_id', $orderId)
+            ->first();
+
+        if (! $order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
 
         return response()->json(['order' => $order]);
     }

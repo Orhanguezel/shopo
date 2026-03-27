@@ -12,8 +12,11 @@ export const getSellersData = cache(async () => {
 export async function generateMetadata() {
   const { seoSetting } = await getSellersData();
   return {
-    title: seoSetting?.seo_title,
+    title: seoSetting?.seo_title || "Satıcılar | Seyfibaba",
     description: seoSetting?.seo_description,
+    alternates: {
+      canonical: "/sellers",
+    },
   };
 }
 

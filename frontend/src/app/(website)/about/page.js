@@ -13,8 +13,11 @@ export async function generateMetadata() {
   const data = await getAboutData();
   const { seoSetting } = data;
   return {
-    title: seoSetting?.seo_title,
+    title: seoSetting?.seo_title || "Hakkımızda | Seyfibaba",
     description: seoSetting?.seo_description,
+    alternates: {
+      canonical: "/about",
+    },
   };
 }
 

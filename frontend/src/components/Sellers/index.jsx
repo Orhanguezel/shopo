@@ -141,10 +141,7 @@ function Sallers({ sellersData }) {
 
                         <div>
                           <Link
-                            href={{
-                              pathname: "/seller-products",
-                              query: { seller: seller.slug },
-                            }}
+                            href={`/seller/${seller.slug}`}
                           >
                             <div className="w-fit h-[40px] cursor-pointer">
                               <div className="yellow-btn flex justify-center px-7">
@@ -185,10 +182,12 @@ function Sallers({ sellersData }) {
                       <div>
                         <div className="flex sm:justify-center justify-start">
                           <div className="w-[170px] h-[170px] p-[30px] rounded-full bg-white mb-[20px] flex justify-center items-center relative overflow-hidden">
-                            <img
+                            <Image
+                              width={170}
+                              height={170}
                               className="w-full h-full object-contain"
                               src={`${appConfig.BASE_URL + seller.logo}`}
-                              alt={seller.slug}
+                              alt={seller.slug || "Seller Logo"}
                             />
                           </div>
                         </div>

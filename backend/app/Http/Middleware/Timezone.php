@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Schema;
+
 class Timezone
 {
     /**
@@ -16,9 +18,15 @@ class Timezone
      */
     public function handle(Request $request, Closure $next)
     {
+        if (!Schema::hasTable('settings')) {
+            return $next($request);
+        }
+
         $setting = Setting::first();
-        config(['app.timezone' => $setting->timezone]);
-        date_default_timezone_set($setting->timezone);
+        if ($setting && $setting->timezone) {
+            config(['app.timezone' => $setting->timezone]);
+            date_default_timezone_set($setting->timezone);
+        }
 
         return $next($request);
     }

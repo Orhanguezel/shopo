@@ -9,9 +9,10 @@ use App\Models\Setting;
 use App\Models\OrderProduct;
 use App\Models\OrderProductVariant;
 use App\Models\OrderAddress;
+use App\Services\CommissionService;
 class OrderController extends Controller
 {
-    public function __construct()
+    public function __construct(private CommissionService $commissionService)
     {
         $this->middleware('auth:admin-api');
     }
@@ -97,6 +98,7 @@ class OrderController extends Controller
             $order->order_status = 3;
             $order->order_completed_date = date('Y-m-d');
             $order->save();
+            $this->commissionService->settleCommissions($order);
         }else if($request->order_status == 4){
             $order->order_status = 4;
             $order->order_declined_date = date('Y-m-d');

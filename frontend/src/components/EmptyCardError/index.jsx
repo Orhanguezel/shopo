@@ -4,6 +4,9 @@ import Image from "next/image";
 import ServeLangItem from "../Helpers/ServeLangItem";
 import appConfig from "@/appConfig";
 import { useRouter } from "next/navigation";
+
+const IMAGE_FALLBACK = "/assets/images/server-error.png";
+
 export default function EmptyCardError() {
   const { websiteSetup } = useSelector((state) => state.websiteSetup);
   const [emptyCart, setEmptyWis] = useState(null);
@@ -11,7 +14,9 @@ export default function EmptyCardError() {
   useEffect(() => {
     if (!emptyCart) {
       if (websiteSetup) {
-        setEmptyWis(websiteSetup.payload?.image_content.empty_cart);
+        setEmptyWis(
+          websiteSetup.payload?.image_content?.empty_cart || IMAGE_FALLBACK
+        );
       }
     }
   }, [emptyCart, websiteSetup]);
@@ -20,16 +25,18 @@ export default function EmptyCardError() {
       <div className="flex justify-center items-center w-full">
         <div>
           <div className="sm:mb-10 mb-5 transform scale-50 sm:scale-100">
-            {emptyCart && (
-              <div className="w-[527px] h-[419px] relative">
-                <Image
-                  fill
-                  style={{ objectFit: "scale-down" }}
-                  src={`${appConfig.BASE_URL}/${emptyCart}`}
-                  alt="404"
-                />
-              </div>
-            )}
+            <div className="w-[527px] h-[419px] relative">
+              <Image
+                fill
+                style={{ objectFit: "scale-down" }}
+                src={
+                  emptyCart === IMAGE_FALLBACK
+                    ? IMAGE_FALLBACK
+                    : `${appConfig.BASE_URL}/${emptyCart}`
+                }
+                alt="Empty cart"
+              />
+            </div>
           </div>
           <div data-aos="fade-up" className="empty-content w-full">
             <h1 className="sm:text-xl text-base font-semibold text-center mb-5">

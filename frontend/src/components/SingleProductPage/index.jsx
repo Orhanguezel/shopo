@@ -20,6 +20,8 @@ import { toast } from "react-toastify";
 import Multivendor from "../Shared/Multivendor";
 
 export default function SingleProductPage({ details }) {
+  const safeDetails = details || {};
+  const safeProduct = safeDetails?.product || null;
   const loginPopupBoard = useContext(LoginContext);
   const [open, setOpen] = useState(false);
   const [photoIndex, setIndex] = useState(0);
@@ -46,17 +48,17 @@ export default function SingleProductPage({ details }) {
   useEffect(() => {
     // Reset comments when product details change
     const reviews =
-      details &&
-      details.productReviews &&
-      details.productReviews.length > 0 &&
-      details.productReviews.map((review) => {
+      safeDetails &&
+      safeDetails.productReviews &&
+      safeDetails.productReviews.length > 0 &&
+      safeDetails.productReviews.map((review) => {
         return {
           id: review.id,
-          author: review.user.name,
+          author: review?.user?.name || "",
           comments: review.review,
           review: parseInt(review.rating),
           replys: null,
-          image: review.user.image
+          image: review?.user?.image
             ? appConfig.BASE_URL + review.user.image
             : null,
         };
@@ -75,22 +77,22 @@ export default function SingleProductPage({ details }) {
     // Reset lightbox states for new products
     setIndex(0);
     setOpen(false);
-  }, [details]);
+  }, [safeDetails]);
 
   const sellerInfo =
-    details.seller &&
-    details.sellerTotalProducts !== undefined &&
-    details.sellerTotalReview !== undefined
+    safeDetails.seller &&
+    safeDetails.sellerTotalProducts !== undefined &&
+    safeDetails.sellerTotalReview !== undefined
       ? {
           seller: {
-            ...details.seller,
-            sellerTotalProducts: parseInt(details.sellerTotalProducts),
-            sellerTotalReview: parseInt(details.sellerTotalReview),
+            ...safeDetails.seller,
+            sellerTotalProducts: parseInt(safeDetails.sellerTotalProducts, 10),
+            sellerTotalReview: parseInt(safeDetails.sellerTotalReview, 10),
           },
         }
       : null;
-  const relatedProducts = details.relatedProducts
-    ? details.relatedProducts.map((item) => {
+  const relatedProducts = safeDetails.relatedProducts
+    ? safeDetails.relatedProducts.map((item) => {
         return {
           id: item.id,
           title: item.name,
@@ -100,7 +102,7 @@ export default function SingleProductPage({ details }) {
           offer_price: item.offer_price,
           campaingn_product: null,
           vendor_id: Number(item.vendor_id),
-          review: parseInt(item.averageRating),
+          review: parseInt(item.averageRating, 10),
           variants: item.active_variants,
         };
       })
@@ -132,6 +134,11 @@ export default function SingleProductPage({ details }) {
     setReportErrors(error.data && error?.data?.errors);
   };
   const productReport = async (id) => {
+    if (!id) {
+      toast.error("Product is not available.");
+      return;
+    }
+
     if (auth()) {
       const userToken = auth()?.access_token;
       await productReportApi({
@@ -149,7 +156,7 @@ export default function SingleProductPage({ details }) {
 
   return (
     <>
-      <div key={details.product.id} className="single-product-wrapper w-full ">
+      <div key={safeProduct?.id || "product"} className="single-product-wrapper w-full ">
         <div className="product-view-main-wrapper bg-white pt-[30px] w-full">
           <div className="breadcrumb-wrapper w-full ">
             <div className="container-x mx-auto">
@@ -157,8 +164,8 @@ export default function SingleProductPage({ details }) {
                 paths={[
                   { name: ServeLangItem()?.home, path: "/" },
                   {
-                    name: details.product.slug,
-                    path: `/single-product?slug=${details.product.slug}`,
+                    name: safeProduct?.slug || "",
+                    path: `/single-product?slug=${safeProduct?.slug || ""}`,
                   },
                 ]}
               />
@@ -168,11 +175,11 @@ export default function SingleProductPage({ details }) {
             <div className="container-x mx-auto">
               {/*key name spelling not correct (gellery)*/}
               <ProductView
-                key={details.product.id}
-                product={details.product}
-                images={details.gellery}
+                key={safeProduct?.id}
+                product={safeProduct}
+                images={safeDetails?.gellery}
                 reportHandler={ReportHandler}
-                seller={details.seller ? details.seller : false}
+                seller={safeDetails?.seller ? safeDetails.seller : false}
               />
             </div>
           </div>
@@ -185,9 +192,9 @@ export default function SingleProductPage({ details }) {
           <div className="tab-buttons w-full mb-10 mt-5 sm:mt-0">
             <div className="container-x mx-auto">
               <ul className="flex space-x-12 ">
-                {details.videos &&
-                  Array.isArray(details.videos) &&
-                  details.videos.length > 0 && (
+                {safeDetails.videos &&
+                  Array.isArray(safeDetails.videos) &&
+                  safeDetails.videos.length > 0 && (
                     <li>
                       <span
                         onClick={() => setTab("video")}
@@ -241,7 +248,7 @@ export default function SingleProductPage({ details }) {
                     {ServeLangItem()?.Reviews}
                   </span>
                 </li>
-                {Multivendor() === 1 && details.is_seller_product && (
+                {Multivendor() === 1 && safeDetails?.is_seller_product && (
                   <li>
                     <span
                       onClick={() => setTab("info")}
@@ -264,10 +271,10 @@ export default function SingleProductPage({ details }) {
               {tab === "video" && (
                 <>
                   <div className="grid grid-cols-5 gap-10">
-                    {details.videos &&
-                      Array.isArray(details.videos) &&
-                      details.videos.length > 0 &&
-                      details.videos.map((item, i) => (
+                    {safeDetails.videos &&
+                      Array.isArray(safeDetails.videos) &&
+                      safeDetails.videos.length > 0 &&
+                      safeDetails.videos.map((item, i) => (
                         <div key={i} className="item h-40">
                           {/*<p  onClick={() => popupHandler(i)}>video {i}</p>*/}
                           <div
@@ -351,25 +358,25 @@ export default function SingleProductPage({ details }) {
                   <div
                     className="product-detail-des mb-10"
                     dangerouslySetInnerHTML={{
-                      __html: details.product.long_description,
+                      __html: safeProduct?.long_description || "",
                     }}
                   ></div>
-                  {details.specifications &&
-                    Array.isArray(details.specifications) &&
-                    details.specifications.length > 0 && (
+                  {safeDetails.specifications &&
+                    Array.isArray(safeDetails.specifications) &&
+                    safeDetails.specifications.length > 0 && (
                       <div className="product-specifications">
                         <h6 className="text-[20px] font-bold mb-4">
                           {ServeLangItem()?.Features} :
                         </h6>
                         <ul className="">
-                          {details.specifications.map((item, i) => (
+                          {safeDetails.specifications.map((item, i) => (
                             <li
                               key={i}
                               className=" leading-9 flex space-x-3 items-center"
                             >
                               <span className="text-qblack font-medium capitalize">
                                 {" "}
-                                {item.key.key}:
+                                {item?.key?.key}:
                               </span>
                               <span className="font-normal text-qgray">
                                 {item.specification}
@@ -400,18 +407,18 @@ export default function SingleProductPage({ details }) {
               )}
               {tab === "info" && (
                 <div data-aos="fade-up" className="w-full tab-content-item">
-                  {details.seller && (
+                  {safeDetails.seller && (
                     <SallerInfo
                       sellerInfo={sellerInfo}
                       products={
-                        details.this_seller_products &&
-                        Array.isArray(details.this_seller_products) &&
-                        details.this_seller_products.length > 0 &&
-                        details.this_seller_products.slice(
+                        safeDetails.this_seller_products &&
+                        Array.isArray(safeDetails.this_seller_products) &&
+                        safeDetails.this_seller_products.length > 0 &&
+                        safeDetails.this_seller_products.slice(
                           0,
-                          details.this_seller_products.length > 8
+                          safeDetails.this_seller_products.length > 8
                             ? 8
-                            : details.this_seller_products.length
+                            : safeDetails.this_seller_products.length
                         )
                       }
                     />
@@ -535,7 +542,7 @@ export default function SingleProductPage({ details }) {
 
               <button
                 disabled={reportLoading}
-                onClick={() => productReport(details?.product?.id)}
+                onClick={() => productReport(safeProduct?.id)}
                 type="button"
                 className="black-btn flex h-[50px] items-center justify-center w-full"
               >

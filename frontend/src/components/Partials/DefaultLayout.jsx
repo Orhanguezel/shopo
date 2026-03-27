@@ -118,7 +118,6 @@ function DefaultLayoutContent({ children }) {
         tawk_setting,
         facebookPixel,
         language,
-        firebase_info,
       } = data;
 
       // Set default currency

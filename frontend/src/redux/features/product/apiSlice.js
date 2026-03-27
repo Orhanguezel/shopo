@@ -1,7 +1,7 @@
 import apiRoutes from "@/appConfig/apiRoutes";
 import { apiSlice } from "@/redux/api/apiSlice";
 import { toast } from "react-toastify";
-import { setWishlistData } from "../whishlist/whishlistSlice";
+import { setWishlistData } from "../wishlist/wishlistSlice";
 import ServeLangItem from "@/components/Helpers/ServeLangItem";
 import { setCompareProducts } from "../compareProduct/compareProductSlice";
 
@@ -320,6 +320,16 @@ export const productApis = apiSlice.injectEndpoints({
         }
       },
     }),
+
+    // get seller detail api
+    getSellerDetailApi: builder.query({
+      query: (slug) => {
+        return {
+          url: `${apiRoutes.sellers}/${slug}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -340,4 +350,5 @@ export const {
   useNextPageProductsApiQuery,
   useProductReportApiMutation,
   useLazyGetProductBySlugApiQuery,
+  useGetSellerDetailApiQuery,
 } = productApis;

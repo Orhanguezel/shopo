@@ -13,7 +13,7 @@ import {
   useDrawer,
 } from "../../hooks/useLayout";
 import auth from "@/utils/auth";
-import { setWishlistData } from "@/redux/features/whishlist/whishlistSlice";
+import { setWishlistData } from "@/redux/features/wishlist/wishlistSlice";
 import {
   useLazyGetWishlistItemsApiQuery,
   useLazyCompareListApiQuery,
