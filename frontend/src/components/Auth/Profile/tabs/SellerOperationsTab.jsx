@@ -8,6 +8,10 @@ import {
   useSellerBulkImportsApiQuery,
   useSellerKycDocumentsApiQuery,
   useSellerKycStatusApiQuery,
+  useSellerLowStockProductsApiQuery,
+  useSellerNotificationsApiQuery,
+  useMarkSellerNotificationReadApiMutation,
+  useMarkAllSellerNotificationsReadApiMutation,
   useUploadSellerBulkImportApiMutation,
   useUploadSellerKycDocumentApiMutation,
 } from "@/redux/features/auth/apiSlice";
@@ -83,6 +87,18 @@ function ErrorList({ errors = [] }) {
   );
 }
 
+function extractNotificationMessage(notification) {
+  if (notification?.data?.message) {
+    return notification.data.message;
+  }
+
+  if (notification?.data?.title) {
+    return notification.data.title;
+  }
+
+  return "Notification received.";
+}
+
 export default function SellerOperationsTab({ token, isActive, isSeller }) {
   const [kycForm, setKycForm] = useState({
     documentType: DOCUMENT_TYPE_OPTIONS[0].value,
@@ -124,6 +140,26 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
       skip: !token || !isActive || !isSeller,
     }
   );
+  const {
+    data: sellerLowStockProductsApi,
+    isFetching: isLowStockFetching,
+    refetch: refetchLowStockProducts,
+  } = useSellerLowStockProductsApiQuery(
+    { token, perPage: 10 },
+    {
+      skip: !token || !isActive || !isSeller,
+    }
+  );
+  const {
+    data: sellerNotificationsApi,
+    isFetching: isNotificationsFetching,
+    refetch: refetchNotifications,
+  } = useSellerNotificationsApiQuery(
+    { token, perPage: 10 },
+    {
+      skip: !token || !isActive || !isSeller,
+    }
+  );
 
   const [uploadSellerKycDocumentApi, { isLoading: isKycUploading }] =
     useUploadSellerKycDocumentApiMutation();
@@ -131,6 +167,10 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
     useDeleteSellerKycDocumentApiMutation();
   const [uploadSellerBulkImportApi, { isLoading: isBulkUploading }] =
     useUploadSellerBulkImportApiMutation();
+  const [markSellerNotificationReadApi, { isLoading: isNotificationUpdating }] =
+    useMarkSellerNotificationReadApiMutation();
+  const [markAllSellerNotificationsReadApi, { isLoading: isMarkingAllNotifications }] =
+    useMarkAllSellerNotificationsReadApiMutation();
 
   useEffect(() => {
     if (sellerKycStatusApi?.status) {
@@ -230,7 +270,38 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
   const kycStatus = sellerKycStatusApi?.status?.kyc_status || "not_submitted";
   const documents = sellerKycDocumentsApi?.documents || [];
   const imports = sellerBulkImportsApi?.imports?.data || [];
+  const lowStockProducts = sellerLowStockProductsApi?.products?.data || [];
+  const notifications = sellerNotificationsApi?.notifications?.data || [];
+  const unreadCount = sellerNotificationsApi?.unread_count || 0;
+  const lowStockThreshold = sellerLowStockProductsApi?.threshold;
   const templateUrl = `${apiRoutes.sellerBulkImportTemplate}?token=${token}`;
+
+  const handleNotificationRead = async (id) => {
+    await markSellerNotificationReadApi({
+      token,
+      id,
+      success: async (data) => {
+        toast.success(data?.message || "Notification marked as read.");
+        await refetchNotifications();
+      },
+      error: (error) => {
+        toast.error(error?.data?.message || "Notification update failed.");
+      },
+    });
+  };
+
+  const handleMarkAllNotificationsRead = async () => {
+    await markAllSellerNotificationsReadApi({
+      token,
+      success: async (data) => {
+        toast.success(data?.message || "All notifications marked as read.");
+        await refetchNotifications();
+      },
+      error: (error) => {
+        toast.error(error?.data?.message || "Bulk notification update failed.");
+      },
+    });
+  };
 
   return (
     <div className="space-y-8">
@@ -513,6 +584,121 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
                 : "No import history found for this seller account."}
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="grid gap-8 xl:grid-cols-2">
+        <div className="rounded-lg border border-qgray-border p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-qblack">Low Stock Products</h2>
+              <p className="mt-1 text-sm text-qgray">
+                Active products at or below the current stock threshold.
+              </p>
+            </div>
+            <div className="rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-700">
+              Threshold: {lowStockThreshold ?? "-"}
+            </div>
+          </div>
+
+          <div className="mt-6 space-y-3">
+            {lowStockProducts.length > 0 ? (
+              lowStockProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex items-start justify-between rounded-lg border border-qgray-border p-4"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-qblack">{product.name}</p>
+                    <p className="mt-1 text-xs text-qgray">
+                      SKU: {product.sku || "-"} | Slug: {product.slug}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-qgray">Qty</p>
+                    <p className="text-lg font-bold text-red-700">{product.qty}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-lg bg-gray-50 p-4 text-sm text-qgray">
+                {isLowStockFetching
+                  ? "Loading low stock products..."
+                  : "No low stock products found."}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-qgray-border p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-qblack">Notifications</h2>
+              <p className="mt-1 text-sm text-qgray">
+                Seller alerts and operational messages.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full bg-yellow-50 px-3 py-1 text-sm font-semibold text-yellow-800">
+                Unread: {unreadCount}
+              </span>
+              <button
+                type="button"
+                disabled={isMarkingAllNotifications || unreadCount === 0}
+                onClick={handleMarkAllNotificationsRead}
+                className="text-sm font-semibold text-qblack underline disabled:opacity-50"
+              >
+                Mark all read
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-6 space-y-3">
+            {notifications.length > 0 ? (
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`rounded-lg border p-4 ${
+                    notification.read_at
+                      ? "border-qgray-border bg-white"
+                      : "border-yellow-200 bg-yellow-50/60"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-semibold text-qblack">
+                        {extractNotificationMessage(notification)}
+                      </p>
+                      <p className="mt-1 text-xs text-qgray">
+                        Type: {notification.data?.type || "general"} |{" "}
+                        {formatDateTime(notification.created_at)}
+                      </p>
+                    </div>
+                    {notification.read_at ? (
+                      <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
+                        Read
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={isNotificationUpdating}
+                        onClick={() => handleNotificationRead(notification.id)}
+                        className="text-sm font-semibold text-qblack underline disabled:opacity-50"
+                      >
+                        Mark read
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-lg bg-gray-50 p-4 text-sm text-qgray">
+                {isNotificationsFetching
+                  ? "Loading notifications..."
+                  : "No notifications found."}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

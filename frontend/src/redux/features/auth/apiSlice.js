@@ -514,6 +514,94 @@ export const authApis = apiSlice.injectEndpoints({
         }
       },
     }),
+    sellerLowStockProductsApi: builder.query({
+      query: (data) => {
+        const params = new URLSearchParams({
+          token: data.token,
+        });
+
+        if (data.perPage) {
+          params.set("per_page", data.perPage);
+        }
+
+        return {
+          url: `${apiRoutes.sellerLowStockProducts}?${params.toString()}`,
+          method: "GET",
+        };
+      },
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
+    }),
+    sellerNotificationsApi: builder.query({
+      query: (data) => {
+        const params = new URLSearchParams({
+          token: data.token,
+        });
+
+        if (data.perPage) {
+          params.set("per_page", data.perPage);
+        }
+
+        if (data.unreadOnly) {
+          params.set("unread_only", "1");
+        }
+
+        return {
+          url: `${apiRoutes.sellerNotifications}?${params.toString()}`,
+          method: "GET",
+        };
+      },
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
+    }),
+    markSellerNotificationReadApi: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${apiRoutes.sellerNotifications}/${data.id}/read?token=${data.token}`,
+          method: "PUT",
+        };
+      },
+      async onQueryStarted(info, { queryFulfilled }) {
+        try {
+          const { data, meta } = await queryFulfilled;
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
+        } catch (error) {
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
+        }
+      },
+    }),
+    markAllSellerNotificationsReadApi: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${apiRoutes.sellerNotifications}/read-all?token=${data.token}`,
+          method: "PUT",
+        };
+      },
+      async onQueryStarted(info, { queryFulfilled }) {
+        try {
+          const { data, meta } = await queryFulfilled;
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
+        } catch (error) {
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
+        }
+      },
+    }),
   }),
 });
 
@@ -543,4 +631,8 @@ export const {
   useDeleteSellerKycDocumentApiMutation,
   useSellerBulkImportsApiQuery,
   useUploadSellerBulkImportApiMutation,
+  useSellerLowStockProductsApiQuery,
+  useSellerNotificationsApiQuery,
+  useMarkSellerNotificationReadApiMutation,
+  useMarkAllSellerNotificationsReadApiMutation,
 } = authApis;
