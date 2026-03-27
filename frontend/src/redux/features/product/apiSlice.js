@@ -21,7 +21,7 @@ export const productApis = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
           info.error(error?.error);
         }
       },
@@ -48,7 +48,7 @@ export const productApis = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
         }
       },
     }),
@@ -83,7 +83,7 @@ export const productApis = apiSlice.injectEndpoints({
             toast.warning(data?.message);
           }
         } catch (error) {
-          console.log(error);
+          // error handled by caller
         }
       },
     }),
@@ -122,7 +122,7 @@ export const productApis = apiSlice.injectEndpoints({
             toast.warning(data?.message);
           }
         } catch (error) {
-          console.log(error);
+          // error handled by caller
         }
       },
     }),
@@ -157,7 +157,7 @@ export const productApis = apiSlice.injectEndpoints({
             toast.warning(data?.message);
           }
         } catch (error) {
-          console.log(error);
+          // error handled by caller
         }
       },
     }),
@@ -177,7 +177,7 @@ export const productApis = apiSlice.injectEndpoints({
             info.success(data, meta.response.status);
           }
         } catch (error) {
-          console.log(error);
+          // error handled by caller
         }
       },
     }),
@@ -213,7 +213,7 @@ export const productApis = apiSlice.injectEndpoints({
           }
         } catch (error) {
           toast.error(error?.error?.data?.notification);
-          console.log(error);
+          // error handled by caller
         }
       },
     }),
@@ -250,7 +250,7 @@ export const productApis = apiSlice.injectEndpoints({
             toast.warning(data?.message);
           }
         } catch (error) {
-          console.log(error);
+          // error handled by caller
         }
       },
     }),
@@ -316,7 +316,7 @@ export const productApis = apiSlice.injectEndpoints({
           info.success(data, meta.response.status);
         } catch (error) {
           info.error(error?.error);
-          console.log(error);
+          // error handled by caller
         }
       },
     }),

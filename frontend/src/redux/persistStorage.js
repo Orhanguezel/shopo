@@ -24,7 +24,7 @@ const createLocalStorage = () => {
         const item = window.localStorage.getItem(key);
         return Promise.resolve(item);
       } catch (error) {
-        console.log(`Error getting item ${key} from localStorage:`, error);
+        // localStorage error - silently fallback
         return Promise.resolve(null);
       }
     },
@@ -36,7 +36,7 @@ const createLocalStorage = () => {
         window.localStorage.setItem(key, value);
         return Promise.resolve(value);
       } catch (error) {
-        console.log(`Error setting item ${key} to localStorage:`, error);
+        // localStorage error - silently fallback
         return Promise.resolve(value);
       }
     },
@@ -48,7 +48,7 @@ const createLocalStorage = () => {
         window.localStorage.removeItem(key);
         return Promise.resolve();
       } catch (error) {
-        console.log(`Error removing item ${key} from localStorage:`, error);
+        // localStorage error - silently fallback
         return Promise.resolve();
       }
     },

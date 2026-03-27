@@ -37,7 +37,7 @@ export const authApis = apiSlice.injectEndpoints({
             info.success(data);
           }
         } catch (error) {
-          console.log(error);
+          // error handled by caller
           info.error(error?.error);
         }
       },
@@ -54,7 +54,7 @@ export const authApis = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
         }
       },
     }),
@@ -73,7 +73,7 @@ export const authApis = apiSlice.injectEndpoints({
           const statusCode = meta.response.status;
           info.success(statusCode);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
           toast.error(error?.error?.data?.message);
         }
       },
@@ -90,7 +90,7 @@ export const authApis = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
           info.error(error?.error);
         }
       },
@@ -153,7 +153,7 @@ export const authApis = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
           info.error(error?.error);
         }
       },
@@ -171,7 +171,7 @@ export const authApis = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
           info.error(error?.error);
         }
       },
@@ -189,7 +189,7 @@ export const authApis = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
           info.error(error?.error);
         }
       },
@@ -275,7 +275,7 @@ export const authApis = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
         }
       },
     }),
@@ -322,7 +322,7 @@ export const authApis = apiSlice.injectEndpoints({
             )
           );
         } catch (error) {
-          console.log(error);
+          // error handled by caller
           info.error(error?.error);
         }
       },
@@ -347,7 +347,7 @@ export const authApis = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
           info.error(error?.error);
         }
       },

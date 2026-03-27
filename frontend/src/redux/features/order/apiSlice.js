@@ -16,7 +16,7 @@ export const orderApis = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.log(error);
+          // error handled by caller
           info.error(error?.error);
         }
       },
