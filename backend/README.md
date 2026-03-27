@@ -64,3 +64,40 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Shopo Test Notes
+
+### Feature Tests
+
+Project feature tests live under `backend/tests/Feature/`.
+
+Current KYC, bulk import, stock alert, and OTP feature tests use in-memory SQLite setup through `tests/Concerns/UsesInMemorySqlite.php`.
+
+Run a filtered test:
+
+```bash
+php artisan test --filter=SellerKycApiTest
+php artisan test --filter=AdminBulkImportApiTest
+```
+
+If `pdo_sqlite` is not installed in the local PHP runtime, these tests will be skipped by design.
+
+### Marketplace Smoke Script
+
+For environments where PHPUnit database drivers are unavailable, use the HTTP smoke script from the repo root:
+
+```bash
+bash tests/smoke/marketplace-feature-smoke.sh http://localhost:8000 "$SELLER_TOKEN" "$ADMIN_TOKEN"
+```
+
+The script checks:
+
+- public website setup reachability
+- seller KYC endpoints
+- seller bulk import endpoints
+- seller low stock and notification endpoints
+- admin KYC endpoints
+- admin stock alert endpoints
+- admin bulk import endpoints
+
+Seller and admin tokens are optional. If omitted, the script skips authenticated checks and only verifies public reachability.
