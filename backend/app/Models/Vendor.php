@@ -14,6 +14,8 @@ class Vendor extends Model
 
     protected $casts = [
         'commission_rate' => 'decimal:2',
+        'kyc_submitted_at' => 'datetime',
+        'kyc_approved_at' => 'datetime',
     ];
 
     protected $appends = ['averageRating'];
@@ -48,5 +50,8 @@ class Vendor extends Model
         return $this->hasMany(ProductReview::class,'product_vendor_id');
     }
 
-
+    public function kycDocuments()
+    {
+        return $this->hasMany(SellerKycDocument::class, 'seller_id');
+    }
 }

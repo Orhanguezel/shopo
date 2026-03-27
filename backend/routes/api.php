@@ -362,12 +362,24 @@ Route::group([], function () {
         Route::get('load-new-message/{id}', [SellerMessageContoller::class, 'loadNewMessage'])->name('load-new-message');
         Route::get('send-message', [SellerMessageContoller::class, 'sendMessage'])->name('send-message');
 
+        // Bulk Product Import
+        Route::post('products/bulk-import', [\App\Http\Controllers\Seller\SellerBulkImportController::class, 'upload']);
+        Route::get('products/bulk-imports', [\App\Http\Controllers\Seller\SellerBulkImportController::class, 'index']);
+        Route::get('products/bulk-import/template', [\App\Http\Controllers\Seller\SellerBulkImportController::class, 'template']);
+        Route::get('products/bulk-import/{id}', [\App\Http\Controllers\Seller\SellerBulkImportController::class, 'show']);
+
         // Return Request Routes
         Route::get('return-requests', [SellerReturnRequestController::class, 'index']);
         Route::get('return-requests/{id}', [SellerReturnRequestController::class, 'show']);
         Route::put('return-requests/{id}/approve', [SellerReturnRequestController::class, 'approve']);
         Route::put('return-requests/{id}/reject', [SellerReturnRequestController::class, 'reject']);
         Route::put('return-requests/{id}/update-status', [SellerReturnRequestController::class, 'updateStatus']);
+
+        // Seller KYC
+        Route::post('kyc/upload', [\App\Http\Controllers\Seller\SellerKycController::class, 'upload']);
+        Route::get('kyc/documents', [\App\Http\Controllers\Seller\SellerKycController::class, 'documents']);
+        Route::delete('kyc/documents/{id}', [\App\Http\Controllers\Seller\SellerKycController::class, 'destroy']);
+        Route::get('kyc/status', [\App\Http\Controllers\Seller\SellerKycController::class, 'status']);
 
         // Stock Alerts
         Route::get('products/low-stock', [\App\Http\Controllers\Seller\StockAlertController::class, 'lowStockProducts']);
@@ -755,10 +767,20 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
     Route::put('return-requests/{id}/refund', [AdminReturnRequestController::class, 'refund']);
     Route::put('return-requests/{id}/update-status', [AdminReturnRequestController::class, 'updateStatus']);
 
+    // Seller KYC
+    Route::get('kyc/pending', [\App\Http\Controllers\Admin\SellerKycController::class, 'pending']);
+    Route::get('kyc/seller/{id}', [\App\Http\Controllers\Admin\SellerKycController::class, 'seller']);
+    Route::put('kyc/{id}/approve', [\App\Http\Controllers\Admin\SellerKycController::class, 'approve']);
+    Route::put('kyc/{id}/reject', [\App\Http\Controllers\Admin\SellerKycController::class, 'reject']);
+
     // Stock Alerts
     Route::get('stock-alerts/settings', [\App\Http\Controllers\Admin\StockAlertController::class, 'settings']);
     Route::put('stock-alerts/settings', [\App\Http\Controllers\Admin\StockAlertController::class, 'updateSettings']);
     Route::get('products/low-stock', [\App\Http\Controllers\Admin\StockAlertController::class, 'lowStockProducts']);
+
+    // Bulk Product Import
+    Route::post('products/bulk-import', [\App\Http\Controllers\Admin\ProductBulkImportController::class, 'upload']);
+    Route::get('products/bulk-imports', [\App\Http\Controllers\Admin\ProductBulkImportController::class, 'index']);
 
     Route::resource('coupon', CouponController::class);
     Route::put('coupon-status/{id}',[CouponController::class,'changeStatus'])->name('coupon-status');
