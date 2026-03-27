@@ -166,7 +166,12 @@ Shopo (CodeCanyon) temasina dayali Laravel 10 + Next.js 15 e-ticaret pazaryeri. 
 - [x] **ORTA - Iyzico callback rate limiting:** `throttle:10,1` middleware eklendi
 - [x] **ORTA - Replay korumasi:** Zaten odenmis siparis tekrar islenmez (payment_status kontrolu)
 - [x] **ORTA - CSRF except temizlik:** Razorpay except'leri kaldirildi (route'lar zaten silinmis)
-- **Dosyalar:** `backend/app/Http/Middleware/Cors.php`, `backend/app/Http/Middleware/XSSProtection.php`, `backend/app/Http/Middleware/VerifyCsrfToken.php`, `backend/routes/api.php`
+- [x] **KRITIK - /run_migration korumasiz:** `auth:admin` middleware eklendi (2026-03-27)
+- [x] **YUKSEK - Session SameSite:** `null` → `lax` (CSRF korumasi) (2026-03-27)
+- [x] **YUKSEK - JWT TTL:** 365 gun → 7 gun (token hijack riski azaltildi) (2026-03-27)
+- [x] **ORTA - Security headers:** HSTS (1 yil) + Permissions-Policy eklendi (2026-03-27)
+- [x] **ORTA - Private storage:** KYC belgeleri icin `storage/app/private/kyc/` olusturuldu (2026-03-27)
+- **Dosyalar:** `backend/app/Http/Middleware/Cors.php`, `backend/app/Http/Middleware/XSSProtection.php`, `backend/app/Http/Middleware/SecurityHeaders.php`, `backend/app/Http/Middleware/VerifyCsrfToken.php`, `backend/routes/api.php`, `backend/routes/web.php`
 
 ### 8. PERFORMANS & OPTIMIZASYON (Tamamlandi)
 - [x] **KRITIK:** `ProductCard` icindeki `Image` anti-pattern'ini duzelt (state-src switching kaldirildi)
