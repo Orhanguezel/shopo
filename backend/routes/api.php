@@ -389,6 +389,9 @@ Route::group([], function () {
         Route::put('notifications/{id}/read', [\App\Http\Controllers\Seller\NotificationController::class, 'markAsRead']);
         Route::put('notifications/read-all', [\App\Http\Controllers\Seller\NotificationController::class, 'markAllAsRead']);
 
+        // AI Content Generation (seller)
+        Route::post('ai/generate-content', [\App\Http\Controllers\AiContentController::class, 'generate']);
+
     });
 
     //delivery man routes
@@ -782,6 +785,13 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
     // Bulk Product Import
     Route::post('products/bulk-import', [\App\Http\Controllers\Admin\ProductBulkImportController::class, 'upload']);
     Route::get('products/bulk-imports', [\App\Http\Controllers\Admin\ProductBulkImportController::class, 'index']);
+
+    // AI Settings
+    Route::get('ai-settings', [\App\Http\Controllers\Admin\AiSettingsController::class, 'show']);
+    Route::put('ai-settings', [\App\Http\Controllers\Admin\AiSettingsController::class, 'update']);
+
+    // AI Content Generation (admin)
+    Route::post('ai/generate-content', [\App\Http\Controllers\AiContentController::class, 'generate']);
 
     Route::resource('coupon', CouponController::class);
     Route::put('coupon-status/{id}',[CouponController::class,'changeStatus'])->name('coupon-status');
