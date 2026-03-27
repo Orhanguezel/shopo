@@ -62,6 +62,8 @@ use App\Http\Controllers\WEB\Admin\EmailTemplateController;
 use App\Http\Controllers\WEB\Admin\PaymentMethodController;
 use App\Http\Controllers\WEB\Admin\PrivacyPolicyController;
 use App\Http\Controllers\WEB\Admin\CommissionController;
+use App\Http\Controllers\WEB\Admin\SellerKycController as AdminSellerKycController;
+use App\Http\Controllers\WEB\Admin\StockAlertController as WebAdminStockAlertController;
 
 use App\Http\Controllers\WEB\Admin\ProductReportController;
 use App\Http\Controllers\WEB\Admin\ProductReviewController;
@@ -372,6 +374,7 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::get('product-import-page', [ProductController::class, 'product_import_page'])->name('product-import-page');
         Route::get('product-export', [ProductController::class, 'product_export'])->name('product-export');
         Route::get('product-demo-export', [ProductController::class, 'demo_product_export'])->name('product-demo-export');
+        Route::get('product-bulk-import-template', [ProductController::class, 'product_bulk_import_template'])->name('product-bulk-import-template');
         Route::post('product-import', [ProductController::class, 'product_import'])->name('product-import');
 
 
@@ -481,6 +484,12 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::put('seller-status/{id}', [SellerController::class, 'changeStatus'])->name('seller-status');
         Route::delete('seller-delete/{id}', [SellerController::class, 'destroy'])->name('seller-delete');
         Route::get('pending-seller-list', [SellerController::class, 'pendingSellerList'])->name('pending-seller-list');
+        Route::get('seller-kyc', [AdminSellerKycController::class, 'index'])->name('kyc.index');
+        Route::get('seller-kyc/{id}', [AdminSellerKycController::class, 'show'])->name('kyc.show');
+        Route::put('seller-kyc/{id}/approve', [AdminSellerKycController::class, 'approve'])->name('kyc.approve');
+        Route::put('seller-kyc/{id}/reject', [AdminSellerKycController::class, 'reject'])->name('kyc.reject');
+        Route::get('seller-kyc/document/{id}/download', [AdminSellerKycController::class, 'download'])->name('kyc.download');
+        Route::post('seller-kyc/{id}/create-sub-merchant', [AdminSellerKycController::class, 'createSubMerchant'])->name('kyc.create-sub-merchant');
         Route::put('seller-update/{id}', [SellerController::class, 'updateSeller'])->name('seller-update');
         Route::get('seller-shop-detail/{id}', [SellerController::class, 'sellerShopDetail'])->name('seller-shop-detail');
         Route::put('remove-seller-social-link/{id}', [SellerController::class, 'removeSellerSocialLink'])->name('remove-seller-social-link');
@@ -742,6 +751,8 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::get('stock-history/{id}', [InventoryController::class, 'show_inventory'])->name('stock-history');
         Route::post('add-stock', [InventoryController::class, 'add_stock'])->name('add-stock');
         Route::delete('delete-stock/{id}', [InventoryController::class, 'delete_stock'])->name('delete-stock');
+        Route::get('stock-alerts', [WebAdminStockAlertController::class, 'index'])->name('stock-alerts.index');
+        Route::put('stock-alerts', [WebAdminStockAlertController::class, 'update'])->name('stock-alerts.update');
 
         //Delivery man route
         Route::resource('delivery-man', DeliveryManController::class);

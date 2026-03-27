@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\WEB\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SellerKycDocument;
@@ -10,37 +10,35 @@ use App\Services\IyzicoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class SellerKycController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
-    public function pending(Request $request)
+    public function index()
     {
-        $perPage = max(1, min((int) $request->get('per_page', 20), 100));
-
-        $vendors = Vendor::query()
-            ->with(['user:id,name,email', 'kycDocuments'])
+        $sellers = Vendor::query()
+            ->with(['user:id,name,email,phone', 'kycDocuments'])
             ->where('kyc_status', 'pending')
             ->orderByDesc('kyc_submitted_at')
-            ->paginate($perPage);
+            ->get();
 
-        return response()->json(['sellers' => $vendors]);
+        return view('admin.seller_kyc', compact('sellers'));
     }
 
-    public function seller($id)
+    public function show($id)
     {
-        $vendor = Vendor::query()
-            ->with(['user:id,name,email,phone', 'kycDocuments.reviewer:id,name,email'])
+        $seller = Vendor::query()
+            ->with(['user:id,name,email,phone,address', 'kycDocuments.reviewer:id,name,email'])
             ->findOrFail($id);
 
-        return response()->json([
-            'seller' => $vendor,
-            'status' => $this->buildStatusPayload($vendor),
-        ]);
+        $status = $this->buildStatusPayload($seller);
+
+        return view('admin.show_seller_kyc', compact('seller', 'status'));
     }
 
     public function approve(Request $request, $id)
@@ -49,21 +47,19 @@ class SellerKycController extends Controller
             'admin_note' => ['nullable', 'string'],
         ]);
 
-        $document = SellerKycDocument::with('seller')->findOrFail($id);
+        $document = SellerKycDocument::with('seller.kycDocuments')->findOrFail($id);
         $document->update([
             'status' => SellerKycDocument::STATUS_APPROVED,
             'admin_note' => $request->input('admin_note'),
-            'reviewed_by' => Auth::guard('admin-api')->id(),
+            'reviewed_by' => Auth::guard('admin')->id(),
             'reviewed_at' => now(),
         ]);
 
-        $vendor = $document->seller->fresh('kycDocuments');
-        $this->syncVendorStatus($vendor);
+        $this->syncVendorStatus($document->seller->fresh('kycDocuments'));
 
-        return response()->json([
-            'message' => 'KYC document approved successfully',
-            'document' => $document->fresh(),
-            'status' => $this->buildStatusPayload($vendor->fresh('kycDocuments')),
+        return redirect()->back()->with([
+            'messege' => trans('admin_validation.Update Successfully'),
+            'alert-type' => 'success',
         ]);
     }
 
@@ -73,54 +69,58 @@ class SellerKycController extends Controller
             'admin_note' => ['required', 'string'],
         ]);
 
-        $document = SellerKycDocument::with('seller')->findOrFail($id);
+        $document = SellerKycDocument::with('seller.kycDocuments')->findOrFail($id);
         $document->update([
             'status' => SellerKycDocument::STATUS_REJECTED,
             'admin_note' => $request->input('admin_note'),
-            'reviewed_by' => Auth::guard('admin-api')->id(),
+            'reviewed_by' => Auth::guard('admin')->id(),
             'reviewed_at' => now(),
         ]);
 
-        $vendor = $document->seller->fresh('kycDocuments');
-        $this->syncVendorStatus($vendor);
+        $this->syncVendorStatus($document->seller->fresh('kycDocuments'));
 
-        return response()->json([
-            'message' => 'KYC document rejected successfully',
-            'document' => $document->fresh(),
-            'status' => $this->buildStatusPayload($vendor->fresh('kycDocuments')),
+        return redirect()->back()->with([
+            'messege' => trans('admin_validation.Update Successfully'),
+            'alert-type' => 'success',
         ]);
+    }
+
+    public function download($id)
+    {
+        $document = SellerKycDocument::query()->findOrFail($id);
+
+        abort_unless($document->file_path && Storage::disk('local')->exists($document->file_path), 404);
+
+        return Storage::disk('local')->download($document->file_path, $document->original_name);
     }
 
     public function createSubMerchant($sellerId)
     {
-        $vendor = Vendor::with('user')->find($sellerId);
-
-        if (!$vendor) {
-            return response()->json(['message' => 'Seller not found'], 404);
-        }
+        $vendor = Vendor::with('user')->findOrFail($sellerId);
 
         if ($vendor->kyc_status !== 'approved') {
-            return response()->json(['message' => 'KYC onaylanmamis satici icin sub-merchant olusturulamaz.'], 422);
+            return redirect()->back()->with([
+                'messege' => 'Sub-merchant can only be created for approved KYC sellers.',
+                'alert-type' => 'error',
+            ]);
         }
 
         if ($vendor->iyzico_sub_merchant_key) {
-            return response()->json([
-                'message' => 'Bu satici icin sub-merchant zaten mevcut.',
-                'sub_merchant_key' => $vendor->iyzico_sub_merchant_key,
+            return redirect()->back()->with([
+                'messege' => 'Sub-merchant already exists for this seller.',
+                'alert-type' => 'info',
             ]);
         }
 
         $this->createIyzicoSubMerchant($vendor);
         $vendor->refresh();
 
-        if ($vendor->iyzico_sub_merchant_key) {
-            return response()->json([
-                'message' => 'Sub-merchant basariyla olusturuldu.',
-                'sub_merchant_key' => $vendor->iyzico_sub_merchant_key,
-            ]);
-        }
-
-        return response()->json(['message' => 'Sub-merchant olusturulamadi. Log kayitlarini kontrol edin.'], 500);
+        return redirect()->back()->with([
+            'messege' => $vendor->iyzico_sub_merchant_key
+                ? 'Sub-merchant created successfully.'
+                : 'Sub-merchant could not be created. Check application logs.',
+            'alert-type' => $vendor->iyzico_sub_merchant_key ? 'success' : 'error',
+        ]);
     }
 
     private function syncVendorStatus(Vendor $vendor): void
@@ -151,15 +151,28 @@ class SellerKycController extends Controller
 
         $vendor->save();
 
-        // Notify seller and trigger sub-merchant creation on status change
         if ($oldStatus !== $vendor->kyc_status && in_array($vendor->kyc_status, ['approved', 'rejected']) && $vendor->user) {
             $vendor->user->notify(new KycStatusNotification($vendor, $vendor->kyc_status));
         }
 
-        // Auto-create Iyzico sub-merchant when KYC approved
         if ($vendor->kyc_status === 'approved' && !$vendor->iyzico_sub_merchant_key) {
             $this->createIyzicoSubMerchant($vendor);
         }
+    }
+
+    private function buildStatusPayload(Vendor $vendor): array
+    {
+        $documents = $vendor->kycDocuments ?? collect();
+
+        return [
+            'kyc_status' => $vendor->kyc_status ?? 'not_submitted',
+            'submitted_at' => $vendor->kyc_submitted_at,
+            'approved_at' => $vendor->kyc_approved_at,
+            'document_count' => $documents->count(),
+            'pending_count' => $documents->where('status', SellerKycDocument::STATUS_PENDING)->count(),
+            'approved_count' => $documents->where('status', SellerKycDocument::STATUS_APPROVED)->count(),
+            'rejected_count' => $documents->where('status', SellerKycDocument::STATUS_REJECTED)->count(),
+        ];
     }
 
     private function createIyzicoSubMerchant(Vendor $vendor): void
@@ -168,13 +181,12 @@ class SellerKycController extends Controller
             $iyzicoService = app(IyzicoService::class);
             $user = $vendor->user;
 
-            // Determine sub-merchant type based on available documents
             $hasTaxNumber = !empty($vendor->tax_number);
             $type = $hasTaxNumber
                 ? \Iyzipay\Model\SubMerchantType::LIMITED_OR_JOINT_STOCK_COMPANY
                 : \Iyzipay\Model\SubMerchantType::PERSONAL;
 
-            $nameParts = $user ? explode(' ', trim($user->name ?? ''), 2) : ['Satici'];
+            $nameParts = $user ? explode(' ', trim($user->name ?? ''), 2) : ['Seller'];
 
             $data = [
                 'external_id' => 'VENDOR_' . $vendor->id,
@@ -183,8 +195,8 @@ class SellerKycController extends Controller
                 'email' => $user->email ?? '',
                 'gsm_number' => $vendor->phone ?? $user->phone ?? '',
                 'iban' => $vendor->iban ?? '',
-                'identity_number' => '00000000000', // Will be updated from KYC docs
-                'address' => $vendor->address ?? '',
+                'identity_number' => (string) (data_get($user, 'identity_number') ?: '00000000000'),
+                'address' => $vendor->address ?? data_get($user, 'address', ''),
                 'contact_name' => $nameParts[0] ?? '',
                 'contact_surname' => $nameParts[1] ?? ($nameParts[0] ?? ''),
             ];
@@ -202,37 +214,22 @@ class SellerKycController extends Controller
                 $vendor->iyzico_sub_merchant_type = $type;
                 $vendor->save();
 
-                Log::info('Iyzico sub-merchant created', [
+                Log::info('Iyzico sub-merchant created from web admin', [
                     'vendor_id' => $vendor->id,
                     'sub_merchant_key' => $result->getSubMerchantKey(),
                 ]);
             } else {
-                Log::error('Iyzico sub-merchant creation failed', [
+                Log::error('Iyzico sub-merchant creation failed from web admin', [
                     'vendor_id' => $vendor->id,
                     'error_code' => $result->getErrorCode(),
                     'error_message' => $result->getErrorMessage(),
                 ]);
             }
         } catch (\Throwable $e) {
-            Log::error('Iyzico sub-merchant creation exception', [
+            Log::error('Iyzico sub-merchant exception from web admin', [
                 'vendor_id' => $vendor->id,
                 'message' => $e->getMessage(),
             ]);
         }
-    }
-
-    private function buildStatusPayload(Vendor $vendor): array
-    {
-        $documents = $vendor->kycDocuments ?? collect();
-
-        return [
-            'kyc_status' => $vendor->kyc_status ?? 'not_submitted',
-            'submitted_at' => optional($vendor->kyc_submitted_at)->toISOString(),
-            'approved_at' => optional($vendor->kyc_approved_at)->toISOString(),
-            'document_count' => $documents->count(),
-            'pending_count' => $documents->where('status', SellerKycDocument::STATUS_PENDING)->count(),
-            'approved_count' => $documents->where('status', SellerKycDocument::STATUS_APPROVED)->count(),
-            'rejected_count' => $documents->where('status', SellerKycDocument::STATUS_REJECTED)->count(),
-        ];
     }
 }

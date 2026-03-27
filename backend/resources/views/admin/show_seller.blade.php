@@ -211,6 +211,11 @@
                                     <div class="col-12">
                                         <a href="{{ route('admin.email-history',$seller->id) }}" class="btn btn-info btn-block btn-lg my-2">{{__('admin.Email Log')}}</a>
                                     </div>
+                                    @if($seller->kyc_status && $seller->kyc_status !== 'not_submitted')
+                                    <div class="col-12">
+                                        <a href="{{ route('admin.kyc.show',$seller->id) }}" class="btn btn-dark btn-block btn-lg my-2">Seller KYC</a>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

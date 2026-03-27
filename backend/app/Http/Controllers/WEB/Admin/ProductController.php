@@ -29,8 +29,12 @@ use Str;
 
 use App\Exports\ProductExport;
 use App\Imports\ProductImport;
+use App\Http\Requests\Seller\UploadBulkProductImportRequest;
+use App\Models\BulkImport;
+use App\Services\BulkProductImportService;
 use Maatwebsite\Excel\Facades\Excel;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 class ProductController extends Controller
 {
     public function __construct()
@@ -393,7 +397,12 @@ class ProductController extends Controller
 
     public function product_import_page()
     {
-        return view('admin.product_import_page');
+        $imports = BulkImport::query()
+            ->where('user_type', 'admin')
+            ->orderByDesc('id')
+            ->paginate(20);
+
+        return view('admin.product_import_page', compact('imports'));
     }
 
     public function product_export()
@@ -411,12 +420,24 @@ class ProductController extends Controller
 
 
 
-    public function product_import(Request $request)
+    public function product_bulk_import_template(BulkProductImportService $bulkImportService)
+    {
+        return response($bulkImportService->templateCsv(), 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="admin-product-import-template.csv"',
+        ]);
+    }
+
+
+
+    public function product_import(UploadBulkProductImportRequest $request, BulkProductImportService $bulkImportService)
     {
         try{
-            Excel::import(new ProductImport, $request->file('import_file'));
+            $adminId = (int) Auth::guard('admin')->id();
+            $bulkImport = $bulkImportService->createImportRecord($adminId, 'admin', $request->file('import_file'));
+            $bulkImportService->process($bulkImport);
 
-            $notification=trans('Uploaded Successfully');
+            $notification='Bulk import processed successfully';
             $notification=array('messege'=>$notification,'alert-type'=>'success');
             return redirect()->back()->with($notification);
 
