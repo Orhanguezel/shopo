@@ -65,8 +65,8 @@ export default function Footer({ settings }) {
         <div className="lg:flex justify-between mb-[50px]">
           {/* About Us Section */}
           <div className="lg:w-[424px] ml-0 w-full mb-10 lg:mb-0">
-            <h1 className="text-[18] font-500 text-[#2F2F2F] mb-5">Hakkımızda</h1>
-            <p className="text-[#9A9A9A] text-[15px] w-[247px] leading-[28px]">
+            <h2 className="text-[18px] font-500 text-[#2F2F2F] mb-5">Hakkımızda</h2>
+            <p className="text-[#6B7280] text-[15px] w-[247px] leading-[28px]">
               {footerContent?.about_us}
             </p>
           </div>
@@ -78,20 +78,20 @@ export default function Footer({ settings }) {
               {firstColumn && (
                 <>
                   <div className="mb-5">
-                    <h6 className="text-[18] font-500 text-[#2F2F2F]">
+                    <h3 className="text-[18px] font-500 text-[#2F2F2F]">
                       {firstColumn.columnTitle}
-                    </h6>
+                    </h3>
                   </div>
                   <div>
                     <ul className="flex flex-col space-y-4">
                       {firstColumn.col_links?.length > 0 &&
                         firstColumn.col_links.map((item, i) => (
                           <li key={i}>
-                            <Link href={item.link}>
-                              <span className="text-[#9A9A9A] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
-                                {item.title}
-                              </span>
-                            </Link>
+                              <Link href={item.link}>
+                                <span className="text-qgraytwo text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
+                                  {item.title}
+                                </span>
+                              </Link>
                           </li>
                         ))}
                     </ul>
@@ -106,9 +106,9 @@ export default function Footer({ settings }) {
                 {secondColumn && (
                   <>
                     <div className="mb-5">
-                      <h6 className="text-[18] font-500 text-[#2F2F2F]">
+                      <h3 className="text-[18px] font-500 text-[#2F2F2F]">
                         {secondColumn.columnTitle}
-                      </h6>
+                      </h3>
                     </div>
                     <div>
                       <ul className="flex flex-col space-y-4">
@@ -116,7 +116,7 @@ export default function Footer({ settings }) {
                           secondColumn.col_links.map((item, i) => (
                             <li key={i}>
                               <Link href={item.link}>
-                                <span className="text-[#9A9A9A] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
+                                <span className="text-[#6B7280] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
                                   {item.title}
                                 </span>
                               </Link>
@@ -135,9 +135,9 @@ export default function Footer({ settings }) {
                 {thirdColumn && (
                   <>
                     <div className="mb-5">
-                      <h6 className="text-[18] font-500 text-[#2F2F2F]">
+                      <h3 className="text-[18px] font-500 text-[#2F2F2F]">
                         {thirdColumn.columnTitle}
-                      </h6>
+                      </h3>
                     </div>
                     <div>
                       <ul className="flex flex-col space-y-4">
@@ -145,7 +145,7 @@ export default function Footer({ settings }) {
                           thirdColumn.col_links.map((item, i) => (
                             <li key={i}>
                               <Link href={item.link}>
-                                <span className="text-[#9A9A9A] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
+                                <span className="text-[#6B7280] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
                                   {item.title}
                                 </span>
                               </Link>
@@ -168,9 +168,15 @@ export default function Footer({ settings }) {
               {/* Social Media Links */}
               {socialLinks?.length > 0 &&
                 socialLinks.map((item, i) => (
-                  <a key={i} href={item.link} target="_blank" rel="noreferrer">
+                  <a 
+                    key={i} 
+                    href={item.link} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    aria-label={item.icon?.replace('fab fa-', '') || 'Social Link'}
+                  >
                     <FontAwesomeCom
-                      className="w-4 h-4 text-qgray"
+                      className="w-4 h-4 text-qgraytwo hover:text-qblack transition-colors"
                       icon={item.icon}
                     />
                   </a>
@@ -186,12 +192,12 @@ export default function Footer({ settings }) {
           {/* Payment Methods */}
           {footerContent?.payment_image && (
             <div className="mt-2 lg:mt-0">
-              <Link href="#">
+              <Link href="#" aria-label="Ödeme Yöntemleri">
                 <Image
                   width={318}
                   height={28}
                   src={`${appConfig.BASE_URL + footerContent.payment_image}`}
-                  alt="payment-getways"
+                  alt="Ödeme Yöntemleri"
                 />
               </Link>
             </div>

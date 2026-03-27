@@ -47,7 +47,7 @@ export default function Header({
       <div className="quomodo-shop-drawer lg:hidden block w-full h-[60px] bg-white">
         <div className="w-full h-full flex justify-between items-center px-5">
           {/* Menu Button */}
-          <button onClick={drawerAction} className="p-1">
+          <button onClick={drawerAction} className="p-1" aria-label="Menüyü aç">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"

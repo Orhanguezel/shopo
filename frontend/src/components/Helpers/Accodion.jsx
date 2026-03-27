@@ -23,7 +23,7 @@ export default function Accodion({ init, title, des }) {
         <span className="sm:text-base text-sm font-semibold text-start capitalize">
           {title}
         </span>
-        <span className="text-[#9A9A9A]">
+        <span className="text-[#6B7280]">
           {collaps ? <MinusIcon /> : <PlusIcon />}
         </span>
       </button>

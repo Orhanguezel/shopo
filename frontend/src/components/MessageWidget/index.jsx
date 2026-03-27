@@ -581,7 +581,7 @@ function MessageWidgetContent({ pusher }) {
                   {"Yapay Zeka Asistanı"}
                 </span>
               </div>
-              <button onClick={toggleMessageWidget} type="button">
+              <button onClick={toggleMessageWidget} type="button" aria-label="Mesaj widget'ını kapat">
                 <CloseCircleIcon />
               </button>
             </div>

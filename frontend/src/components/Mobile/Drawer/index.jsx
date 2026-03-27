@@ -54,7 +54,7 @@ export default function Drawer({ className, open, action }) {
           <div className="flex justify-between items-center">
             <div className="flex space-x-5 items-center">
               <div className="compaire relative">
-                <Link href="/products-compare">
+                <Link href="/products-compare" aria-label="Karşılaştır">
                   <span>
                     <Compair className="text-qblack fill-current" />
                   </span>
@@ -64,7 +64,7 @@ export default function Drawer({ className, open, action }) {
                 </span>
               </div>
               <div className="favorite relative">
-                <Link href="/wishlist">
+                <Link href="/wishlist" aria-label="Favorilerim">
                   <span>
                     <ThinLove className="text-qblack fill-current" />
                   </span>
@@ -74,7 +74,7 @@ export default function Drawer({ className, open, action }) {
                 </span>
               </div>
             </div>
-            <button onClick={action} type="button">
+            <button onClick={action} type="button" aria-label="Menüyü kapat">
               <CloseButtonIcon />
             </button>
           </div>
