@@ -133,9 +133,23 @@ Shopo (CodeCanyon) temasina dayali Laravel 10 + Next.js 15 e-ticaret pazaryeri. 
 ### 6. PAZARYERI EKSIKLERI ← CODEX GOREV 3 + 4
 - [x] **Komisyon sistemi:** (GOREV 3) Tamamlandi (DB semasi, Ledger, CommissionService, Admin/Vendor UI)
 - [x] **Iade talep sistemi:** (GOREV 4) Tamamlandi (Durum makinesi, 3 aktor API, Admin Blade, User Frontend)
-- [ ] **Satici KYC/Dogrulama:** Belge yukleme ve admin onay sistemi
-- [ ] **Stok uyarilari:** Dusuk stok bildirimi (admin + satici)
-- [ ] **Toplu urun yukleme:** CSV import ozeligi saticlar icin
+- [x] **Satici KYC/Dogrulama:** Belge yukleme ve admin onay sistemi — TAMAMLANDI (2026-03-27)
+  - Migration: `seller_kyc_documents` tablosu + vendors'a `kyc_status`, `iban`, `tax_number` kolonlari
+  - Seller: belge yukleme (PDF/JPG/PNG, max 5MB), listeleme, silme, durum sorgulama
+  - Admin: bekleyen KYC listesi, belge onay/red, toplu onay
+  - KycStatusNotification: Satici'ya KYC onay/red bildirimi (database)
+  - Form request validation, `checkseller` middleware, `updateOrCreate` pattern
+- [x] **Stok uyarilari:** Dusuk stok bildirimi (admin + satici) — TAMAMLANDI (2026-03-27)
+  - ProductObserver: qty degisiminde threshold kontrolu, seller + admin'e database notification
+  - Admin: stok uyari ayarlari (threshold, enable/disable) + dusuk stoklu urunler listesi
+  - Seller: kendi dusuk stoklu urunleri + bildirim merkezi (list, read, read-all)
+- [x] **Toplu urun yukleme:** CSV import ozeligi saticlar icin — TAMAMLANDI (2026-03-27)
+  - Migration: `bulk_imports` tablosu (progress tracking, error log, status)
+  - BulkProductImportService: CSV parse, validate, resolve categories/brands, create/update products
+  - Seller: CSV yukleme, import gecmisi, import detay, CSV sablon indirme
+  - Admin: toplu yukleme, import listesi
+  - Form request validation (csv/xlsx, max 10MB)
+  - Hata satir bazli JSON log ile takip edilir
 - **Planlar:** `docs/commission-plan.md`, `docs/return-request-plan.md`
 - **Dosyalar:** `backend/app/Models/ReturnRequest.php`, `backend/app/Models/CommissionLedger.php`, `backend/database/migrations/`
 
