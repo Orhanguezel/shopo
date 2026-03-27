@@ -76,7 +76,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="tr">
+    <html lang="tr" translate="no" className="notranslate">
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
         {/* loader */}
         <NextSnakeLoader />
