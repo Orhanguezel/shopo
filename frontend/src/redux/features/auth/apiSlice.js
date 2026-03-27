@@ -5,24 +5,12 @@ import { toast } from "react-toastify";
 export const authApis = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     userSignupApi: builder.mutation({
-      query: (data) => {
+      query: ({ name, email, password, password_confirmation, phone, otp_verified_token, agree }) => {
         return {
           url: apiRoutes.signup,
           method: "POST",
-          body: data,
+          body: { name, email, password, password_confirmation, phone, otp_verified_token, agree },
         };
-      },
-      async onQueryStarted(info, { queryFulfilled }) {
-        try {
-          const { data, meta } = await queryFulfilled;
-          if (info && typeof info.success === "function") {
-            info.success(data, meta.response.status);
-          }
-        } catch (error) {
-          if (info && typeof info.error === "function") {
-            info.error(error?.error);
-          }
-        }
       },
     }),
     userLoginApi: builder.mutation({
