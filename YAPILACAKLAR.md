@@ -226,7 +226,9 @@ Shopo (CodeCanyon) temasina dayali Laravel 10 + Next.js 15 e-ticaret pazaryeri. 
 
 **Pazaryeri:**
 - [ ] Komisyon frontend/admin ekranlarinin API ile tam hizalanmasi — **NOT:** Admin blade views ve API tamamen calisiyor. Seller API endpoints (`/api/seller/earnings`) mevcut ama Next.js'te satici dashboard yok. Bu V2 kapsaminda (Next.js satici paneli).
-- [ ] Return request admin/seller frontend ekranlarinin modernizasyonu
+- [x] Return request admin/seller frontend ekranlarinin modernizasyonu — TAMAMLANDI (2026-03-27)
+  - Admin ve seller Blade liste ekranlari status filtreleri, istatistik kartlari ve iyilestirilmis tablo alanlari ile guncellendi
+  - Admin ve seller detail ekranlari ozet kartlari, kanit gorselleri, not alanlari ve aksiyon akisi ile modernize edildi
 
 **Legacy Gateway Temizligi:** ✅ TAMAMLANDI (2026-03-27)
 - [x] FlutterWave, Mollie, Paystack, Instamojo, SSLCommerz, MyFatoorah, bKash — tamamen kaldirildi. Sadece Iyzico + Havale + Kapida Odeme kaldi.
