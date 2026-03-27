@@ -31,7 +31,7 @@ export default function CampaignCountDown({
                 backgroundSize: "cover",
               }}
             >
-              <div className="w-full xl:p-12 p-5">
+              <div className="w-full h-full xl:p-12 p-5 bg-black/40 flex flex-col justify-between">
                 <div className="countdown-wrapper w-full flex lg:justify-between justify-evenly lg:mb-10 mb-2">
                   <div className="countdown-item">
                     <div className="countdown-number sm:w-[100px] sm:h-[100px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
@@ -39,7 +39,7 @@ export default function CampaignCountDown({
                         {showDate}
                       </span>
                     </div>
-                    <p className="sm:text-[18px] text-[12px] font-500 text-center leading-8">
+                    <p className="sm:text-[18px] text-[12px] font-500 text-center leading-8 text-white">
                       {ServeLangItem()?.Days}
                     </p>
                   </div>
@@ -49,7 +49,7 @@ export default function CampaignCountDown({
                         {showHour}
                       </span>
                     </div>
-                    <p className="sm:text-[18px] text-[12px] font-500 text-center leading-8">
+                    <p className="sm:text-[18px] text-[12px] font-500 text-center leading-8 text-white">
                       {ServeLangItem()?.Hours}
                     </p>
                   </div>
@@ -59,7 +59,7 @@ export default function CampaignCountDown({
                         {showMinute}
                       </span>
                     </div>
-                    <p className="sm:text-[18px] text-[12px] font-500 text-center leading-8">
+                    <p className="sm:text-[18px] text-[12px] font-500 text-center leading-8 text-white">
                       {ServeLangItem()?.Minutes}
                     </p>
                   </div>
@@ -69,20 +69,22 @@ export default function CampaignCountDown({
                         {showSecound}
                       </span>
                     </div>
-                    <p className="sm:text-[18px] text-[12px] font-500 text-center leading-8">
+                    <p className="sm:text-[18px] text-[12px] font-500 text-center leading-8 text-white">
                       {ServeLangItem()?.Seconds}
                     </p>
                   </div>
                 </div>
-                <div className="countdown-title mb-4">
-                  <h1 className="text-[44px] text-qblack font-600">
-                    {flashSaleData.title}
-                  </h1>
-                </div>
-                <div className="w-auto">
-                  <Link href="/flash-sale">
-                    <ShopNowBtn />
-                  </Link>
+                <div>
+                  <div className="countdown-title mb-4">
+                    <h1 className="sm:text-[36px] text-[24px] text-white font-700 leading-tight drop-shadow-lg">
+                      {flashSaleData.title}
+                    </h1>
+                  </div>
+                  <div className="w-auto">
+                    <Link href="/flash-sale">
+                      <ShopNowBtn />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

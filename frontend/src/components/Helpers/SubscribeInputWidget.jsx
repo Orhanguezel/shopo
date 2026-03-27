@@ -24,7 +24,7 @@ function SubscribeInputWidget() {
   return (
     <div
       data-aos="fade-right"
-      className="sm:w-[543px] w-[300px] h-[54px] flex mt-8"
+      className="w-full max-w-[543px] h-[54px] flex mt-8"
     >
       <div className="flex-1 bg-white ltr:pl-4 rtl:pr-4 flex rtl:space-x-reverse space-x-2 items-center h-full focus-within:text-qyellow text-qblack">
         <span>
@@ -64,7 +64,7 @@ function SubscribeInputWidget() {
         disabled={isLoading || !email}
         onClick={subscribehandler}
         type="button"
-        className="sm:w-[158px] w-[80px]  h-full bg-qyellow text-sm font-600 disabled:cursor-not-allowed"
+        className="sm:w-[158px] w-[100px] shrink-0 h-full bg-qyellow text-sm font-600 disabled:cursor-not-allowed"
       >
         {ServeLangItem()?.Get_the_Coupon}
       </button>
