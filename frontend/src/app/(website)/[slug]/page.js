@@ -2,6 +2,8 @@ import React, { Suspense } from "react";
 import CustomPageCom from "../../../components/CustomPageCom";
 import apiRoutes from "@/appConfig/apiRoutes";
 
+const DEFAULT_LANGUAGE_CODE = "tr";
+
 /**
  * Generate metadata for the custom page from website setup data
  */
@@ -9,7 +11,10 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   
   try {
-    const response = await fetch(apiRoutes.websiteSetup, { next: { revalidate: 3600 } });
+    const response = await fetch(
+      `${apiRoutes.websiteSetup}?lang_code=${DEFAULT_LANGUAGE_CODE}`,
+      { next: { revalidate: 3600 } }
+    );
     const data = await response.json();
     
     const page = data?.customPages?.find((item) => item.slug === slug);

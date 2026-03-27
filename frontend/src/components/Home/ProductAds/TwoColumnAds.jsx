@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import ShopNowBtn from "../../Helpers/Buttons/ShopNowBtn";
 import ServeLangItem from "../../Helpers/ServeLangItem";
 import appConfig from "@/appConfig";
@@ -16,117 +17,107 @@ function TwoColumnAds({ bannerOne, bannerTwo }) {
               className={`sm:flex xl:space-x-[30px] md:space-x-5 rtl:space-x-reverse items-center w-full h-full  overflow-hidden`}
             >
               {bannerOne && (
-                <div data-aos="fade-right" className={`h-full sm:w-1/2 w-full`}>
-                  <div
-                    style={{
-                      backgroundImage: `url(${
-                        appConfig.BASE_URL + bannerOne.image
-                      })`,
-                      backgroundSize: `cover`,
-                      backgroundRepeat: `no-repeat`,
-                    }}
-                    className="w-full h-full relative ltr:pl-[50px] rtl:pr-[50px] py-[35px] flex flex-col justify-between group"
-                  >
+                <div data-aos="fade-right" className={`h-full sm:w-1/2 w-full rounded-xl overflow-hidden shadow-sm relative`}>
+                  <Image
+                    src={appConfig.BASE_URL + bannerOne.image}
+                    alt={bannerOne.title_two || "Banner 1"}
+                    fill
+                    className="object-cover object-right"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/60 to-transparent pointer-events-none"></div>
+                  <div className="relative z-10 ltr:pl-[40px] rtl:pr-[40px] py-[30px] flex flex-col justify-center h-full max-w-[60%]">
                     <div>
-                      <div className="lg:mb-[22px] mb-2.5">
-                        <span className="text-qblack uppercase text-xs font-semibold">
-                          {bannerOne.badge}
-                        </span>
-                      </div>
-                      <div className="lg:mb-[30px] mb-2.5">
-                        <p className="lg:text-[30px] text-[20px] leading-none text-qblack font-semibold lg:mb-3">
+                      {bannerOne.badge && (
+                        <div className="mb-2">
+                          <span className="bg-qyellow/10 text-qyellow uppercase text-[10px] tracking-wider font-bold px-2 py-1 rounded">
+                            {bannerOne.badge}
+                          </span>
+                        </div>
+                      )}
+                      <div className="mb-6">
+                        <p className="text-lg leading-tight text-qblack font-medium mb-1 line-clamp-1">
                           {bannerOne.title_one}
                         </p>
-                        <h2 className="lg:text-[30px] text-[20px] lg:leading-[40px] text-qblack font-semibold">
+                        <h2 className="text-2xl lg:text-3xl leading-tight text-qblack font-bold line-clamp-2">
                           {bannerOne.title_two}
                         </h2>
                       </div>
                     </div>
-                    <div>
-                      <div className="w-auto">
-                        <Link
-                          href={{
-                            pathname: "/products",
-                            query: { category: bannerOne.product_slug },
-                          }}
-                        >
-                          <ShopNowBtn />
-                        </Link>
-                      </div>
+                    <div className="w-auto">
+                      <Link
+                        href={{
+                          pathname: "/products",
+                          query: { category: bannerOne.product_slug },
+                        }}
+                      >
+                        <div className="inline-flex items-center group/btn cursor-pointer">
+                          <span className="text-sm font-bold text-qblack mr-2 border-b-2 border-qyellow leading-relaxed">
+                            {ServeLangItem()?.Shop_Now}
+                          </span>
+                          <svg
+                              className="w-4 h-4 transition-transform duration-300 transform group-hover/btn:translate-x-1"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                          >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </Link>
                     </div>
                   </div>
                 </div>
               )}
               {bannerTwo && (
-                <div data-aos="fade-left" className={`h-full sm:w-1/2 w-full`}>
-                  <div
-                    style={{
-                      backgroundImage: `url(${
-                        appConfig.BASE_URL + bannerTwo.image
-                      })`,
-                      backgroundSize: `cover`,
-                      backgroundRepeat: `no-repeat`,
-                    }}
-                    className="w-full h-full relative bg-blue-100  ltr:pl-[50px] rtl:pr-[50px] py-[35px] flex flex-col justify-between group"
-                  >
+                <div data-aos="fade-left" className={`h-full sm:w-1/2 w-full rounded-xl overflow-hidden shadow-sm relative`}>
+                  <Image
+                    src={appConfig.BASE_URL + bannerTwo.image}
+                    alt={bannerTwo.title_two || "Banner 2"}
+                    fill
+                    className="object-cover object-right"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/60 to-transparent pointer-events-none"></div>
+                  <div className="relative z-10 ltr:pl-[40px] rtl:pr-[40px] py-[30px] flex flex-col justify-center h-full max-w-[60%]">
                     <div>
-                      <div className="lg:mb-[22px] mb-2.5">
-                        <span className="text-qblack uppercase text-xs font-semibold">
-                          {bannerTwo.badge}
-                        </span>
-                      </div>
-                      <div className="lg:mb-[30px] mb-2.5">
-                        <p className="lg:text-[30px] leading-none text-qblack font-semibold lg:mb-3">
+                      {bannerTwo.badge && (
+                        <div className="mb-2">
+                          <span className="bg-qyellow/10 text-qyellow uppercase text-[10px] tracking-wider font-bold px-2 py-1 rounded">
+                            {bannerTwo.badge}
+                          </span>
+                        </div>
+                      )}
+                      <div className="mb-6">
+                        <p className="text-lg leading-tight text-qblack font-medium mb-1 line-clamp-1">
                           {bannerTwo.title_one}
                         </p>
-                        <h2 className="lg:text-[30px] text-[20px] lg:leading-[40px] text-qblack font-semibold">
+                        <h2 className="text-2xl lg:text-3xl leading-tight text-qblack font-bold line-clamp-2">
                           {bannerTwo.title_two}
                         </h2>
                       </div>
                     </div>
-                    <div>
-                      <div className="w-auto">
-                        <Link
-                          href={{
-                            pathname: "/products",
-                            query: { category: bannerTwo.product_slug },
-                          }}
-                        >
-                          <div className="cursor-pointer w-full relative  ">
-                            <div className="inline-flex  space-x-1.5 rtl:space-x-reverse items-center relative z-20">
-                              <span className="text-sm text-qblack font-medium leading-[30px]">
-                                {ServeLangItem()?.Shop_Now}
-                              </span>
-                              <span className="leading-[30px]">
-                                <svg
-                                  className={`transform rtl:rotate-180 text-qblack fill-current`}
-                                  width="7"
-                                  height="11"
-                                  viewBox="0 0 7 11"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <rect
-                                    x="2.08984"
-                                    y="0.636719"
-                                    width="6.94219"
-                                    height="1.54271"
-                                    transform="rotate(45 2.08984 0.636719)"
-                                  />
-                                  <rect
-                                    x="7"
-                                    y="5.54492"
-                                    width="6.94219"
-                                    height="1.54271"
-                                    transform="rotate(135 7 5.54492)"
-                                  />
-                                </svg>
-                              </span>
-                            </div>
-                            <div className="w-[82px] transition-all duration-300 ease-in-out group-hover:h-4 h-[0px] bg-qyellow absolute left-0 bottom-0 z-10"></div>
-                          </div>
-                        </Link>
-                      </div>
+                    <div className="w-auto">
+                      <Link
+                        href={{
+                          pathname: "/products",
+                          query: { category: bannerTwo.product_slug },
+                        }}
+                      >
+                        <div className="inline-flex items-center group/btn cursor-pointer">
+                          <span className="text-sm font-bold text-qblack mr-2 border-b-2 border-qyellow leading-relaxed">
+                            {ServeLangItem()?.Shop_Now}
+                          </span>
+                          <svg
+                              className="w-4 h-4 transition-transform duration-300 transform group-hover/btn:translate-x-1"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                          >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </Link>
                     </div>
                   </div>
                 </div>

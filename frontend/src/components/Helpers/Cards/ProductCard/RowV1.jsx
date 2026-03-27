@@ -17,7 +17,6 @@ function RowV1({
   price,
   isProductInFlashSale,
   addToCart,
-  quickViewHandler,
   arWishlist,
   addToWishlist,
   removeToWishlist,
@@ -132,15 +131,17 @@ function RowV1({
         </div>
         {/* quick-access-btns */}
         <div className="quick-access-btns flex flex-col space-y-2">
-          <button
+          <Link
             className=" absolute group-hover:left-4 -left-10 top-5  transition-all ease-in-out"
-            type="button"
-            onClick={() => quickViewHandler(datas.slug)}
+            href={{
+              pathname: "/single-product",
+              query: { slug: datas.slug },
+            }}
           >
             <span className="hover:bg-qyellow w-10 h-10 flex justify-center text-black hover:text-white items-center transition-all duration-300 ease-in-out hover-bg-qyellow bg-primarygray rounded">
               <QuickViewIco className="fill-current" />
             </span>
-          </button>
+          </Link>
           {!arWishlist ? (
             <button
               className=" absolute group-hover:left-4 -left-10 top-[60px] duration-300   transition-all ease-in-out"

@@ -43,6 +43,11 @@ return [
         'redirect' => '',
     ],
 
+    'geliver' => [
+        'api_token' => env('GELIVER_API_TOKEN'),
+        'default_sender_address_id' => env('GELIVER_SENDER_ADDRESS_ID'),
+    ],
+
 
 
 ];

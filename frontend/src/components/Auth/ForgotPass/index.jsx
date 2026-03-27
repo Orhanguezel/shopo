@@ -75,6 +75,7 @@ export default function ForgotPass() {
   const [resetPass, setResetpass] = useState(false);
   const [forgotUser, setForgotUser] = useState(true);
   const [errors, setErrors] = useState(null);
+  const [devOtpCode, setDevOtpCode] = useState("");
   const [imgThumb, setImgThumb] = useState(null);
   const loginImage =
     imgThumb && imgThumb !== IMAGE_FALLBACK
@@ -115,8 +116,12 @@ export default function ForgotPass() {
       setResetpass(true);
       setForgotUser(false);
       setErrors(null);
+      if (data?.otp_code) {
+        setDevOtpCode(data.otp_code);
+      }
       toast.success(
-        data?.notification || data?.message || "Verification code sent."
+        data?.notification || data?.message || "Verification code sent.",
+        { autoClose: data?.otp_code ? 15000 : 5000 }
       );
     } else {
       toast.error(data?.notification || data?.message);
@@ -180,6 +185,7 @@ export default function ForgotPass() {
         }
 
         await userResetApi({
+          otp: data.token,
           otp_verified_token: data.token,
           phone: fields.phone.trim(),
           password: fields.newPass,
@@ -293,6 +299,13 @@ export default function ForgotPass() {
 
       {/* Form Inputs */}
       <div className="input-area">
+        {devOtpCode && (
+          <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 rounded text-center">
+            <span className="text-sm text-yellow-800 font-bold">
+              DEV MODE — OTP Kodu: {devOtpCode}
+            </span>
+          </div>
+        )}
         {/* OTP Input Field */}
         <div className="input-item mb-5">
           <InputCom

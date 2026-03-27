@@ -1,0 +1,21 @@
+<?php
+
+return [
+    'provider' => env('SMS_PROVIDER', 'iletimerkezi'),
+
+    'otp' => [
+        'length' => (int) env('OTP_LENGTH', 6),
+        'expire_minutes' => (int) env('OTP_EXPIRE_MINUTES', 5),
+        'max_attempts' => (int) env('OTP_MAX_ATTEMPTS', 3),
+        'cooldown_seconds' => (int) env('OTP_COOLDOWN_SECONDS', 60),
+    ],
+
+    'drivers' => [
+        'iletimerkezi' => [
+            'endpoint' => env('ILETIMERKEZI_ENDPOINT', 'https://api.iletimerkezi.com/v1/send-sms'),
+            'api_key' => env('ILETIMERKEZI_API_KEY'),
+            'api_hash' => env('ILETIMERKEZI_API_HASH'),
+            'sender' => env('ILETIMERKEZI_SENDER'),
+        ],
+    ],
+];

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c8f72d1a5ef6470b314dc57ef3838cb",
+    "content-hash": "e9bc2e4ed98468191a5fd46671896278",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -996,6 +996,44 @@
                 }
             ],
             "time": "2025-12-03T09:33:47+00:00"
+        },
+        {
+            "name": "geliver/sdk",
+            "version": "1.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/GeliverApp/geliver-php.git",
+                "reference": "1cb60c8adc336ff2e260e0d628bff579887814fa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/GeliverApp/geliver-php/zipball/1cb60c8adc336ff2e260e0d628bff579887814fa",
+                "reference": "1cb60c8adc336ff2e260e0d628bff579887814fa",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.8",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Geliver\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Geliver API SDK (PHP)",
+            "support": {
+                "issues": "https://github.com/GeliverApp/geliver-php/issues",
+                "source": "https://github.com/GeliverApp/geliver-php/tree/v1.2.2"
+            },
+            "time": "2026-03-05T23:59:45+00:00"
         },
         {
             "name": "google/recaptcha",
@@ -10079,6 +10117,6 @@
     "platform": {
         "php": "^8.1"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
 }

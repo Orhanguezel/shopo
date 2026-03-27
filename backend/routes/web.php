@@ -61,6 +61,9 @@ use App\Http\Controllers\WEB\Admin\AdvertisementController;
 use App\Http\Controllers\WEB\Admin\EmailTemplateController;
 use App\Http\Controllers\WEB\Admin\PaymentMethodController;
 use App\Http\Controllers\WEB\Admin\PrivacyPolicyController;
+use App\Http\Controllers\WEB\Admin\AiSettingsController;
+use App\Http\Controllers\WEB\Admin\GeliverSettingsController;
+use App\Http\Controllers\WEB\Admin\OrderCargoController;
 use App\Http\Controllers\WEB\Admin\CommissionController;
 use App\Http\Controllers\WEB\Admin\SellerKycController as AdminSellerKycController;
 use App\Http\Controllers\WEB\Admin\StockAlertController as WebAdminStockAlertController;
@@ -190,6 +193,7 @@ Route::group(['middleware' => ['XSS']], function () {
             Route::post('update-lat-long', [SellerProfileController::class, 'updateLocation'])->name('update.lat-long');
 
             Route::resource('product', SellerProductController::class);
+            Route::post('ai-generate-content', [SellerProductController::class, 'aiGenerateContent'])->name('ai-generate-content');
             Route::get('stockout-product', [SellerProductController::class, 'stockoutProduct'])->name('stockout-product');
             Route::put('product-status/{id}', [SellerProductController::class, 'changeStatus'])->name('product-status');
             Route::put('removed-product-exist-specification/{id}', [SellerProductController::class, 'removedProductExistSpecification'])->name('removed-product-exist-specification');
@@ -450,6 +454,9 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::put('update-social-login', [SettingController::class, 'updateSocialLogin'])->name('update-social-login');
         Route::put('update-facebook-pixel', [SettingController::class, 'updateFacebookPixel'])->name('update-facebook-pixel');
         Route::put('update-pusher', [SettingController::class, 'updatePusher'])->name('update-pusher');
+        Route::get('geliver-settings', [GeliverSettingsController::class, 'index'])->name('geliver-settings');
+        Route::put('update-geliver-settings', [GeliverSettingsController::class, 'update'])->name('update-geliver-settings');
+        Route::post('geliver-settings/create-sender-address', [GeliverSettingsController::class, 'createSenderAddress'])->name('geliver-settings.create-sender-address');
 
 
         Route::resource('admin', AdminController::class);
@@ -687,6 +694,10 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::get('declined-order', [OrderController::class, 'declinedOrder'])->name('declined-order');
         Route::get('cash-on-delivery', [OrderController::class, 'cashOnDelivery'])->name('cash-on-delivery');
         Route::get('order-show/{id}', [OrderController::class, 'show'])->name('order-show');
+        Route::get('orders/{orderId}/cargo', [OrderCargoController::class, 'show'])->name('orders.cargo.show');
+        Route::get('orders/{orderId}/cargo/offers', [OrderCargoController::class, 'offers'])->name('orders.cargo.offers');
+        Route::post('orders/{orderId}/cargo', [OrderCargoController::class, 'createShipment'])->name('orders.cargo.create');
+        Route::delete('orders/{orderId}/cargo', [OrderCargoController::class, 'cancel'])->name('orders.cargo.cancel');
         Route::delete('delete-order/{id}', [OrderController::class, 'destroy'])->name('delete-order');
         Route::put('update-order-status/{id}', [OrderController::class, 'updateOrderStatus'])->name('update-order-status');
 
@@ -696,6 +707,21 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::put('update-vendor-commission-rate/{id}', [CommissionController::class, 'updateVendorRate'])->name('update-vendor-commission-rate');
         Route::delete('reset-vendor-commission-rate/{id}', [CommissionController::class, 'resetVendorRate'])->name('reset-vendor-commission-rate');
         Route::get('commission-report', [CommissionController::class, 'report'])->name('commission-report');
+
+        // AI Settings Routes
+        Route::get('ai-settings', [AiSettingsController::class, 'settings'])->name('ai-settings');
+        Route::put('update-ai-settings', [AiSettingsController::class, 'update'])->name('update-ai-settings');
+        Route::post('test-ai-connection', [AiSettingsController::class, 'testConnection'])->name('test-ai-connection');
+        Route::post('ai-generate-content', [AiSettingsController::class, 'generateContent'])->name('ai-generate-content');
+
+        // AI Chat Routes
+        Route::get('ai-chat-settings', [App\Http\Controllers\WEB\Admin\AiChatController::class, 'settings'])->name('ai-chat-settings');
+        Route::put('update-ai-chat-settings', [App\Http\Controllers\WEB\Admin\AiChatController::class, 'updateSettings'])->name('update-ai-chat-settings');
+        Route::post('ai-chat-knowledge', [App\Http\Controllers\WEB\Admin\AiChatController::class, 'storeKnowledge'])->name('ai-chat-knowledge.store');
+        Route::put('ai-chat-knowledge/{id}', [App\Http\Controllers\WEB\Admin\AiChatController::class, 'updateKnowledge'])->name('ai-chat-knowledge.update');
+        Route::delete('ai-chat-knowledge/{id}', [App\Http\Controllers\WEB\Admin\AiChatController::class, 'deleteKnowledge'])->name('ai-chat-knowledge.delete');
+        Route::put('ai-chat-knowledge/{id}/toggle', [App\Http\Controllers\WEB\Admin\AiChatController::class, 'toggleKnowledge'])->name('ai-chat-knowledge.toggle');
+        Route::get('ai-chat-conversation/{id}/messages', [App\Http\Controllers\WEB\Admin\AiChatController::class, 'conversationMessages'])->name('ai-chat-conversation.messages');
 
         // Return Request Routes
         Route::get('return-requests', [App\Http\Controllers\WEB\Admin\ReturnRequestController::class, 'index'])->name('return-requests.index');

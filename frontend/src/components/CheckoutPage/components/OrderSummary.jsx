@@ -3,6 +3,7 @@ import wordCount from "@/utils/wordCount";
 import ServeLangItem from "@/components/Helpers/ServeLangItem";
 import CurrencyConvert from "@/components/Shared/CurrencyConvert";
 import CheckProductIsExistsInFlashSale from "@/components/Shared/CheckProductIsExistsInFlashSale";
+import FreeShippingBar from "@/components/Shared/FreeShippingBar";
 import { calculateProductPrice } from "../utils/checkoutUtils";
 
 const OrderSummary = ({
@@ -96,10 +97,10 @@ const OrderSummary = ({
       <div className="sub-total mb-6">
         <div className="flex justify-between mb-5">
           <p className="text-[13px] font-medium text-qblack uppercase">
-            {ServeLangItem()?.Product}
+            Ürün
           </p>
           <p className="text-[13px] font-medium text-qblack uppercase">
-            {ServeLangItem()?.total}
+            Toplam
           </p>
         </div>
         <div className="w-full h-[1px] bg-[#EDEDED]"></div>
@@ -156,7 +157,7 @@ const OrderSummary = ({
       <div className="mt-[20px]">
         <div className="flex justify-between mb-5">
           <p className="text-[13px] text-qblack uppercase font-bold">
-            {ServeLangItem()?.SUBTOTAL}
+            Ara Toplam
           </p>
           <p
             suppressHydrationWarning
@@ -167,7 +168,7 @@ const OrderSummary = ({
         </div>
         <div className="flex justify-between mb-5">
           <p className="text-[13px] text-qblack uppercase font-bold">
-            {ServeLangItem()?.Discount_coupon} (-)
+            İndirim Kuponu (-)
           </p>
           <p
             suppressHydrationWarning
@@ -178,10 +179,13 @@ const OrderSummary = ({
         </div>
       </div>
 
+      {/* Free Shipping Progress Bar */}
+      <FreeShippingBar totalPrice={totalPrice} />
+
       {/* Shipping Section */}
       <div className="shipping mb-6 mt-6">
         <span className="text-[15px] font-medium text-qblack mb-[18px] block">
-          {ServeLangItem()?.Shipping} (+)
+          Kargo (+)
         </span>
 
         {Number(webSettings?.map_status) !== 1 ? (
@@ -192,12 +196,11 @@ const OrderSummary = ({
               )
             ) : (
               <div className="flex space-x-2 justify-center items-center text-qblack">
-                <p className="text-sm text-center">Select Shipping Address</p>
+                <p className="text-sm text-center">Teslimat adresi seçin</p>
                 <span
                   className="cursor-pointer"
-                  title="Please provide your shipping information or create a shipping address. Without a shipping address, you won't be able to place an order. If you need help, contact the administrator."
+                  title="Lütfen teslimat bilgilerinizi girin veya bir teslimat adresi oluşturun. Teslimat adresi olmadan sipariş veremezsiniz."
                 >
-                  {/* ShippingInfoIco component would go here */}
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
@@ -218,7 +221,7 @@ const OrderSummary = ({
             {locationShippingPrice && (
               <div className="flex justify-between items-center">
                 <span className="text-[15px] text-normal text-qgraytwo">
-                  Shipping Price
+                  Kargo Ücreti
                 </span>
                 <span
                   suppressHydrationWarning
@@ -236,7 +239,7 @@ const OrderSummary = ({
       <div className="mt-[30px]">
         <div className="flex justify-between mb-5">
           <p className="text-2xl font-medium text-qblack capitalize">
-            {ServeLangItem()?.total}
+            Toplam
           </p>
           <p
             suppressHydrationWarning

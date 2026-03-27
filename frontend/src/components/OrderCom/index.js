@@ -81,6 +81,8 @@ function OrderComContent({ resData, orderStatus, orderId }) {
     loadReturnableItems();
   }, [orderId]);
 
+  const isPaymentSuccess = urlQuery.get("payment_status") === "success";
+
   return (
     <div className="w-full pt-[30px] pb-[60px]">
       <div className="order-tracking-wrapper w-full">
@@ -91,6 +93,27 @@ function OrderComContent({ resData, orderStatus, orderId }) {
               { name: ServeLangItem()?.Order, path: `/order/${orderId}` },
             ]}
           />
+
+          {isPaymentSuccess && (
+            <div className="mb-6 rounded-2xl bg-green-50 border border-green-200 p-6 print:hidden">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-green-800">
+                    {ServeLangItem()?.Payment_Successful || "Ödemeniz Başarıyla Alındı!"}
+                  </h2>
+                  <p className="text-green-600 text-sm mt-1">
+                    {ServeLangItem()?.Payment_Success_Message || "Siparişiniz onaylandı. Aşağıda sipariş detaylarınızı görebilirsiniz."}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="w-full h-[168px]  bg-[#CBECFF] rounded-2xl mb-10 relative print:hidden">
             <div className="w-full px-10 flex justify-between pt-3 mb-7">
               <div>
@@ -102,9 +125,9 @@ function OrderComContent({ resData, orderStatus, orderId }) {
                 )}
               </div>
               <div>
-                {orderStatus === "Declined" && (
+                {orderStatus === "Reddedildi" && (
                   <p className="text-base font-bold text-qred mr-10">
-                    {ServeLangItem()?.Your_order_is_declined}!
+                    {ServeLangItem()?.Your_order_is_declined || "Siparişiniz reddedildi"}!
                   </p>
                 )}
               </div>
@@ -120,18 +143,18 @@ function OrderComContent({ resData, orderStatus, orderId }) {
               <div className="relative">
                 <div
                   className={`w-[30px] h-[30px] border-[8px] rounded-full  bg-white relative z-20 ${
-                    orderStatus === "Progress" ||
-                    orderStatus === "Delivered" ||
-                    orderStatus === "Completed"
+                    orderStatus === "Hazırlanıyor" ||
+                    orderStatus === "Teslim Edildi" ||
+                    orderStatus === "Tamamlandı"
                       ? "border-qyellow"
                       : "border-qgray"
                   }`}
                 ></div>
                 <div
                   className={`lg:w-[400px] w-[100px] h-[8px] absolute ltr:lg:-left-[390px] ltr:-left-[92px] rtl:lg:-right-[390px] rtl:-right-[92px] top-[10px] z-10  ${
-                    orderStatus === "Progress" ||
-                    orderStatus === "Delivered" ||
-                    orderStatus === "Completed"
+                    orderStatus === "Hazırlanıyor" ||
+                    orderStatus === "Teslim Edildi" ||
+                    orderStatus === "Tamamlandı"
                       ? "primary-bg"
                       : "bg-white"
                   }`}
@@ -143,14 +166,14 @@ function OrderComContent({ resData, orderStatus, orderId }) {
               <div className="relative">
                 <div
                   className={`w-[30px] h-[30px] border-[8px] rounded-full bg-white  relative z-20 ${
-                    orderStatus === "Delivered" || orderStatus === "Completed"
+                    orderStatus === "Teslim Edildi" || orderStatus === "Tamamlandı"
                       ? "border-qyellow"
                       : "border-qgray"
                   }`}
                 ></div>
                 <div
                   className={`lg:w-[400px] w-[100px] h-[8px] absolute ltr:lg:-left-[390px] ltr:-left-[92px] rtl:lg:-right-[390px] rtl:-right-[92px] top-[10px] z-10 ${
-                    orderStatus === "Delivered" || orderStatus === "Completed"
+                    orderStatus === "Teslim Edildi" || orderStatus === "Tamamlandı"
                       ? "primary-bg"
                       : "bg-white"
                   }`}
@@ -209,8 +232,8 @@ function OrderComContent({ resData, orderStatus, orderId }) {
                         parseInt(
                           resData.order_address.shipping_address_type
                         ) === 1
-                          ? "Office"
-                          : "Home"}
+                          ? "Ofis"
+                          : "Ev"}
                       </span>
                     </li>
                   </ul>
@@ -292,7 +315,7 @@ function OrderComContent({ resData, orderStatus, orderId }) {
                           </button>
                         )}
                         {auth() &&
-                          [ "Delivered", "Completed" ].includes(orderStatus) &&
+                          [ "Teslim Edildi", "Tamamlandı" ].includes(orderStatus) &&
                           returnableItems[item.id]?.is_returnable && (
                           <button
                             onClick={() =>
@@ -301,7 +324,7 @@ function OrderComContent({ resData, orderStatus, orderId }) {
                             type="button"
                             className="text-qred text-sm font-semibold capitalize"
                           >
-                            Return
+                            İade Et
                           </button>
                         )}
                       </td>

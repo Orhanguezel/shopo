@@ -23,7 +23,7 @@ export default function Selectbox({
     if (defaultValue) {
       setItem({ name: defaultValue });
     } else {
-      setItem({ name: "Select" });
+      setItem({ name: "Seçiniz" });
     }
   }, [datas, defaultValue]);
 

@@ -17,12 +17,12 @@ import {
 } from "@/redux/features/auth/apiSlice";
 
 const DOCUMENT_TYPE_OPTIONS = [
-  { value: "identity_front", label: "Identity Front" },
-  { value: "identity_back", label: "Identity Back" },
-  { value: "tax_certificate", label: "Tax Certificate" },
-  { value: "address_proof", label: "Address Proof" },
-  { value: "bank_statement", label: "Bank Statement" },
-  { value: "iban_document", label: "IBAN Document" },
+  { value: "identity_front", label: "Kimlik Ön Yüz" },
+  { value: "identity_back", label: "Kimlik Arka Yüz" },
+  { value: "tax_certificate", label: "Vergi Belgesi" },
+  { value: "address_proof", label: "Adres Belgesi" },
+  { value: "bank_statement", label: "Banka Hesap Özeti" },
+  { value: "iban_document", label: "IBAN Belgesi" },
 ];
 
 const STATUS_STYLES = {
@@ -79,10 +79,10 @@ function ErrorList({ errors = [] }) {
     <div className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">
       {errors.slice(0, 3).map((error, index) => (
         <p key={`${error.row || index}-${error.message}`}>
-          Row {error.row || "?"}: {error.message}
+          Satır {error.row || "?"}: {error.message}
         </p>
       ))}
-      {errors.length > 3 ? <p>+{errors.length - 3} more errors</p> : null}
+      {errors.length > 3 ? <p>+{errors.length - 3} hata daha</p> : null}
     </div>
   );
 }
@@ -96,7 +96,7 @@ function extractNotificationMessage(notification) {
     return notification.data.title;
   }
 
-  return "Notification received.";
+  return "Bildirim alındı.";
 }
 
 export default function SellerOperationsTab({ token, isActive, isSeller }) {
@@ -185,9 +185,9 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
   if (!isSeller) {
     return (
       <div className="rounded-lg border border-qgray-border p-6">
-        <h2 className="text-xl font-semibold text-qblack">Seller Tools</h2>
+        <h2 className="text-xl font-semibold text-qblack">Satıcı Araçları</h2>
         <p className="mt-3 text-sm text-qgray">
-          This section is available only for seller accounts.
+          Bu alan yalnızca satıcı hesaplarında kullanılabilir.
         </p>
       </div>
     );
@@ -197,7 +197,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
     event.preventDefault();
 
     if (!kycForm.document) {
-      toast.error("Please choose a document file.");
+      toast.error("Lütfen bir belge dosyası seçin.");
       return;
     }
 
@@ -210,7 +210,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
         tax_number: kycForm.taxNumber.trim() || null,
       },
       success: async (data) => {
-        toast.success(data?.message || "KYC document uploaded.");
+        toast.success(data?.message || "KYC belgesi yüklendi.");
         setKycForm((prev) => ({
           ...prev,
           document: null,
@@ -222,7 +222,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
         await Promise.all([refetchKycDocuments(), refetchKycStatus()]);
       },
       error: (error) => {
-        toast.error(error?.data?.message || "KYC upload failed.");
+        toast.error(error?.data?.message || "KYC yükleme başarısız oldu.");
       },
     });
   };
@@ -232,11 +232,11 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
       token,
       id,
       success: async (data) => {
-        toast.success(data?.message || "KYC document deleted.");
+        toast.success(data?.message || "KYC belgesi silindi.");
         await Promise.all([refetchKycDocuments(), refetchKycStatus()]);
       },
       error: (error) => {
-        toast.error(error?.data?.message || "Document could not be deleted.");
+        toast.error(error?.data?.message || "Belge silinemedi.");
       },
     });
   };
@@ -245,7 +245,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
     event.preventDefault();
 
     if (!bulkFile) {
-      toast.error("Please choose a CSV or XLSX file.");
+      toast.error("Lütfen bir CSV veya XLSX dosyası seçin.");
       return;
     }
 
@@ -253,7 +253,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
       token,
       file: bulkFile,
       success: async (data) => {
-        toast.success(data?.message || "Bulk import processed.");
+        toast.success(data?.message || "Toplu içe aktarma işlendi.");
         setBulkFile(null);
         const fileInput = document.getElementById("seller-bulk-import-file");
         if (fileInput) {
@@ -262,7 +262,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
         await refetchBulkImports();
       },
       error: (error) => {
-        toast.error(error?.data?.message || "Bulk import failed.");
+        toast.error(error?.data?.message || "Toplu içe aktarma başarısız oldu.");
       },
     });
   };
@@ -281,11 +281,11 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
       token,
       id,
       success: async (data) => {
-        toast.success(data?.message || "Notification marked as read.");
+        toast.success(data?.message || "Bildirim okundu olarak işaretlendi.");
         await refetchNotifications();
       },
       error: (error) => {
-        toast.error(error?.data?.message || "Notification update failed.");
+        toast.error(error?.data?.message || "Bildirim güncellenemedi.");
       },
     });
   };
@@ -294,11 +294,11 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
     await markAllSellerNotificationsReadApi({
       token,
       success: async (data) => {
-        toast.success(data?.message || "All notifications marked as read.");
+        toast.success(data?.message || "Tüm bildirimler okundu olarak işaretlendi.");
         await refetchNotifications();
       },
       error: (error) => {
-        toast.error(error?.data?.message || "Bulk notification update failed.");
+        toast.error(error?.data?.message || "Toplu bildirim güncellemesi başarısız oldu.");
       },
     });
   };
@@ -308,9 +308,9 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
       <div className="rounded-lg border border-qgray-border p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-qblack">Seller KYC</h2>
+            <h2 className="text-xl font-semibold text-qblack">Satıcı KYC</h2>
             <p className="mt-1 text-sm text-qgray">
-              Upload the required documents to keep your seller account active.
+              Satıcı hesabınızı aktif tutmak için gerekli belgeleri yükleyin.
             </p>
           </div>
           <span
@@ -324,25 +324,25 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
 
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-lg bg-gray-50 p-4">
-            <p className="text-sm text-qgray">Submitted</p>
+            <p className="text-sm text-qgray">Gönderildi</p>
             <p className="mt-2 text-sm font-semibold text-qblack">
               {formatDateTime(sellerKycStatusApi?.status?.submitted_at)}
             </p>
           </div>
           <div className="rounded-lg bg-gray-50 p-4">
-            <p className="text-sm text-qgray">Approved</p>
+            <p className="text-sm text-qgray">Onaylandı</p>
             <p className="mt-2 text-sm font-semibold text-qblack">
               {formatDateTime(sellerKycStatusApi?.status?.approved_at)}
             </p>
           </div>
           <div className="rounded-lg bg-gray-50 p-4">
-            <p className="text-sm text-qgray">Documents</p>
+            <p className="text-sm text-qgray">Belgeler</p>
             <p className="mt-2 text-sm font-semibold text-qblack">
               {sellerKycStatusApi?.status?.document_count || 0}
             </p>
           </div>
           <div className="rounded-lg bg-gray-50 p-4">
-            <p className="text-sm text-qgray">Rejected Types</p>
+            <p className="text-sm text-qgray">Reddedilen Türler</p>
             <p className="mt-2 text-sm font-semibold text-qblack">
               {sellerKycStatusApi?.status?.rejected_document_types?.length || 0}
             </p>
@@ -351,7 +351,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
 
         <form className="mt-6 grid gap-4 lg:grid-cols-2" onSubmit={handleKycUpload}>
           <div>
-            <label className="mb-2 block text-sm text-qgray">Document Type</label>
+            <label className="mb-2 block text-sm text-qgray">Belge Türü</label>
             <select
               value={kycForm.documentType}
               onChange={(event) =>
@@ -371,7 +371,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-qgray">Document File</label>
+            <label className="mb-2 block text-sm text-qgray">Belge Dosyası</label>
             <input
               id="seller-kyc-document"
               type="file"
@@ -403,7 +403,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-qgray">Tax Number</label>
+            <label className="mb-2 block text-sm text-qgray">Vergi Numarası</label>
             <input
               type="text"
               value={kycForm.taxNumber}
@@ -423,7 +423,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
               disabled={isKycUploading}
               className="h-[46px] px-6 bg-qyellow text-qblack text-sm font-semibold disabled:opacity-60"
             >
-              {isKycUploading ? "Uploading..." : "Upload KYC Document"}
+              {isKycUploading ? "Yükleniyor..." : "KYC Belgesini Yükle"}
             </button>
           </div>
         </form>
@@ -432,12 +432,12 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
           <table className="w-full text-sm text-left text-gray-600">
             <thead>
               <tr className="border-b border-qgray-border text-qgray">
-                <th className="py-3 pr-4 font-medium">Document</th>
-                <th className="py-3 pr-4 font-medium">File</th>
+                <th className="py-3 pr-4 font-medium">Belge</th>
+                <th className="py-3 pr-4 font-medium">Dosya</th>
                 <th className="py-3 pr-4 font-medium">Size</th>
-                <th className="py-3 pr-4 font-medium">Status</th>
-                <th className="py-3 pr-4 font-medium">Reviewed</th>
-                <th className="py-3 font-medium text-right">Action</th>
+                <th className="py-3 pr-4 font-medium">Durum</th>
+                <th className="py-3 pr-4 font-medium">İncelendi</th>
+                <th className="py-3 font-medium text-right">İşlem</th>
               </tr>
             </thead>
             <tbody>
@@ -472,10 +472,10 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
                           onClick={() => handleDeleteDocument(documentItem.id)}
                           className="text-sm font-medium text-red-600 disabled:opacity-60"
                         >
-                          Delete
+                          Sil
                         </button>
                       ) : (
-                        <span className="text-xs text-qgray">Locked</span>
+                        <span className="text-xs text-qgray">Kilitli</span>
                       )}
                     </td>
                   </tr>
@@ -484,8 +484,8 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
                 <tr>
                   <td colSpan="6" className="py-6 text-center text-qgray">
                     {isKycFetching || isKycStatusFetching
-                      ? "Loading seller KYC data..."
-                      : "No KYC documents uploaded yet."}
+                      ? "Satıcı KYC verileri yükleniyor..."
+                      : "Henüz KYC belgesi yüklenmedi."}
                   </td>
                 </tr>
               )}
@@ -497,16 +497,16 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
       <div className="rounded-lg border border-qgray-border p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-qblack">Bulk Product Import</h2>
+            <h2 className="text-xl font-semibold text-qblack">Toplu Ürün İçe Aktarma</h2>
             <p className="mt-1 text-sm text-qgray">
-              Download the template and upload product rows in a single file.
+              Şablonu indirip ürün satırlarını tek dosyada yükleyin.
             </p>
           </div>
           <a
             href={templateUrl}
             className="inline-flex h-[42px] items-center justify-center bg-qblack px-5 text-sm font-semibold text-white"
           >
-            Download Template
+            Şablonu İndir
           </a>
         </div>
 
@@ -523,7 +523,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
             disabled={isBulkUploading}
             className="h-[46px] px-6 bg-qyellow text-qblack text-sm font-semibold disabled:opacity-60"
           >
-            {isBulkUploading ? "Processing..." : "Upload Import File"}
+            {isBulkUploading ? "İşleniyor..." : "İçe Aktarma Dosyasını Yükle"}
           </button>
         </form>
 
@@ -537,7 +537,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
                       {item.original_name || `Import #${item.id}`}
                     </p>
                     <p className="mt-1 text-xs text-qgray">
-                      Started: {formatDateTime(item.started_at || item.created_at)}
+                      Başlangıç: {formatDateTime(item.started_at || item.created_at)}
                     </p>
                   </div>
                   <span
@@ -551,23 +551,23 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
 
                 <div className="mt-4 grid gap-3 md:grid-cols-4">
                   <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="text-xs text-qgray">Rows</p>
+                    <p className="text-xs text-qgray">Satır</p>
                     <p className="mt-1 font-semibold text-qblack">{item.total_rows || 0}</p>
                   </div>
                   <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="text-xs text-qgray">Processed</p>
+                    <p className="text-xs text-qgray">İşlenen</p>
                     <p className="mt-1 font-semibold text-qblack">
                       {item.processed_rows || 0}
                     </p>
                   </div>
                   <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="text-xs text-qgray">Success</p>
+                    <p className="text-xs text-qgray">Başarılı</p>
                     <p className="mt-1 font-semibold text-green-700">
                       {item.success_count || 0}
                     </p>
                   </div>
                   <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="text-xs text-qgray">Errors</p>
+                    <p className="text-xs text-qgray">Hata</p>
                     <p className="mt-1 font-semibold text-red-700">
                       {item.error_count || 0}
                     </p>
@@ -580,8 +580,8 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
           ) : (
             <div className="rounded-lg bg-gray-50 p-4 text-sm text-qgray">
               {isBulkImportsFetching
-                ? "Loading import history..."
-                : "No import history found for this seller account."}
+                ? "İçe aktarma geçmişi yükleniyor..."
+                : "Bu satıcı hesabı için içe aktarma geçmişi bulunamadı."}
             </div>
           )}
         </div>
@@ -591,13 +591,13 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
         <div className="rounded-lg border border-qgray-border p-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-qblack">Low Stock Products</h2>
+              <h2 className="text-xl font-semibold text-qblack">Düşük Stoklu Ürünler</h2>
               <p className="mt-1 text-sm text-qgray">
-                Active products at or below the current stock threshold.
+                Mevcut stok eşiğinde veya altında olan aktif ürünler.
               </p>
             </div>
             <div className="rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-700">
-              Threshold: {lowStockThreshold ?? "-"}
+              Eşik: {lowStockThreshold ?? "-"}
             </div>
           </div>
 
@@ -615,7 +615,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-qgray">Qty</p>
+                    <p className="text-xs text-qgray">Adet</p>
                     <p className="text-lg font-bold text-red-700">{product.qty}</p>
                   </div>
                 </div>
@@ -623,8 +623,8 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
             ) : (
               <div className="rounded-lg bg-gray-50 p-4 text-sm text-qgray">
                 {isLowStockFetching
-                  ? "Loading low stock products..."
-                  : "No low stock products found."}
+                  ? "Düşük stoklu ürünler yükleniyor..."
+                  : "Düşük stoklu ürün bulunamadı."}
               </div>
             )}
           </div>
@@ -633,14 +633,14 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
         <div className="rounded-lg border border-qgray-border p-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-qblack">Notifications</h2>
+              <h2 className="text-xl font-semibold text-qblack">Bildirimler</h2>
               <p className="mt-1 text-sm text-qgray">
-                Seller alerts and operational messages.
+                Satıcı uyarıları ve operasyonel mesajlar.
               </p>
             </div>
             <div className="flex items-center gap-3">
               <span className="rounded-full bg-yellow-50 px-3 py-1 text-sm font-semibold text-yellow-800">
-                Unread: {unreadCount}
+                Okunmamış: {unreadCount}
               </span>
               <button
                 type="button"
@@ -648,7 +648,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
                 onClick={handleMarkAllNotificationsRead}
                 className="text-sm font-semibold text-qblack underline disabled:opacity-50"
               >
-                Mark all read
+                Tümünü okundu yap
               </button>
             </div>
           </div>
@@ -670,13 +670,13 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
                         {extractNotificationMessage(notification)}
                       </p>
                       <p className="mt-1 text-xs text-qgray">
-                        Type: {notification.data?.type || "general"} |{" "}
+                        Tür: {notification.data?.type || "genel"} |{" "}
                         {formatDateTime(notification.created_at)}
                       </p>
                     </div>
                     {notification.read_at ? (
                       <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                        Read
+                        Okundu
                       </span>
                     ) : (
                       <button
@@ -685,7 +685,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
                         onClick={() => handleNotificationRead(notification.id)}
                         className="text-sm font-semibold text-qblack underline disabled:opacity-50"
                       >
-                        Mark read
+                        Okundu yap
                       </button>
                     )}
                   </div>
@@ -694,8 +694,8 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
             ) : (
               <div className="rounded-lg bg-gray-50 p-4 text-sm text-qgray">
                 {isNotificationsFetching
-                  ? "Loading notifications..."
-                  : "No notifications found."}
+                  ? "Bildirimler yükleniyor..."
+                  : "Bildirim bulunamadı."}
               </div>
             )}
           </div>

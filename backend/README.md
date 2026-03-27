@@ -1,103 +1,156 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Seyfibaba Backend (Laravel 10)
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Seyfibaba pazaryeri platformunun backend API'si. CodeCanyon Shopo temasina dayali, Turkiye odakli e-ticaret pazaryeri.
 
-## About Laravel
+## Gereksinimler
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP >= 8.1
+- Composer
+- MySQL 8.x
+- Node.js (webpack mix icin, opsiyonel)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[CMS Max](https://www.cmsmax.com/)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-- **[Romega Software](https://romegasoftware.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-## Shopo Test Notes
-
-### Feature Tests
-
-Project feature tests live under `backend/tests/Feature/`.
-
-Current KYC, bulk import, stock alert, and OTP feature tests use in-memory SQLite setup through `tests/Concerns/UsesInMemorySqlite.php`.
-
-Run a filtered test:
+## Kurulum
 
 ```bash
+# 1. Bagimliliklari yukle
+composer install
+
+# 2. Ortam dosyasini olustur
+cp .env.example .env
+
+# 3. Uygulama anahtari olustur
+php artisan key:generate
+
+# 4. JWT secret olustur
+php artisan jwt:secret
+
+# 5. .env dosyasinda veritabani bilgilerini ayarla
+#    DB_DATABASE=seyfibaba
+#    DB_USERNAME=root
+#    DB_PASSWORD=sifren
+
+# 6. Veritabanini olustur
+mysql -u root -p -e "CREATE DATABASE seyfibaba CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# 7. Migration ve seed calistir
+php artisan migrate --seed
+
+# 8. Storage linkini olustur
+php artisan storage:link
+
+# 9. Sunucuyu baslat
+php artisan serve
+```
+
+Backend `http://localhost:8000` adresinde calisir.
+Admin paneli: `http://localhost:8000/admin`
+
+## Ortam Degiskenleri (.env)
+
+| Degisken | Aciklama |
+|----------|----------|
+| `DB_DATABASE` | MySQL veritabani adi |
+| `DB_USERNAME` / `DB_PASSWORD` | MySQL kullanici bilgileri |
+| `JWT_SECRET` | `php artisan jwt:secret` ile olusturulur |
+| `SMS_PROVIDER` | SMS saglayici: `iletimerkezi` veya `netgsm` |
+| `ILETIMERKEZI_API_KEY` / `API_HASH` | Iletimerkezi API bilgileri |
+| `FRONTEND_URL` | Frontend URL (CORS ve callback icin) |
+| `MAIL_*` | SMTP mail ayarlari |
+| `PUSHER_*` | Real-time bildirimler icin Pusher ayarlari |
+
+AI, Iyzico odeme ve Google Maps ayarlari admin panelinden yapilandirilir.
+
+## Sik Kullanilan Komutlar
+
+```bash
+# Sunucuyu baslat
+php artisan serve
+
+# Migration calistir
+php artisan migrate
+
+# Seed calistir
+php artisan db:seed
+
+# Cache temizle
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
+# Hepsini bir seferde temizle
+php artisan optimize:clear
+
+# Route listesi
+php artisan route:list
+
+# Tinker (REPL)
+php artisan tinker
+
+# Kuyruk calistir (bildirimler, mail vb.)
+php artisan queue:work
+```
+
+## Test
+
+```bash
+# Tum testleri calistir
+php artisan test
+
+# Belirli bir test calistir
 php artisan test --filter=SellerKycApiTest
 php artisan test --filter=AdminBulkImportApiTest
 ```
 
-If `pdo_sqlite` is not installed in the local PHP runtime, these tests will be skipped by design.
+Feature testler `tests/Feature/` altindadir. SQLite kullanan testler `pdo_sqlite` eklentisi gerektirir; yoksa otomatik atlanir.
 
-### Marketplace Smoke Script
+### Smoke Test
 
-For environments where PHPUnit database drivers are unavailable, use the HTTP smoke script from the repo root:
+PHPUnit kullanilmadan HTTP uzerinden test:
 
 ```bash
 bash tests/smoke/marketplace-feature-smoke.sh http://localhost:8000 "$SELLER_TOKEN" "$ADMIN_TOKEN"
 ```
 
-The script checks:
+## Proje Yapisi
 
-- public website setup reachability
-- seller KYC endpoints
-- seller bulk import endpoints
-- seller low stock and notification endpoints
-- admin KYC endpoints
-- admin stock alert endpoints
-- admin bulk import endpoints
+```
+app/
+  Http/Controllers/     # API ve web controller'lar
+    API/                 # Mobil/frontend API endpoint'leri
+    WEB/Admin/           # Admin panel controller'lari
+    WEB/Seller/          # Satici panel controller'lari
+    Auth/                # Login, OTP, kayit
+  Models/                # Eloquent modeller
+  Services/              # Business logic servisleri
+config/                  # Uygulama konfigurasyonu
+database/
+  migrations/            # Veritabani migration'lari
+  seeders/               # Seed dosyalari
+resources/views/         # Blade template'ler (admin & seller panel)
+routes/
+  api.php                # API route'lari
+  web.php                # Web route'lari
+public/uploads/          # Yuklenen dosyalar (resimler vb.)
+```
 
-Seller and admin tokens are optional. If omitted, the script skips authenticated checks and only verifies public reachability.
+## Entegrasyonlar
+
+- **Iyzico** — Pazaryeri odeme modeli (sub-merchant destegi), admin panelden yapilandirilir
+- **Iletimerkezi / Netgsm** — OTP SMS dogrulamasi
+- **OpenAI / Claude / Groq** — AI ile urun icerigi olusturma
+- **Pusher** — Real-time bildirimler
+- **Google Maps** — Adres secimi ve harita
+
+## Production
+
+```bash
+# Config ve route cache
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# .env'de
+APP_ENV=production
+APP_DEBUG=false
+```

@@ -126,7 +126,7 @@ export default function SingleProductPage({ details }) {
       setReport(!report);
       toast.success(data?.message);
     } else {
-      toast.warning("Something went wrong");
+      toast.warning("Bir hata olustu");
     }
   };
 
@@ -135,7 +135,7 @@ export default function SingleProductPage({ details }) {
   };
   const productReport = async (id) => {
     if (!id) {
-      toast.error("Product is not available.");
+      toast.error("Urun bulunamadi.");
       return;
     }
 
@@ -219,7 +219,7 @@ export default function SingleProductPage({ details }) {
                             />
                           </svg>
                         </span>{" "}
-                        <span>Videos</span>
+                        <span>Videolar</span>
                       </span>
                     </li>
                   )}

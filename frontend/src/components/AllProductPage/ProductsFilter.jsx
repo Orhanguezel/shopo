@@ -171,7 +171,7 @@ export default function ProductsFilter({
           type="button"
           className="w-full text-sm my-4 text-start text-qred transition-colors duration-200 font-medium"
         >
-          Clear All Filters
+          Tüm filtreleri temizle
         </button>
 
         <button

@@ -57,18 +57,28 @@ class OtpController extends Controller
             (int) config('sms.otp.expire_minutes', 5)
         );
 
-        if (!$this->smsService->send($phone, $message)) {
+        $smsSent = $this->smsService->send($phone, $message);
+
+        if (!$smsSent) {
             return response()->json([
                 'success' => false,
                 'message' => 'OTP could not be sent at this time.',
             ], 500);
         }
 
-        return response()->json([
+        $response = [
             'success' => true,
             'message' => 'OTP sent successfully.',
             'expires_in' => (int) config('sms.otp.expire_minutes', 5) * 60,
-        ]);
+        ];
+
+        // In local/testing, include OTP in response so developers can test without real SMS
+        if (app()->environment('local', 'testing')) {
+            $response['otp_code'] = $otp->otp_code;
+            $response['message'] = "OTP: {$otp->otp_code} (dev mode — SMS not sent)";
+        }
+
+        return response()->json($response);
     }
 
     public function verify(Request $request)

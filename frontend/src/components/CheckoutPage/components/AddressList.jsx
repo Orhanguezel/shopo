@@ -1,5 +1,4 @@
 import React from "react";
-import ServeLangItem from "@/components/Helpers/ServeLangItem";
 import AddressDltCheck from "@/components/Helpers/icons/AddressDltCheck";
 
 const AddressList = ({
@@ -75,7 +74,7 @@ const AddressList = ({
         {/* Address Header */}
         <div className="flex justify-between items-center">
           <p className="title text-[22px] font-semibold">
-            {ServeLangItem()?.Address} #{index + 1}
+            Adres #{index + 1}
           </p>
           <button
             onClick={(e) => handleDeleteAddress(e, address.id)}
@@ -93,7 +92,7 @@ const AddressList = ({
               {/* Name */}
               <tr className="flex mb-3">
                 <td className="text-base text-qgraytwo w-[70px] block line-clamp-1 capitalize">
-                  {ServeLangItem()?.Name}:
+                  Ad:
                 </td>
                 <td className="text-base text-qblack line-clamp-1 font-medium">
                   {address.name}
@@ -103,7 +102,7 @@ const AddressList = ({
               {/* Email */}
               <tr className="flex mb-3">
                 <td className="text-base text-qgraytwo w-[70px] block line-clamp-1 capitalize">
-                  {ServeLangItem()?.Email}:
+                  E-posta:
                 </td>
                 <td className="text-base text-qblack line-clamp-1 font-medium">
                   {address.email}
@@ -113,7 +112,7 @@ const AddressList = ({
               {/* Phone */}
               <tr className="flex mb-3">
                 <td className="text-base text-qgraytwo w-[70px] block line-clamp-1 capitalize">
-                  {ServeLangItem()?.phone}:
+                  Telefon:
                 </td>
                 <td className="text-base text-qblack line-clamp-1 font-medium">
                   {address.phone}
@@ -123,7 +122,7 @@ const AddressList = ({
               {/* Country */}
               <tr className="flex mb-3">
                 <td className="text-base text-qgraytwo w-[70px] block line-clamp-1 capitalize">
-                  {ServeLangItem()?.Country}:
+                  Ülke:
                 </td>
                 <td className="text-base text-qblack line-clamp-1 font-medium">
                   {address.country?.name}
@@ -133,7 +132,7 @@ const AddressList = ({
               {/* State */}
               <tr className="flex mb-3">
                 <td className="text-base text-qgraytwo w-[70px] block line-clamp-1 capitalize">
-                  {ServeLangItem()?.State}:
+                  İl:
                 </td>
                 <td className="text-base text-qblack line-clamp-1 font-medium">
                   {address.country_state?.name}
@@ -143,7 +142,7 @@ const AddressList = ({
               {/* City */}
               <tr className="flex mb-3">
                 <td className="text-base text-qgraytwo w-[70px] block line-clamp-1 capitalize">
-                  {ServeLangItem()?.City}:
+                  İlçe:
                 </td>
                 <td className="text-base text-qblack line-clamp-1 font-medium">
                   {address.city?.name}
@@ -155,7 +154,7 @@ const AddressList = ({
                 <>
                   <tr className="flex mb-3">
                     <td className="text-base text-qgraytwo w-[100px] block line-clamp-1 capitalize">
-                      Longitude:
+                      Boylam:
                     </td>
                     <td className="text-base text-qblack line-clamp-1 font-medium">
                       {address.longitude}
@@ -163,7 +162,7 @@ const AddressList = ({
                   </tr>
                   <tr className="flex mb-3">
                     <td className="text-base text-qgraytwo w-[100px] block line-clamp-1 capitalize">
-                      Latitude:
+                      Enlem:
                     </td>
                     <td className="text-base text-qblack line-clamp-1 font-medium">
                       {address.latitude}
@@ -178,7 +177,7 @@ const AddressList = ({
         {/* Selected indicator */}
         {isSelected && (
           <span className="text-qblack bg-qyellow px-2 text-sm absolute right-2 -top-2 font-medium">
-            {ServeLangItem()?.Selected}
+            Seçili
           </span>
         )}
       </div>

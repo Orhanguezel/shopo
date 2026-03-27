@@ -29,6 +29,8 @@ export default function Navbar({ className }) {
   // Local state
   const [categoryToggle, setToggle] = useState(false);
   const [subCatHeight, setHeight] = useState(null);
+  const navLinkClass =
+    "flex items-center text-sm font-600 cursor-pointer text-qblack hover:text-white transition-colors";
 
   /**
    * Toggle category dropdown visibility
@@ -108,20 +110,10 @@ export default function Navbar({ className }) {
       >
         <div className="flex rtl:space-x-reverse space-x-3 items-center">
           <span>
-            <svg
-              width="14"
-              height="9"
-              viewBox="0 0 14 9"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="14" height="1" />
-              <rect y="8" width="14" height="1" />
-              <rect y="4" width="10" height="1" />
-            </svg>
+            <FontAwesomeCom className="w-4 h-4 text-qblacktext" icon="menu" />
           </span>
           <span className="text-sm font-600 text-qblacktext">
-            {ServeLangItem()?.All_Categories}
+            {ServeLangItem()?.All_Categories || "Tüm Kategoriler"}
           </span>
         </div>
         <div>
@@ -428,6 +420,14 @@ export default function Navbar({ className }) {
     </div>
   );
 
+  const renderNavLink = (href, label) => (
+    <li>
+      <Link href={href} className={navLinkClass}>
+        <span>{label}</span>
+      </Link>
+    </li>
+  );
+
   /**
    * Render become seller button
    */
@@ -486,10 +486,12 @@ export default function Navbar({ className }) {
               {/* Main Navigation */}
               <div className="nav">
                 <ul className="nav-wrapper flex xl:space-x-10 rtl:space-x-reverse space-x-5">
+                  {renderNavLink("/", "Anasayfa")}
+
                   {/* Shop Menu */}
                   <li>
-                    <span className="flex items-center text-sm font-600 cursor-pointer text-qblack">
-                      <span>{ServeLangItem()?.Shop}</span>
+                    <span className={navLinkClass}>
+                      <span>{ServeLangItem()?.Shop || "Mağaza"}</span>
                       <span className="ml-1.5">
                         <Arrow className="fill-current" />
                       </span>
@@ -499,14 +501,17 @@ export default function Navbar({ className }) {
 
                   {/* Pages Dropdown */}
                   <li className="relative">
-                    <span className="flex items-center text-sm font-600 cursor-pointer text-qblack">
-                      <span>{ServeLangItem()?.Pages}</span>
+                    <span className={navLinkClass}>
+                      <span>{ServeLangItem()?.Pages || "Sayfalar"}</span>
                       <span className="ml-1.5">
                         <Arrow className="fill-current" />
                       </span>
                     </span>
                     {renderPagesDropdown()}
                   </li>
+
+                  {renderNavLink("/about", "Hakkımızda")}
+                  {renderNavLink("/contact", "İletişim")}
                 </ul>
               </div>
             </div>

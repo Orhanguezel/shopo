@@ -33,17 +33,17 @@ export default async function OrderDetailsPage({ params }) {
   const getOrderStatus = () => {
     switch (Number(data?.order?.order_status)) {
       case 0:
-        return "Pending";
+        return "Beklemede";
       case 1:
-        return "Progress";
+        return "Hazırlanıyor";
       case 2:
-        return "Delivered";
+        return "Teslim Edildi";
       case 3:
-        return "Completed";
+        return "Tamamlandı";
       case 4:
-        return "Declined";
+        return "Reddedildi";
       default:
-        return "Pending";
+        return "Beklemede";
     }
   };
   const orderStatus = getOrderStatus();

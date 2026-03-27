@@ -91,6 +91,7 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
   const [errors, setErrors] = useState(null);
   const [currentStep, setCurrentStep] = useState("form"); // steps: 'form', 'otp', 'success'
   const [otpToken, setOtpToken] = useState("");
+  const [devOtpCode, setDevOtpCode] = useState("");
 
   /**
    * Handles input field changes
@@ -220,7 +221,10 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
       }).unwrap();
 
       if (result.success) {
-        toast.success(result.message);
+        toast.success(result.message, { autoClose: result.otp_code ? 15000 : 5000 });
+        if (result.otp_code) {
+          setDevOtpCode(result.otp_code);
+        }
         setCurrentStep("otp");
       } else {
         toast.error(result.message);
@@ -283,6 +287,13 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
           </div>
         </div>
         <div className="bg-[#FAFAFA] border border-qgray-border p-6 rounded-lg">
+          {devOtpCode && (
+            <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 rounded text-center">
+              <span className="text-sm text-yellow-800 font-bold">
+                DEV MODE — OTP Kodu: {devOtpCode}
+              </span>
+            </div>
+          )}
           <OtpVerifyStep
             phone={formData.phone}
             onVerified={onOtpVerified}
@@ -554,7 +565,7 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
               </button>
             ) : (
               <button
-                onClick={doSignup}
+                onClick={() => doSignup()}
                 type="button"
                 disabled={!checked || isSignupLoading}
                 className="black-btn disabled:bg-opacity-50 disabled:cursor-not-allowed  w-full h-[50px] font-semibold flex justify-center bg-purple items-center"

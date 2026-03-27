@@ -29,7 +29,11 @@ function ContactForm() {
       label: ServeLangItem()?.Email_Address + "*",
       placeholder: ServeLangItem()?.Email,
     },
-    { key: "subject", label: "Subject*", placeholder: "Your Subject here" },
+    {
+      key: "subject",
+      label: "Konu*",
+      placeholder: "Konu girin",
+    },
   ];
 
   // Unified input change handler for all fields
@@ -107,7 +111,7 @@ function ContactForm() {
           name="message"
           value={formData.message}
           onChange={handleInputChange}
-          placeholder="Type your message here"
+          placeholder="Mesajınızı buraya yazın"
           className={`w-full h-[105px] focus:ring-0 focus:outline-none p-3 border placeholder:text-sm ${
             !!(errors && Object.hasOwn(errors, "message"))
               ? "border-qred"

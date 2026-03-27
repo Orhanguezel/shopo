@@ -91,8 +91,10 @@ class ProductController extends Controller
         $categories = Category::all();
         $brands = Brand::all();
         $specificationKeys = ProductSpecificationKey::all();
+        $setting = Setting::first();
+        $aiEnabled = (bool) $setting->openai_enabled || (bool) $setting->claude_enabled;
 
-        return view('admin.create_product',compact('categories','brands','specificationKeys'));
+        return view('admin.create_product',compact('categories','brands','specificationKeys','aiEnabled'));
     }
 
     public function store(Request $request)
@@ -210,7 +212,10 @@ class ProductController extends Controller
         $specificationKeys = ProductSpecificationKey::all();
         $productSpecifications = ProductSpecification::where('product_id',$product->id)->get();
 
-        return view('admin.edit_product',compact('categories','brands','specificationKeys','product','subCategories','childCategories','productSpecifications'));
+        $setting = Setting::first();
+        $aiEnabled = (bool) $setting->openai_enabled || (bool) $setting->claude_enabled;
+
+        return view('admin.edit_product',compact('categories','brands','specificationKeys','product','subCategories','childCategories','productSpecifications','aiEnabled'));
 
     }
 

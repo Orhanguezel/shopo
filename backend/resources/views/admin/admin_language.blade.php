@@ -34,7 +34,9 @@
                                 if(request()->get('lang_code')){
                                     $current_language = App\Models\Language::where('lang_code', request()->get('lang_code'))->first();
                                 }else{
-                                    $current_language = App\Models\Language::where('lang_code','en')->first();
+                                    $current_language = App\Models\Language::where('lang_code','tr')->first()
+                                        ?? App\Models\Language::whereRaw('LOWER(is_default) = ?', ['yes'])->first()
+                                        ?? App\Models\Language::first();
                                 }
 
                             @endphp

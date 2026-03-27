@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ServeLangItem from "@/components/Helpers/ServeLangItem";
 import AddressList from "./AddressList";
 import CheckoutAddressForm from "./CheckoutAddressForm";
 
@@ -76,7 +75,7 @@ const AddressTabs = ({
                     : "text-qyellow"
                 }`}
               >
-                {ServeLangItem()?.Billing_Address}
+                Fatura Adresi
               </button>
               <button
                 onClick={() => handleTabSwitch("shipping")}
@@ -87,7 +86,7 @@ const AddressTabs = ({
                     : "text-qyellow"
                 }`}
               >
-                {ServeLangItem()?.Shipping_Address}
+                Teslimat Adresi
               </button>
             </div>
 
@@ -97,7 +96,7 @@ const AddressTabs = ({
               className="w-[100px] h-[40px] mt-2 sm:mt-0 border border-qblack hover:bg-qblack hover:text-white transition-all duration-300 ease-in-out"
             >
               <span className="text-sm font-semibold">
-                {ServeLangItem()?.Add_New}
+                Yeni Ekle
               </span>
             </button>
           </div>

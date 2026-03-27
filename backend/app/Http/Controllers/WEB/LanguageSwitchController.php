@@ -22,6 +22,7 @@ class LanguageSwitchController extends Controller
 
        Session::put('front_lang', $request->lang_code);
        Session::put('lang_name', $request_lang->lang_name);
+       Session::put('lang_manually_selected', true);
 
         $notification= trans('admin_validation.Language switched successfully');
         $notification=array('messege'=>$notification,'alert-type'=>'success');

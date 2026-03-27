@@ -8,6 +8,7 @@ use App\Models\IyzicoPayment;
 use App\Models\Order;
 use App\Models\ProductVariantItem;
 use App\Models\ShoppingCart;
+use App\Models\Setting;
 use App\Models\Vendor;
 use App\Services\IyzicoService;
 use Illuminate\Http\Request;
@@ -346,7 +347,8 @@ class IyzicoController extends Controller
         $token = (string)$request->get('token', '');
         $conversationId = 'order_' . $orderId;
 
-        $frontendUrl = rtrim(config('app.frontend_url', config('app.url')), '/');
+        $setting = Setting::first();
+        $frontendUrl = rtrim($setting->frontend_url ?? config('app.url'), '/');
         $cancelUrl = $this->buildFailedPaymentUrl($frontendUrl, $orderId);
 
         if ($token === '' || $orderId <= 0) {

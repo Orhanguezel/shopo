@@ -1,5 +1,4 @@
 import React from "react";
-import ServeLangItem from "@/components/Helpers/ServeLangItem";
 import CheckoutTickIco from "@/components/Helpers/icons/CheckoutTickIco";
 
 const PaymentMethods = ({
@@ -71,21 +70,21 @@ const PaymentMethods = ({
           {/* Cash on Delivery */}
           {renderPaymentMethod(
             "cashOnDelivery",
-            ServeLangItem()?.Cash_On_Delivery,
+            "Kapıda Ödeme",
             paymentStatuses.cash_on_delivery_status
           )}
 
           {/* Bank Payment */}
           {renderPaymentMethod(
             "bankpayment",
-            ServeLangItem()?.Bank_Payment,
+            "Banka Havalesi",
             paymentStatuses.bankPaymentInfo
           )}
 
-          {/* Iyzico */}
+          {/* Kredi Kartı (Iyzico) */}
           {renderPaymentMethod(
             "iyzico",
-            "Iyzico (Kredi Kartı)",
+            "Kredi Kartı ile Öde",
             paymentStatuses.iyzico
           )}
         </div>
@@ -101,7 +100,7 @@ const PaymentMethods = ({
               </pre>
             </div>
             <h6 className="input-label capitalize text-[13px] font-600 leading-[24px] text-qblack block mb-2">
-              {ServeLangItem()?.Transaction_Information}*
+              İşlem Bilgisi*
             </h6>
             <textarea
               cols="5"
@@ -109,7 +108,7 @@ const PaymentMethods = ({
               value={transactionInfo}
               onChange={(e) => setTransactionInfo(e.target.value)}
               className="w-full focus:ring-0 focus:outline-none py-3 px-4 border placeholder:text-sm text-sm"
-              placeholder={"Example:\r\n" + bankInfo?.account_info}
+              placeholder={"Örnek:\r\n" + bankInfo?.account_info}
             ></textarea>
           </div>
         </div>
@@ -118,9 +117,7 @@ const PaymentMethods = ({
       {/* Place Order Button */}
       <button type="button" onClick={placeOrderHandler} className="w-full">
         <div className="w-full h-[50px] black-btn flex justify-center items-center">
-          <span className="text-sm font-semibold">
-            {ServeLangItem()?.Place_Order_Now}
-          </span>
+          <span className="text-sm font-semibold">Siparişi Ver</span>
         </div>
       </button>
     </div>

@@ -93,9 +93,10 @@ const TableHeader = () => (
 const ProductImage = ({ imagePath }) => (
   <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED] relative">
     <Image
-      layout="fill"
+      fill
       src={`${appConfig.BASE_URL}${imagePath}`}
       alt="product"
+      sizes="80px"
       className="w-full h-full object-contain"
     />
   </div>

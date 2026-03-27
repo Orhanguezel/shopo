@@ -27,4 +27,9 @@ class Order extends Model
     public function deliveryman(){
         return $this->belongsTo(DeliveryMan::class, 'delivery_man_id', 'id');
     }
+
+    public function cargoShipment()
+    {
+        return $this->hasOne(CargoShipment::class)->latestOfMany();
+    }
 }

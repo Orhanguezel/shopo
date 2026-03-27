@@ -116,7 +116,7 @@ function ProfileContent() {
     } else {
       // for force logout
       dispatch(setWishlistData(null));
-      toast.success("Logout Successfully");
+      toast.success("Çıkış başarılı");
       localStorage.removeItem("auth");
       deleteCookie("access_token");
       router.push("/login");
@@ -398,7 +398,7 @@ function ProfileContent() {
                               <IcoSupport />
                             </span>
                             <span className=" font-normal text-base capitalize cursor-pointer">
-                              Seller Tools
+                              Satıcı Araçları
                             </span>
                           </div>
                         </Link>

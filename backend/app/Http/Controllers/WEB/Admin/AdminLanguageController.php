@@ -10,6 +10,17 @@ use File;
 
 class AdminLanguageController extends Controller
 {
+    private function getPreferredDefaultLanguage(): ?Language
+    {
+        return Language::where('lang_code', 'tr')->first()
+            ?? Language::whereRaw('LOWER(is_default) = ?', ['yes'])->first()
+            ?? Language::first();
+    }
+
+    private function isProtectedLanguage(Language $language): bool
+    {
+        return $language->lang_code === 'tr';
+    }
 
     public function __construct()
     {
@@ -90,10 +101,12 @@ class AdminLanguageController extends Controller
     }
 
     public function update(Request $request, $id){
+        $language = Language::findOrFail($id);
+        $isProtectedLanguage = $this->isProtectedLanguage($language);
 
         $rules = [
-            'lang_name'=> $id != 1 ? 'required|unique:languages,id,'.$id : '',
-            'lang_code'=> $id != 1 ? 'required|unique:languages,id,'.$id : '',
+            'lang_name'=> $isProtectedLanguage ? '' : 'required|unique:languages,id,'.$id,
+            'lang_code'=> $isProtectedLanguage ? '' : 'required|unique:languages,id,'.$id,
         ];
         $customMessages = [
             'lang_name.required' => trans('admin_validation.Name is required'),
@@ -104,9 +117,7 @@ class AdminLanguageController extends Controller
 
         $this->validate($request, $rules,$customMessages);
 
-        $language = Language::findOrFail($id);
-
-        if ($language->id != 1) {
+        if (!$isProtectedLanguage) {
             $old_path = base_path().'/resources'.'/lang'.'/'.$language->lang_code;
             $update_path = base_path().'/resources'.'/lang'.'/'.$request->lang_code;
 
@@ -120,14 +131,19 @@ class AdminLanguageController extends Controller
         }
 
         if($language->is_default == 'Yes' && $request->is_default == 'No'){
-            DB::table('languages')->where('id', 1)->update(['is_default' => 'Yes']);
+            $fallbackLanguage = $this->getPreferredDefaultLanguage();
+            if ($fallbackLanguage) {
+                DB::table('languages')
+                    ->where('id', $fallbackLanguage->id)
+                    ->update(['is_default' => 'Yes']);
+            }
         }
 
-        if ($language->id != 1) {
+        if (!$isProtectedLanguage) {
             $language->lang_name = $request->lang_name;
         }
 
-        if ($language->id != 1) {
+        if (!$isProtectedLanguage) {
             $language->lang_code = $request->lang_code;
         }
 
@@ -136,7 +152,7 @@ class AdminLanguageController extends Controller
 
         $language->lang_direction = $request->lang_direction;
 
-        if ($language->id != 1) {
+        if (!$isProtectedLanguage) {
             $language->status = $request->status;
         }
 

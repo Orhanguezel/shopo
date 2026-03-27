@@ -19,6 +19,11 @@ class Setting extends Model
         'claude_model',
         'claude_timeout',
         'claude_enabled',
+        'geliver_api_token',
+        'geliver_test_mode',
+        'geliver_sender_address_id',
+        'geliver_webhook_header_name',
+        'geliver_webhook_header_secret',
     ];
 
     protected $casts = [
@@ -32,6 +37,8 @@ class Setting extends Model
     protected $hidden = [
         'openai_api_key',
         'claude_api_key',
+        'geliver_api_token',
+        'geliver_webhook_header_secret',
     ];
 
     public function currency(){

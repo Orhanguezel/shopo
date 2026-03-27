@@ -57,28 +57,28 @@
 
 | # | Hedef | Payload | Nerede Dene |
 |---|-------|---------|-------------|
-| 1 | Stored XSS | `<script>alert('xss')</script>` | Urun yorumu, mesaj, satici adi |
-| 2 | Reflected XSS | `<img onerror=alert(1) src=x>` | Arama kutusuna yaz |
-| 3 | DOM XSS | `javascript:alert(1)` | URL parametrelerinde |
-| 4 | SVG XSS | SVG icinde script tag | Profil resmi/urun gorseli yukle |
-| 5 | Event handler | `" onfocus=alert(1) autofocus="` | Input alanlarina |
+| 1 | Stored XSS | `<script>alert('xss')</script>` | Urun yorumu, mesaj, satici adi | ✅ Escaped by React/Blade |
+| 2 | Reflected XSS | `<img onerror=alert(1) src=x>` | Arama kutusuna yaz | ✅ API search sanitized |
+| 3 | DOM XSS | `javascript:alert(1)` | URL parametrelerinde | ✅ Next.js App Router protected |
+| 4 | SVG XSS | SVG icinde script tag | Profil resmi/urun gorseli yukle | ⏳ |
+| 5 | Event handler | `" onfocus=alert(1) autofocus="` | Input alanlarina | ✅ OK |
 
 ### CSRF Testleri
 
-| # | Hedef | Yontem |
-|---|-------|--------|
-| 1 | Siparis durumu degistirme | Baska siteden form submit |
-| 2 | Profil guncelleme | Cross-origin POST |
-| 3 | Odeme callback | cURL ile sahte callback |
+| # | Hedef | Yontem | Durum |
+|---|-------|--------|-------|
+| 1 | Siparis durumu degistirme | Baska siteden form submit | ✅ Laravel CSRF/Sanctum protected |
+| 2 | Profil guncelleme | Cross-origin POST | ✅ CORS blocked/Sanctum |
+| 3 | Odeme callback | cURL ile sahte callback | ⏳ |
 
 ### IDOR Testleri
 
 | # | Hedef | Yontem |
 |---|-------|--------|
-| 1 | Baska kullanicinin siparisi | `/api/user/order/BASKA_ID` |
-| 2 | Baska saticinin urunu | `/api/seller/product/BASKA_ID` |
-| 3 | Baska kullanicinin profili | `/api/user/profile/BASKA_ID` |
-| 4 | Baska saticinin cekimi | `/api/seller/withdraw/BASKA_ID` |
+| 1 | Baska kullanicinin siparisi | `/api/user/order/BASKA_ID` | ✅ 302 Redirect (protected) |
+| 2 | Baska saticinin urunu | `/api/seller/product/BASKA_ID` | ⏳ |
+| 3 | Baska kullanicinin profili | `/api/user/profile/BASKA_ID` | ⏳ |
+| 4 | Baska saticinin cekimi | `/api/seller/withdraw/BASKA_ID` | ⏳ |
 
 ### File Upload Testleri
 

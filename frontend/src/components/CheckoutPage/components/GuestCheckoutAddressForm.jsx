@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import ArrowDownIcoCheck from "@/components/Helpers/icons/ArrowDownIcoCheck";
 import InputCom from "@/components/Helpers/InputCom";
 import Selectbox from "@/components/Helpers/Selectbox";
+import SearchableSelectbox from "@/components/Helpers/SearchableSelectbox";
 import ServeLangItem from "@/components/Helpers/ServeLangItem";
 import MapComponent from "@/components/MapComponent/Index";
 import {
@@ -12,6 +13,11 @@ import {
 } from "@/redux/features/locations/apiSlice";
 import auth from "@/utils/auth";
 import settings from "@/utils/settings";
+import {
+  findTurkeyCountry,
+  sortTurkeyDistrictOptions,
+  sortTurkeyStateOptions,
+} from "@/data/turkey-cities";
 
 function GuestCheckoutAddressForm({
   fName,
@@ -62,7 +68,15 @@ function GuestCheckoutAddressForm({
       try {
         const response = await getCountryListGuestApi();
         if (response.data) {
-          setCountryDropdown(response.data.countries || []);
+          const countries = response.data.countries || [];
+          setCountryDropdown(countries);
+
+          if (!country) {
+            const turkeyCountry = findTurkeyCountry(countries);
+            if (turkeyCountry?.id) {
+              await getState(turkeyCountry);
+            }
+          }
         }
       } catch (error) {
         console.error("Error fetching countries:", error);
@@ -70,7 +84,7 @@ function GuestCheckoutAddressForm({
     };
 
     fetchCountries();
-  }, [getCountryListGuestApi]);
+  }, [country, getCountryListGuestApi]);
 
   /**
    * Handles getState functionality
@@ -80,13 +94,15 @@ function GuestCheckoutAddressForm({
     if (value) {
       if (value?.id) {
         setCountry(value.id);
+        setState(null);
+        setCity(null);
         const response = await getStateListApi({
           countryId: Number(value.id),
           token: auth()?.access_token,
         });
         if (response.isSuccess) {
           setCityDropdown(null);
-          setStateDropdown(response?.data?.states);
+          setStateDropdown(sortTurkeyStateOptions(response?.data?.states || []));
         }
       } else {
         console.error(
@@ -109,7 +125,10 @@ function GuestCheckoutAddressForm({
           token: auth()?.access_token,
         });
         if (response.isSuccess) {
-          setCityDropdown(response?.data?.cities);
+          setCity(null);
+          setCityDropdown(
+            sortTurkeyDistrictOptions(response?.data?.cities || [], value?.name)
+          );
         }
       } else {
         console.error(
@@ -142,12 +161,15 @@ function GuestCheckoutAddressForm({
           <div className="sm:flex sm:space-x-5 items-center">
             <div className="sm:w-1/2 w-full  mb-5 sm:mb-0">
               <InputCom
-                label={ServeLangItem()?.First_Name + "*"}
-                placeholder={ServeLangItem()?.Name}
+                label="Ad*"
+                placeholder="Ad"
                 inputClasses="w-full h-[50px]"
                 value={fName}
                 inputHandler={(e) => setFName(e.target.value)}
                 error={!!(errors && Object.hasOwn(errors, "fName"))}
+                name="given-name"
+                type="text"
+                autoComplete="given-name"
               />
               {errors && Object.hasOwn(errors, "fName") ? (
                 <span className="text-sm mt-1 text-qred">
@@ -159,12 +181,15 @@ function GuestCheckoutAddressForm({
             </div>
             <div className="sm:w-1/2 w-full">
               <InputCom
-                label={ServeLangItem()?.Last_Name + "*"}
-                placeholder={ServeLangItem()?.Name}
+                label="Soyad*"
+                placeholder="Soyad"
                 inputClasses="w-full h-[50px]"
                 value={lName}
                 inputHandler={(e) => setLName(e.target.value)}
                 error={!!(errors && Object.hasOwn(errors, "lName"))}
+                name="family-name"
+                type="text"
+                autoComplete="family-name"
               />
               {errors && Object.hasOwn(errors, "lName") ? (
                 <span className="text-sm mt-1 text-qred">
@@ -179,12 +204,16 @@ function GuestCheckoutAddressForm({
         <div className="flex space-x-5 items-center mb-6">
           <div className="sm:w-1/2 w-full">
             <InputCom
-              label={ServeLangItem()?.Email_Address + "*"}
-              placeholder={ServeLangItem()?.Email}
+              label="E-posta Adresi*"
+              placeholder="E-posta"
               inputClasses="w-full h-[50px]"
               value={email}
               inputHandler={(e) => setEmail(e.target.value)}
               error={!!(errors && Object.hasOwn(errors, "email"))}
+              name="email"
+              type="email"
+              autoComplete="email"
+              inputMode="email"
             />
             {errors && Object.hasOwn(errors, "email") ? (
               <span className="text-sm mt-1 text-qred">{errors.email[0]}</span>
@@ -194,12 +223,16 @@ function GuestCheckoutAddressForm({
           </div>
           <div className="sm:w-1/2 w-full">
             <InputCom
-              label={ServeLangItem()?.Phone_Number + "*"}
+              label="Telefon Numarası*"
               placeholder="012 3  *******"
               inputClasses="w-full h-[50px]"
               value={phone}
               inputHandler={(e) => setPhone(e.target.value)}
               error={!!(errors && Object.hasOwn(errors, "phone"))}
+              name="tel"
+              type="tel"
+              autoComplete="tel"
+              inputMode="tel"
             />
             {errors && Object.hasOwn(errors, "phone") ? (
               <span className="text-sm mt-1 text-qred">{errors.phone[0]}</span>
@@ -210,7 +243,7 @@ function GuestCheckoutAddressForm({
         </div>
         <div className="mb-6">
           <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
-            {ServeLangItem()?.Country}*
+            Ülke*
           </h1>
           <div
             className={`w-full h-[50px] border flex justify-between items-center mb-2 ${
@@ -222,7 +255,16 @@ function GuestCheckoutAddressForm({
             <Selectbox
               action={getState}
               className="w-full px-5"
-              defaultValue="Select"
+              defaultValue={
+                countryDropdown &&
+                countryDropdown.length > 0 &&
+                (function () {
+                  const item = countryDropdown.find(
+                    (countryItem) => parseInt(countryItem.id) === parseInt(country)
+                  );
+                  return item ? item.name : "Türkiye";
+                })()
+              }
               datas={countryDropdown && countryDropdown}
             >
               {({ item }) => (
@@ -248,7 +290,7 @@ function GuestCheckoutAddressForm({
         <div className="flex space-x-5 items-center mb-6">
           <div className="w-1/2">
             <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
-              {ServeLangItem()?.State}*
+              İl*
             </h1>
             <div
               className={`w-full h-[50px] border flex justify-between items-center mb-2 ${
@@ -257,10 +299,11 @@ function GuestCheckoutAddressForm({
                   : "border-[#EDEDED]"
               }`}
             >
-              <Selectbox
+              <SearchableSelectbox
                 action={getcity}
                 className="w-full px-5"
-                defaultValue="Select"
+                placeholder="İl ara..."
+                defaultValue="Seçiniz"
                 datas={stateDropdown && stateDropdown}
               >
                 {({ item }) => (
@@ -275,7 +318,7 @@ function GuestCheckoutAddressForm({
                     </div>
                   </>
                 )}
-              </Selectbox>
+              </SearchableSelectbox>
             </div>
             {errors && Object.hasOwn(errors, "state") ? (
               <span className="text-sm mt-1 text-qred">{errors.state[0]}</span>
@@ -285,7 +328,7 @@ function GuestCheckoutAddressForm({
           </div>
           <div className="w-1/2">
             <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
-              {ServeLangItem()?.City}*
+              İlçe*
             </h1>
             <div
               className={`w-full h-[50px] border flex justify-between items-center mb-2 ${
@@ -294,10 +337,11 @@ function GuestCheckoutAddressForm({
                   : "border-[#EDEDED]"
               }`}
             >
-              <Selectbox
+              <SearchableSelectbox
                 action={selectCity}
                 className="w-full px-5"
-                defaultValue="select"
+                placeholder="İlçe ara..."
+                defaultValue="Seçiniz"
                 datas={cityDropdown && cityDropdown}
               >
                 {({ item }) => (
@@ -312,7 +356,7 @@ function GuestCheckoutAddressForm({
                     </div>
                   </>
                 )}
-              </Selectbox>
+              </SearchableSelectbox>
             </div>
             {errors && Object.hasOwn(errors, "city") ? (
               <span className="text-sm mt-1 text-qred">{errors.city[0]}</span>
@@ -355,7 +399,7 @@ function GuestCheckoutAddressForm({
               htmlFor="home"
               className="text-qblack text-[15px] select-none capitalize"
             >
-              {ServeLangItem()?.home}
+              Ev
             </label>
           </div>
           <div className="flex space-x-2 items-center mb-10">
@@ -375,7 +419,7 @@ function GuestCheckoutAddressForm({
               htmlFor="office"
               className="text-qblack text-[15px] select-none"
             >
-              {ServeLangItem()?.Office}
+              Ofis
             </label>
           </div>
         </div>

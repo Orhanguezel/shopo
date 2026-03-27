@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/dist/client/link";
+import Image from "next/image";
 import ServeLangItem from "../../Helpers/ServeLangItem";
 import appConfig from "@/appConfig";
 
@@ -12,67 +13,50 @@ function OneColumnAdsOne({ data }) {
         <div className="container-x mx-auto h-full">
           <div
             data-aos="fade-right"
-            style={{
-              backgroundImage: `url(${appConfig.BASE_URL + data.image})`,
-              backgroundSize: `cover`,
-              backgroundRepeat: `no-repeat`,
-            }}
-            className="w-full h-full flex  justify-center items-center xl:py-[60px] md:py-[40px] py-4 group"
+            className="w-full h-full relative flex justify-center items-center rounded-2xl overflow-hidden shadow-md group"
           >
-            <div className="w-full h-full flex flex-col justify-between items-center">
-              <div>
-                <div className="md:mb-3 text-center">
-                  <span className="text-qblack uppercase text-xs font-semibold">
+            <Image
+              src={appConfig.BASE_URL + data.image}
+              alt={data.title_two || "Banner"}
+              fill
+              className="object-cover"
+              sizes="100vw"
+            />
+            <div className="absolute inset-0 bg-black/10 transition-colors duration-300 group-hover:bg-black/20"></div>
+            <div className="relative z-10 w-full max-w-2xl px-6 py-10 flex flex-col items-center text-center">
+              <div className="backdrop-blur-sm bg-white/40 p-10 rounded-3xl border border-white/30 shadow-xl">
+                <div className="mb-4">
+                  <span className="bg-qyellow text-qblack uppercase text-[10px] tracking-widest font-black px-3 py-1.5 rounded-full inline-block">
                     {data.title_one}
                   </span>
                 </div>
-                <div className="flex justify-center">
-                  <h2 className="w-[300px] md:text-[30px] text-[20px] md:leading-[40px] leading-1 text-qblack font-semibold text-center">
+                <div className="mb-8">
+                  <h2 className="text-3xl md:text-5xl font-black text-qblack leading-tight">
                     {data.title_two}
                   </h2>
                 </div>
-              </div>
-              <div>
-                <Link
-                  href={{
-                    pathname: "/products",
-                    query: { category: data.product_slug },
-                  }}
-                >
-                  <div className="px-5 h-[40px] bg-white relative flex justify-center overflow-hidden">
-                    <div className="w-full h-full bg-qyellow absolute transition-all duration-300 ease-in-out -left-[240px] group-hover:left-0 top-0"></div>
-                    <div className="flex space-x-2 rtl:space-x-reverse items-center relative z-10">
-                      <span className="text-sm text-semibold transition-all duration-300 ease-in-out text-qyellow group-hover:text-white">
+                <div>
+                  <Link
+                    href={{
+                      pathname: "/products",
+                      query: { category: data.product_slug },
+                    }}
+                  >
+                    <div className="inline-flex items-center px-8 py-3 bg-qblack text-white rounded-full font-bold transition-all duration-300 hover:bg-qyellow hover:text-qblack transform hover:-translate-y-1 shadow-lg hover:shadow-qyellow/20 cursor-pointer">
+                      <span className="text-sm mr-2">
                         {ServeLangItem()?.Shop_Now}
                       </span>
-                      <span className="text-qyellow transition-all duration-300 ease-in-out group-hover:text-white">
-                        <svg
-                          width="6"
-                          height="11"
-                          viewBox="0 0 6 11"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="fill-current transform rtl:rotate-180"
-                        >
-                          <rect
-                            x="1.08984"
-                            y="0.636719"
-                            width="6.94219"
-                            height="1.54271"
-                            transform="rotate(45 1.08984 0.636719)"
-                          />
-                          <rect
-                            x="6"
-                            y="5.54492"
-                            width="6.94219"
-                            height="1.54271"
-                            transform="rotate(135 6 5.54492)"
-                          />
-                        </svg>
-                      </span>
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

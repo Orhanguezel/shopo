@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Star from "../../icons/Star";
@@ -19,7 +18,6 @@ function ColumnV1({
   offerPrice,
   price,
   isProductInFlashSale,
-  quickViewHandler,
   arWishlist,
   addToWishlist,
   removeToWishlist,
@@ -34,7 +32,13 @@ function ColumnV1({
         className="product-card-one w-full h-[445px] bg-white relative group overflow-hidden"
         style={{ boxShadow: "0px 15px 64px 0px rgba(0, 0, 0, 0.05)" }}
       >
-        <div className="product-card-img w-full h-[300px] -mt-2">
+        <Link
+          href={{
+            pathname: "/single-product",
+            query: { slug: datas.slug },
+          }}
+          className="product-card-img w-full h-[300px] -mt-2 block"
+        >
           <div className="w-full h-full relative flex justify-center items-center transform scale-100 group-hover:scale-110 transition duration-300 ease-in-out">
             <Image
               src={productImage}
@@ -46,7 +50,7 @@ function ColumnV1({
               loading="lazy"
             />
           </div>
-        </div>
+        </Link>
         <div className="product-card-details px-[30px] pb-[30px] relative pt-2">
           {/* add to card button */}
           <div className="absolute w-full h-10 px-[30px] left-0 top-40 group-hover:top-[85px] transition-all duration-300 ease-in-out">
@@ -136,15 +140,17 @@ function ColumnV1({
         </div>
         {/* quick-access-btns */}
         <div className="quick-access-btns flex flex-col space-y-2">
-          <button
+          <Link
             className=" absolute group-hover:right-4 -right-10 top-20  transition-all ease-in-out"
-            onClick={() => quickViewHandler(datas.slug)}
-            type="button"
+            href={{
+              pathname: "/single-product",
+              query: { slug: datas.slug },
+            }}
           >
             <span className="hover:bg-qyellow w-10 h-10 flex justify-center text-black hover:text-white items-center transition-all duration-300 ease-in-out hover-bg-qyellow bg-primarygray rounded">
               <QuickViewIco className="fill-current" />
             </span>
-          </button>
+          </Link>
           {!arWishlist ? (
             <button
               className=" absolute group-hover:right-4 -right-10 top-[120px]  transition-all duration-300 ease-in-out"

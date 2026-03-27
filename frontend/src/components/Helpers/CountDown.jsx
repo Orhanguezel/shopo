@@ -1,3 +1,4 @@
+"use client";
 /* eslint-disable no-underscore-dangle */
 import { useEffect, useState } from "react";
 

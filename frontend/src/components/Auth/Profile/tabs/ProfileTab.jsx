@@ -322,7 +322,7 @@ export default function ProfileTab({ profileInfo }) {
             <div className="input-item mb-8">
               <InputCom
                 label={ServeLangItem()?.Name}
-                placeholder="Name"
+                placeholder="Ad Soyad"
                 type="text"
                 inputClasses="h-[50px]"
                 value={formData.name}
@@ -459,7 +459,7 @@ export default function ProfileTab({ profileInfo }) {
                             parseInt(item.id) ===
                             parseInt(profileInfo.personInfo.country_id)
                         );
-                      return item ? item.name : "Select";
+                      return item ? item.name : "Seçiniz";
                     })()
                   }
                   datas={countryDropdown && countryDropdown}
@@ -514,7 +514,7 @@ export default function ProfileTab({ profileInfo }) {
                             item.id ===
                             parseInt(profileInfo.personInfo.state_id)
                         );
-                        return item ? item.name : "Select";
+                        return item ? item.name : "Seçiniz";
                       })()
                     }
                     datas={stateDropdown && stateDropdown}
@@ -566,7 +566,7 @@ export default function ProfileTab({ profileInfo }) {
                           (item) =>
                             item.id === parseInt(profileInfo.personInfo.city_id)
                         );
-                        return item ? item.name : "Select";
+                        return item ? item.name : "Seçiniz";
                       })()
                     }
                     datas={cityDropdown && cityDropdown}

@@ -1,3 +1,4 @@
+"use client";
 import Maintain from "../Maintain";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";

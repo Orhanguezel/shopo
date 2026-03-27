@@ -1,30 +1,19 @@
 import Link from "next/link";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState } from "react";
 import ServeLangItem from "../../../Helpers/ServeLangItem";
-import Arrow from "../../../Helpers/icons/Arrow";
-import Selectbox from "../../../Helpers/Selectbox";
-import { hasCookie, setCookie, getCookie, deleteCookie } from "cookies-next";
+import { deleteCookie } from "cookies-next";
 
 /**
- * Configuration constants for Google Translate integration and language handling
- * This object contains all the configuration values used throughout the component
+ * Configuration constants for language handling
  */
 const CONFIG = {
-  GOOGLE_TRANSLATE: {
-    SCRIPT_URL:
-      "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit",
-    ELEMENT_ID: "google_translate_element",
-  },
   COOKIE: {
-    NAME: "googtrans", // Google Translate cookie name
+    NAME: "googtrans",
     PATH: "/",
-    PREFIX: "/auto/", // Prefix used by Google Translate for language codes
   },
   LANGUAGES: {
-    RTL: ["ar", "he"], // Languages that use right-to-left text direction
     DIRECTIONS: { LTR: "ltr", RTL: "rtl" },
   },
-  RELOAD_DELAY: 2000, // Delay before reloading page after language change (ms)
 };
 
 /**
@@ -70,32 +59,10 @@ const EmailIcon = () => (
 );
 
 /**
- * Determines the text direction (LTR or RTL) based on language code
- * @param {string} langCode - The language code (e.g., 'en', 'ar', 'he')
- * @returns {string} - 'ltr' for left-to-right languages, 'rtl' for right-to-left
- */
-const getDirection = (langCode) =>
-  CONFIG.LANGUAGES.RTL.includes(langCode)
-    ? CONFIG.LANGUAGES.DIRECTIONS.RTL
-    : CONFIG.LANGUAGES.DIRECTIONS.LTR;
-
-/**
  * Sets the document's text direction attribute
- * @param {string} langCode - The language code to determine direction
  */
-const setDocumentDirection = (langCode) =>
-  document.body.setAttribute("dir", getDirection(langCode));
-
-/**
- * Determines the appropriate cookie domain based on the current hostname
- * Handles subdomains and localhost scenarios
- * @param {string} hostname - The current window hostname
- * @returns {string} - The domain to use for cookie setting
- */
-const getCookieDomain = (hostname) => {
-  const isSubdomain = hostname.split(".").length >= 2;
-  return isSubdomain ? `.${hostname}` : hostname;
-};
+const setDocumentDirection = () =>
+  document.body.setAttribute("dir", CONFIG.LANGUAGES.DIRECTIONS.LTR);
 
 /**
  * Contact information display component
@@ -139,34 +106,6 @@ const CurrencySelector = ({ allCurrency, defaultCurrency, handler }) => {
 };
 
 /**
- * Language selector dropdown component
- * Allows users to switch between different languages
- * @param {Array} languagesApi - Array of available languages from API
- * @param {Object} selectedLang - Currently selected language
- * @param {Function} onLanguageChange - Function to handle language changes
- */
-const LanguageSelector = ({ languagesApi, selectedLang, onLanguageChange }) => {
-  // Memoize language options to prevent unnecessary re-renders
-  const languageOptions = useMemo(
-    () =>
-      languagesApi?.map((item) => ({ ...item, name: item.lang_name })) || [],
-    [languagesApi]
-  );
-
-  return (
-    <div className="language-select flex space-x-1 items-center notranslate">
-      <Selectbox
-        action={onLanguageChange}
-        defaultValue={selectedLang?.lang_name || selectedLang?.name}
-        className="w-fit"
-        datas={languageOptions}
-      />
-      <Arrow className="fill-current qblack" />
-    </div>
-  );
-};
-
-/**
  * Account link component that shows different content based on authentication status
  * Shows "Account" for logged-in users, "Login" for guests
  * @param {Object} auth - Authentication object from localStorage
@@ -197,244 +136,33 @@ const AccountLink = ({ auth }) => {
 };
 
 /**
- * TopBar component - Main header bar containing contact info, currency/language selectors, and navigation
- * Handles Google Translate integration and language direction management
+ * TopBar component - Main header bar containing contact info and navigation
  *
  * @param {string} className - Additional CSS classes
  * @param {Object} contact - Contact information object with phone and email
  * @param {Object} topBarProps - Object containing currency data and handlers
- * @param {Array} languagesApi - Array of available languages from API
  */
 export default function TopBar({
   className,
   contact,
   topBarProps,
-  languagesApi,
-  defaultLanguage,
 }) {
   const { allCurrency, defaultCurrency, handler } = topBarProps;
 
-  // State for authentication status and selected language
+  // State for authentication status
   const [auth, setAuth] = useState(null);
-  const [selectedLang, setSelectedLang] = useState(languagesApi?.[0] || null);
 
   // Initialize authentication state from localStorage on component mount
   useEffect(() => {
     setAuth(JSON.parse(localStorage.getItem("auth")));
   }, []);
 
-  /**
-   * Google Translate initialization function
-   * Creates and configures the Google Translate element
-   */
-  const googleTranslateElementInit = useCallback(() => {
-    if (window.google?.translate) {
-      new window.google.translate.TranslateElement(
-        { pageLanguage: "auto", autoDisplay: false },
-        CONFIG.GOOGLE_TRANSLATE.ELEMENT_ID
-      );
-    }
-  }, []);
-
-  // Load Google Translate script dynamically
+  // Force Turkish-only display by removing legacy translation cookies.
   useEffect(() => {
-    // Prevent duplicate script loading
-    if (document.querySelector(`script[src*="translate.google.com"]`)) return;
-
-    // Set up the global callback function
-    window.googleTranslateElementInit = googleTranslateElementInit;
-
-    // Create and append the Google Translate script
-    const script = document.createElement("script");
-    script.setAttribute("src", CONFIG.GOOGLE_TRANSLATE.SCRIPT_URL);
-    document.body.appendChild(script);
-  }, [googleTranslateElementInit]);
-
-  // Initialize language selection and document direction
-  useEffect(() => {
-    if (!languagesApi?.length) return;
-
-    if (hasCookie(CONFIG.COOKIE.NAME)) {
-      // User has a language preference stored in cookies
-      const cookieValue = getCookie(CONFIG.COOKIE.NAME);
-      let languageCode = null;
-      
-      if (cookieValue && typeof cookieValue === "string") {
-        // Cookie format: "/auto/tr" or "/auto/en" -> extract "tr" or "en"
-        languageCode = cookieValue.replace(CONFIG.COOKIE.PREFIX, "").replace("/", "").trim();
-      }
-      
-      if (languageCode && languageCode !== "auto") {
-        const selectedLanguage = languagesApi.find(
-          (item) => item.lang_code === languageCode
-        );
-        if (selectedLanguage) {
-          setSelectedLang(selectedLanguage);
-          setDocumentDirection(languageCode);
-        } else {
-          // Cookie'deki dil listede yoksa, default language kullan
-          if (defaultLanguage) {
-            const defaultLangInList = languagesApi.find(
-              (item) => item.lang_code === defaultLanguage.lang_code
-            );
-            if (defaultLangInList) {
-              setSelectedLang(defaultLangInList);
-              setDocumentDirection(defaultLanguage.lang_code);
-            }
-          }
-        }
-      } else {
-        // Cookie değeri geçersizse, default language kullan
-        if (defaultLanguage) {
-          const defaultLangInList = languagesApi.find(
-            (item) => item.lang_code === defaultLanguage.lang_code
-          );
-          if (defaultLangInList) {
-            setSelectedLang(defaultLangInList);
-            setDocumentDirection(defaultLanguage.lang_code);
-          }
-        }
-      }
-    } else {
-      // No language preference - use default language from API or first available language
-      let langToUse = null;
-      if (defaultLanguage) {
-        const defaultLangInList = languagesApi.find(
-          (item) => item.lang_code === defaultLanguage.lang_code
-        );
-        if (defaultLangInList) {
-          langToUse = defaultLangInList;
-        } else {
-          langToUse = languagesApi[0];
-        }
-      } else {
-        langToUse = languagesApi[0];
-      }
-
-      if (langToUse) {
-        setSelectedLang(langToUse);
-        setDocumentDirection(langToUse.lang_code);
-
-        // Set cookie for default language so it persists
-        const currentDomain = window.location.hostname;
-        const cookieDomain = getCookieDomain(currentDomain);
-        const isIPAddress = /^\d+\.\d+\.\d+\.\d+$/.test(currentDomain);
-
-        if (currentDomain !== "localhost" && !isIPAddress) {
-          setCookie(
-            CONFIG.COOKIE.NAME,
-            `${CONFIG.COOKIE.PREFIX}${langToUse.lang_code}`,
-            {
-              path: CONFIG.COOKIE.PATH,
-              domain: cookieDomain,
-              secure: false,
-            }
-          );
-
-          // Handle subdomain scenarios
-          if (currentDomain.split(".").length === 3) {
-            const dotDomain = currentDomain.split(".").slice(1, 3).join(".");
-            setCookie(
-              CONFIG.COOKIE.NAME,
-              `${CONFIG.COOKIE.PREFIX}${langToUse.lang_code}`,
-              {
-                path: CONFIG.COOKIE.PATH,
-                domain: `.${dotDomain}`,
-                secure: false,
-              }
-            );
-          }
-        } else {
-          // For localhost or IP addresses
-          setCookie(
-            CONFIG.COOKIE.NAME,
-            `${CONFIG.COOKIE.PREFIX}${langToUse.lang_code}`,
-            {
-              path: CONFIG.COOKIE.PATH,
-              secure: false,
-            }
-          );
-        }
-      }
-    }
-  }, [languagesApi, defaultLanguage]);
-
-  /**
-   * Handles language change events
-   * Sets cookies, updates state, and reloads the page to apply changes
-   * @param {Object} selectedLanguage - The newly selected language object
-   */
-  const handleLanguageChange = useCallback((selectedLanguage) => {
-    const { lang_code } = selectedLanguage;
-    const currentDomain = window.location.hostname;
-    const isIPAddress = /^\d+\.\d+\.\d+\.\d+$/.test(currentDomain);
-
-    // First, delete all existing cookies with different domains/paths
-    // This ensures we don't have conflicting cookies
-    if (currentDomain !== "localhost" && !isIPAddress) {
-      // Delete cookie from current domain
-      deleteCookie(CONFIG.COOKIE.NAME, {
-        path: CONFIG.COOKIE.PATH,
-      });
-
-      // Delete cookie from domain with dot prefix
-      const cookieDomain = getCookieDomain(currentDomain);
-      deleteCookie(CONFIG.COOKIE.NAME, {
-        domain: cookieDomain,
-        path: CONFIG.COOKIE.PATH,
-      });
-
-      // Delete cookie from root domain (for subdomains)
-      if (currentDomain.split(".").length === 3) {
-        const dotDomain = currentDomain.split(".").slice(1, 3).join(".");
-        deleteCookie(CONFIG.COOKIE.NAME, {
-          domain: `.${dotDomain}`,
-          path: CONFIG.COOKIE.PATH,
-        });
-      }
-    } else {
-      // For localhost or IP addresses
-      deleteCookie(CONFIG.COOKIE.NAME, {
-        path: CONFIG.COOKIE.PATH,
-      });
-    }
-
-    // Small delay to ensure deletion completes
-    setTimeout(() => {
-      // Now set the new cookie
-      if (currentDomain !== "localhost" && !isIPAddress) {
-        // For production domains, set cookie on root domain
-        if (currentDomain.split(".").length === 3) {
-          const dotDomain = currentDomain.split(".").slice(1, 3).join(".");
-          setCookie(CONFIG.COOKIE.NAME, `${CONFIG.COOKIE.PREFIX}${lang_code}`, {
-            path: CONFIG.COOKIE.PATH,
-            domain: `.${dotDomain}`,
-            secure: false,
-            maxAge: 60 * 60 * 24 * 365, // 1 year
-          });
-        } else {
-          // For root domains
-          setCookie(CONFIG.COOKIE.NAME, `${CONFIG.COOKIE.PREFIX}${lang_code}`, {
-            path: CONFIG.COOKIE.PATH,
-            secure: false,
-            maxAge: 60 * 60 * 24 * 365, // 1 year
-          });
-        }
-      } else {
-        // For localhost or IP addresses
-        setCookie(CONFIG.COOKIE.NAME, `${CONFIG.COOKIE.PREFIX}${lang_code}`, {
-          path: CONFIG.COOKIE.PATH,
-          secure: false,
-          maxAge: 60 * 60 * 24 * 365, // 1 year
-        });
-      }
-
-      // Update selected language state
-      setSelectedLang(selectedLanguage);
-
-      // Reload page after a delay to apply language changes
-      setTimeout(() => window.location.reload(), CONFIG.RELOAD_DELAY);
-    }, 100);
+    deleteCookie(CONFIG.COOKIE.NAME, {
+      path: CONFIG.COOKIE.PATH,
+    });
+    setDocumentDirection();
   }, []);
 
   return (
@@ -475,12 +203,6 @@ export default function TopBar({
                 handler={handler}
               />
 
-              {/* Language selector dropdown */}
-              <LanguageSelector
-                languagesApi={languagesApi}
-                selectedLang={selectedLang}
-                onLanguageChange={handleLanguageChange}
-              />
             </div>
           </div>
         </div>

@@ -32,7 +32,7 @@ export default function EmptyCardError() {
                 src={
                   emptyCart === IMAGE_FALLBACK
                     ? IMAGE_FALLBACK
-                    : `${appConfig.BASE_URL}/${emptyCart}`
+                    : `${appConfig.BASE_URL}/${emptyCart}`.replace(/([^:])\/\//g, '$1/')
                 }
                 alt="Empty cart"
               />

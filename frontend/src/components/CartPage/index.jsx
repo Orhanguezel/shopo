@@ -10,6 +10,7 @@ import ProductsTable from "./ProductsTable";
 import ServeLangItem from "../Helpers/ServeLangItem";
 import LoginContext from "../Contexts/LoginContext";
 import auth from "../../utils/auth";
+import FreeShippingBar from "../Shared/FreeShippingBar";
 import {
   clearCartAction,
   deleteItemAction,
@@ -146,12 +147,22 @@ function CartPage() {
     <div className="cart-page-wrapper w-full bg-white pb-[60px]">
       {/* Page header */}
       <div className="w-full">
-        <PageTitle title="Your Cart" breadcrumb={breadcrumbItems} />
+        <PageTitle title={ServeLangItem()?.cart || "Sepetim"} breadcrumb={breadcrumbItems} />
       </div>
 
       {/* Cart content */}
       <div className="w-full mt-[23px]">
         <div className="container-x mx-auto">
+          {/* Free Shipping Progress Bar */}
+          <div className="mb-4">
+            <FreeShippingBar
+              totalPrice={cartItems.reduce(
+                (sum, item) => sum + (parseFloat(item.totalPrice) || 0),
+                0
+              )}
+            />
+          </div>
+
           {/* Products table */}
           <ProductsTable
             incrementQty={handleIncreaseQuantity}

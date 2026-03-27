@@ -20,36 +20,36 @@ Admin giris bilgileri: DB'deki `admins` tablosundan (varsayilan email/password k
 
 | # | Alan | Test | Beklenen Sonuc | Durum |
 |---|------|------|----------------|-------|
-| 1 | **Erisim** | `localhost:8000/admin` git | Login sayfasi gorunmeli | ✅ FIX: Banner null error resolved. |
-| 2 | **Erisim** | Admin credentials ile giris yap | Dashboard yuklenmeli | ✅ Working. |
-| 3 | **Dashboard** | Istatistikleri kontrol et | Bugunun/ayin/toplam siparis/ciro gorunmeli | ✅ Verified. |
-| 4 | **Urun** | Urunler listesini ac | Urun listesi, arama, filtre calismali | |
-| 5 | **Urun** | Yeni urun ekle (isim, fiyat, kategori, gorsel) | Basarili kayit, listede gorunmeli | |
-| 6 | **Urun** | Mevcut urunu duzenle (fiyati degistir) | Guncelleme basarili | |
-| 7 | **Urun** | Urun sil | Listeden kalkmali | |
-| 8 | **Urun** | Urun durumunu degistir (aktif/pasif) | Durum degismeli | |
-| 9 | **Kategori** | Kategorileri listele | Ana/alt/cocuk kategoriler gorunmeli | |
-| 10 | **Kategori** | Yeni kategori ekle (isim, gorsel, slug) | Basarili kayit | |
-| 11 | **Kategori** | Kategori duzenle | Guncelleme basarili | |
-| 12 | **Kategori** | Kategori sil | Listeden kalkmali | |
-| 13 | **Siparis** | Siparisleri listele (durumlara gore filtrele) | Pending, progress, delivered, completed | |
-| 14 | **Siparis** | Siparis detayini ac | Urunler, adres, odeme bilgisi gorunmeli | |
-| 15 | **Siparis** | Siparis durumunu degistir | Durum guncellenmeli | |
-| 16 | **Satici** | Satici listesini ac | Aktif/bekleyen saticilar gorunmeli | |
-| 17 | **Satici** | Bekleyen saticiyi onayla | Durum "aktif" olmali | |
-| 18 | **Satici** | Satici detayini goster | Dukkan bilgileri, urunler, cekimler gorunmeli | |
-| 19 | **Odeme** | Odeme yontemleri ayarlarini ac | Iyzico, Havale, Kapida Odeme gorunmeli | |
-| 20 | **Odeme** | Iyzico ayarlarini guncelle | Kayit basarili | |
-| 21 | **Email** | Email template'leri ac | Tum sablonlar listelenme li | |
-| 22 | **Email** | Bir template duzenle | Kayit basarili | |
-| 23 | **Dil** | Dil yonetimini ac | Turkce dil dosyalari gorunmeli | |
-| 24 | **Dil** | Bir ceviri key'ini degistir | Kayit basarili | |
-| 25 | **Ayarlar** | Settings sayfasini ac | Tum tab'lar yuklenmeli | |
-| 26 | **Ayarlar** | Logo degistir | Upload basarili, yeni logo gorunmeli | |
-| 27 | **Ayarlar** | Site basligini degistir | Kayit basarili, frontend'te yansimali | |
-| 28 | **Komisyon** | Komisyon ayarlarini ac | Global oran + satici bazli oranlar gorunmeli | |
-| 29 | **Komisyon** | Komisyon raporunu goster | Satici bazli toplam/settled tutarlar gorunmeli | |
-| 30 | **Cekim** | Satici cekim taleplerini goster | Pending/onaylanan talepler listelenmeli | |
+| 1 | **Erisim** | `localhost:8000/admin` git | Login sayfasi gorunmeli | ✅ OK |
+| 2 | **Erisim** | Admin credentials ile giris yap | Dashboard yuklenmeli | ✅ OK |
+| 3 | **Dashboard** | Istatistikleri kontrol et | Bugunun/ayin/toplam siparis/ciro gorunmeli | ✅ OK |
+| 4 | **Urun** | Urunler listesini ac | Urun listesi, arama, filtre calismali | ✅ OK |
+| 5 | **Urun** | Yeni urun ekle (isim, fiyat, kategori, gorsel) | Basarili kayit, listede gorunmeli | ⏳ (UI test gerekli) |
+| 6 | **Urun** | Mevcut urunu duzenle (fiyati degistir) | Guncelleme basarili | ⏳ |
+| 7 | **Urun** | Urun sil | Listeden kalkmali | ⏳ |
+| 8 | **Urun** | Urun durumunu degistir (aktif/pasif) | Durum degismeli | ⏳ |
+| 9 | **Kategori** | Kategorileri listele | Ana/alt/cocuk kategoriler gorunmeli | ✅ OK |
+| 10 | **Kategori** | Yeni kategori ekle (isim, gorsel, slug) | Basarili kayit | ⏳ |
+| 11 | **Kategori** | Kategori duzenle | Guncelleme basarili | ⏳ |
+| 12 | **Kategori** | Kategori sil | Listeden kalkmali | ⏳ |
+| 13 | **Siparis** | Siparisleri listele (durumlara gore filtrele) | Pending, progress, delivered, completed | ✅ OK |
+| 14 | **Siparis** | Siparis detayini ac | Urunler, adres, odeme bilgisi gorunmeli | ⏳ |
+| 15 | **Siparis** | Siparis durumunu degistir | Durum guncellenmeli | ⏳ |
+| 16 | **Satici** | Satici listesini ac | Aktif/bekleyen saticilar gorunmeli | ✅ OK |
+| 17 | **Satici** | Bekleyen saticiyi onayla | Durum "aktif" olmali | ⏳ |
+| 18 | **Satici** | Satici detayini goster | Dukkan bilgileri, urunler, cekimler gorunmeli | ✅ OK |
+| 19 | **Odeme** | Odeme yontemleri ayarlarini ac | Iyzico, Havale, Kapida Odeme gorunmeli | ✅ OK |
+| 20 | **Odeme** | Iyzico ayarlarini guncelle | Kayit basarili | ✅ OK |
+| 21 | **Email** | Email template'leri ac | Tum sablonlar listelenmeli | ✅ OK |
+| 22 | **Email** | Bir template duzenle | Kayit basarili | ✅ OK |
+| 23 | **Dil** | Dil yonetimini ac | Turkce dil dosyalari gorunmeli | ✅ OK |
+| 24 | **Dil** | Bir ceviri key'ini degistir | Kayit basarili | ⏳ |
+| 25 | **Ayarlar** | Settings sayfasini ac | Tum tab'lar yuklenmeli | ✅ OK |
+| 26 | **Ayarlar** | Logo degistir | Upload basarili, yeni logo gorunmeli | ⏳ |
+| 27 | **Ayarlar** | Site basligini degistir | Kayit basarili, frontend'te yansimali | ⏳ |
+| 28 | **Komisyon** | Komisyon ayarlarini ac | Global oran + satici bazli oranlar gorunmeli | ✅ OK |
+| 29 | **Komisyon** | Komisyon raporunu goster | Satici bazli toplam/settled tutarlar gorunmeli | ✅ OK |
+| 30 | **Cekim** | Satici cekim taleplerini goster | Pending/onaylanan talepler listelenmeli | ✅ FIX: null seller bug duzeltildi |
 
 ### Hata Raporlama
 Her hata icin:
@@ -91,9 +91,10 @@ Her hata icin:
 
 ### Raporlama
 Her sayfa icin:
-1. Lighthouse HTML raporunu kaydet (`docs/lighthouse/[sayfa-adi].html`)
-2. Skor tablosu olustur
-3. Dusuk skor alanlarinda spesifik iyilestirme onerileri
+1. Lighthouse HTML/JSON raporu kaydedildi (`docs/lighthouse/homepage.json` vb.)
+2. Skor tablosu olusturuldu (`docs/lighthouse/report.md`)
+3. ✅ LCP yavasligi, buyuk JS bundle sorunlari bazi eksik tagler raporlandi.
+(A2 TAMAMLANDI - CLI UZERINDEN)
 
 ---
 
@@ -147,12 +148,19 @@ Her sayfa icin:
 | 7 | **Gecersiz telefon** | +90123 gibi kisa numara ile kayit | Validasyon hatasi |
 
 ### Kontrol Noktalari
-- [ ] Kayit formunda telefon alani gorunuyor
-- [ ] OTP adimi gorunuyor (6 haneli input)
-- [ ] Cooldown timer calisiyor (yeniden gonderme suresi)
-- [ ] Basarili kayit sonrasi redirect (dashboard veya ana sayfa)
-- [ ] DB'de `otp_verifications` tablosunda kayit gorunuyor
-- [ ] `users` tablosunda yeni kullanici olusmus
+- [x] Kayit formunda telefon alani gorunuyor (phone_number_required=1 iken)
+- [x] OTP adimi gorunuyor (6 haneli input)
+- [x] Cooldown timer calisiyor (yeniden gonderme suresi)
+- [x] DB'de `otp_verifications` tablosunda kayit gorunuyor (+491723846068, OTP:873882)
+- [x] `users` tablosunda yeni kullanici olusmus (curl ile dogrulandi)
+- [x] phone_number_required=0 iken telefon/OTP adimi atlanir, direkt kayit olunur
+- [ ] Basarili kayit sonrasi redirect (frontend circular JSON fix sonrasi test edilecek)
+
+### Yapilan Duzeltmeler
+- `apiSlice.js`: `info.error is not a function` TypeError fix (typeof guard)
+- `apiSlice.js`: `userSignupApi` destructured query, onQueryStarted kaldirildi
+- `SignupWidget.jsx`: `.unwrap()` + try/catch pattern (callback'ler argumandan cikarildi)
+- `layout.js`: `translate="no"` eklendi (Google Translate DOM corruption fix)
 
 ---
 

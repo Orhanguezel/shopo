@@ -10,6 +10,9 @@ export default function InputCom({
   error = false,
   labelClasses = "text-qgray text-[13px] font-normal",
   onBlur,
+  onFocus,
+  autoComplete,
+  inputMode,
 }) {
   return (
     <div className="input-com w-full h-full">
@@ -28,6 +31,7 @@ export default function InputCom({
       >
         <input
           onBlur={onBlur ? onBlur : undefined}
+          onFocus={onFocus ? onFocus : undefined}
           placeholder={placeholder}
           value={value || ""}
           onChange={(e) => inputHandler(e)}
@@ -37,6 +41,8 @@ export default function InputCom({
           name={name}
           type={type}
           id={name}
+          autoComplete={autoComplete}
+          inputMode={inputMode}
         />
         {children && children}
       </div>

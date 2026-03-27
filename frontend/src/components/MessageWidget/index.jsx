@@ -533,7 +533,7 @@ function MessageWidgetContent({ pusher }) {
           type="button"
           className="w-[120px] h-[32px] bg-white text-sm text-qyellow font-semibold absolute shadow-lg"
         >
-          {ServeLangItem().Send_Product}
+          {ServeLangItem().Send_Product || "Ürünü Gönder"}
         </button>
       )}
     </div>
@@ -552,7 +552,7 @@ function MessageWidgetContent({ pusher }) {
             <ChatMessageIcon />
           </span>
           <span className="text-base font-medium text-qblack">
-            {ServeLangItem().Messages}
+            {"AI Asistan"}
           </span>
         </button>
       )}
@@ -578,7 +578,7 @@ function MessageWidgetContent({ pusher }) {
                   <ChatMessageIcon />
                 </span>
                 <span className="text-base font-medium text-qblack">
-                  {ServeLangItem().Messages}
+                  {"Yapay Zeka Asistanı"}
                 </span>
               </div>
               <button onClick={toggleMessageWidget} type="button">
@@ -780,12 +780,11 @@ function MessageWidgetContent({ pusher }) {
                         </div>
                         <div>
                           <h1 className="text-[#1D1D1D] font-bold text-[20px] text-center">
-                            {ServeLangItem().No_Message_yet}
+                            {"Henüz mesaj yok"}
                           </h1>
                           <p className="text-[#797979] text-sm text-center">
                             {
-                              ServeLangItem()
-                                .Its_seems__No_Message_in_your_inbox
+                              "Ürünlerle ilgili soru sorabilir, özellik, fiyat ve stok bilgisi için bu alandan yardım alabilirsiniz."
                             }
                           </p>
                         </div>
@@ -801,7 +800,7 @@ function MessageWidgetContent({ pusher }) {
                       onChange={handleMessageInput}
                       onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                       value={state.message}
-                      placeholder="Message"
+                      placeholder="Ürün hakkında sorunuzu yazın"
                       className="w-full h-full placeholder:text-[#85959E] text-[#85959E] focus:outline-none bg-[#E2E8EB]"
                     />
                   </div>
@@ -814,7 +813,7 @@ function MessageWidgetContent({ pusher }) {
                         updateState({ toggleEmoji: !state.toggleEmoji })
                       }
                       type="button"
-                      aria-label="Add emoji"
+                      aria-label="Emoji ekle"
                     >
                       <span>
                         <EmojiIcon />
@@ -826,7 +825,7 @@ function MessageWidgetContent({ pusher }) {
                       onClick={() => sendMessage()}
                       type="button"
                       className="w-[50px] h-full bg-qyellow flex justify-center items-center text-qblack"
-                      aria-label="Send message"
+                      aria-label="Mesaj gönder"
                     >
                       <span>
                         <SendIcon />

@@ -7,13 +7,28 @@ use App\Models\Language;
 use Auth;
 class LanguageController extends Controller
 {
+    private function resolveLanguageCode(?string $langCode, string $fileName): string
+    {
+        if ($langCode && file_exists(resource_path('lang/'.$langCode.'/'.$fileName))) {
+            return $langCode;
+        }
+
+        $defaultLanguage = Language::where('lang_code', 'tr')->first()
+            ?? Language::whereRaw('LOWER(is_default) = ?', ['yes'])->first()
+            ?? Language::first();
+
+        $defaultCode = $defaultLanguage?->lang_code ?: 'tr';
+
+        if (file_exists(resource_path('lang/'.$defaultCode.'/'.$fileName))) {
+            return $defaultCode;
+        }
+
+        return 'en';
+    }
 
     public function adminLnagugae(Request $request){
-        if($request->lang_code){
-            $data = include(resource_path('lang/'.$request->lang_code.'/admin.php'));
-        }else{
-            $data = include(resource_path('lang/en/admin.php'));
-        }
+        $langCode = $this->resolveLanguageCode($request->lang_code, 'admin.php');
+        $data = include(resource_path('lang/'.$langCode.'/admin.php'));
         $languages = Language::get();
         return view('admin.admin_language', compact('data','languages'));
     }
@@ -34,11 +49,8 @@ class LanguageController extends Controller
     }
 
     public function adminValidationLnagugae(Request $request){
-        if($request->lang_code){
-            $data = include(resource_path('lang/'.$request->lang_code.'/admin_validation.php'));
-        }else{
-            $data = include(resource_path('lang/en/admin_validation.php'));
-        }
+        $langCode = $this->resolveLanguageCode($request->lang_code, 'admin_validation.php');
+        $data = include(resource_path('lang/'.$langCode.'/admin_validation.php'));
         $languages = Language::get();
         return view('admin.admin_validation_language', compact('data','languages'));
     }
@@ -58,12 +70,8 @@ class LanguageController extends Controller
     }
 
     public function websiteLanguage(Request $request){
-
-        if($request->lang_code){
-            $data = include(resource_path('lang/'.$request->lang_code.'/user.php'));
-        }else{
-            $data = include(resource_path('lang/en/user.php'));
-        }
+        $langCode = $this->resolveLanguageCode($request->lang_code, 'user.php');
+        $data = include(resource_path('lang/'.$langCode.'/user.php'));
         $languages = Language::get();
         return view('admin.language', compact('data','languages'));
 
@@ -86,11 +94,8 @@ class LanguageController extends Controller
 
 
     public function websiteValidationLanguage(Request $request){
-        if($request->lang_code){
-            $data = include(resource_path('lang/'.$request->lang_code.'/user_validation.php'));
-        }else{
-            $data = include(resource_path('lang/en/user_validation.php'));
-        }
+        $langCode = $this->resolveLanguageCode($request->lang_code, 'user_validation.php');
+        $data = include(resource_path('lang/'.$langCode.'/user_validation.php'));
         $languages = Language::get();
         return view('admin.website_validation_language', compact('data','languages'));
     }

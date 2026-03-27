@@ -29,10 +29,10 @@ export default function Contact({ datas }) {
       {/* Page title and breadcrumb */}
       <div className="page-title mb-10">
         <PageTitle
-          title="Contact"
+          title={ServeLangItem()?.Contact_Us || "İletişim"}
           breadcrumb={[
-            { name: "home", path: "/" },
-            { name: "contact", path: "/contact" },
+            { name: ServeLangItem()?.home || "Ana Sayfa", path: "/" },
+            { name: ServeLangItem()?.Contact_Us || "İletişim", path: "/contact" },
           ]}
         />
       </div>
@@ -107,7 +107,7 @@ export default function Contact({ datas }) {
             <div className="flex-1 bg-white sm:p-10 p-3">
               <div className="title flex flex-col items-center">
                 <h1 className="text-[34px] font-bold text-qblack">
-                  {ServeLangItem()?.Get_In_Touch}
+                  {ServeLangItem()?.Get_In_Touch || "Bizimle İletişime Geçin"}
                 </h1>
                 <span className="-mt-5 block">
                   {/* Decorative SVG underline */}

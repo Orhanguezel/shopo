@@ -181,24 +181,29 @@ export default function usePlaceOrder({
             router.push(res.data.checkout_url);
             removeCouponFromStorage();
           } else {
-            toast.error(res.message || "Iyzico session failed");
+            toast.error(res.message || "Iyzico oturumu başlatılamadı");
           }
         } catch (err) {
-          toast.error(err?.data?.message || "Something went wrong with Iyzico");
+          const msg = err?.data?.message || err?.data?.error || "";
+          if (msg.includes("api bilgileri") || msg.includes("API anahtarları")) {
+            toast.error("Kredi kartı ödeme sistemi henüz yapılandırılmamış. Lütfen başka bir ödeme yöntemi seçin.");
+          } else {
+            toast.error(msg || "Kredi kartı ile ödeme başlatılırken bir hata oluştu");
+          }
         }
       },
     };
 
     if (isGuest) {
       const validationFields = [
-        { field: "fName", message: "First name is required" },
-        { field: "lName", message: "Last name is required" },
-        { field: "email", message: "Email is required" },
-        { field: "phone", message: "Phone is required" },
-        { field: "address", message: "Address is required" },
-        { field: "country", message: "Country is required" },
-        { field: "state", message: "State is required" },
-        { field: "city", message: "City is required" },
+        { field: "fName", message: "Ad alanı zorunludur" },
+        { field: "lName", message: "Soyad alanı zorunludur" },
+        { field: "email", message: "E-posta alanı zorunludur" },
+        { field: "phone", message: "Telefon alanı zorunludur" },
+        { field: "address", message: "Adres alanı zorunludur" },
+        { field: "country", message: "Ülke alanı zorunludur" },
+        { field: "state", message: "İl alanı zorunludur" },
+        { field: "city", message: "İlçe alanı zorunludur" },
       ];
 
       // Validate all fields
@@ -216,10 +221,18 @@ export default function usePlaceOrder({
 
       if (!isGuestFormValid) {
         guestFields.setErrors(errors);
-        return toast.error("Please fill all the fields");
+        return toast.error("Lütfen tüm zorunlu alanları doldurun");
       } else {
         guestFields.setErrors(null);
       }
+    }
+
+    if (!isGuest && !selectedShipping) {
+      return toast.error("Lütfen teslimat adresi seçin");
+    }
+
+    if (!isGuest && !selectedBilling) {
+      return toast.error("Lütfen fatura adresi seçin");
     }
 
     if (!selectedRule)
@@ -228,12 +241,35 @@ export default function usePlaceOrder({
     if (!selectPayment)
       return toast.error(ServeLangItem()?.Please_Select_Your_Payment_Method);
 
+    if (!isGuest) {
+      const findAddress = addresses?.find(
+        (f) => parseInt(f.id) === parseInt(selectedShipping)
+      );
+
+      if (!findAddress) {
+        return toast.error("Seçilen teslimat adresi bulunamadı");
+      }
+
+      if (
+        !addresses?.some((f) => parseInt(f.id) === parseInt(selectedBilling))
+      ) {
+        return toast.error("Seçilen fatura adresi bulunamadı");
+      }
+
+      if (Number(webSettings?.map_status) !== 1) {
+        const hasValidShippingRule = Number.isInteger(parseInt(selectedRule));
+        if (!hasValidShippingRule) {
+          return toast.error("Lütfen geçerli bir kargo seçeneği seçin");
+        }
+      }
+    }
+
     if (!isGuest && Number(webSettings?.map_status) === 1) {
       const findAddress = addresses?.find(
-        (f) => parseInt(f.id) === selectedShipping
+        (f) => parseInt(f.id) === parseInt(selectedShipping)
       );
       if (!Number(findAddress?.latitude) || !Number(findAddress?.longitude)) {
-        toast.error("Location not found. Please create a new location");
+        toast.error("Konum bulunamadı. Lütfen yeni bir konum oluşturun");
         return setNewAddress(true);
       }
     }

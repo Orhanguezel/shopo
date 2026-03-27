@@ -13,6 +13,7 @@ import settings from "./../../../../utils/settings";
 import InputCom from "../../../Helpers/InputCom";
 import LoaderStyleOne from "../../../Helpers/Loaders/LoaderStyleOne";
 import Selectbox from "../../../Helpers/Selectbox";
+import SearchableSelectbox from "../../../Helpers/SearchableSelectbox";
 import ServeLangItem from "../../../Helpers/ServeLangItem";
 import AddressDltIco from "@/components/Helpers/icons/AddressDltIco";
 import AddressEditIco from "@/components/Helpers/icons/AddressEditIco";
@@ -235,7 +236,7 @@ export default function AddressesTab({ countryLists }) {
     if (statusCode === 200 || statusCode === 201) {
       resetData();
       toast.success(
-        data?.notification ? data?.notification : "Address added successfully",
+        data?.notification ? data?.notification : "Adres başarıyla eklendi",
         {
           autoClose: 1000,
         }
@@ -267,7 +268,7 @@ export default function AddressesTab({ countryLists }) {
       if (location) {
         await requestSaveAddress();
       } else {
-        toast.error("Please select location");
+        toast.error("Lütfen konum seçin");
       }
     } else {
       await requestSaveAddress();
@@ -318,7 +319,7 @@ export default function AddressesTab({ countryLists }) {
       }
       setNewAddress(!newAddress);
     } else {
-      toast.error("Address not found");
+      toast.error("Adres bulunamadı");
     }
   };
 
@@ -353,7 +354,7 @@ export default function AddressesTab({ countryLists }) {
           error: updateAddressErrorHandler,
         });
       } else {
-        toast.error("Please select location");
+        toast.error("Lütfen konum seçin");
       }
     } else {
       await updateAddressApi({
@@ -449,7 +450,7 @@ export default function AddressesTab({ countryLists }) {
                 <div className="w-full  mb-5 sm:mb-0">
                   <InputCom
                     label={ServeLangItem()?.Name + "*"}
-                    placeholder="Name"
+                    placeholder="Ad Soyad"
                     inputClasses="w-full h-[50px]"
                     value={formData.fName}
                     inputHandler={(e) =>
@@ -534,7 +535,7 @@ export default function AddressesTab({ countryLists }) {
                             (item) =>
                               parseInt(item.id) === parseInt(formData.country)
                           );
-                        return item ? item.name : "Select";
+                        return item ? item.name : "Seçiniz";
                       })()
                     }
                     datas={countryDropdown && countryDropdown}
@@ -588,9 +589,10 @@ export default function AddressesTab({ countryLists }) {
                         : "border-qgray-border"
                     }`}
                   >
-                    <Selectbox
+                    <SearchableSelectbox
                       action={getcity}
                       className="w-full px-5"
+                      placeholder="İl ara..."
                       defaultValue={
                         stateDropdown &&
                         stateDropdown.length > 0 &&
@@ -598,7 +600,7 @@ export default function AddressesTab({ countryLists }) {
                           let item = stateDropdown.find(
                             (item) => item.id === parseInt(formData.state)
                           );
-                          return item ? item.name : "Select";
+                          return item ? item.name : "Seçiniz";
                         })()
                       }
                       datas={stateDropdown && stateDropdown}
@@ -628,7 +630,7 @@ export default function AddressesTab({ countryLists }) {
                           </div>
                         </>
                       )}
-                    </Selectbox>
+                    </SearchableSelectbox>
                   </div>
                   {errors && Object.hasOwn(errors, "state") ? (
                     <span className="text-sm mt-1 text-qred">
@@ -649,9 +651,10 @@ export default function AddressesTab({ countryLists }) {
                         : "border-qgray-border"
                     }`}
                   >
-                    <Selectbox
+                    <SearchableSelectbox
                       action={selectCity}
                       className="w-full px-5"
+                      placeholder="İlçe ara..."
                       defaultValue={
                         cityDropdown &&
                         cityDropdown.length > 0 &&
@@ -659,7 +662,7 @@ export default function AddressesTab({ countryLists }) {
                           let item = cityDropdown.find(
                             (item) => item.id === parseInt(formData.city)
                           );
-                          return item ? item.name : "Select";
+                          return item ? item.name : "Seçiniz";
                         })()
                       }
                       datas={cityDropdown && cityDropdown}
@@ -689,7 +692,7 @@ export default function AddressesTab({ countryLists }) {
                           </div>
                         </>
                       )}
-                    </Selectbox>
+                    </SearchableSelectbox>
                   </div>
                   {errors && Object.hasOwn(errors, "city") ? (
                     <span className="text-sm mt-1 text-qred">

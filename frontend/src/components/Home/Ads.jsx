@@ -69,15 +69,16 @@ export default function Ads() {
           <div className="w-full h-full flex fixed left-0 top-0 justify-center z-40 items-center ">
             <div className="w-full h-full fixed left-0 right-0 bg-black  bg-opacity-25"></div>
             <div
-              className="lg:w-[812px] md:w-[650px] w-[310px] md:h-[509px] relative z-50 bg-slate-700 ltr:md:pl-10 ltr:pl-3 rtl:md:pr-10 rtl:pr-3 pr-3 md:py-[108px] py-20 flex flex-col justify-end overflow-hidden"
-              style={{
-                backgroundImage: `url(${
-                  appConfig.BASE_URL + announcment.image
-                })`,
-                backgroundRepeat: " no-repeat",
-                backgroundSize: "cover",
-              }}
+              className="lg:w-[812px] md:w-[650px] w-[310px] md:h-[509px] relative z-50 bg-slate-700 overflow-hidden"
             >
+              <Image
+                src={appConfig.BASE_URL + announcment.image}
+                alt={announcment.title || "Announcement"}
+                fill
+                priority
+                className="object-cover"
+              />
+              <div className="absolute inset-0 z-10 ltr:md:pl-10 ltr:pl-3 rtl:md:pr-10 rtl:pr-3 pr-3 md:py-[108px] py-20 flex flex-col justify-end">
               <div>
                 <div className="logo mb-[20px]">
                   <Link href="/">
@@ -164,6 +165,7 @@ export default function Ads() {
               </button>
             </div>
           </div>
+        </div>
         )}
       </div>
     </>

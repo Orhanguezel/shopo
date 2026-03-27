@@ -176,7 +176,7 @@ function AllProductPageContent({ response, sellerInfo }) {
         // Show user notification
         if (typeof window !== "undefined") {
           alert(
-            "Too many filters selected. Some filters have been removed to keep the URL manageable."
+            "Çok fazla filtre seçildi. URL uzunluğunu korumak için bazı filtreler kaldırıldı."
           );
         }
         // Remove some filter parameters to shorten URL
@@ -970,29 +970,29 @@ function AllProductPageContent({ response, sellerInfo }) {
 
     return (
       <div
-        style={{
-          backgroundImage: `url(${
-            appConfig.BASE_URL + response.shopPageSidebarBanner.image
-          })`,
-          backgroundSize: `cover`,
-          backgroundRepeat: `no-repeat`,
-        }}
-        className="w-full hidden py-[35px] ltr:pl-[40px] rtl:pr-[40px] group lg:block h-[295px] relative"
+        data-aos="fade-up"
+        className="w-full hidden lg:block h-[320px] relative rounded-2xl overflow-hidden shadow-sm group border border-gray-100"
       >
-        <div className="flex flex-col justify-between w-full h-full">
-          <div>
-            <div className="mb-[10px]">
-              <span className="text-qblack uppercase text-xs font-semibold">
-                {response.shopPageSidebarBanner.title_one}
-              </span>
-            </div>
-            <div className="mb-[30px]">
-              <h1 className="w-[162px] text-[24px] leading-[40px] text-qblack font-semibold">
-                {response.shopPageSidebarBanner.title_two}
-              </h1>
-            </div>
+        <Image
+          src={appConfig.BASE_URL + response.shopPageSidebarBanner.image}
+          alt={response.shopPageSidebarBanner.title_two || "Sidebar Banner"}
+          fill
+          className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
+          sizes="270px"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-transparent to-white/40 pointer-events-none"></div>
+        
+        <div className="absolute inset-0 p-5 flex flex-col justify-between z-10">
+          <div className="bg-white/80 backdrop-blur-sm px-4 py-3 rounded-xl border border-white shadow-sm w-fit max-w-[200px]">
+            <span className="text-qyellow uppercase text-[10px] tracking-widest font-black block mb-0.5">
+              {response.shopPageSidebarBanner.title_one}
+            </span>
+            <h2 className="text-lg font-black text-qblack leading-tight line-clamp-2">
+              {response.shopPageSidebarBanner.title_two}
+            </h2>
           </div>
-          <div className="w-auto">
+          
+          <div className="w-full flex justify-center">
             <Link
               href={{
                 pathname: "/products",
@@ -1001,16 +1001,18 @@ function AllProductPageContent({ response, sellerInfo }) {
                 },
               }}
             >
-              <div className="cursor-pointer w-full relative">
-                <div className="inline-flex space-x-1.5 rtl:space-x-reverse items-center relative z-20">
-                  <span className="text-sm text-qblack font-medium leading-[30px]">
-                    {ServeLangItem()?.Shop_Now}
-                  </span>
-                  <span className="leading-[30px]">
-                    <ShopArrowIco />
-                  </span>
-                </div>
-                <div className="w-[82px] transition-all duration-300 ease-in-out group-hover:h-4 h-[2px] bg-qyellow absolute ltr:left-0 rtl:right-0 bottom-0 z-10"></div>
+              <div className="inline-flex items-center px-6 py-2 bg-qblack text-white rounded-full font-bold transition-all duration-300 hover:bg-qyellow hover:text-qblack shadow-lg cursor-pointer">
+                <span className="text-[13px] mr-2">
+                  {ServeLangItem()?.Shop_Now}
+                </span>
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                </svg>
               </div>
             </Link>
           </div>
@@ -1213,7 +1215,7 @@ function AllProductPageContent({ response, sellerInfo }) {
             ) : (
               <div className="mt-5 flex justify-center">
                 <h1 className="text-2xl font-medium text-tblack">
-                  Products not available
+                  Urun bulunamadi
                 </h1>
               </div>
             )}

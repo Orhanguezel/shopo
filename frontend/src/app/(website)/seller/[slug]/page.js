@@ -21,6 +21,9 @@ export async function generateMetadata({ params }) {
       },
     };
   } catch (error) {
+    if (error?.digest === 'NEXT_NOT_FOUND' || error?.message?.includes('NEXT_NOT_FOUND') || error?.message === 'NEXT_NOT_FOUND') {
+      throw error;
+    }
     return {
       title: "Satıcı Mağazası | Seyfibaba Pazaryeri",
       alternates: {
@@ -48,6 +51,9 @@ export default async function SellerPage({ params }) {
     }
   } catch (error) {
     // Fail silently — schemas are non-critical
+    if (error?.digest === 'NEXT_NOT_FOUND' || error?.message?.includes('NEXT_NOT_FOUND') || error?.message === 'NEXT_NOT_FOUND') {
+      throw error;
+    }
   }
 
   return (

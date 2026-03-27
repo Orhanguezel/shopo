@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Webhooks\GeliverWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -841,3 +842,17 @@ Route::group(['as'=> 'user.', 'prefix' => 'user'],function (){
         Route::post('/pay-with-iyzico', [IyzicoController::class, 'createGuestCheckoutSession'])->name('pay-with-iyzico');
     });
 });
+
+// AI Chat Routes
+Route::prefix('ai-chat')->group(function () {
+    Route::get('/status', [\App\Http\Controllers\API\AiChatController::class, 'status']);
+    Route::post('/guest/send', [\App\Http\Controllers\API\AiChatController::class, 'guestSend'])
+        ->middleware('throttle:5,1');
+});
+
+Route::group(['middleware' => ['auth:api'], 'prefix' => 'user/ai-chat'], function () {
+    Route::post('/send', [\App\Http\Controllers\API\AiChatController::class, 'send'])
+        ->middleware('throttle:10,1');
+    Route::get('/history', [\App\Http\Controllers\API\AiChatController::class, 'history']);
+});
+Route::post('webhooks/geliver', [GeliverWebhookController::class, 'handle']);

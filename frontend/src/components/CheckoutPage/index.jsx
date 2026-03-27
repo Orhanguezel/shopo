@@ -154,7 +154,7 @@ export default function CheckoutPage() {
 
   const submitCoupon = async () => {
     if (!auth()) {
-      toast.error("If you want offer the coupon, please login first");
+      toast.error("Kupon kullanmak için önce giriş yapmalısınız");
       return false;
     }
 
@@ -177,13 +177,13 @@ export default function CheckoutPage() {
           localStorage.setItem("coupon_set_date", currDate);
           toast.success(ServeLangItem()?.Coupon_Applied);
         } else {
-          toast.error("Your total price not able to apply coupon");
+          toast.error("Toplam tutarınız bu kuponu uygulamak için yeterli değil");
         }
       }
     } else if (res.status === "rejected") {
       toast.error(res?.error && res?.error?.data?.message);
     } else {
-      toast.error("Something went wrong");
+      toast.error("Bir şeyler ters gitti");
     }
   };
 
@@ -202,6 +202,29 @@ export default function CheckoutPage() {
    * @param {number} cityId - City ID for shipping rules
    */
   const shippingHandler = (addressId, cityId) => {
+    setSelectedRule(null);
+    setShippingCharge(null);
+
+    const autoSelectBestRule = (rules) => {
+      if (!rules || rules.length === 0) return;
+      // Find the best matching rule: prefer the cheapest one that matches current totalPrice
+      const currentTotal = calculateTotalPrice(subTotal) || 0;
+      const matchingRules = rules.filter((rule) => {
+        if (rule.type === "base_on_price") {
+          const from = parseInt(rule.condition_from);
+          const to = parseInt(rule.condition_to);
+          return from <= currentTotal && (to >= currentTotal || to === -1);
+        }
+        return true;
+      });
+      // Sort by fee ascending — cheapest (free) first
+      const sorted = matchingRules.length > 0
+        ? [...matchingRules].sort((a, b) => parseFloat(a.shipping_fee) - parseFloat(b.shipping_fee))
+        : rules;
+      setSelectedRule(sorted[0].id.toString());
+      setShippingCharge(sorted[0].shipping_fee);
+    };
+
     if (auth() && addressId) {
       setShipping(addressId);
 
@@ -209,15 +232,22 @@ export default function CheckoutPage() {
         const findAddress = addresses?.find(
           (f) => parseInt(f.id) === addressId
         );
-        const calcPrice = calculateLocationShippingPrice(findAddress);
+        const calcPrice = findAddress
+          ? calculateLocationShippingPrice(findAddress)
+          : null;
         setLocationShippingPrice(calcPrice);
+        setShippingRulesByCityId([]);
       } else {
+        setLocationShippingPrice(null);
         const filteredRules = filterShippingRulesByCity(shippingRules, cityId);
         setShippingRulesByCityId(filteredRules);
+        autoSelectBestRule(filteredRules);
       }
     } else {
+      setLocationShippingPrice(null);
       const filteredRules = filterShippingRulesByCity(shippingRules, cityId);
       setShippingRulesByCityId(filteredRules);
+      autoSelectBestRule(filteredRules);
     }
   };
 
@@ -307,22 +337,51 @@ export default function CheckoutPage() {
   // Update addresses when addressesData changes
   useEffect(() => {
     if (addressesData?.addresses) {
-      setAddresses(addressesData.addresses);
-      if (addressesData.addresses.length > 0) {
-        // Only set default addresses if they haven't been selected yet
-        if (!selectedShipping) {
-          setShipping(addressesData.addresses[0].id);
-        }
-        if (!selectedBilling) {
-          setBilling(addressesData.addresses[0].id);
+      const checkoutAddresses = addressesData.addresses;
+      setAddresses(checkoutAddresses);
+
+      if (checkoutAddresses.length > 0) {
+        const selectedShippingAddress =
+          checkoutAddresses.find(
+            (item) => parseInt(item.id) === parseInt(selectedShipping)
+          ) || checkoutAddresses[0];
+
+        const selectedBillingAddress =
+          checkoutAddresses.find(
+            (item) => parseInt(item.id) === parseInt(selectedBilling)
+          ) || checkoutAddresses[0];
+
+        if (
+          !selectedShipping ||
+          !checkoutAddresses.some(
+            (item) => parseInt(item.id) === parseInt(selectedShipping)
+          )
+        ) {
+          setShipping(selectedShippingAddress.id);
         }
 
-        // Calculate location shipping price if map is enabled
+        if (
+          !selectedBilling ||
+          !checkoutAddresses.some(
+            (item) => parseInt(item.id) === parseInt(selectedBilling)
+          )
+        ) {
+          setBilling(selectedBillingAddress.id);
+        }
+
         if (Number(webSettings?.map_status) === 1) {
-          const firstAddress = addressesData.addresses[0];
-          const calcPrice = calculateLocationShippingPrice(firstAddress);
+          const calcPrice = calculateLocationShippingPrice(
+            selectedShippingAddress
+          );
           setLocationShippingPrice(calcPrice);
         }
+      } else {
+        setShipping(null);
+        setBilling(null);
+        setSelectedRule(null);
+        setShippingCharge(null);
+        setLocationShippingPrice(null);
+        setShippingRulesByCityId([]);
       }
     }
   }, [addressesData, webSettings, selectedShipping, selectedBilling]);
@@ -414,7 +473,7 @@ export default function CheckoutPage() {
     }
   }, [shippingCharge, locationShippingPrice, totalPrice]);
 
-  // Initialize shipping when addresses and rules are available
+  // Initialize shipping rules when addresses and rules are available
   useEffect(() => {
     if (
       addresses &&
@@ -422,10 +481,31 @@ export default function CheckoutPage() {
       shippingRules &&
       shippingRules.length > 0
     ) {
-      shippingHandler(
-        parseInt(addresses[0].id),
-        parseInt(addresses[0].city_id)
-      );
+      const shippingAddress =
+        addresses.find((item) => parseInt(item.id) === parseInt(selectedShipping)) ||
+        addresses[0];
+
+      if (shippingAddress) {
+        if (Number(webSettings?.map_status) === 1) {
+          const calcPrice = calculateLocationShippingPrice(shippingAddress);
+          setLocationShippingPrice(calcPrice);
+          setShippingRulesByCityId([]);
+        } else {
+          setLocationShippingPrice(null);
+          const filteredRules = filterShippingRulesByCity(
+            shippingRules,
+            parseInt(shippingAddress.city_id)
+          );
+          setShippingRulesByCityId(filteredRules);
+
+          // Auto-select first matching rule if none selected
+          if (!selectedRule && filteredRules.length > 0) {
+            const firstRule = filteredRules[0];
+            setSelectedRule(firstRule.id.toString());
+            setShippingCharge(firstRule.shipping_fee);
+          }
+        }
+      }
     }
   }, [shippingRules, addresses]);
 
@@ -480,21 +560,62 @@ export default function CheckoutPage() {
     setBankInfo(response.data.bankPaymentInfo);
 
     // Set shipping rules
-    setShipppingRules(response.data.shippings);
+    const shippings = response.data.shippings || [];
+    setShipppingRules(shippings);
 
     if (isRealUser) {
       // Set addresses
-      setAddresses(response.data.addresses);
+      const checkoutAddresses = response.data.addresses || [];
+      setAddresses(checkoutAddresses);
 
       // Set default shipping and billing addresses
-      setShipping(response.data.addresses[0].id);
-      setBilling(response.data.addresses[0].id);
+      if (checkoutAddresses.length > 0) {
+        const defaultShippingAddress = checkoutAddresses[0];
 
-      // Calculate location shipping price if map is enabled
-      if (Number(webSettings?.map_status) === 1) {
-        setLocationShippingPrice(
-          calculateLocationShippingPrice(response.data.addresses[0])
-        );
+        setShipping(defaultShippingAddress.id);
+        setBilling(defaultShippingAddress.id);
+
+        // Calculate location shipping price if map is enabled
+        if (Number(webSettings?.map_status) === 1) {
+          setLocationShippingPrice(
+            calculateLocationShippingPrice(defaultShippingAddress)
+          );
+        } else {
+          // Filter and auto-select shipping rules for default address
+          const filteredRules = filterShippingRulesByCity(
+            shippings,
+            parseInt(defaultShippingAddress.city_id)
+          );
+          setShippingRulesByCityId(filteredRules);
+          // Auto-select best rule (cheapest matching)
+          if (filteredRules.length > 0) {
+            const cartTotal = cart?.cartProducts?.reduce((sum, item) => {
+              const basePrice = item.product?.offer_price || item.product?.price || 0;
+              return sum + parseFloat(basePrice) * parseInt(item.qty);
+            }, 0) || 0;
+            const matching = filteredRules.filter((r) => {
+              if (r.type !== "base_on_price") return true;
+              const from = parseInt(r.condition_from);
+              const to = parseInt(r.condition_to);
+              return from <= cartTotal && (to >= cartTotal || to === -1);
+            });
+            const best = (matching.length > 0 ? matching : filteredRules)
+              .sort((a, b) => parseFloat(a.shipping_fee) - parseFloat(b.shipping_fee))[0];
+            setSelectedRule(best.id.toString());
+            setShippingCharge(best.shipping_fee);
+          }
+        }
+      }
+    } else {
+      // Guest user: show default rules (city_id=0) immediately
+      const defaultRules = shippings.filter(
+        (rule) => parseInt(rule.city_id) === 0
+      );
+      if (defaultRules.length > 0) {
+        setShippingRulesByCityId(defaultRules);
+        const best = [...defaultRules].sort((a, b) => parseFloat(a.shipping_fee) - parseFloat(b.shipping_fee))[0];
+        setSelectedRule(best.id.toString());
+        setShippingCharge(best.shipping_fee);
       }
     }
   };
@@ -559,10 +680,10 @@ export default function CheckoutPage() {
         {/* Page Title */}
         <div className="w-full mb-5">
           <PageTitle
-            title="Checkout"
+            title="Ödeme"
             breadcrumb={[
-              { name: ServeLangItem()?.home, path: "/" },
-              { name: ServeLangItem()?.Checkout, path: "/checkout" },
+              { name: "Ana Sayfa", path: "/" },
+              { name: "Ödeme", path: "/checkout" },
             ]}
           />
         </div>
@@ -575,7 +696,7 @@ export default function CheckoutPage() {
                 {/* Left Column - Address Section */}
                 <div className="lg:w-4/6 w-full">
                   <h1 className="sm:text-2xl text-xl text-qblack font-medium mt-5 mb-5">
-                    {ServeLangItem()?.Addresses}
+                    Adresler
                   </h1>
 
                   {auth() ? (
@@ -608,7 +729,7 @@ export default function CheckoutPage() {
 
                   {/* Order Summary */}
                   <h1 className="sm:text-2xl text-xl text-qblack font-medium mt-5 mb-5">
-                    {ServeLangItem()?.Order_Summary}
+                    Sipariş Özeti
                   </h1>
 
                   <OrderSummary

@@ -8,7 +8,6 @@ import "@/assets/css/loader.css";
 import "@/assets/css/selecbox.css";
 import { Providers } from "@/redux/providers";
 import Toaster from "@/components/Helpers/Toaster";
-import settings from "@/utils/settings";
 import localFont from "next/font/local";
 
 const inter = localFont({
@@ -27,19 +26,35 @@ const inter = localFont({
   display: "swap",
 });
 
+import getSetupData from "@/api/setup";
+
 export async function generateMetadata() {
-  const { favicon, seo_title, seo_description } = settings();
+  const setupData = await getSetupData();
+  const setting = setupData?.setting;
+  const seo_setting = setupData?.seo_setting;
+  
+  // Find global SEO settings (usually id 1 or type home)
+  const homeSeo = seo_setting?.find(s => s.id === 1);
+  
+  const favicon = setting?.favicon;
+  const logo = setting?.logo;
+  const seo_title = homeSeo?.seo_title || "Shopo - E-Ticaret Pazaryeri";
+  const seo_description = homeSeo?.seo_description || "Shopo ile güvenli ve hızlı alışverişin tadını çıkarın.";
+  
+  const faviconUrl = favicon ? appConfig.BASE_URL + favicon : "/favico.svg";
+  const ogImageUrl = logo ? appConfig.BASE_URL + logo : `${appConfig.BASE_URL}uploads/website-images/og-default.jpg`;
+
   return {
     metadataBase: new URL(appConfig.APPLICATION_URL),
     title: {
-      default: seo_title || "Shopo - E-Ticaret Pazaryeri",
+      default: seo_title,
       template: `%s | Shopo`,
     },
-    description: seo_description || "Shopo ile güvenli ve hızlı alışverişin tadını çıkarın.",
+    description: seo_description,
     icons: {
-      icon: favicon ? appConfig.BASE_URL + favicon : "/favico.svg",
-      shortcut: favicon ? appConfig.BASE_URL + favicon : "/favico.svg",
-      apple: favicon ? appConfig.BASE_URL + favicon : "/favico.svg",
+      icon: faviconUrl,
+      shortcut: faviconUrl,
+      apple: faviconUrl,
     },
     manifest: appConfig.PWA_STATUS === 1 || appConfig.PWA_STATUS === "1" ? "/manifest.json" : null,
     openGraph: {
@@ -51,7 +66,7 @@ export async function generateMetadata() {
       locale: "tr_TR",
       images: [
         {
-          url: `${appConfig.BASE_URL}uploads/website-images/og-default.jpg`,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: "Seyfibaba Pazaryeri",
@@ -62,7 +77,7 @@ export async function generateMetadata() {
       card: "summary_large_image",
       title: seo_title,
       description: seo_description,
-      images: [`${appConfig.BASE_URL}uploads/website-images/og-default.jpg`],
+      images: [ogImageUrl],
     },
   };
 }
@@ -77,6 +92,11 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="tr" translate="no" className="notranslate">
+      <head>
+        <link rel="preconnect" href="https://admin.seyfibaba.com/" />
+        {/* If using local dev with localhost:8000 */}
+        <link rel="preconnect" href="http://localhost:8000/" />
+      </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
         {/* loader */}
         <NextSnakeLoader />

@@ -55,10 +55,21 @@ class CheckoutController extends Controller
     public function checkout(Request $request){
         $user = Auth::guard('api')->user();
         $cartProducts = ShoppingCart::with('product','variants.variantItem')->where('user_id', $user->id)->select('id','product_id','qty')->get();
+        $bankPaymentInfo = BankPayment::first();
+        $iyzico = IyzicoPayment::select('status','marketplace_mode','is_test_mode')->first();
 
         if($cartProducts->count() == 0){
-            $notification = trans('user_validation.Your shopping cart is empty');
-            return response()->json(['message' => $notification],403);
+            $addresses = Address::with('country', 'countryState', 'city')->where(['user_id' => $user->id])->get();
+            $shippings = Shipping::all();
+            return response()->json([
+                'cartProducts' => $cartProducts,
+                'addresses' => $addresses,
+                'shippings' => $shippings,
+                'couponOffer' => '',
+                'bankPaymentInfo' => $bankPaymentInfo,
+                'iyzico' => $iyzico,
+                'message' => trans('user_validation.Your shopping cart is empty'),
+            ],200);
         }
 
 
@@ -109,11 +120,6 @@ class CheckoutController extends Controller
                 }
             }
         }
-
-
-
-        $bankPaymentInfo = BankPayment::first();
-        $iyzico = IyzicoPayment::select('status','marketplace_mode','is_test_mode')->first();
 
         return response()->json([
             'cartProducts' => $cartProducts,

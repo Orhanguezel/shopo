@@ -21,40 +21,50 @@ export default function CategoryCard({
 
   return (
     <div
-      className="category-card-wrappwer w-full h-full p-[30px]"
+      className="category-card-wrapper w-full h-full relative rounded-2xl overflow-hidden shadow-sm group"
       style={{
         background: `url(${
           background || `/assets/images/section-category-1.jpg`
         }) no-repeat`,
         backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
-      <div>
-        {/* Card Title */}
-        <h1 className="text-base font-600 tracking-wide mb-2">{title}</h1>
-        {/* List of filtered categories */}
-        <div className="brands-list mb-[7px]">
-          <ul>
-            {filterCategory.map((category) => (
-              <li key={category.id}>
-                <span
-                  onClick={() => changeIdHandler(category.category_id)}
-                  className="text-sm text-qgray hober:text-qBlack border-b border-transparent hover:border-qblack hover:text-qblack capitalize cursor-pointer"
-                >
-                  {/* Display category name */}
-                  {category && category.category.name}
-                </span>
-              </li>
-            ))}
-          </ul>
+      <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent pointer-events-none group-hover:from-white/50 transition-all duration-300"></div>
+      <div className="relative z-10 p-8 h-full flex flex-col justify-between">
+        <div>
+          {/* Card Title */}
+          <div className="mb-6">
+            <h1 className="text-2xl font-black text-qblack leading-tight drop-shadow-sm group-hover:scale-[1.02] transform transition-transform duration-300 uppercase italic">
+              {title}
+            </h1>
+            <div className="w-12 h-1 bg-qyellow rounded-full mt-2"></div>
+          </div>
+          {/* List of filtered categories */}
+          <div className="brands-list mb-8">
+            <ul className="space-y-3">
+              {filterCategory.map((category) => (
+                <li key={category.id}>
+                  <span
+                    onClick={() => changeIdHandler(category.category_id)}
+                    className="text-sm font-semibold text-qgray hover:text-qblack transition-colors duration-200 flex items-center group/item cursor-pointer"
+                  >
+                    <span className="w-1.5 h-1.5 bg-qyellow rounded-full mr-2 opacity-0 group-hover/item:opacity-100 transition-opacity"></span>
+                    {category && category.category.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
+        
         {/* 'Shop Now' link with icon */}
         <Link href={`${moreUrl}`}>
-          <div className="flex space-x-2 rtl:space-x-reverse items-center cursor-pointer">
-            <span className="text-qblack font-600 text-sm">
+          <div className="inline-flex items-center space-x-2 text-qblack font-bold group/btn cursor-pointer">
+            <span className="text-sm border-b-2 border-qyellow leading-relaxed">
               {ServeLangItem()?.Shop_Now}
             </span>
-            <span>
+            <span className="transform transition-transform duration-300 group-hover/btn:translate-x-1">
               <ShopNowIco />
             </span>
           </div>

@@ -67,7 +67,7 @@
                                         </td>
                                         <td>
                                             <a href="{{ route('admin.language.edit',$language->id) }}" class="btn btn-primary btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                                            @if ($language->id != 1)
+                                            @if ($language->lang_code !== 'tr')
                                                 @if ($language->is_default == 'Yes')
                                                 <a href="javascript:;" data-toggle="modal" data-target="#canNotDeleteModal" class="btn btn-danger btn-sm" onclick="deleteData({{ $language->id }})"><i class="fa fa-trash" aria-hidden="true"></i></a>
                                                 @else

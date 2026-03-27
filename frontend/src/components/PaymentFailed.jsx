@@ -13,19 +13,19 @@ export default function PaymentFailed() {
 
   const reasonMap = {
     missing_callback_params:
-      "The payment provider returned an incomplete response. Please try again.",
+      "Ödeme sağlayıcısından eksik yanıt alındı. Lütfen tekrar deneyin.",
     order_not_found:
-      "We could not match this payment attempt to an order. Please start checkout again.",
+      "Bu ödeme girişimi bir siparişle eşleştirilemedi. Lütfen yeniden sipariş verin.",
     payment_declined:
-      "Your bank or payment provider declined this transaction.",
+      "Bankanız veya ödeme sağlayıcınız bu işlemi reddetti.",
     payment_processing_error:
-      "The payment attempt could not be completed due to a temporary processing error.",
+      "Ödeme işlemi geçici bir hata nedeniyle tamamlanamadı.",
   };
 
   const detailMessage =
     reasonMap[reason] ||
     ServeLangItem()?.Oh_snap_The_Payment_Information_was_declined ||
-    "We were unable to process your transaction. This might be due to incorrect card details or insufficient funds.";
+    "İşleminizi gerçekleştiremedik. Kart bilgilerinizi veya bakiyenizi kontrol edin.";
 
   const retryHref = orderId ? `/checkout?order_id=${orderId}` : "/checkout";
 
@@ -46,7 +46,7 @@ export default function PaymentFailed() {
           </div>
 
           <h1 className="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
-            {ServeLangItem()?.Payment_Declined || "Payment Declined"}
+            {ServeLangItem()?.Payment_Declined || "Ödeme Başarısız"}
           </h1>
           
           <p className="text-gray-500 text-lg mb-10 leading-relaxed max-w-sm mx-auto">
@@ -57,13 +57,13 @@ export default function PaymentFailed() {
             <div className="mb-8 rounded-2xl border border-gray-200 bg-gray-50 px-5 py-4 text-left text-sm text-gray-600">
               {orderId && (
                 <p>
-                  <span className="font-semibold text-gray-900">Order ID:</span>{" "}
+                  <span className="font-semibold text-gray-900">Sipariş No:</span>{" "}
                   {orderId}
                 </p>
               )}
               {errorCode && (
                 <p>
-                  <span className="font-semibold text-gray-900">Error Code:</span>{" "}
+                  <span className="font-semibold text-gray-900">Hata Kodu:</span>{" "}
                   {errorCode}
                 </p>
               )}
@@ -76,20 +76,20 @@ export default function PaymentFailed() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.268 15c-.77 1.333.192 3 1.732 3z" />
               </svg>
-              Common issues to check:
+              Kontrol edilmesi gerekenler:
             </h4>
             <ul className="space-y-2 text-sm text-red-700 font-medium">
               <li className="flex items-center gap-2">
                 <div className="w-1 h-1 bg-red-400 rounded-full" />
-                Incorrect CVV or expiration date
+                Yanlış CVV veya son kullanma tarihi
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-1 h-1 bg-red-400 rounded-full" />
-                3D Secure authentication failed or expired
+                3D Secure doğrulaması başarısız veya süresi dolmuş
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-1 h-1 bg-red-400 rounded-full" />
-                Card not enabled for online shopping
+                Kart internet alışverişine kapalı
               </li>
             </ul>
           </div>
@@ -99,19 +99,19 @@ export default function PaymentFailed() {
               href={retryHref}
               className="flex-1 bg-primary text-white py-4 px-8 rounded-2xl font-bold hover:bg-primary-dark transition-all shadow-xl shadow-red-200 hover:shadow-red-300 transform active:scale-95"
             >
-              Try Again
+              Tekrar Dene
             </Link>
-            <Link 
-              href="/contact" 
+            <Link
+              href="/contact"
               className="flex-1 bg-gray-100 text-gray-700 py-4 px-8 rounded-2xl font-bold hover:bg-gray-200 transition-all transform active:scale-95"
             >
-              Support
+              Destek
             </Link>
           </div>
         </div>
 
         <p className="mt-8 text-gray-400 text-sm">
-          Need help? <Link href="/contact" className="text-primary font-bold hover:underline">Contact our 24/7 support team</Link>
+          Yardıma mı ihtiyacınız var? <Link href="/contact" className="text-primary font-bold hover:underline">Destek ekibimizle iletişime geçin</Link>
         </p>
       </div>
     </div>

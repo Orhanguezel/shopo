@@ -10,10 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AiContentController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api')->except([]);
-    }
+    // Auth is handled by route-level middleware (api.php groups or web.php groups)
 
     /**
      * Generate AI-powered product content.

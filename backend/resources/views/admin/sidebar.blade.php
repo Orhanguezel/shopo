@@ -179,9 +179,6 @@
                 <li class="{{ Route::is('admin.flash-sale-product') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.flash-sale-product') }}">{{__('admin.Flash Sale Product')}}</a></li>
 
                 <li class="{{ Route::is('admin.coupon.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.coupon.index') }}">{{__('admin.Coupon')}}</a></li>
-
-                <li class="{{ Route::is('admin.payment-method') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.payment-method') }}">{{__('admin.Payment Method')}}</a></li>
-
                 <li class="nav-item dropdown {{ Route::is('admin.commission-settings') || Route::is('admin.commission-report') ? 'active' : '' }}">
                     <a href="#" class="nav-link has-dropdown"><i class="fas fa-coins"></i><span>{{__('admin.Commission')}}</span></a>
                     <ul class="dropdown-menu">
@@ -189,6 +186,7 @@
                         <li class="{{ Route::is('admin.commission-report') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.commission-report') }}">{{__('admin.Report')}}</a></li>
                     </ul>
                 </li>
+
             </ul>
 
           </li>
@@ -199,7 +197,7 @@
           <i class="fas fa-ad"></i>
           </div>
            <span>{{__('admin.Advertisement')}}</span></a></li>
-            <li class="nav-item dropdown {{ Route::is('admin.country.*') || Route::is('admin.state.*') || Route::is('admin.city.*') || Route::is('admin.country-import-page') || Route::is('admin.state-import-page') || Route::is('admin.city-import-page') || Route::is('admin.shipping-import-page') ? 'active' : '' }}">
+            <li class="nav-item dropdown {{ Route::is('admin.country.*') || Route::is('admin.state.*') || Route::is('admin.city.*') || Route::is('admin.country-import-page') || Route::is('admin.state-import-page') || Route::is('admin.city-import-page') ? 'active' : '' }}">
 
                        <a href="#" class="nav-link has-dropdown">
                        <div class="icon">
@@ -214,10 +212,6 @@
                            <li class="{{ Route::is('admin.state.*') || Route::is('admin.state-import-page') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.state.index') }}">{{__('admin.State / Province')}}</a></li>
 
                            <li class="{{ Route::is('admin.city.*') || Route::is('admin.city-import-page') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.city.index') }}">{{__('admin.City / Delivery Area')}}</a></li>
-
-
-                            <li class="{{ Route::is('admin.shipping.*') || Route::is('admin.shipping-import-page') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.shipping.index') }}">{{__('admin.Shipping Rule')}}</a></li>
-
 
                        </ul>
 
@@ -337,38 +331,33 @@
 
 
 
-          <li class="nav-item dropdown {{ Route::is('admin.email-configuration') || Route::is('admin.email-template') || Route::is('admin.edit-email-template') ? 'active' : '' }}">
+          <li class="nav-item dropdown {{ Route::is('admin.payment-method') || Route::is('admin.currency.*') || Route::is('admin.email-configuration') || Route::is('admin.email-template') || Route::is('admin.edit-email-template') || Route::is('admin.sms-notification') || Route::is('admin.sms-template') || Route::is('admin.edit-sms-template') || Route::is('admin.admin-language') || Route::is('admin.admin-validation-language') || Route::is('admin.website-language') || Route::is('admin.website-validation-language') || Route::is('admin.ai-settings') || Route::is('admin.ai-chat-settings') || Route::is('admin.general-setting') || Route::is('admin.shipping.*') || Route::is('admin.shipping-import-page') || Route::is('admin.geliver-settings') ? 'active' : '' }}">
            <p class="s-divide">{{__('admin.Configuration')}}</p>
             <a href="#" class="nav-link has-dropdown">
             <div class="icon">
-            <i class="fas fa-envelope"></i>
+            <i class="fas fa-cog"></i>
             </div>
-            <span>{{__('admin.Email Configuration')}}</span></a>
+            <span>{{__('admin.Configuration')}}</span></a>
 
             <ul class="dropdown-menu">
-
-                <li class="{{ Route::is('admin.email-configuration') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.email-configuration') }}">{{__('admin.Setting')}}</a></li>
-
+                <li class="{{ Route::is('admin.payment-method') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.payment-method') }}">{{__('admin.Payment Methods')}}</a></li>
+                <li class="{{ Route::is('admin.currency.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.currency.index') }}">{{__('admin.Currency')}}</a></li>
+                <li class="{{ Route::is('admin.email-configuration') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.email-configuration') }}">{{__('admin.Email Configuration')}}</a></li>
                 <li class="{{ Route::is('admin.email-template') || Route::is('admin.edit-email-template') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.email-template') }}">{{__('admin.Email Template')}}</a></li>
-
-            </ul>
-
-          </li>
-
-          <li class="nav-item dropdown {{ Route::is('admin.sms-notification') || Route::is('admin.sms-template') || Route::is('admin.edit-sms-template') ? 'active' : '' }}">
-            <a href="#" class="nav-link has-dropdown">
-
-                <div class="icon">
-                    <i class="fas fa-envelope"></i>
-                </div>
-
-                <span>{{__('admin.Sms Configuration')}}</span></a>
-
-            <ul class="dropdown-menu">
-                <li class="{{ Route::is('admin.sms-notification') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.sms-notification') }}">{{__('admin.Setting')}}</a></li>
-
+                <li class="{{ Route::is('admin.sms-notification') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.sms-notification') }}">{{__('admin.Sms Configuration')}}</a></li>
                 <li class="{{ Route::is('admin.sms-template') || Route::is('admin.edit-sms-template') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.sms-template') }}">{{__('admin.Sms Template')}}</a></li>
+                <li class="{{ Route::is('admin.shipping.index') || Route::is('admin.shipping.create') || Route::is('admin.shipping.edit') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.shipping.index') }}">Kargo Kuralları</a></li>
+                <li class="{{ Route::is('admin.shipping-import-page') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.shipping-import-page') }}">Kargo Toplu Yükleme</a></li>
+                <li class="{{ Route::is('admin.geliver-settings') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.geliver-settings') }}">Geliver Kargo Yapılandırması</a></li>
+                <li class="{{ Route::is('admin.admin-language') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.admin-language') }}">{{__('admin.Admin Language')}}</a></li>
+                <li class="{{ Route::is('admin.admin-validation-language') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.admin-validation-language') }}">{{__('admin.Admin Validation')}}</a></li>
+                <li class="{{ Route::is('admin.website-language') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.website-language') }}">{{__('admin.Frontend Language')}}</a></li>
+                <li class="{{ Route::is('admin.website-validation-language') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.website-validation-language') }}">{{__('admin.Frontend Validation')}}</a></li>
+                <li class="{{ Route::is('admin.ai-settings') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.ai-settings') }}">AI Ayarları</a></li>
+                <li class="{{ Route::is('admin.ai-chat-settings') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.ai-chat-settings') }}">AI Chat</a></li>
+                <li class="{{ Route::is('admin.general-setting') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.general-setting') }}">{{__('admin.Setting')}}</a></li>
             </ul>
+
           </li>
 
           <li class="{{ Route::is('admin.subscriber') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.subscriber') }}">
@@ -378,34 +367,7 @@
                      </div>
                      <span>{{__('admin.Subscribers')}}</span></a></li>
 
-          <li class="nav-item dropdown {{ Route::is('admin.admin-language') || Route::is('admin.admin-validation-language') || Route::is('admin.website-language') || Route::is('admin.website-validation-language') ? 'active' : '' }}">
-            <a href="#" class="nav-link has-dropdown">
-            <div class="icon">
-            <i class="fas fa-th-large"></i>
-            </div>
-            <span>{{__('admin.Language')}}</span></a>
 
-            <ul class="dropdown-menu">
-                <li class="{{ Route::is('admin.admin-language') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.admin-language') }}">{{__('admin.Admin Language')}}</a></li>
-
-                <li class="{{ Route::is('admin.admin-validation-language') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.admin-validation-language') }}">{{__('admin.Admin Validation')}}</a></li>
-
-                <li class="{{ Route::is('admin.website-language') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.website-language') }}">{{__('admin.Frontend Language')}}</a></li>
-                <li class="{{ Route::is('admin.website-validation-language') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.website-validation-language') }}">{{__('admin.Frontend Validation')}}</a></li>
-            </ul>
-          </li>
-
-
-          <li class="{{ Route::is('admin.general-setting') ? 'active' : '' }}">
-          <p class="s-divide">{{__('admin.Settings')}}</p>
-
-          <a class="nav-link" href="{{ route('admin.general-setting') }}">
-
-
-           <div class="icon">
-           <i class="fas fa-cog"></i>
-           </div>
-           <span>{{__('admin.Setting')}}</span></a></li>
           @php
               $logedInAdmin = Auth::guard('admin')->user();
           @endphp

@@ -125,9 +125,10 @@ export default function Cart({ className }) {
                   {/* Product Thumbnail */}
                   <div className="w-[65px] h-full relative">
                     <Image
-                      layout="fill"
+                      fill
                       src={`${appConfig.BASE_URL + item.product.thumb_image}`}
                       alt={item.product.name}
+                      sizes="65px"
                       className="w-full h-full object-contain"
                     />
                   </div>

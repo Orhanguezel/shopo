@@ -75,8 +75,10 @@ class SellerProductController extends Controller
         $categories = Category::all();
         $brands = Brand::all();
         $specificationKeys = ProductSpecificationKey::all();
+        $setting = Setting::first();
+        $aiEnabled = (bool) $setting->openai_enabled || (bool) $setting->claude_enabled;
 
-        return view('seller.create_product',compact('categories','brands','specificationKeys'));
+        return view('seller.create_product',compact('categories','brands','specificationKeys','aiEnabled'));
     }
 
 
@@ -220,7 +222,10 @@ class SellerProductController extends Controller
         $productSpecifications = ProductSpecification::where('product_id',$product->id)->get();
 
 
-        return view('seller.edit_product',compact('categories','brands','specificationKeys','product','subCategories','childCategories','productSpecifications'));
+        $setting = Setting::first();
+        $aiEnabled = (bool) $setting->openai_enabled || (bool) $setting->claude_enabled;
+
+        return view('seller.edit_product',compact('categories','brands','specificationKeys','product','subCategories','childCategories','productSpecifications','aiEnabled'));
 
     }
 
@@ -427,8 +432,11 @@ class SellerProductController extends Controller
             $notification=array('messege'=>$notification,'alert-type'=>'error');
             return redirect()->back()->with($notification);
         }
+    }
 
-
+    public function aiGenerateContent(Request $request)
+    {
+        return app(\App\Http\Controllers\AiContentController::class)->generate($request);
     }
 
 }

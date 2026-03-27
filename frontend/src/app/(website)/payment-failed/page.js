@@ -2,7 +2,7 @@ import React from "react";
 import PaymentFailed from "../../../components/PaymentFailed";
 
 export const metadata = {
-  title: "Payment Failed | Shopo",
+  title: "Ödeme Başarısız | Seyfibaba",
   robots: { index: false, follow: false },
   alternates: {
     canonical: "/payment-failed",

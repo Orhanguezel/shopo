@@ -93,23 +93,22 @@ export default function Banner({
                       className="object-cover"
                       sizes="(max-width: 1200px) 100vw, 400px"
                     />
-                    <div className="flex flex-col justify-between relative z-10">
-                      <div>
-                        <div className="inline-block md:w-[112px] w-[100px] shadow md:h-[25px] h-[18px] flex items-center justify-center  bg-white rounded-full md:mb-[22px] mb-[15px]">
+                    <div className="flex flex-col justify-between relative z-10 items-start space-y-2">
+                        <div className="inline-block md:w-[112px] w-[100px] shadow md:h-[25px] h-[18px] flex items-center justify-center  bg-white rounded-full md:mb-[15px] mb-[10px]">
                           <span className="text-qblack uppercase md:text-xs text-[10px] font-semibold">
                             {sidebarImgOne.badge}
                           </span>
                         </div>
-                        <div className="md:mb-[30px] mb-2.5">
-                          <p className="md:text-[30px] leading-none text-qblack font-semibold md:mb-3">
+                        <div className="space-y-1">
+                          <p className="inline-block md:text-[20px] leading-none text-qblack font-semibold bg-white/80 px-3 py-1 rounded-lg">
                             {sidebarImgOne.title_one}
                           </p>
-                          <h2 className="md:text-[30px] md:leading-[40px] text-qblack font-semibold">
+                          <br />
+                          <h2 className="inline-block md:text-[24px] md:leading-[32px] text-qblack font-bold bg-white/90 px-4 py-2 rounded-xl shadow-sm">
                             {sidebarImgOne.title_two}
                           </h2>
                         </div>
-                      </div>
-                      <div className="w-auto">
+                        <div className="w-auto bg-white/90 p-1.5 rounded-full shadow-sm px-4">
                         <Link
                           href={{
                             pathname: "/products",
@@ -168,23 +167,22 @@ export default function Banner({
                       className="object-cover"
                       sizes="(max-width: 1200px) 100vw, 400px"
                     />
-                    <div className="flex flex-col justify-between relative z-10">
-                      <div>
-                        <div className="inline-block md:w-[112px] w-[100px] shadow md:h-[25px] h-[18px] flex items-center justify-center  bg-white rounded-full md:mb-[22px] mb-[15px]">
+                    <div className="flex flex-col justify-between relative z-10 items-start space-y-2">
+                        <div className="inline-block md:w-[112px] w-[100px] shadow md:h-[25px] h-[18px] flex items-center justify-center  bg-white rounded-full md:mb-[15px] mb-[10px]">
                           <span className="text-qblack uppercase md:text-xs text-[10px] font-semibold">
                             {sidebarImgTwo.badge}
                           </span>
                         </div>
-                        <div className="md:mb-[30px] mb-2.5">
-                          <p className="md:text-[30px] leading-none text-qblack font-semibold md:mb-3">
+                        <div className="space-y-1">
+                          <p className="inline-block md:text-[20px] leading-none text-qblack font-semibold bg-white/80 px-3 py-1 rounded-lg">
                             {sidebarImgTwo.title_one}
                           </p>
-                          <h2 className="md:text-[30px] md:leading-[40px] text-qblack font-semibold">
+                          <br />
+                          <h2 className="inline-block md:text-[24px] md:leading-[32px] text-qblack font-bold bg-white/90 px-4 py-2 rounded-xl shadow-sm">
                             {sidebarImgTwo.title_two}
                           </h2>
                         </div>
-                      </div>
-                      <div className="w-auto">
+                        <div className="w-auto bg-white/90 p-1.5 rounded-full shadow-sm px-4">
                         <Link
                           href={{
                             pathname: "/products",

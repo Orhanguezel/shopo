@@ -6,8 +6,14 @@ function ServeLangItem() {
   return langCntnt && typeof langCntnt === "object"
       ? langCntnt
       : {
-          home: "Home",
-          Show_more: "Show more",
+          home: "Ana Sayfa",
+          Show_more: "Daha Fazla",
+          Checkout: "Ödeme",
+          Addresses: "Adresler",
+          Order_Summary: "Sipariş Özeti",
+          Billing_Address: "Fatura Adresi",
+          Shipping_Address: "Teslimat Adresi",
+          All_Categories: "Tüm Kategoriler",
         };
 }
 

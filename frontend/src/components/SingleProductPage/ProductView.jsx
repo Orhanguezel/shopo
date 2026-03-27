@@ -321,7 +321,7 @@ export default function ProductView({
   const addToCard = useCallback(
     (id, event) => {
       if (!safeProduct?.id) {
-        toast.error("Product is not available.");
+        toast.error("Urun bulunamadi.");
         return;
       }
 
@@ -382,7 +382,7 @@ export default function ProductView({
         if (enableMapOrCommission) {
           if (!vendorProduct) {
             if (checkProduct) {
-              toast.error("Product already in cart");
+              toast.error("Urun zaten sepette.");
             } else {
               dispatch(addItem(productShort));
               // Trigger flying cart animation
@@ -395,7 +395,7 @@ export default function ProductView({
           }
         } else {
           if (checkProduct) {
-            toast.error("Product already in cart");
+            toast.error("Urun zaten sepette.");
           } else {
             dispatch(addItem(productShort));
             // Trigger flying cart animation
@@ -497,7 +497,7 @@ export default function ProductView({
     return (
       <div className={`product-view w-full ${className || ""}`}>
         <div className="w-full rounded border border-qgray-border p-8 text-center text-qgray">
-          Product details are not available.
+          Urun detaylari su anda goruntulenemiyor.
         </div>
       </div>
     );
@@ -517,7 +517,7 @@ export default function ProductView({
               fill
               style={{ objectFit: "scale-down" }}
               src={src ? `${appConfig.BASE_URL + src}` : PRODUCT_IMAGE_FALLBACK}
-              alt={product?.name || "Product image"}
+              alt={product?.name || "Urun gorseli"}
               className="object-contain transform scale-110"
             />
             {safeProduct?.offer_price && (
@@ -629,7 +629,7 @@ export default function ProductView({
               type="button"
               className="text-blue-500 text-xs font-bold"
             >
-              {more ? "See Less" : "See More"}
+              {more ? "Daha az goster" : "Devamini goster"}
             </button>
           </div>
 
@@ -640,8 +640,8 @@ export default function ProductView({
             </span>
             <span className="text-base font-bold text-qyellow">
               {safeProduct?.qty !== "0"
-                ? `${safeProduct.qty} Products Available`
-                : `Products not Available`}
+                ? `${safeProduct.qty} urun stokta`
+                : `Urun stokta yok`}
             </span>
           </div>
 
@@ -700,12 +700,12 @@ export default function ProductView({
         {/* Product Info */}
         <div data-aos="fade-up" className="mb-[20px]">
           <p className="text-[13px] text-qgray leading-7">
-            <span className="text-qblack">Category :</span>{" "}
+            <span className="text-qblack">Kategori:</span>{" "}
             {safeProduct?.category?.name || ""}
           </p>
           {tags && (
             <p className="text-[13px] text-qgray leading-7">
-              <span className="text-qblack">Tags:</span>{" "}
+              <span className="text-qblack">Etiketler:</span>{" "}
               {tags.length > 0 &&
                 tags.map((item, i) => <span key={i}>{item.value + ", "}</span>)}
             </p>
@@ -758,7 +758,7 @@ export default function ProductView({
                 <MessageIco />
               </span>
               <span className="text-base font-medium text-qblack capitalize">
-                Chat with seller
+                Saticiya mesaj gonder
               </span>
             </button>
           </div>

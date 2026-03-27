@@ -18,13 +18,25 @@ export const useWebsiteSetup = (websiteSetup) => {
   useEffect(() => {
     if (websiteSetup?.payload) {
       try {
-        const { setting, language_list, default_language, footer, currencies } =
+        const {
+          setting,
+          language_list,
+          default_language,
+          footer,
+          currencies,
+          language,
+        } =
           websiteSetup.payload;
 
         setSettings(setting);
         setLanguages(language_list);
         setDefaultLanguage(default_language);
         setAllCurrencies(currencies);
+
+        if (typeof window !== "undefined" && language) {
+          localStorage.setItem("language", JSON.stringify(language));
+          localStorage.setItem(STORAGE_KEYS.LANGUAGE, JSON.stringify(language));
+        }
 
         setContact({
           phone: footer?.phone || null,

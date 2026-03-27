@@ -7,6 +7,7 @@ import settings from "@/utils/settings";
 import InputCom from "@/components/Helpers/InputCom";
 import LoaderStyleOne from "@/components/Helpers/Loaders/LoaderStyleOne";
 import Selectbox from "@/components/Helpers/Selectbox";
+import SearchableSelectbox from "@/components/Helpers/SearchableSelectbox";
 import ServeLangItem from "@/components/Helpers/ServeLangItem";
 import {
   useLazyGetStateListApiQuery,
@@ -15,6 +16,11 @@ import {
   useAddNewAddressMutation,
 } from "@/redux/features/locations/apiSlice";
 import ArrowDownIcoCheck from "@/components/Helpers/icons/ArrowDownIcoCheck";
+import {
+  findTurkeyCountry,
+  sortTurkeyDistrictOptions,
+  sortTurkeyStateOptions,
+} from "@/data/turkey-cities";
 
 const MapComponent = dynamic(() => import("@/components/MapComponent/Index"), {
   ssr: false,
@@ -64,7 +70,15 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
         const userToken = auth()?.access_token;
         const response = await getCountryListApi({ token: userToken });
         if (response.data) {
-          setCountryDropdown(response.data.countries || []);
+          const countries = response.data.countries || [];
+          setCountryDropdown(countries);
+
+          if (!formData.country) {
+            const turkeyCountry = findTurkeyCountry(countries);
+            if (turkeyCountry?.id) {
+              await getState(turkeyCountry);
+            }
+          }
         }
       } catch (error) {
         console.error("Error fetching countries:", error);
@@ -72,7 +86,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
     };
 
     fetchCountries();
-  }, [getCountryListApi]);
+  }, [formData.country, getCountryListApi]);
 
   /**
    * Handles input field changes for form data
@@ -149,14 +163,19 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
   const getState = async (value) => {
     if (value) {
       if (value?.id) {
-        setFormData((prev) => ({ ...prev, country: value.id }));
+        setFormData((prev) => ({
+          ...prev,
+          country: value.id,
+          state: null,
+          city: null,
+        }));
         const response = await getStateListApi({
           countryId: Number(value.id),
           token: auth()?.access_token,
         });
         if (response.isSuccess) {
           setCityDropdown(null);
-          setStateDropdown(response?.data?.states);
+          setStateDropdown(sortTurkeyStateOptions(response?.data?.states || []));
         }
       } else {
         console.error(
@@ -173,13 +192,15 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
   const getcity = async (value) => {
     if (value) {
       if (value?.id) {
-        setFormData((prev) => ({ ...prev, state: value.id }));
+        setFormData((prev) => ({ ...prev, state: value.id, city: null }));
         const response = await getCityListApi({
           stateId: Number(value.id),
           token: auth()?.access_token,
         });
         if (response.isSuccess) {
-          setCityDropdown(response?.data?.cities);
+          setCityDropdown(
+            sortTurkeyDistrictOptions(response?.data?.cities || [], value?.name)
+          );
         }
       } else {
         console.error(
@@ -213,7 +234,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
     if (statusCode === 200 || statusCode === 201) {
       resetData();
       toast.success(
-        data?.notification ? data?.notification : "Address added successfully",
+        data?.notification ? data?.notification : "Adres başarıyla eklendi",
         {
           autoClose: 1000,
         }
@@ -251,7 +272,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
       if (location) {
         await requestSaveAddress();
       } else {
-        toast.error("Please select location");
+        toast.error("Lütfen konum seçin");
       }
     } else {
       await requestSaveAddress();
@@ -283,7 +304,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
       {/* Form Header */}
       <div className="flex justify-between items-center">
         <h1 className="sm:text-2xl text-xl text-qblack font-medium mb-5">
-          {ServeLangItem()?.Add_New_Address}
+          Yeni Adres Ekle
         </h1>
         <span onClick={onCancel} className="text-qyellow cursor-pointer">
           <svg
@@ -308,12 +329,15 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
           <div className="mb-6">
             <div className="w-full mb-5 sm:mb-0">
               <InputCom
-                label={ServeLangItem()?.Name + "*"}
-                placeholder="Name"
+                label="Ad Soyad*"
+                placeholder="Ad Soyad"
                 inputClasses="w-full h-[50px]"
                 value={formData.fName}
                 inputHandler={(e) => handleInputChange("fName", e.target.value)}
                 error={hasError("name")}
+                name="name"
+                type="text"
+                autoComplete="name"
               />
             </div>
             {hasError("name") && (
@@ -327,12 +351,16 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
           <div className="flex rtl:space-x-reverse space-x-5 items-center mb-6">
             <div className="sm:w-1/2 w-full">
               <InputCom
-                label={ServeLangItem()?.Email + "*"}
-                placeholder={ServeLangItem()?.Email}
+                label="E-posta*"
+                placeholder="E-posta"
                 inputClasses="w-full h-[50px]"
                 value={formData.email}
                 inputHandler={(e) => handleInputChange("email", e.target.value)}
                 error={hasError("email")}
+                name="email"
+                type="email"
+                autoComplete="email"
+                inputMode="email"
               />
               {hasError("email") && (
                 <span className="text-sm mt-1 text-qred">
@@ -342,12 +370,16 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
             </div>
             <div className="sm:w-1/2 w-full">
               <InputCom
-                label={ServeLangItem()?.Phone_Number + "*"}
+                label="Telefon Numarası*"
                 placeholder="012 3  *******"
                 inputClasses="w-full h-[50px]"
                 value={formData.phone}
                 inputHandler={(e) => handleInputChange("phone", e.target.value)}
                 error={hasError("phone")}
+                name="tel"
+                type="tel"
+                autoComplete="tel"
+                inputMode="tel"
               />
               {hasError("phone") && (
                 <span className="text-sm mt-1 text-qred">
@@ -360,7 +392,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
           {/* Country Selection */}
           <div className="mb-6">
             <h1 className="input-label capitalize block mb-2 text-qgray text-[13px] font-normal">
-              {ServeLangItem()?.Country}*
+              Ülke*
             </h1>
             <div
               className={`w-full h-[50px] border flex justify-between items-center border-qgray-border mb-2 ${
@@ -380,7 +412,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
                         (item) =>
                           parseInt(item.id) === parseInt(formData.country)
                       );
-                    return item ? item.name : "Select";
+                    return item ? item.name : "Türkiye";
                   })()
                 }
                 datas={countryDropdown && countryDropdown}
@@ -410,16 +442,17 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
           <div className="flex rtl:space-x-reverse space-x-5 items-center mb-6">
             <div className="w-1/2">
               <h1 className="input-label capitalize block mb-2 text-qgray text-[13px] font-normal">
-                {ServeLangItem()?.State}*
+                İl*
               </h1>
               <div
                 className={`w-full h-[50px] border flex justify-between items-center border-qgray-border mb-2 ${
                   hasError("state") ? "border-qred" : "border-qgray-border"
                 }`}
               >
-                <Selectbox
+                <SearchableSelectbox
                   action={getcity}
                   className="w-full px-5"
+                  placeholder="İl ara..."
                   defaultValue={
                     stateDropdown &&
                     stateDropdown.length > 0 &&
@@ -427,7 +460,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
                       let item = stateDropdown.find(
                         (item) => item.id === parseInt(formData.state)
                       );
-                      return item ? item.name : "Select";
+                      return item ? item.name : "Seçiniz";
                     })()
                   }
                   datas={stateDropdown && stateDropdown}
@@ -446,7 +479,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
                       </div>
                     </>
                   )}
-                </Selectbox>
+                </SearchableSelectbox>
               </div>
               {hasError("state") && (
                 <span className="text-sm mt-1 text-qred">
@@ -456,16 +489,17 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
             </div>
             <div className="w-1/2">
               <h1 className="input-label capitalize block mb-2 text-qgray text-[13px] font-normal">
-                {ServeLangItem()?.City}*
+                İlçe*
               </h1>
               <div
                 className={`w-full h-[50px] border flex justify-between items-center border-qgray-border mb-2 ${
                   hasError("city") ? "border-qred" : "border-qgray-border"
                 }`}
               >
-                <Selectbox
+                <SearchableSelectbox
                   action={selectCity}
                   className="w-full px-5"
+                  placeholder="İlçe ara..."
                   defaultValue={
                     cityDropdown &&
                     cityDropdown.length > 0 &&
@@ -473,7 +507,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
                       let item = cityDropdown.find(
                         (item) => item.id === parseInt(formData.city)
                       );
-                      return item ? item.name : "Select";
+                      return item ? item.name : "Seçiniz";
                     })()
                   }
                   datas={cityDropdown && cityDropdown}
@@ -492,7 +526,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
                       </div>
                     </>
                   )}
-                </Selectbox>
+                </SearchableSelectbox>
               </div>
               {hasError("city") && (
                 <span className="text-sm mt-1 text-qred">
@@ -538,7 +572,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
                 htmlFor="home"
                 className="text-qblack text-[15px] select-none capitalize"
               >
-                {ServeLangItem()?.home}
+                Ev
               </label>
             </div>
             <div className="flex rtl:space-x-reverse space-x-2 items-center mb-10">
@@ -555,7 +589,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
                 htmlFor="office"
                 className="text-qblack text-[15px] select-none"
               >
-                {ServeLangItem()?.Office}
+                Ofis
               </label>
             </div>
           </div>
@@ -569,7 +603,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
           >
             <div className="yellow-btn rounded">
               <span className="text-sm text-qblack">
-                {ServeLangItem()?.Save_Address}
+                Adresi Kaydet
               </span>
               {isAddNewAddressLoading && (
                 <span className="w-5" style={{ transform: "scale(0.3)" }}>

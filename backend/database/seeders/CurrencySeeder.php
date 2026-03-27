@@ -14,15 +14,30 @@ class CurrencySeeder extends Seeder
      */
     public function run()
     {
-        MultiCurrency::create([
-            'currency_name' => '$-USD',
-            'country_code' => 'USD',
-            'currency_code' => 'USD',
-            'currency_icon' => '$',
-            'is_default' => 'Yes',
-            'currency_rate' => 1,
-            'currency_position' => 'right',
-            'status' => 1,
-        ]);
+        MultiCurrency::updateOrCreate(
+            ['currency_code' => 'TRY'],
+            [
+                'currency_name' => '₺-TRY',
+                'country_code' => 'TR',
+                'currency_icon' => '₺',
+                'is_default' => 'Yes',
+                'currency_rate' => 1,
+                'currency_position' => 'right',
+                'status' => 1,
+            ]
+        );
+
+        MultiCurrency::updateOrCreate(
+            ['currency_code' => 'USD'],
+            [
+                'currency_name' => '$-USD',
+                'country_code' => 'USD',
+                'currency_icon' => '$',
+                'is_default' => 'No',
+                'currency_rate' => 1,
+                'currency_position' => 'right',
+                'status' => 0,
+            ]
+        );
     }
 }

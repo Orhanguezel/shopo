@@ -105,6 +105,12 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
         ],
 
+        'geliver_webhook' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/geliver-webhook.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
         'null' => [
             'driver' => 'monolog',
             'handler' => NullHandler::class,

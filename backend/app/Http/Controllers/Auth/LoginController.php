@@ -252,16 +252,26 @@ class LoginController extends Controller
             (int) config('sms.otp.expire_minutes', 5)
         );
 
-        if (!app(SmsServiceInterface::class)->send($phone, $message)) {
+        $smsSent = app(SmsServiceInterface::class)->send($phone, $message);
+
+        if (!$smsSent) {
             return response()->json([
                 'notification' => 'OTP could not be sent at this time.',
             ], 500);
         }
 
-        return response()->json([
+        $response = [
             'notification' => $notification,
             'expires_in' => (int) config('sms.otp.expire_minutes', 5) * 60,
-        ], 200);
+        ];
+
+        // In local/testing, include OTP in response so developers can test without real SMS
+        if (app()->environment('local', 'testing')) {
+            $response['otp_code'] = $otp->otp_code;
+            $response['notification'] = "OTP: {$otp->otp_code} (dev mode — SMS not sent)";
+        }
+
+        return response()->json($response, 200);
     }
 
     protected function sendLegacyEmailPasswordReset(Request $request)

@@ -26,6 +26,9 @@ function BasicAddressInput({
         placeholder="Your Address here"
         inputClasses="w-full h-[50px]"
         error={searchInputError}
+        name="street-address"
+        type="text"
+        autoComplete="street-address"
       />
       {searchInputError ? (
         <span className="text-sm mt-1 text-qred">{searchInputError}</span>
@@ -318,6 +321,9 @@ function InteractiveMap({
             placeholder="Your Address here"
             inputClasses="w-full h-[50px]"
             error={searchInputError}
+            name="street-address"
+            type="text"
+            autoComplete="street-address"
           />
           {searchInputError ? (
             <span className="text-sm mt-1 text-qred">{searchInputError}</span>

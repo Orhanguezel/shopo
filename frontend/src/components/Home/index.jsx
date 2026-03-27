@@ -1,15 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
-import settings from "../../utils/settings";
 import SectionStyleFour from "../Helpers/SectionStyleFour";
 import SectionStyleOne from "../Helpers/SectionStyleOne";
 import SectionStyleThree from "../Helpers/SectionStyleThree";
 import SectionStyleTwo from "../Helpers/SectionStyleTwo";
 import ViewMoreTitle from "../Helpers/ViewMoreTitle";
-import Layout from "../Partials/Layout";
 import Ads from "./Ads";
 import Banner from "./Banner";
-import BestSellers from "./BestSellers";
 import BrandSection from "./BrandSection";
 import CampaignCountDown from "./CampaignCountDown";
 import TwoColumnAds from "./ProductAds/TwoColumnAds";
@@ -20,54 +16,67 @@ import appConfig from "@/appConfig";
 
 export default function Home({ homepageData }) {
   const getsectionTitles = homepageData.section_title;
-  const [sectionTitles, setSectionTitles] = useState(null);
-  useEffect(() => {
-    if (!sectionTitles) {
-      let tem =
-        getsectionTitles &&
-        getsectionTitles.map((item, i) => {
-          return {
-            [item.key]: item.custom ? item.custom : item.default,
-          };
-        });
-      setSectionTitles(Object.assign.apply(Object, tem));
-    }
-  }, [sectionTitles]);
+  
+  const getTurkishSectionTitle = (key, value) => {
+    const titleMap = {
+      Trending_Category: "Öne Çıkan Kategoriler",
+      Popular_Category: "Popüler Kategoriler",
+      Shop_by_Brand: "Markalara Göre Alışveriş",
+      Top_Rated_Products: "En Çok Beğenilen Ürünler",
+      Best_Seller: "En İyi Satıcılar",
+      Featured_Products: "Öne Çıkan Ürünler",
+      New_Arrivals: "Yeni Gelenler",
+      Best_Products: "En İyi Ürünler",
+    };
+    return titleMap[key] || value;
+  };
 
-  const [homepage] = useState(homepageData);
-  const { enable_multivendor } = settings();
-  const [isMultivendor, setIsMultivendor] = useState(false);
-  useEffect(() => {
-    if (!isMultivendor) {
-      setIsMultivendor(enable_multivendor && parseInt(enable_multivendor));
-    }
-  }, [isMultivendor]);
+  // Pre-calculate section titles on server
+  let sectionTitles = {};
+  if (getsectionTitles && getsectionTitles.length > 0) {
+    getsectionTitles.forEach((item) => {
+      sectionTitles[item.key] = getTurkishSectionTitle(
+        item.key,
+        item.custom ? item.custom : item.default
+      );
+    });
+  }
+
+  const homepage = homepageData;
+  const isMultivendor = true; // Default to true on server, or fetch from shared config/API if possible
+
   return (
-    <div className="w-full pt-[30px] pb-[60px]">
+    <div className="w-full pt-[40px] pb-[80px] space-y-[60px] md:space-y-[100px] bg-[#fdfdfd]">
       <Ads />
-      {homepage?.sliders?.length > 0 && (
-        <Banner
-          images={homepage.sliders}
-          services={homepage.services}
-          sidebarImgOne={
-            homepage.sliderBannerOne &&
-            parseInt(homepage.sliderBannerOne.status) === 1
-              ? homepage.sliderBannerOne
-              : null
-          }
-          sidebarImgTwo={
-            homepage.sliderBannerTwo &&
-            parseInt(homepage.sliderBannerTwo.status) === 1
-              ? homepage.sliderBannerTwo
-              : null
-          }
-          className="banner-wrapper md:mb-[60px] mb-[30px]"
+      <div className="container-x mx-auto">
+        {homepage?.sliders?.length > 0 && (
+          <Banner
+            images={homepage.sliders}
+            services={homepage.services}
+            sidebarImgOne={
+              homepage.sliderBannerOne &&
+              parseInt(homepage.sliderBannerOne.status) === 1
+                ? homepage.sliderBannerOne
+                : null
+            }
+            sidebarImgTwo={
+              homepage.sliderBannerTwo &&
+              parseInt(homepage.sliderBannerTwo.status) === 1
+                ? homepage.sliderBannerTwo
+                : null
+            }
+            className="banner-wrapper shadow-xl rounded-3xl overflow-hidden"
+          />
+        )}
+      </div>
+
+      <div className="py-10 bg-white/50 backdrop-blur-sm">
+        <CategorySection
+          categories={homepage?.homepage_categories}
+          sectionTitle={sectionTitles && sectionTitles.Trending_Category}
         />
-      )}
-      <CategorySection
-        categories={homepage?.homepage_categories}
-        sectionTitle={sectionTitles && sectionTitles.Trending_Category}
-      />
+      </div>
+
       <SectionStyleOne
         products={homepage?.popularCategoryProducts}
         categories={homepage?.popularCategories}
@@ -77,13 +86,17 @@ export default function Home({ homepageData }) {
         categoryTitle={sectionTitles && sectionTitles.Popular_Category}
         sectionTitle={sectionTitles && sectionTitles.Popular_Category}
         seeMoreUrl={`/products?highlight=popular_category`}
-        className="category-products md:mb-[60px] mb-[30px]"
+        className="category-products"
       />
-      <BrandSection
-        brands={homepage?.brands?.length > 0 ? homepage.brands : []}
-        sectionTitle={sectionTitles && sectionTitles.Shop_by_Brand}
-        className="brand-section-wrapper md:mb-[60px] mb-[30px]"
-      />
+
+      <div className="py-16 bg-gray-50/50 border-y border-gray-100">
+        <BrandSection
+          brands={homepage?.brands?.length > 0 ? homepage.brands : []}
+          sectionTitle={sectionTitles && sectionTitles.Shop_by_Brand}
+          className="brand-section-wrapper"
+        />
+      </div>
+
       {homepage?.flashSale && (
         <CampaignCountDown
           className="md:mb-[60px] mb-[30px]"
@@ -92,8 +105,9 @@ export default function Home({ homepageData }) {
           lastDate={homepage.flashSale?.end_time}
         />
       )}
+
       <ViewMoreTitle
-        className="top-selling-product md:mb-[60px] mb-[30px]"
+        className="top-selling-product"
         seeMoreUrl={`/products?highlight=top_product`}
         categoryTitle={sectionTitles && sectionTitles.Top_Rated_Products}
       >
@@ -106,17 +120,7 @@ export default function Home({ homepageData }) {
           }
         />
       </ViewMoreTitle>
-      {isMultivendor === 1 && (
-        <ViewMoreTitle
-          className="best-sallers-section md:mb-[60px] mb-[30px]"
-          seeMoreUrl="/sellers"
-          categoryTitle={sectionTitles && sectionTitles.Best_Seller}
-        >
-          <BestSellers
-            sallers={homepage?.sellers?.length > 0 ? homepage.sellers : []}
-          />
-        </ViewMoreTitle>
-      )}
+
       <TwoColumnAds
         bannerOne={
           homepage?.twoColumnBannerOne &&
@@ -131,6 +135,7 @@ export default function Home({ homepageData }) {
             : null
         }
       />
+
       <SectionStyleOne
         categories={
           homepage?.featuredCategories?.length > 0
@@ -148,8 +153,9 @@ export default function Home({ homepageData }) {
         }
         sectionTitle={sectionTitles && sectionTitles.Featured_Products}
         seeMoreUrl={`/products?highlight=featured_product`}
-        className="category-products md:mb-[60px] mb-[30px]"
+        className="category-products"
       />
+
       <OneColumnAdsOne
         data={
           homepage?.singleBannerOne &&
@@ -158,6 +164,7 @@ export default function Home({ homepageData }) {
             : null
         }
       />
+
       <SectionStyleThree
         products={
           homepage?.newArrivalProducts?.length > 0
@@ -171,9 +178,10 @@ export default function Home({ homepageData }) {
         }
         sectionTitle={sectionTitles && sectionTitles.New_Arrivals}
         seeMoreUrl={`/products?highlight=new_arrival`}
-        className="new-products md:mb-[60px] mb-[30px]"
+        className="new-products"
       />
-      <div className="w-full text-white md:mb-[60px] mb-[30px]">
+
+      <div className="w-full text-white">
         <div className="container-x mx-auto">
           <OneColumnAdsTwo
             data={
@@ -185,14 +193,17 @@ export default function Home({ homepageData }) {
           />
         </div>
       </div>
-      <SectionStyleFour
-        products={
-          homepage?.bestProducts?.length > 0 ? homepage?.bestProducts : []
-        }
-        sectionTitle={sectionTitles && sectionTitles.Best_Products}
-        seeMoreUrl={`/products?highlight=best_product`}
-        className="category-products md:mb-[60px] mb-[30px]"
-      />
+
+      <div className="pb-20">
+        <SectionStyleFour
+          products={
+            homepage?.bestProducts?.length > 0 ? homepage?.bestProducts : []
+          }
+          sectionTitle={sectionTitles && sectionTitles.Best_Products}
+          seeMoreUrl={`/products?highlight=best_product`}
+          className="category-products"
+        />
+      </div>
     </div>
   );
 }

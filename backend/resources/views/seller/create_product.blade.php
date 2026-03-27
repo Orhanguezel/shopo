@@ -51,6 +51,10 @@
                                     <input type="text" id="slug" class="form-control"  name="slug" value="{{ old('slug') }}">
                                 </div>
 
+                                </div>{{-- close row temporarily for AI card --}}
+                                @include('seller.partials.ai_content_generator')
+                                <div class="row">{{-- re-open row --}}
+
                                 <div class="form-group col-12">
                                     <label>{{__('admin.Category')}} <span class="text-danger">*</span></label>
                                     <select name="category" class="form-control select2" id="category">
