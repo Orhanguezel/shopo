@@ -44,5 +44,14 @@ package-lock.json
 *.sql
 database/yedek/
 
+# Lighthouse reports (may contain API keys)
+docs/lighthouse/*.json
+
+# Syncthing temp files
+*.syncthing.*.tmp
+.syncthing.*.tmp
+
 # Misc
 *.pem
+*.tmp
+localhost_*.json
