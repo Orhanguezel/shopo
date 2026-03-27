@@ -19,9 +19,10 @@ class ReturnRequestController extends Controller
         $this->commissionService = $commissionService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $returns = ReturnRequest::with(['order', 'orderProduct.product', 'user', 'seller'])
+                               ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
                                ->orderBy('id', 'desc')
                                ->get();
 
@@ -52,12 +53,28 @@ class ReturnRequestController extends Controller
             return redirect()->back()->with($notification);
         }
 
+        $adminNote = $request->input('admin_note', $request->admin_response);
+
         if ($request->status == 4) { // Complete Refund
-             return $this->processRefund($return, $request->admin_response);
+             return $this->processRefund($return, $adminNote);
         }
 
         $return->status = $request->status;
-        $return->admin_response = $request->admin_response;
+        $return->admin_response = $adminNote;
+        $return->admin_note = $adminNote;
+
+        if ($request->filled('refund_amount')) {
+            $return->refund_amount = $request->refund_amount;
+        }
+
+        if ($request->filled('refund_method')) {
+            $return->refund_method = $request->refund_method;
+        }
+
+        if ($request->filled('rejected_reason')) {
+            $return->rejected_reason = $request->rejected_reason;
+        }
+
         $return->save();
 
         $notification = 'Status updated successfully';
@@ -77,6 +94,7 @@ class ReturnRequestController extends Controller
         try {
             $return->status = 4;
             $return->admin_response = $note;
+            $return->admin_note = $note;
             $return->save();
 
             // Record in ledger
