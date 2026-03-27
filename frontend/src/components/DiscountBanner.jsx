@@ -3,7 +3,7 @@ import appConfig from "@/appConfig";
 export default function DiscountBanner({ className, datas }) {
   return (
     <div
-      className={`w-full h-[307px] bg-cover flex justify-center items-end print:hidden ${
+      className={`w-full min-h-[307px] bg-cover flex justify-center items-center print:hidden ${
         className || ""
       }`}
       style={{
@@ -15,16 +15,18 @@ export default function DiscountBanner({ className, datas }) {
         backgroundPosition: "top",
       }}
     >
-      <div className="mb-[70px]">
+      <div className="py-10 px-4 max-w-2xl w-full mx-auto">
         <div data-aos="fade-up">
-          <h1 className="sm:text-3xl text-xl font-700 text-qblack mb-2 text-center">
+          <h1 className="sm:text-3xl text-xl font-700 text-qblack mb-2 text-center leading-tight">
             {datas?.header}
           </h1>
           <p className="text-center sm:text-[18px] text-sm font-400">
             {datas?.title}
           </p>
         </div>
-        <SubscribeInputWidget />
+        <div className="flex justify-center">
+          <SubscribeInputWidget />
+        </div>
       </div>
     </div>
   );
