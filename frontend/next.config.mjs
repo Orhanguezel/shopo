@@ -4,7 +4,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://admin.seyfibaba.com
 const { hostname, protocol } = new URL(baseUrl);
 
 const nextConfig = {
-  // output: 'export', // Static export kaldırıldı - Node.js server ile çalışacak
+  compress: true,
   reactStrictMode: true,
   images: {
     formats: ['image/avif', 'image/webp'],
