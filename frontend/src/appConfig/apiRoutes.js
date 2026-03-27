@@ -206,6 +206,14 @@ const apiRoutes = {
   // seller request
   sellerRequest: combinedUrl(SELLER_REQUEST),
 
+  // seller tools
+  sellerKycUpload: combinedUrl("seller/kyc/upload"),
+  sellerKycDocuments: combinedUrl("seller/kyc/documents"),
+  sellerKycStatus: combinedUrl("seller/kyc/status"),
+  sellerBulkImportUpload: combinedUrl("seller/products/bulk-import"),
+  sellerBulkImports: combinedUrl("seller/products/bulk-imports"),
+  sellerBulkImportTemplate: combinedUrl("seller/products/bulk-import/template"),
+
   // callback
   googleCallback: combinedUrl(GOOGLE_CALLBACK),
   facebookCallback: combinedUrl(FACEBOOK_CALLBACK),

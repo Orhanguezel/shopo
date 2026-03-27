@@ -9,6 +9,15 @@ class SellerKycDocument extends Model
 {
     use HasFactory;
 
+    public const DOCUMENT_TYPES = [
+        'identity_front',
+        'identity_back',
+        'tax_certificate',
+        'address_proof',
+        'bank_statement',
+        'iban_document',
+    ];
+
     public const STATUS_PENDING = 'pending';
     public const STATUS_APPROVED = 'approved';
     public const STATUS_REJECTED = 'rejected';

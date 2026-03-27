@@ -29,6 +29,7 @@ import OrderTab from "./tabs/OrderTab";
 import PasswordTab from "./tabs/PasswordTab";
 import ProfileTab from "./tabs/ProfileTab";
 import ReviewTab from "./tabs/ReviewTab";
+import SellerOperationsTab from "./tabs/SellerOperationsTab";
 import WishlistTab from "./tabs/WishlistTab";
 import {
   useDashboardApiQuery,
@@ -387,6 +388,22 @@ function ProfileContent() {
                       </div>
                     </Link>
                   </div>
+                  {Multivendor() === 1 &&
+                    dashboardApi &&
+                    dashboardApi.is_seller && (
+                      <div className="item group">
+                        <Link href="/profile#seller-tools">
+                          <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
+                            <span>
+                              <IcoSupport />
+                            </span>
+                            <span className=" font-normal text-base capitalize cursor-pointer">
+                              Seller Tools
+                            </span>
+                          </div>
+                        </Link>
+                      </div>
+                    )}
                   {/* Change password tab */}
                   <div className="item group">
                     <Link href="/profile#password">
@@ -496,6 +513,12 @@ function ProfileContent() {
                         </div>
                       )}
                     </>
+                  ) : active === "seller-tools" ? (
+                    <SellerOperationsTab
+                      token={auth()?.access_token}
+                      isActive={active === "seller-tools"}
+                      isSeller={Boolean(dashboardApi?.is_seller)}
+                    />
                   ) : (
                     ""
                   )}

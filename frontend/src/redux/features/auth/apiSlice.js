@@ -15,9 +15,13 @@ export const authApis = apiSlice.injectEndpoints({
       async onQueryStarted(info, { queryFulfilled }) {
         try {
           const { data, meta } = await queryFulfilled;
-          info.success(data, meta.response.status);
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
         } catch (error) {
-          info.error(error?.error);
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
         }
       },
     }),
@@ -33,12 +37,14 @@ export const authApis = apiSlice.injectEndpoints({
       async onQueryStarted(info, { queryFulfilled }) {
         try {
           const { data, meta } = await queryFulfilled;
-          if (meta.response.status === 200 || meta.response.status === 201) {
+          if ((meta.response.status === 200 || meta.response.status === 201) && info && typeof info.success === "function") {
             info.success(data);
           }
         } catch (error) {
           // error handled by caller
-          info.error(error?.error);
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
         }
       },
     }),
@@ -104,9 +110,13 @@ export const authApis = apiSlice.injectEndpoints({
       async onQueryStarted(info, { queryFulfilled }) {
         try {
           const { data, meta } = await queryFulfilled;
-          info.success(data, meta.response.status);
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
         } catch (error) {
-          info.error(error?.error);
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
         }
       },
     }),
@@ -119,9 +129,13 @@ export const authApis = apiSlice.injectEndpoints({
       async onQueryStarted(info, { queryFulfilled }) {
         try {
           const { data, meta } = await queryFulfilled;
-          info.success(data, meta.response.status);
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
         } catch (error) {
-          info.error(error?.error);
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
         }
       },
     }),
@@ -134,9 +148,13 @@ export const authApis = apiSlice.injectEndpoints({
       async onQueryStarted(info, { queryFulfilled }) {
         try {
           const { data, meta } = await queryFulfilled;
-          info.success(data, meta.response.status);
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
         } catch (error) {
-          info.error(error?.error);
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
         }
       },
     }),
@@ -380,6 +398,122 @@ export const authApis = apiSlice.injectEndpoints({
         }
       },
     }),
+    sellerKycDocumentsApi: builder.query({
+      query: (data) => {
+        return {
+          url: `${apiRoutes.sellerKycDocuments}?token=${data.token}`,
+          method: "GET",
+        };
+      },
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
+    }),
+    sellerKycStatusApi: builder.query({
+      query: (data) => {
+        return {
+          url: `${apiRoutes.sellerKycStatus}?token=${data.token}`,
+          method: "GET",
+        };
+      },
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
+    }),
+    uploadSellerKycDocumentApi: builder.mutation({
+      query: (data) => {
+        const formData = new FormData();
+        for (const key in data.data) {
+          if (data.data[key] !== undefined && data.data[key] !== null) {
+            formData.append(key, data.data[key]);
+          }
+        }
+
+        return {
+          url: `${apiRoutes.sellerKycUpload}?token=${data.token}`,
+          method: "POST",
+          body: formData,
+          formData: true,
+        };
+      },
+      async onQueryStarted(info, { queryFulfilled }) {
+        try {
+          const { data, meta } = await queryFulfilled;
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
+        } catch (error) {
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
+        }
+      },
+    }),
+    deleteSellerKycDocumentApi: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${apiRoutes.sellerKycDocuments}/${data.id}?token=${data.token}`,
+          method: "DELETE",
+        };
+      },
+      async onQueryStarted(info, { queryFulfilled }) {
+        try {
+          const { data, meta } = await queryFulfilled;
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
+        } catch (error) {
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
+        }
+      },
+    }),
+    sellerBulkImportsApi: builder.query({
+      query: (data) => {
+        return {
+          url: `${apiRoutes.sellerBulkImports}?token=${data.token}`,
+          method: "GET",
+        };
+      },
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
+    }),
+    uploadSellerBulkImportApi: builder.mutation({
+      query: (data) => {
+        const formData = new FormData();
+        formData.append("import_file", data.file);
+
+        return {
+          url: `${apiRoutes.sellerBulkImportUpload}?token=${data.token}`,
+          method: "POST",
+          body: formData,
+          formData: true,
+        };
+      },
+      async onQueryStarted(info, { queryFulfilled }) {
+        try {
+          const { data, meta } = await queryFulfilled;
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
+        } catch (error) {
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
+        }
+      },
+    }),
   }),
 });
 
@@ -403,4 +537,10 @@ export const {
   useVerifyOtpApiMutation,
   useResendOtpApiMutation,
   useReturnRequestsApiQuery,
+  useSellerKycDocumentsApiQuery,
+  useSellerKycStatusApiQuery,
+  useUploadSellerKycDocumentApiMutation,
+  useDeleteSellerKycDocumentApiMutation,
+  useSellerBulkImportsApiQuery,
+  useUploadSellerBulkImportApiMutation,
 } = authApis;
