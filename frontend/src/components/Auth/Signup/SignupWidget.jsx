@@ -242,7 +242,7 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
 
   const doSignup = async (token) => {
     if (checked) {
-      await userSignupApi({
+      const payload = {
         name: formData.fname + " " + formData.lname,
         email: formData.email,
         password: formData.password,
@@ -250,9 +250,14 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
         phone: formData.phone ? formData.phone : "",
         otp_verified_token: token || otpToken,
         agree: checked ? 1 : "",
-        success: signupSuccessHandler,
-        error: signupErrorHandler,
-      });
+      };
+
+      try {
+        const result = await userSignupApi(payload).unwrap();
+        signupSuccessHandler(result, 200);
+      } catch (error) {
+        signupErrorHandler(error);
+      }
     } else {
       toast.error(ServeLangItem()?.Please_accept_terms_and_conditions || "Lütfen şartlar ve koşulları kabul edin");
     }

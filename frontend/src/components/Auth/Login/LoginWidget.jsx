@@ -242,12 +242,16 @@ function LoginWidget({ redirect = true, loginActionPopup, notVerifyHandler }) {
   };
 
   const doLogin = async () => {
-    await userLoginApi({
-      email: formData.email,
-      password: formData.password,
-      success: loginSuccessHandler,
-      error: loginErrorHandler,
-    });
+    try {
+      const result = await userLoginApi({
+        email: formData.email,
+        password: formData.password,
+      }).unwrap();
+
+      await loginSuccessHandler(result);
+    } catch (error) {
+      loginErrorHandler(error);
+    }
   };
 
   /**

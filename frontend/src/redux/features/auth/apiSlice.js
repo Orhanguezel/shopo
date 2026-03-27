@@ -36,15 +36,9 @@ export const authApis = apiSlice.injectEndpoints({
       },
       async onQueryStarted(info, { queryFulfilled }) {
         try {
-          const { data, meta } = await queryFulfilled;
-          if ((meta.response.status === 200 || meta.response.status === 201) && info && typeof info.success === "function") {
-            info.success(data);
-          }
+          await queryFulfilled;
         } catch (error) {
           // error handled by caller
-          if (info && typeof info.error === "function") {
-            info.error(error?.error);
-          }
         }
       },
     }),
@@ -345,7 +339,9 @@ export const authApis = apiSlice.injectEndpoints({
       async onQueryStarted(info, { queryFulfilled, dispatch }) {
         try {
           const { data, meta } = await queryFulfilled;
-          info.success(data, meta.response.status);
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
           dispatch(
             apiSlice.util.updateQueryData(
               "profileInfoApi",
@@ -369,7 +365,9 @@ export const authApis = apiSlice.injectEndpoints({
           );
         } catch (error) {
           // error handled by caller
-          info.error(error?.error);
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
         }
       },
     }),
