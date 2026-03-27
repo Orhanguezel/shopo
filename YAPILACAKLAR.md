@@ -60,7 +60,7 @@ Shopo (CodeCanyon) temasina dayali Laravel 10 + Next.js 15 e-ticaret pazaryeri. 
 - [x] Frontend: `OtpVerifyStep.jsx` component (onceden implement edilmis)
 - [x] Frontend: `SignupWidget.jsx`'e OTP adimi entegre (onceden implement edilmis)
 - [x] Frontend: `apiRoutes.js` + `apiSlice.js` OTP endpoint'leri (onceden implement edilmis)
-- [ ] Sifre sifirlama icin SMS OTP secenegi (Faza 2 — opsiyonel)
+- [x] Sifre sifirlama icin SMS OTP secenegi — TAMAMLANDI (2026-03-27, LoginController + ForgotPass frontend)
 - [ ] **Uretim icin:** `.env`'e `ILETIMERKEZI_API_KEY` ve `ILETIMERKEZI_API_HASH` eklenmeli
 - **Plan:** `docs/sms-otp-plan.md`
 - **Dosyalar:** `backend/app/Http/Controllers/Auth/OtpController.php`, `backend/app/Services/IletimMerkeziService.php`, `backend/config/sms.php`, `frontend/src/components/Auth/Signup/SignupWidget.jsx`
