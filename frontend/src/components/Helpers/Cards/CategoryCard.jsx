@@ -30,12 +30,12 @@ export default function CategoryCard({
         backgroundPosition: "center",
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent pointer-events-none group-hover:from-white/50 transition-all duration-300"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/70 to-white/40 pointer-events-none group-hover:from-white/95 transition-all duration-300"></div>
       <div className="relative z-10 p-8 h-full flex flex-col justify-between">
         <div>
           {/* Card Title */}
           <div className="mb-6">
-            <h1 className="text-2xl font-black text-qblack leading-tight drop-shadow-sm group-hover:scale-[1.02] transform transition-transform duration-300 uppercase italic">
+            <h1 className="text-2xl font-black text-gray-900 leading-tight group-hover:scale-[1.02] transform transition-transform duration-300 uppercase italic">
               {title}
             </h1>
             <div className="w-12 h-1 bg-qyellow rounded-full mt-2"></div>
@@ -47,7 +47,7 @@ export default function CategoryCard({
                 <li key={category.id}>
                   <span
                     onClick={() => changeIdHandler(category.category_id)}
-                    className="text-sm font-semibold text-qgray hover:text-qblack transition-colors duration-200 flex items-center group/item cursor-pointer"
+                    className="text-sm font-semibold text-gray-700 hover:text-gray-900 transition-colors duration-200 flex items-center group/item cursor-pointer"
                   >
                     <span className="w-1.5 h-1.5 bg-qyellow rounded-full mr-2 opacity-0 group-hover/item:opacity-100 transition-opacity"></span>
                     {category && category.category.name}
@@ -57,10 +57,10 @@ export default function CategoryCard({
             </ul>
           </div>
         </div>
-        
+
         {/* 'Shop Now' link with icon */}
         <Link href={`${moreUrl}`}>
-          <div className="inline-flex items-center space-x-2 text-qblack font-bold group/btn cursor-pointer">
+          <div className="inline-flex items-center space-x-2 text-gray-900 font-bold group/btn cursor-pointer">
             <span className="text-sm border-b-2 border-qyellow leading-relaxed">
               {ServeLangItem()?.Shop_Now}
             </span>
