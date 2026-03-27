@@ -13,10 +13,15 @@ use Iyzipay\Model\Currency;
 use Iyzipay\Model\Locale;
 use Iyzipay\Model\PaymentGroup;
 use Iyzipay\Model\Refund;
+use Iyzipay\Model\SubMerchant;
+use Iyzipay\Model\SubMerchantType;
 use Iyzipay\Options;
 use Iyzipay\Request\CreateCheckoutFormInitializeRequest;
 use Iyzipay\Request\CreateRefundRequest;
+use Iyzipay\Request\CreateSubMerchantRequest;
 use Iyzipay\Request\RetrieveCheckoutFormRequest;
+use Iyzipay\Request\RetrieveSubMerchantRequest;
+use Iyzipay\Request\UpdateSubMerchantRequest;
 
 class IyzicoService
 {
@@ -95,6 +100,86 @@ class IyzicoService
         $request->setIp('127.0.0.1');
 
         return Refund::create($request, $this->options());
+    }
+
+    /**
+     * Create a sub-merchant on Iyzico.
+     *
+     * @param array $data Required: external_id, type (PERSONAL|PRIVATE_COMPANY|LIMITED_OR_JOINT_STOCK_COMPANY),
+     *                     name, email, gsm_number, iban, identity_number. Optional: address, tax_office,
+     *                     tax_number, legal_company_title, contact_name, contact_surname.
+     */
+    public function createSubMerchant(array $data): SubMerchant
+    {
+        $request = new CreateSubMerchantRequest();
+        $request->setLocale(Locale::TR);
+        $request->setConversationId($data['conversation_id'] ?? 'sm_' . $data['external_id']);
+        $request->setSubMerchantExternalId($data['external_id']);
+        $request->setSubMerchantType($data['type']);
+        $request->setName($data['name']);
+        $request->setEmail($data['email']);
+        $request->setGsmNumber($data['gsm_number']);
+        $request->setIban($data['iban']);
+        $request->setIdentityNumber($data['identity_number']);
+        $request->setCurrency(Currency::TL);
+        $request->setAddress($data['address'] ?? '');
+
+        if (!empty($data['contact_name'])) {
+            $request->setContactName($data['contact_name']);
+        }
+        if (!empty($data['contact_surname'])) {
+            $request->setContactSurname($data['contact_surname']);
+        }
+        if (!empty($data['tax_office'])) {
+            $request->setTaxOffice($data['tax_office']);
+        }
+        if (!empty($data['tax_number'])) {
+            $request->setTaxNumber($data['tax_number']);
+        }
+        if (!empty($data['legal_company_title'])) {
+            $request->setLegalCompanyTitle($data['legal_company_title']);
+        }
+
+        return SubMerchant::create($request, $this->options());
+    }
+
+    /**
+     * Update an existing sub-merchant on Iyzico.
+     */
+    public function updateSubMerchant(array $data): SubMerchant
+    {
+        $request = new UpdateSubMerchantRequest();
+        $request->setLocale(Locale::TR);
+        $request->setConversationId($data['conversation_id'] ?? 'sm_update_' . $data['sub_merchant_key']);
+        $request->setSubMerchantKey($data['sub_merchant_key']);
+
+        if (isset($data['name'])) $request->setName($data['name']);
+        if (isset($data['email'])) $request->setEmail($data['email']);
+        if (isset($data['gsm_number'])) $request->setGsmNumber($data['gsm_number']);
+        if (isset($data['iban'])) $request->setIban($data['iban']);
+        if (isset($data['identity_number'])) $request->setIdentityNumber($data['identity_number']);
+        if (isset($data['address'])) $request->setAddress($data['address']);
+        if (isset($data['tax_office'])) $request->setTaxOffice($data['tax_office']);
+        if (isset($data['tax_number'])) $request->setTaxNumber($data['tax_number']);
+        if (isset($data['legal_company_title'])) $request->setLegalCompanyTitle($data['legal_company_title']);
+        if (isset($data['contact_name'])) $request->setContactName($data['contact_name']);
+        if (isset($data['contact_surname'])) $request->setContactSurname($data['contact_surname']);
+        $request->setCurrency(Currency::TL);
+
+        return SubMerchant::update($request, $this->options());
+    }
+
+    /**
+     * Retrieve a sub-merchant from Iyzico.
+     */
+    public function retrieveSubMerchant(string $subMerchantExternalId): SubMerchant
+    {
+        $request = new RetrieveSubMerchantRequest();
+        $request->setLocale(Locale::TR);
+        $request->setConversationId('sm_retrieve_' . $subMerchantExternalId);
+        $request->setSubMerchantExternalId($subMerchantExternalId);
+
+        return SubMerchant::retrieve($request, $this->options());
     }
 
     private function makeBuyer(array $payload): Buyer

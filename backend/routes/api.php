@@ -772,6 +772,7 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
     Route::get('kyc/seller/{id}', [\App\Http\Controllers\Admin\SellerKycController::class, 'seller']);
     Route::put('kyc/{id}/approve', [\App\Http\Controllers\Admin\SellerKycController::class, 'approve']);
     Route::put('kyc/{id}/reject', [\App\Http\Controllers\Admin\SellerKycController::class, 'reject']);
+    Route::post('kyc/seller/{id}/create-sub-merchant', [\App\Http\Controllers\Admin\SellerKycController::class, 'createSubMerchant']);
 
     // Stock Alerts
     Route::get('stock-alerts/settings', [\App\Http\Controllers\Admin\StockAlertController::class, 'settings']);

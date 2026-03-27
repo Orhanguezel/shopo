@@ -8,6 +8,7 @@ use App\Models\IyzicoPayment;
 use App\Models\Order;
 use App\Models\ProductVariantItem;
 use App\Models\ShoppingCart;
+use App\Models\Vendor;
 use App\Services\IyzicoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -515,15 +516,11 @@ class IyzicoController extends Controller
             ];
 
             if ($marketplaceMode && $product->vendor_id) {
-                $vendorId = (string)$product->vendor_id;
-                $subMerchantKey = $storeSubMerchantKeys[$vendorId]
-                    ?? $storeSubMerchantKeys[(int)$vendorId]
-                    ?? $config->sub_merchant_key
-                    ?? null;
+                $subMerchantKey = $this->resolveSubMerchantKey($product->vendor_id, $storeSubMerchantKeys, $config);
 
                 if ($subMerchantKey) {
                     $item['sub_merchant_key'] = $subMerchantKey;
-                    $item['sub_merchant_price'] = $linePrice;
+                    $item['sub_merchant_price'] = $this->calculateSubMerchantPrice((float)$linePrice, $product->vendor_id);
                 }
             }
 
@@ -567,15 +564,11 @@ class IyzicoController extends Controller
             ];
 
             if ($marketplaceMode && $product->vendor_id) {
-                $vendorId = (string)$product->vendor_id;
-                $subMerchantKey = $storeSubMerchantKeys[$vendorId]
-                    ?? $storeSubMerchantKeys[(int)$vendorId]
-                    ?? $config->sub_merchant_key
-                    ?? null;
+                $subMerchantKey = $this->resolveSubMerchantKey($product->vendor_id, $storeSubMerchantKeys, $config);
 
                 if ($subMerchantKey) {
                     $item['sub_merchant_key'] = $subMerchantKey;
-                    $item['sub_merchant_price'] = $linePrice;
+                    $item['sub_merchant_price'] = $this->calculateSubMerchantPrice((float)$linePrice, $product->vendor_id);
                 }
             }
 
@@ -583,6 +576,39 @@ class IyzicoController extends Controller
         }
 
         return $basketItems;
+    }
+
+    /**
+     * Resolve the sub-merchant key for a vendor.
+     * Priority: vendor DB field → admin JSON map → global fallback
+     */
+    private function resolveSubMerchantKey(int $vendorId, array $storeSubMerchantKeys, IyzicoPayment $config): ?string
+    {
+        $vendor = Vendor::find($vendorId);
+        if ($vendor && $vendor->iyzico_sub_merchant_key) {
+            return $vendor->iyzico_sub_merchant_key;
+        }
+
+        $vendorIdStr = (string)$vendorId;
+        return $storeSubMerchantKeys[$vendorIdStr]
+            ?? $storeSubMerchantKeys[$vendorId]
+            ?? $config->sub_merchant_key
+            ?? null;
+    }
+
+    /**
+     * Calculate sub-merchant price after commission deduction.
+     * subMerchantPrice = linePrice - (linePrice * commissionRate / 100)
+     */
+    private function calculateSubMerchantPrice(float $linePrice, int $vendorId): string
+    {
+        $vendor = Vendor::find($vendorId);
+        $commissionRate = $vendor ? $vendor->getEffectiveCommissionRate() : 0;
+
+        $commission = $linePrice * ($commissionRate / 100);
+        $subMerchantPrice = $linePrice - $commission;
+
+        return number_format(max(0, $subMerchantPrice), 2, '.', '');
     }
 
     private function extractFirstName(?string $fullName): string

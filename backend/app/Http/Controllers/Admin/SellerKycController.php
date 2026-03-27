@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SellerKycDocument;
 use App\Models\Vendor;
+use App\Notifications\KycStatusNotification;
+use App\Services\IyzicoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SellerKycController extends Controller
 {
@@ -88,6 +91,38 @@ class SellerKycController extends Controller
         ]);
     }
 
+    public function createSubMerchant($sellerId)
+    {
+        $vendor = Vendor::with('user')->find($sellerId);
+
+        if (!$vendor) {
+            return response()->json(['message' => 'Seller not found'], 404);
+        }
+
+        if ($vendor->kyc_status !== 'approved') {
+            return response()->json(['message' => 'KYC onaylanmamis satici icin sub-merchant olusturulamaz.'], 422);
+        }
+
+        if ($vendor->iyzico_sub_merchant_key) {
+            return response()->json([
+                'message' => 'Bu satici icin sub-merchant zaten mevcut.',
+                'sub_merchant_key' => $vendor->iyzico_sub_merchant_key,
+            ]);
+        }
+
+        $this->createIyzicoSubMerchant($vendor);
+        $vendor->refresh();
+
+        if ($vendor->iyzico_sub_merchant_key) {
+            return response()->json([
+                'message' => 'Sub-merchant basariyla olusturuldu.',
+                'sub_merchant_key' => $vendor->iyzico_sub_merchant_key,
+            ]);
+        }
+
+        return response()->json(['message' => 'Sub-merchant olusturulamadi. Log kayitlarini kontrol edin.'], 500);
+    }
+
     private function syncVendorStatus(Vendor $vendor): void
     {
         $documents = $vendor->kycDocuments;
@@ -114,6 +149,75 @@ class SellerKycController extends Controller
         }
 
         $vendor->save();
+
+        // Notify seller and trigger sub-merchant creation on status change
+        if (in_array($vendor->kyc_status, ['approved', 'rejected']) && $vendor->user) {
+            $vendor->user->notify(new KycStatusNotification($vendor, $vendor->kyc_status));
+        }
+
+        // Auto-create Iyzico sub-merchant when KYC approved
+        if ($vendor->kyc_status === 'approved' && !$vendor->iyzico_sub_merchant_key) {
+            $this->createIyzicoSubMerchant($vendor);
+        }
+    }
+
+    private function createIyzicoSubMerchant(Vendor $vendor): void
+    {
+        try {
+            $iyzicoService = app(IyzicoService::class);
+            $user = $vendor->user;
+
+            // Determine sub-merchant type based on available documents
+            $hasTaxNumber = !empty($vendor->tax_number);
+            $type = $hasTaxNumber
+                ? \Iyzipay\Model\SubMerchantType::LIMITED_OR_JOINT_STOCK_COMPANY
+                : \Iyzipay\Model\SubMerchantType::PERSONAL;
+
+            $nameParts = $user ? explode(' ', trim($user->name ?? ''), 2) : ['Satici'];
+
+            $data = [
+                'external_id' => 'VENDOR_' . $vendor->id,
+                'type' => $type,
+                'name' => $vendor->shop_name ?? ('Vendor ' . $vendor->id),
+                'email' => $user->email ?? '',
+                'gsm_number' => $vendor->phone ?? $user->phone ?? '',
+                'iban' => $vendor->iban ?? '',
+                'identity_number' => '00000000000', // Will be updated from KYC docs
+                'address' => $vendor->address ?? '',
+                'contact_name' => $nameParts[0] ?? '',
+                'contact_surname' => $nameParts[1] ?? ($nameParts[0] ?? ''),
+            ];
+
+            if ($hasTaxNumber) {
+                $data['tax_number'] = $vendor->tax_number;
+                $data['tax_office'] = $vendor->tax_office ?? '';
+                $data['legal_company_title'] = $vendor->legal_company_title ?? $vendor->shop_name;
+            }
+
+            $result = $iyzicoService->createSubMerchant($data);
+
+            if ($result->getStatus() === 'success') {
+                $vendor->iyzico_sub_merchant_key = $result->getSubMerchantKey();
+                $vendor->iyzico_sub_merchant_type = $type;
+                $vendor->save();
+
+                Log::info('Iyzico sub-merchant created', [
+                    'vendor_id' => $vendor->id,
+                    'sub_merchant_key' => $result->getSubMerchantKey(),
+                ]);
+            } else {
+                Log::error('Iyzico sub-merchant creation failed', [
+                    'vendor_id' => $vendor->id,
+                    'error_code' => $result->getErrorCode(),
+                    'error_message' => $result->getErrorMessage(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Iyzico sub-merchant creation exception', [
+                'vendor_id' => $vendor->id,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function buildStatusPayload(Vendor $vendor): array

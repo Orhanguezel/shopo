@@ -196,7 +196,13 @@ Shopo (CodeCanyon) temasina dayali Laravel 10 + Next.js 15 e-ticaret pazaryeri. 
   - `Admin\ReturnRequestController::refund()` Iyzico odemelerini otomatik iade ediyor, diger odeme yontemlerinde manuel akis devam ediyor
   - Migration: `orders.iyzico_payment_data` (JSON) + `return_requests.refund_transaction_id/refund_status/refund_error`
   - Hata durumunda admin'e detayli mesaj, log kaydı, ve DB rollback
-- [ ] Iyzico sub-merchant yonetimi (marketplace model — V2)
+- [x] Iyzico sub-merchant yonetimi (marketplace model) — TAMAMLANDI (2026-03-27)
+  - `IyzicoService`: createSubMerchant, updateSubMerchant, retrieveSubMerchant methods
+  - Migration: vendors'a `iyzico_sub_merchant_key`, `iyzico_sub_merchant_type`, `tax_office`, `legal_company_title`
+  - KYC onay → otomatik sub-merchant olusturma (SellerKycController.syncVendorStatus)
+  - Admin manuel sub-merchant olusturma endpoint: `POST /admin/kyc/seller/{id}/create-sub-merchant`
+  - Marketplace odeme: komisyon oranina gore `sub_merchant_price` hesaplama (linePrice - komisyon)
+  - Vendor DB'den sub-merchant key oncelikli cozumleme (fallback: admin JSON map → global key)
 
 **SMS/OTP:**
 - [x] Backend OTP akisi uc uca dogrulandi (send/verify/register/resend/cooldown)
