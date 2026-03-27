@@ -11,22 +11,17 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use PDO;
+use Tests\Concerns\UsesInMemorySqlite;
 use Tests\TestCase;
 
 class SellerKycApiTest extends TestCase
 {
+    use UsesInMemorySqlite;
+
     protected function setUp(): void
     {
         parent::setUp();
-
-        if (! in_array('sqlite', PDO::getAvailableDrivers(), true)) {
-            $this->markTestSkipped('pdo_sqlite is not installed in this environment.');
-        }
-
-        Config::set('database.default', 'sqlite');
-        Config::set('database.connections.sqlite.database', ':memory:');
-        DB::purge('sqlite');
+        $this->configureInMemorySqlite();
 
         Schema::create('users', function (Blueprint $table) {
             $table->id();

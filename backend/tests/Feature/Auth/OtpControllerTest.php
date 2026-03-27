@@ -11,24 +11,18 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
-use PDO;
+use Tests\Concerns\UsesInMemorySqlite;
 use Tests\TestCase;
 
 class OtpControllerTest extends TestCase
 {
     use WithFaker;
+    use UsesInMemorySqlite;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        if (!in_array('sqlite', PDO::getAvailableDrivers(), true)) {
-            $this->markTestSkipped('pdo_sqlite is not installed in this environment.');
-        }
-
-        Config::set('database.default', 'sqlite');
-        Config::set('database.connections.sqlite.database', ':memory:');
-        DB::purge('sqlite');
+        $this->configureInMemorySqlite();
 
         Schema::create('otp_verifications', function (Blueprint $table) {
             $table->id();
