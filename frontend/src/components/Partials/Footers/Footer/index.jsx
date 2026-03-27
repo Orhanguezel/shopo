@@ -88,7 +88,7 @@ export default function Footer({ settings }) {
                         firstColumn.col_links.map((item, i) => (
                           <li key={i}>
                               <Link href={item.link}>
-                                <span className="text-qgraytwo text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
+                                <span className="text-[#4B5563] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
                                   {item.title}
                                 </span>
                               </Link>
@@ -176,7 +176,7 @@ export default function Footer({ settings }) {
                     aria-label={item.icon?.replace('fab fa-', '') || 'Social Link'}
                   >
                     <FontAwesomeCom
-                      className="w-4 h-4 text-qgraytwo hover:text-qblack transition-colors"
+                      className="w-4 h-4 text-[#4B5563] hover:text-qblack transition-colors"
                       icon={item.icon}
                     />
                   </a>
@@ -184,7 +184,7 @@ export default function Footer({ settings }) {
             </div>
 
             {/* Copyright Text */}
-            <span className="sm:text-base text-[10px] text-qgray font-300">
+            <span className="sm:text-base text-[10px] text-[#4B5563] font-300">
               {footerContent?.copyright || ""}
             </span>
           </div>

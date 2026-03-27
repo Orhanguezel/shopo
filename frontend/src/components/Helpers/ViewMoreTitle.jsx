@@ -19,7 +19,7 @@ export default function ViewMoreTitle({
           </div>
           <div className="view-more-btn">
             <Link href={seeMoreUrl}>
-              <div className="flex space-x-2 text-qgray hover:text-qblack transition-colors duration-300 items-center cursor-pointer group">
+              <div className="flex space-x-2 text-[#4B5563] hover:text-qblack transition-colors duration-300 items-center cursor-pointer group">
                 <p className="text-base font-bold">
                   {ServeLangItem()?.View_More}
                 </p>

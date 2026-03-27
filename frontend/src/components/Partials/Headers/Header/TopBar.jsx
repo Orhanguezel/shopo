@@ -124,12 +124,12 @@ const AccountLink = ({ auth }) => {
 
   // User is not logged in - show login link with responsive text
   return (
-    <Link href="/login">
+    <Link href="/login" aria-label={ServeLangItem()?.Login || "Giriş Yap"}>
       <span className={`${linkClass} lg:block hidden`}>
         {ServeLangItem()?.Account}
       </span>
       <span className={`${linkClass} lg:hidden block`}>
-        {ServeLangItem()?.Login || "Sign In"}
+        {ServeLangItem()?.Login || "Giriş Yap"}
       </span>
     </Link>
   );

@@ -67,7 +67,7 @@ export default function SearchBox({ className }) {
         <button
           onClick={() => setToggleCat(!toggleCat)}
           type="button"
-          className="w-full text-xs font-500 text-qgray flex justify-between items-center capitalize"
+          className="w-full text-xs font-500 text-[#4B5563] flex justify-between items-center capitalize"
         >
           <span className="line-clamp-1">
             {selectedCat ? selectedCat.name : ServeLangItem()?.category}
@@ -90,7 +90,7 @@ export default function SearchBox({ className }) {
                 {categories &&
                   categories.map((item, i) => (
                     <li onClick={() => categoryHandler(item)} key={i}>
-                      <span className="text-qgray text-sm font-400 border-b border-transparent hover:border-qyellow hover:text-qyellow cursor-pointer">
+                      <span className="text-[#4B5563] text-sm font-400 border-b border-transparent hover:border-qyellow hover:text-qyellow cursor-pointer">
                         {item.name}
                       </span>
                     </li>

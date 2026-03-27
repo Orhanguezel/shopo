@@ -113,7 +113,10 @@ export default function Middlebar({ className, settings }) {
             <div className="flex space-x-6 rtl:space-x-reverse items-center relative">
               {/* Compare Products */}
               <div className="compaire relative">
-                <Link href={auth() ? "/products-compare" : "/login"}>
+                <Link 
+                  href={auth() ? "/products-compare" : "/login"}
+                  aria-label={ServeLangItem()?.Compare || "Karşılaştır"}
+                >
                   <span className="cursor-pointer">
                     <Compair className="fill-current" />
                   </span>
@@ -125,7 +128,10 @@ export default function Middlebar({ className, settings }) {
 
               {/* Wishlist */}
               <div className="favorite relative">
-                <Link href={auth() ? "/wishlist" : "/login"}>
+                <Link 
+                  href={auth() ? "/wishlist" : "/login"}
+                  aria-label={ServeLangItem()?.Wishlist || "Favorilerim"}
+                >
                   <span className="cursor-pointer">
                     <ThinLove className="fill-current" />
                   </span>
@@ -138,7 +144,10 @@ export default function Middlebar({ className, settings }) {
               {/* Shopping Cart */}
               <div className="cart-wrapper group relative py-4">
                 <div className="cart relative cursor-pointer">
-                  <Link href="/cart">
+                  <Link 
+                    href="/cart"
+                    aria-label={ServeLangItem()?.Cart || "Sepetim"}
+                  >
                     <span className="cursor-pointer">
                       <ThinBag />
                     </span>
@@ -162,7 +171,10 @@ export default function Middlebar({ className, settings }) {
                     </span>
                   </button>
                 ) : (
-                  <Link href="/login">
+                  <Link 
+                    href="/login"
+                    aria-label={ServeLangItem()?.Login || "Giriş Yap"}
+                  >
                     <span className="cursor-pointer">
                       <ThinPeople />
                     </span>

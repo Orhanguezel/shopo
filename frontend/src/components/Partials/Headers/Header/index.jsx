@@ -82,7 +82,7 @@ export default function Header({
 
           {/* Cart Icon */}
           <div className="cart relative cursor-pointer">
-            <Link href="/cart">
+            <Link href="/cart" aria-label="Sepetim">
               <ThinBag />
             </Link>
             <span className="w-[18px] h-[18px] rounded-full bg-qyellow absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px]">

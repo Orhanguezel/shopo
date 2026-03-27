@@ -146,6 +146,7 @@ function ColumnV1({
               pathname: "/single-product",
               query: { slug: datas.slug },
             }}
+            aria-label={ServeLangItem()?.Quick_View || "Hızlı Bakış"}
           >
             <span className="hover:bg-qyellow w-10 h-10 flex justify-center text-black hover:text-white items-center transition-all duration-300 ease-in-out hover-bg-qyellow bg-primarygray rounded">
               <QuickViewIco className="fill-current" />
@@ -156,6 +157,7 @@ function ColumnV1({
               className=" absolute group-hover:right-4 -right-10 top-[120px]  transition-all duration-300 ease-in-out"
               type="button"
               onClick={() => addToWishlist(datas.id)}
+              aria-label={ServeLangItem()?.Add_To_Wishlist || "Favorilere Ekle"}
             >
               <span className="hover:bg-qyellow w-10 h-10 flex text-black hover:text-white justify-center items-center transition-all duration-300 ease-in-out hover-bg-qyellow bg-primarygray rounded">
                 <ThinLove className="fill-current" />
@@ -166,6 +168,7 @@ function ColumnV1({
               className="absolute group-hover:right-4 -right-10 top-[120px]  transition-all duration-300 ease-in-out"
               type="button"
               onClick={() => removeToWishlist(wishlisted && wishlisted.id)}
+              aria-label={ServeLangItem()?.Remove_From_Wishlist || "Favorilerden Çıkar"}
             >
               <span className="hover:bg-qyellow w-10 h-10 flex justify-center items-center bg-primarygray rounded">
                 <ThinLove fill={true} />
@@ -177,6 +180,7 @@ function ColumnV1({
             className=" absolute group-hover:right-4 -right-10 top-[168px]  transition-all duration-500 ease-in-out"
             type="button"
             onClick={() => addToCompare(datas.id)}
+            aria-label={ServeLangItem()?.Add_To_Compare || "Karşılaştır"}
           >
             <span className="hover:bg-qyellow w-10 h-10 flex justify-center text-black hover:text-white transition-all duration-300 ease-in-out items-center hover-bg-qyellow bg-primarygray rounded">
               <Compair className="fill-current" />
