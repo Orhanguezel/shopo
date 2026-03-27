@@ -846,4 +846,4 @@ Route::get('/run_migration', function () {
         $notification = array('messege' => $notification, 'alert-type' => 'error');
         return redirect()->route('admin.dashboard')->with($notification);
     }
-})->name('run_migration');
+})->middleware('auth:admin')->name('run_migration');
