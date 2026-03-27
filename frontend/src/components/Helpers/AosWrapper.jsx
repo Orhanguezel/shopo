@@ -1,13 +1,13 @@
 "use client";
 import { useEffect } from "react";
-// aos
-import AOS from "aos";
-import "aos/dist/aos.css";
 
 function AosWrapper({ children }) {
-  // aos
   useEffect(() => {
-    AOS.init({ once: true, disable: "mobile" });
+    // Lazy load AOS only after page is interactive
+    import("aos/dist/aos.css");
+    import("aos").then((AOS) => {
+      AOS.init({ once: true, disable: "mobile" });
+    });
   }, []);
   return children;
 }

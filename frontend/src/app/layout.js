@@ -12,15 +12,10 @@ import localFont from "next/font/local";
 
 const inter = localFont({
   src: [
-    { path: "../../public/assets/fonts/Inter-Thin.ttf", weight: "100", style: "normal" },
-    { path: "../../public/assets/fonts/Inter-ExtraLight.ttf", weight: "200", style: "normal" },
-    { path: "../../public/assets/fonts/Inter-Light.ttf", weight: "300", style: "normal" },
     { path: "../../public/assets/fonts/Inter-Regular.ttf", weight: "400", style: "normal" },
     { path: "../../public/assets/fonts/Inter-Medium.ttf", weight: "500", style: "normal" },
     { path: "../../public/assets/fonts/Inter-SemiBold.ttf", weight: "600", style: "normal" },
     { path: "../../public/assets/fonts/Inter-Bold.ttf", weight: "700", style: "normal" },
-    { path: "../../public/assets/fonts/Inter-ExtraBold.ttf", weight: "800", style: "normal" },
-    { path: "../../public/assets/fonts/Inter-Black.ttf", weight: "900", style: "normal" },
   ],
   variable: "--font-inter",
   display: "swap",
@@ -55,8 +50,12 @@ export async function generateMetadata() {
       icon: faviconUrl,
       shortcut: faviconUrl,
       apple: faviconUrl,
+      "apple-touch-icon": faviconUrl,
     },
     manifest: appConfig.PWA_STATUS === 1 || appConfig.PWA_STATUS === "1" ? "/manifest.json" : null,
+    alternates: {
+      canonical: "/",
+    },
     openGraph: {
       type: "website",
       siteName: "Seyfibaba",
@@ -94,8 +93,7 @@ export default function RootLayout({ children }) {
     <html lang="tr" translate="no" className="notranslate">
       <head>
         <link rel="preconnect" href="https://admin.seyfibaba.com/" />
-        {/* If using local dev with localhost:8000 */}
-        <link rel="preconnect" href="http://localhost:8000/" />
+        <link rel="dns-prefetch" href="https://admin.seyfibaba.com/" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
         {/* loader */}
