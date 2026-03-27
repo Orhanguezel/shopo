@@ -21,65 +21,44 @@ const inter = localFont({
   display: "swap",
 });
 
-import getSetupData from "@/api/setup";
-
-export async function generateMetadata() {
-  const setupData = await getSetupData();
-  const setting = setupData?.setting;
-  const seo_setting = setupData?.seo_setting;
-  
-  // Find global SEO settings (usually id 1 or type home)
-  const homeSeo = seo_setting?.find(s => s.id === 1);
-  
-  const favicon = setting?.favicon;
-  const logo = setting?.logo;
-  const seo_title = homeSeo?.seo_title || "Shopo - E-Ticaret Pazaryeri";
-  const seo_description = homeSeo?.seo_description || "Shopo ile güvenli ve hızlı alışverişin tadını çıkarın.";
-  
-  const faviconUrl = favicon ? appConfig.BASE_URL + favicon : "/favico.svg";
-  const ogImageUrl = logo ? appConfig.BASE_URL + logo : `${appConfig.BASE_URL}uploads/website-images/og-default.jpg`;
-
-  return {
-    metadataBase: new URL(appConfig.APPLICATION_URL),
-    title: {
-      default: seo_title,
-      template: `%s | Shopo`,
-    },
-    description: seo_description,
-    icons: {
-      icon: faviconUrl,
-      shortcut: faviconUrl,
-      apple: faviconUrl,
-      "apple-touch-icon": faviconUrl,
-    },
-    manifest: appConfig.PWA_STATUS === 1 || appConfig.PWA_STATUS === "1" ? "/manifest.json" : null,
-    alternates: {
-      canonical: "/",
-    },
-    openGraph: {
-      type: "website",
-      siteName: "Seyfibaba",
-      title: seo_title,
-      description: seo_description,
-      url: appConfig.APPLICATION_URL,
-      locale: "tr_TR",
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: "Seyfibaba Pazaryeri",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: seo_title,
-      description: seo_description,
-      images: [ogImageUrl],
-    },
-  };
-}
+export const metadata = {
+  metadataBase: new URL(appConfig.APPLICATION_URL),
+  title: {
+    default: "Berber & Kuaför Malzemeleri – Profesyoneller İçin Alışveriş",
+    template: "%s | Seyfibaba",
+  },
+  description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
+  icons: {
+    icon: appConfig.BASE_URL + "uploads/website-images/favicon.png",
+    shortcut: appConfig.BASE_URL + "uploads/website-images/favicon.png",
+    apple: appConfig.BASE_URL + "uploads/website-images/favicon.png",
+  },
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Seyfibaba",
+    title: "Berber & Kuaför Malzemeleri – Profesyoneller İçin Alışveriş",
+    description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
+    url: appConfig.APPLICATION_URL,
+    locale: "tr_TR",
+    images: [
+      {
+        url: appConfig.BASE_URL + "uploads/website-images/logo-2025-12-18-04-53-36-7704.png",
+        width: 1200,
+        height: 630,
+        alt: "Seyfibaba Pazaryeri",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Berber & Kuaför Malzemeleri – Profesyoneller İçin Alışveriş",
+    description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
+    images: [appConfig.BASE_URL + "uploads/website-images/logo-2025-12-18-04-53-36-7704.png"],
+  },
+};
 
 export const viewport = {
   width: "device-width",
@@ -92,6 +71,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="tr" translate="no" className="notranslate">
       <head>
+        <title>Berber &amp; Kuaför Malzemeleri – Profesyoneller İçin Alışveriş | Seyfibaba</title>
+        <meta name="description" content="Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi." />
         <link rel="preconnect" href="https://admin.seyfibaba.com/" />
         <link rel="dns-prefetch" href="https://admin.seyfibaba.com/" />
       </head>

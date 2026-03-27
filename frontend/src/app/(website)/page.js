@@ -9,18 +9,14 @@ export const getHomeData = cache(async () => {
   return await home();
 });
 
-// generate seo metadata
-export async function generateMetadata() {
-  const data = await getHomeData();
-  const { seoSetting } = data;
-  return {
-    title: seoSetting?.seo_title || "Seyfibaba - E-Ticaret Pazaryeri",
-    description: seoSetting?.seo_description || "Shopo ile güvenli ve hızlı alışverişin tadını çıkarın. En iyi ürünler ve fırsatlar burada.",
-    alternates: {
-      canonical: "/",
-    },
-  };
-}
+// Static metadata — ensures description lands in <head> for SEO
+export const metadata = {
+  title: "Berber & Kuaför Malzemeleri – Profesyoneller İçin Alışveriş",
+  description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
+  alternates: {
+    canonical: "/",
+  },
+};
 
 import JsonLd, { generateOrganizationSchema, generateWebSiteSchema } from "@/components/Helpers/JsonLd";
 import appConfig from "@/appConfig";
