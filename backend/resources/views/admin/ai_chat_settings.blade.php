@@ -93,6 +93,11 @@
               <div class="card-header"><h4><i class="fas fa-cog mr-2"></i>Genel Ayarlar</h4></div>
               <div class="card-body">
 
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle mr-1"></i>
+                  AI Chat, <a href="{{ route('admin.ai-settings') }}"><strong>AI Ayarları</strong></a> sayfasındaki API anahtarı ve model yapılandırmasını kullanır. Ayrıca yapılandırma gerekmez.
+                </div>
+
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
@@ -116,26 +121,6 @@
                   </div>
                 </div>
 
-                <div class="form-group">
-                  <label>AI Sağlayıcı</label>
-                  <select name="ai_chat_provider" class="form-control selectric">
-                    <option value="groq" {{ $setting->ai_chat_provider == 'groq' ? 'selected' : '' }}>Groq (Llama 3.3 — Ücretsiz, Hızlı)</option>
-                    <option value="openai" {{ $setting->ai_chat_provider == 'openai' ? 'selected' : '' }}>OpenAI (GPT-4o — En Yetenekli)</option>
-                    <option value="anthropic" {{ $setting->ai_chat_provider == 'anthropic' ? 'selected' : '' }}>Anthropic (Claude — Doğal Dil)</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>API Anahtarı</label>
-                  <div class="input-group">
-                    <input type="password" name="ai_chat_api_key" id="apiKeyInput" class="form-control" placeholder="{{ $setting->ai_chat_api_key ? '••••••••••••••••' : 'API anahtarını girin' }}">
-                    <div class="input-group-append">
-                      <button type="button" class="btn btn-outline-secondary" id="toggleApiKey"><i class="fas fa-eye"></i></button>
-                    </div>
-                  </div>
-                  <small class="text-muted">Boş bırakılırsa mevcut anahtar korunur.</small>
-                </div>
-
               </div>
             </div>
           </div>
@@ -143,18 +128,8 @@
           {{-- Model Ayarları --}}
           <div class="col-lg-6">
             <div class="card">
-              <div class="card-header"><h4><i class="fas fa-sliders-h mr-2"></i>Model Ayarları</h4></div>
+              <div class="card-header"><h4><i class="fas fa-sliders-h mr-2"></i>Chat Ayarları</h4></div>
               <div class="card-body">
-
-                <div class="form-group">
-                  <label>Model Adı</label>
-                  <input type="text" name="ai_chat_model" class="form-control" value="{{ $setting->ai_chat_model }}">
-                  <small class="text-muted">
-                    <strong>Groq:</strong> llama-3.3-70b-versatile &nbsp;|&nbsp;
-                    <strong>OpenAI:</strong> gpt-4o-mini &nbsp;|&nbsp;
-                    <strong>Claude:</strong> claude-sonnet-4-5-20250929
-                  </small>
-                </div>
 
                 <div class="row">
                   <div class="col-6">
@@ -173,7 +148,7 @@
 
                 <div class="alert alert-light border mt-3">
                   <i class="fas fa-lightbulb text-warning mr-1"></i>
-                  <strong>İpucu:</strong> Müşteri hizmeti için düşük temperature (0.3-0.5) ve 500-1024 arası max token önerilir. Çok yüksek değerler maliyeti artırır.
+                  <strong>İpucu:</strong> Müşteri hizmeti için düşük temperature (0.3-0.5) ve 500-1024 arası max token önerilir.
                 </div>
 
               </div>
@@ -451,19 +426,6 @@ $(document).on('click', '.view-conversation', function() {
         });
         $body.html(html || '<p class="text-center text-muted py-4"><i class="fas fa-inbox mr-1"></i>Mesaj bulunamadı.</p>');
     });
-});
-
-// Toggle API key visibility
-$('#toggleApiKey').on('click', function() {
-    var input = $('#apiKeyInput');
-    var icon = $(this).find('i');
-    if (input.attr('type') === 'password') {
-        input.attr('type', 'text');
-        icon.removeClass('fa-eye').addClass('fa-eye-slash');
-    } else {
-        input.attr('type', 'password');
-        icon.removeClass('fa-eye-slash').addClass('fa-eye');
-    }
 });
 
 // Prompt character count

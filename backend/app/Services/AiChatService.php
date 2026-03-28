@@ -56,7 +56,8 @@ class AiChatService
         }
 
         $settings = Setting::first();
-        $provider = $settings->ai_chat_provider ?? 'groq';
+        $apiKey = trim($settings->openai_api_key ?? '');
+        $provider = str_starts_with($apiKey, 'sk-ant-') ? 'anthropic' : 'openai';
         $result = $this->callProvider($provider, $messages, $settings);
 
         AiChatMessage::create([
@@ -198,8 +199,8 @@ class AiChatService
 
     private function callOpenAICompatible(array $messages, Setting $settings): array
     {
-        $apiKey = trim($settings->ai_chat_api_key ?? '');
-        $model = $settings->ai_chat_model ?: 'llama-3.3-70b-versatile';
+        $apiKey = trim($settings->openai_api_key ?? '');
+        $model = $settings->openai_model ?: 'llama-3.3-70b-versatile';
         $maxTokens = (int) ($settings->ai_chat_max_tokens ?: 1024);
         $temperature = (float) ($settings->ai_chat_temperature ?: 0.7);
 
@@ -235,8 +236,8 @@ class AiChatService
 
     private function callAnthropic(array $messages, Setting $settings): array
     {
-        $apiKey = trim($settings->ai_chat_api_key ?? '');
-        $model = $settings->ai_chat_model ?: 'claude-sonnet-4-5-20250929';
+        $apiKey = trim($settings->claude_api_key ?? $settings->openai_api_key ?? '');
+        $model = $settings->claude_model ?: 'claude-sonnet-4-5-20250929';
         $maxTokens = (int) ($settings->ai_chat_max_tokens ?: 1024);
         $temperature = (float) ($settings->ai_chat_temperature ?: 0.7);
 

@@ -34,9 +34,6 @@ class AiChatController extends Controller
     {
         $request->validate([
             'ai_chat_enabled' => 'nullable',
-            'ai_chat_provider' => 'required|string|in:groq,openai,anthropic',
-            'ai_chat_api_key' => 'nullable|string',
-            'ai_chat_model' => 'nullable|string|max:100',
             'ai_chat_max_tokens' => 'required|integer|min:100|max:4096',
             'ai_chat_temperature' => 'required|numeric|min:0|max:2',
             'ai_chat_system_prompt' => 'nullable|string',
@@ -46,9 +43,6 @@ class AiChatController extends Controller
         $setting = Setting::first();
         $setting->update([
             'ai_chat_enabled' => $request->has('ai_chat_enabled') ? 1 : 0,
-            'ai_chat_provider' => $request->ai_chat_provider,
-            'ai_chat_api_key' => $request->ai_chat_api_key ?: $setting->ai_chat_api_key,
-            'ai_chat_model' => $request->ai_chat_model,
             'ai_chat_max_tokens' => $request->ai_chat_max_tokens,
             'ai_chat_temperature' => $request->ai_chat_temperature,
             'ai_chat_system_prompt' => $request->ai_chat_system_prompt,
