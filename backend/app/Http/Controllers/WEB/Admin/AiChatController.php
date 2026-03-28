@@ -18,7 +18,7 @@ class AiChatController extends Controller
     {
         $setting = Setting::first();
         $knowledge = AiChatKnowledge::orderBy('sort_order')->orderBy('id')->get();
-        $conversations = AiChatConversation::with('user')
+        $conversations = AiChatConversation::with(['user', 'messages' => fn($q) => $q->orderBy('created_at')])
             ->withCount('messages')
             ->orderBy('updated_at', 'desc')
             ->take(50)

@@ -257,7 +257,7 @@
                       <td class="text-center"><span class="badge badge-primary">{{ $conv->messages_count }}</span></td>
                       <td>{{ $conv->updated_at->format('d.m.Y H:i') }}</td>
                       <td>
-                        <button class="btn btn-sm btn-info view-conversation" data-id="{{ $conv->id }}" title="Konuşmayı Görüntüle"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#convModal{{ $conv->id }}" title="Konuşmayı Görüntüle"><i class="fas fa-eye"></i></button>
                       </td>
                     </tr>
                     @endforeach
@@ -385,64 +385,43 @@
   </div>
 </div>
 
-{{-- Conversation Detail Modal --}}
-<div class="modal fade" id="conversationModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
+{{-- Conversation Detail Modals (inline, no AJAX) --}}
+@foreach($conversations as $conv)
+<div class="modal fade" id="convModal{{ $conv->id }}" tabindex="-1" role="dialog" style="z-index:1050;">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header bg-info text-white">
-        <h5 class="modal-title"><i class="fas fa-comments mr-2"></i>Konuşma Detayı</h5>
+        <h5 class="modal-title"><i class="fas fa-comments mr-2"></i>Konuşma #{{ $conv->id }} — {{ $conv->user ? $conv->user->name : 'Misafir' }}</h5>
         <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
       </div>
-      <div class="modal-body p-0" id="conversationMessages" style="max-height:500px;overflow-y:auto;">
-        <div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>
+      <div class="modal-body p-0" style="max-height:500px;overflow-y:auto;">
+        @forelse($conv->messages as $msg)
+        <div class="p-3" style="{{ $msg->role === 'user' ? 'background:#e3f2fd;border-left:3px solid #2196f3;' : 'background:#f5f5f5;border-left:3px solid #4caf50;' }}">
+          <div class="d-flex justify-content-between mb-2">
+            <small class="font-weight-bold">
+              @if($msg->role === 'user')
+                <i class="fas fa-user-circle text-primary mr-1"></i> Müşteri
+              @else
+                <i class="fas fa-robot text-success mr-1"></i> AI Asistan
+              @endif
+            </small>
+            <small class="text-muted">{{ $msg->created_at->format('d.m.Y H:i:s') }}</small>
+          </div>
+          <div style="white-space:pre-wrap;font-size:14px;">{{ $msg->content }}</div>
+        </div>
+        @empty
+        <p class="text-center text-muted py-4"><i class="fas fa-inbox mr-1"></i>Mesaj bulunamadı.</p>
+        @endforelse
       </div>
     </div>
   </div>
 </div>
+@endforeach
 
 @endsection
 
 @push('js')
 <script>
-// Conversation viewer
-$(document).on('click', '.view-conversation', function() {
-    var id = $(this).data('id');
-    var $body = $('#conversationMessages');
-    $body.html('<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>');
-    $('#conversationModal').modal('show');
-
-    $.ajax({
-        url: "/admin/ai-chat-conversation/" + id + "/messages",
-        type: 'GET',
-        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-        success: function(data) {
-            var html = '';
-            if (!data.messages || data.messages.length === 0) {
-                $body.html('<p class="text-center text-muted py-4"><i class="fas fa-inbox mr-1"></i>Mesaj bulunamadı.</p>');
-                return;
-            }
-            data.messages.forEach(function(msg) {
-                var isUser = msg.role === 'user';
-                var bg = isUser ? 'background:#e3f2fd;' : 'background:#f5f5f5;';
-                var icon = isUser ? '<i class="fas fa-user-circle text-primary mr-1"></i> Müşteri' : '<i class="fas fa-robot text-success mr-1"></i> AI Asistan';
-                var borderColor = isUser ? 'border-left:3px solid #2196f3;' : 'border-left:3px solid #4caf50;';
-                html += '<div class="p-3" style="' + bg + borderColor + '">' +
-                    '<div class="d-flex justify-content-between mb-2">' +
-                    '<small class="font-weight-bold">' + icon + '</small>' +
-                    '<small class="text-muted">' + msg.created_at + '</small>' +
-                    '</div>' +
-                    '<div style="white-space:pre-wrap;font-size:14px;">' +
-                    msg.content.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') +
-                    '</div></div>';
-            });
-            $body.html(html);
-        },
-        error: function(xhr) {
-            $body.html('<p class="text-center text-danger py-4"><i class="fas fa-exclamation-triangle mr-1"></i>Konuşma yüklenemedi. (HTTP ' + xhr.status + ')</p>');
-        }
-    });
-});
-
 // Prompt character count
 var $prompt = $('textarea[name="ai_chat_system_prompt"]');
 var $counter = $('#promptCharCount');
