@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import CustomPageCom from "../../../components/CustomPageCom";
 import apiRoutes from "@/appConfig/apiRoutes";
 
+export const dynamic = "force-dynamic";
+
 const DEFAULT_LANGUAGE_CODE = "tr";
 
 /**
