@@ -1,4 +1,5 @@
 import React, { Suspense } from "react";
+import { notFound } from "next/navigation";
 import CustomPageCom from "../../../components/CustomPageCom";
 import apiRoutes from "@/appConfig/apiRoutes";
 
@@ -55,7 +56,22 @@ function PageWrapContent({ slug }) {
 
 // Server Component (Default Export)
 export default async function PageWrap({ params }) {
-  const { slug } = await params; 
+  const { slug } = await params;
+
+  // Check if custom page exists, otherwise 404
+  try {
+    const response = await fetch(
+      `${apiRoutes.websiteSetup}?lang_code=${DEFAULT_LANGUAGE_CODE}`,
+      { next: { revalidate: 3600 } }
+    );
+    const data = await response.json();
+    const page = data?.customPages?.find((item) => item.slug === slug);
+    if (!page) {
+      notFound();
+    }
+  } catch {
+    notFound();
+  }
 
   return (
     <Suspense

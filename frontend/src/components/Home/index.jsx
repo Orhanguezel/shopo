@@ -74,31 +74,6 @@ export default function Home({ homepageData }) {
             className="banner-wrapper shadow-xl rounded-3xl overflow-hidden"
           />
         )}
-        <section
-          aria-labelledby="home-main-heading"
-          className="mt-10 rounded-[32px] border border-[#ece7da] bg-gradient-to-r from-[#fff9ee] via-[#fffdf8] to-[#f4efe3] px-6 py-8 shadow-sm md:px-10"
-        >
-          <div className="max-w-4xl space-y-4">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#9f7b2f]">
-              Profesyonel ekipman pazaryeri
-            </p>
-            <h1
-              id="home-main-heading"
-              className="text-3xl font-black leading-tight text-[#1f2937] md:text-5xl"
-            >
-              Berber &amp; Kuaför Malzemeleri
-            </h1>
-            <p className="max-w-3xl text-base leading-8 text-[#4b5563] md:text-lg">
-              Seyfibaba, profesyonel berber ve kuaför salonları için ekipman,
-              mobilya, sarf malzeme ve salon teknolojilerini tek noktada bir
-              araya getiren bir pazaryeridir. Berber koltuğu, kuaför tezgahı,
-              makine ekipmanları, sterilizasyon ürünleri ve günlük salon
-              ihtiyaçları için kategorilere göre hızlı şekilde gezebilir,
-              markaları karşılaştırabilir ve işletmenize uygun ürünleri güvenle
-              inceleyebilirsiniz.
-            </p>
-          </div>
-        </section>
       </div>
 
       <section className="py-10 bg-white/50 backdrop-blur-sm">

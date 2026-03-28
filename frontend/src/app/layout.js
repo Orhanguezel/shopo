@@ -24,10 +24,10 @@ const inter = localFont({
 export const metadata = {
   metadataBase: new URL(appConfig.APPLICATION_URL),
   title: {
-    default: "Berber & Kuaför Malzemeleri | Seyfibaba",
+    default: "Berber ve Kuaför Malzemeleri | Seyfibaba",
     template: "%s | Seyfibaba",
   },
-  description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi. Hemen alışverişe başla!",
+  description: "Berber malzemeleri, kuaför ekipmanları, berber koltuğu ve salon mobilyaları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
   icons: {
     icon: appConfig.BASE_URL + "uploads/website-images/favicon.png",
     shortcut: appConfig.BASE_URL + "uploads/website-images/favicon.png",
@@ -39,8 +39,8 @@ export const metadata = {
   openGraph: {
     type: "website",
     siteName: "Seyfibaba",
-    title: "Berber & Kuaför Malzemeleri | Seyfibaba",
-    description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi. Hemen alışverişe başla!",
+    title: "Berber ve Kuaför Malzemeleri | Seyfibaba",
+    description: "Berber malzemeleri, kuaför ekipmanları, berber koltuğu ve salon mobilyaları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
     url: appConfig.APPLICATION_URL,
     locale: "tr_TR",
     images: [
@@ -55,8 +55,8 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     site: "@seyfibaba",
-    title: "Berber & Kuaför Malzemeleri | Seyfibaba",
-    description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi. Hemen alışverişe başla!",
+    title: "Berber ve Kuaför Malzemeleri | Seyfibaba",
+    description: "Berber malzemeleri, kuaför ekipmanları, berber koltuğu ve salon mobilyaları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
     images: [appConfig.BASE_URL + "uploads/website-images/logo-2025-12-18-04-53-36-7704.png"],
   },
 };
