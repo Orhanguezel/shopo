@@ -212,55 +212,6 @@
                       </td>
                     </tr>
 
-                    {{-- Edit Modal --}}
-                    <div class="modal fade" id="editKnowledgeModal{{ $entry->id }}" tabindex="-1">
-                      <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                          <form action="{{ route('admin.ai-chat-knowledge.update', $entry->id) }}" method="POST">
-                            @csrf @method('PUT')
-                            <div class="modal-header bg-warning text-white">
-                              <h5 class="modal-title"><i class="fas fa-edit mr-2"></i>Bilgi Düzenle #{{ $entry->id }}</h5>
-                              <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-                            </div>
-                            <div class="modal-body">
-                              <div class="form-group">
-                                <label>Kategori</label>
-                                <input type="text" name="category" class="form-control" value="{{ $entry->category }}" required>
-                              </div>
-                              <div class="form-group">
-                                <label>Soru</label>
-                                <textarea name="question" class="form-control" rows="3" required>{{ $entry->question }}</textarea>
-                              </div>
-                              <div class="form-group">
-                                <label>Cevap</label>
-                                <textarea name="answer" class="form-control" rows="5" required>{{ $entry->answer }}</textarea>
-                              </div>
-                              <div class="row">
-                                <div class="col-6">
-                                  <div class="form-group">
-                                    <label>Sıra</label>
-                                    <input type="number" name="sort_order" class="form-control" value="{{ $entry->sort_order }}">
-                                  </div>
-                                </div>
-                                <div class="col-6">
-                                  <div class="form-group mt-4">
-                                    <label class="custom-switch">
-                                      <input type="checkbox" name="is_active" class="custom-switch-input" {{ $entry->is_active ? 'checked' : '' }}>
-                                      <span class="custom-switch-indicator"></span>
-                                      <span class="custom-switch-description">Aktif</span>
-                                    </label>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
-                              <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Güncelle</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
                     @empty
                     <tr><td colspan="7" class="text-center text-muted py-4"><i class="fas fa-inbox mr-1"></i>Henüz bilgi bankası kaydı eklenmemiş.</td></tr>
                     @endforelse
@@ -322,6 +273,58 @@
     </div>
   </section>
 </div>
+
+{{-- Edit Knowledge Modals (outside table for z-index) --}}
+@foreach($knowledge as $entry)
+<div class="modal fade" id="editKnowledgeModal{{ $entry->id }}" tabindex="-1" role="dialog" style="z-index:1050;">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <form action="{{ route('admin.ai-chat-knowledge.update', $entry->id) }}" method="POST">
+        @csrf @method('PUT')
+        <div class="modal-header bg-warning text-white">
+          <h5 class="modal-title"><i class="fas fa-edit mr-2"></i>Bilgi Düzenle #{{ $entry->id }}</h5>
+          <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Kategori</label>
+            <input type="text" name="category" class="form-control" value="{{ $entry->category }}" required>
+          </div>
+          <div class="form-group">
+            <label>Soru</label>
+            <textarea name="question" class="form-control" rows="3" required>{{ $entry->question }}</textarea>
+          </div>
+          <div class="form-group">
+            <label>Cevap</label>
+            <textarea name="answer" class="form-control" rows="5" required>{{ $entry->answer }}</textarea>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label>Sıra</label>
+                <input type="number" name="sort_order" class="form-control" value="{{ $entry->sort_order }}">
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group mt-4">
+                <label class="custom-switch">
+                  <input type="checkbox" name="is_active" class="custom-switch-input" {{ $entry->is_active ? 'checked' : '' }}>
+                  <span class="custom-switch-indicator"></span>
+                  <span class="custom-switch-description">Aktif</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Güncelle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+@endforeach
 
 {{-- Add Knowledge Modal --}}
 <div class="modal fade" id="addKnowledgeModal" tabindex="-1">
