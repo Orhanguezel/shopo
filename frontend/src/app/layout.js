@@ -28,6 +28,19 @@ export const metadata = {
     template: "%s | Seyfibaba",
   },
   description: "Berber malzemeleri, kuaför ekipmanları, berber koltuğu ve salon mobilyaları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
+  authors: [{ name: "Seyfibaba", url: appConfig.APPLICATION_URL }],
+  publisher: "Seyfibaba",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: appConfig.BASE_URL + "uploads/website-images/favicon.png",
     shortcut: appConfig.BASE_URL + "uploads/website-images/favicon.png",
