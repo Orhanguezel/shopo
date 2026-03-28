@@ -31,13 +31,11 @@ class IyzicoController extends Controller
             'shipping_address_id' => 'required|integer',
             'billing_address_id' => 'required|integer',
             'shipping_method_id' => 'required|integer',
+            'cart_products' => 'required|array|min:1',
         ]);
 
         $user = Auth::guard('api')->user();
-        $cartProducts = ShoppingCart::with('product', 'variants.variantItem')
-            ->where('user_id', $user->id)
-            ->select('id', 'product_id', 'qty')
-            ->get();
+        $cartProducts = collect($request->input('cart_products', []));
 
         if ($cartProducts->count() == 0) {
             return response()->json(['message' => trans('user_validation.Your shopping cart is empty')], 403);
@@ -96,7 +94,7 @@ class IyzicoController extends Controller
             $amount = number_format((float)$totalPrice, 2, '.', '');
 
             $callbackUrl = route('iyzico.callback', ['order_id' => $order->id]);
-            $basketItems = $this->buildBasketItems($order, $cartProducts, $iyzicoConfig);
+            $basketItems = $this->buildGuestBasketItems($order, $cartProducts, $iyzicoConfig);
 
             $addressText = (string)($shippingAddress->address ?? 'Adres belirtilmedi');
             $city = (string)($shippingAddress->city->name ?? $shippingAddress->countryState->name ?? 'Istanbul');
