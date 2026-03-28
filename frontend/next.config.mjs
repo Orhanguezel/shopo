@@ -5,6 +5,7 @@ const { hostname, protocol } = new URL(baseUrl);
 
 const nextConfig = {
   compress: true,
+  poweredByHeader: false,
   reactStrictMode: true,
   experimental: {
     optimizePackageImports: [

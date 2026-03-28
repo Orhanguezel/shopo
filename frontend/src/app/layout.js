@@ -76,6 +76,18 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="https://admin.seyfibaba.com/" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
+        {/* SEO: SSR-visible H1 and intro for crawlers */}
+        <div id="seo-hero" className="sr-only" aria-hidden="false">
+          <h1>Berber ve Kuaför Malzemeleri - Seyfibaba</h1>
+          <h2>Profesyonel Berber ve Kuaför Ekipmanları</h2>
+          <p>
+            Seyfibaba, profesyonel berber ve kuaför salonları için ekipman, mobilya,
+            sarf malzeme ve salon teknolojilerini tek noktada bir araya getiren
+            Türkiye merkezli bir pazaryeridir. Berber koltuğu, kuaför tezgahı,
+            tıraş makineleri, makas setleri, saç bakım ürünleri ve salon
+            ekipmanları en uygun fiyatlarla burada.
+          </p>
+        </div>
         {/* loader */}
         <NextSnakeLoader />
         {/* Toaster container */}
