@@ -515,13 +515,17 @@ class IyzicoController extends Controller
                 'price' => $linePrice,
             ];
 
+            // Iyzico marketplace hesabı her ürün için subMerchantKey zorunlu tutar
+            $subMerchantKey = null;
             if ($marketplaceMode && $product->vendor_id) {
                 $subMerchantKey = $this->resolveSubMerchantKey($product->vendor_id, $storeSubMerchantKeys, $config);
-
-                if ($subMerchantKey) {
-                    $item['sub_merchant_key'] = $subMerchantKey;
-                    $item['sub_merchant_price'] = $this->calculateSubMerchantPrice((float)$linePrice, $product->vendor_id);
-                }
+            }
+            if (!$subMerchantKey && $config->default_sub_merchant_key) {
+                $subMerchantKey = $config->default_sub_merchant_key;
+            }
+            if ($subMerchantKey) {
+                $item['sub_merchant_key'] = $subMerchantKey;
+                $item['sub_merchant_price'] = $linePrice;
             }
 
             $basketItems[] = $item;
@@ -563,13 +567,17 @@ class IyzicoController extends Controller
                 'price' => $linePrice,
             ];
 
+            // Iyzico marketplace hesabı her ürün için subMerchantKey zorunlu tutar
+            $subMerchantKey = null;
             if ($marketplaceMode && $product->vendor_id) {
                 $subMerchantKey = $this->resolveSubMerchantKey($product->vendor_id, $storeSubMerchantKeys, $config);
-
-                if ($subMerchantKey) {
-                    $item['sub_merchant_key'] = $subMerchantKey;
-                    $item['sub_merchant_price'] = $this->calculateSubMerchantPrice((float)$linePrice, $product->vendor_id);
-                }
+            }
+            if (!$subMerchantKey && $config->default_sub_merchant_key) {
+                $subMerchantKey = $config->default_sub_merchant_key;
+            }
+            if ($subMerchantKey) {
+                $item['sub_merchant_key'] = $subMerchantKey;
+                $item['sub_merchant_price'] = $linePrice;
             }
 
             $basketItems[] = $item;
