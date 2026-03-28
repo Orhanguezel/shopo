@@ -8,6 +8,38 @@ import ContactForm from "./ContactForm";
 
 // Main Contact component
 export default function Contact({ datas }) {
+  const rawMapValue = datas?.contact?.map || "";
+  const addressValue = datas?.contact?.address || "";
+
+  const resolveMapUrl = (mapValue, address) => {
+    const normalizedMap = String(mapValue || "").trim();
+
+    if (!normalizedMap) {
+      return address
+        ? `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`
+        : "";
+    }
+
+    if (normalizedMap.startsWith("<")) {
+      const srcMatch = normalizedMap.match(/src=["']([^"']+)["']/i);
+      if (srcMatch?.[1]) {
+        return srcMatch[1];
+      }
+    }
+
+    if (
+      normalizedMap.startsWith("http://") ||
+      normalizedMap.startsWith("https://") ||
+      normalizedMap.startsWith("//")
+    ) {
+      return normalizedMap;
+    }
+
+    return `https://www.google.com/maps?q=${encodeURIComponent(address || normalizedMap)}&output=embed`;
+  };
+
+  const mapUrl = resolveMapUrl(rawMapValue, addressValue);
+
   // Contact info cards (phone, email)
   const contactInfo = [
     {
@@ -89,14 +121,20 @@ export default function Contact({ datas }) {
                       </div>
                     </div>
                     <div className="w-full h-[206px] mt-5">
-                      {/* Embedded map iframe */}
-                      <iframe
-                        title="newWork"
-                        src={datas.contact.map}
-                        style={{ border: "0", width: "100%", height: "100%" }}
-                        allowFullScreen=""
-                        loading="lazy"
-                      />
+                      {mapUrl ? (
+                        <iframe
+                          title="contact-map"
+                          src={mapUrl}
+                          style={{ border: "0", width: "100%", height: "100%" }}
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center rounded bg-white text-sm text-qgray">
+                          Harita bilgisi bulunamadı
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

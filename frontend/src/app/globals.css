@@ -92,13 +92,13 @@ font {
   }
 }
 .blog .details :is(p, span) {
-  color: #9a9a9a !important;
+  color: #666666 !important;
   font-size: 15px !important;
   line-height: 30px !important;
   text-align: start !important;
 }
 .product-detail-des :is(p, span, ul li) {
-  color: #797979 !important;
+  color: #707070 !important;
 }
 .about-content :is(h1, h2, h3) {
   color: #222222 !important;
@@ -111,7 +111,7 @@ font {
 .about-content p,
 .about-content p span {
   font-size: 15px !important;
-  color: #797979 !important;
+  color: #707070 !important;
 }
 .about-content ul li a,
 .about-content ol li a,
@@ -165,7 +165,7 @@ font {
 }
 .about-content p,
 .about-content ul li {
-  color: #797979 !important;
+  color: #707070 !important;
   line-height: 30px !important;
 }
 .terms-condition-page :is(h1, h2, h3, h4, h5) {
@@ -183,7 +183,7 @@ font {
   margin-bottom: 14px;
 }
 .terms-condition-page :is(p, span, p span, li, a) {
-  color: #797979 !important;
+  color: #707070 !important;
   font-size: 15px !important;
   line-height: 30px !important;
 }
@@ -328,7 +328,7 @@ font {
   display: none;
 }
 .product-detail-des :is(p, span) {
-  color: #797979 !important;
+  color: #707070 !important;
   font-size: 15px !important;
   line-height: 30px;
 }
@@ -677,7 +677,7 @@ font {
 
 /*TODO: =============== blog ============ */
 .blog-card-wrapper .article-area :is(p, h1, h2, h3, h5, h6, h4, span) {
-  color: #9a9a9a !important;
+  color: #666666 !important;
 }
 
 /* loader style one */

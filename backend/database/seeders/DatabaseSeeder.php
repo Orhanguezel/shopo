@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             CurrencySeeder::class,
             SiteContentSeeder::class,
             DemoDataCleanupSeeder::class,
+            CouponSeeder::class,
         ]);
     }
 }

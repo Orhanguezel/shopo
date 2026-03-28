@@ -107,6 +107,8 @@ export default function Navbar({ className }) {
         onClick={handleCategoryToggle}
         type="button"
         className="w-full h-full flex justify-between items-center"
+        aria-label={ServeLangItem()?.All_Categories || "Tüm Kategoriler"}
+        aria-expanded={categoryToggle}
       >
         <div className="flex rtl:space-x-reverse space-x-3 items-center">
           <span>
@@ -251,9 +253,9 @@ export default function Navbar({ className }) {
           {megaMenuList?.slice(0, 3).map((megaItem) => (
             <div key={megaItem.id}>
               <div className="category">
-                <h1 className="text-[13px] font-700 text-qblack uppercase mb-[13px]">
+                <h2 className="text-[13px] font-700 text-qblack uppercase mb-[13px]">
                   {megaItem.category.name}
-                </h1>
+                </h2>
               </div>
               <div className="category-items">
                 <ul className="flex flex-col space-y-2">
@@ -300,9 +302,9 @@ export default function Navbar({ className }) {
                   </span>
                 </div>
                 <div className="mb-[30px]">
-                  <h1 className="w-[160px] text-[24px] leading-[32px] text-qblack font-semibold">
+                  <h3 className="w-[160px] text-[24px] leading-[32px] text-qblack font-semibold">
                     {megaMenuBanner.title_two}
-                  </h1>
+                  </h3>
                 </div>
               </div>
               <div className="w-auto">

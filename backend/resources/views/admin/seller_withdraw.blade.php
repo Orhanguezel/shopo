@@ -37,7 +37,13 @@
                                 @foreach ($withdraws as $index => $withdraw)
                                     <tr>
                                         <td>{{ ++$index }}</td>
-                                        <td><a href="{{ route('admin.seller-show',$withdraw->seller->id) }}">{{ $withdraw->seller->user->name }}</a></td>
+                                        <td>
+                                            @if($withdraw->seller)
+                                                <a href="{{ route('admin.seller-show',$withdraw->seller->id) }}">{{ $withdraw->seller->user->name ?? __('admin.Unknown') }}</a>
+                                            @else
+                                                <span class="text-muted">{{ __('admin.Deleted') }}</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $withdraw->method }}</td>
                                         <td>{{ $setting->currency_icon }}{{ $withdraw->withdraw_charge }}</td>
                                         <td>{{ $setting->currency_icon }}{{ $withdraw->total_amount }}</td>

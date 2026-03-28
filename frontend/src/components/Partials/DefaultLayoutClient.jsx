@@ -201,7 +201,9 @@ export default function DefaultLayoutClient({ children }) {
       <Consent />
 
       {/* Main Content */}
-      <MaintenanceWrapper>{children}</MaintenanceWrapper>
+      <main id="main-content">
+        <MaintenanceWrapper>{children}</MaintenanceWrapper>
+      </main>
 
       {/* AI Chat Widget */}
       <ChatWidget />

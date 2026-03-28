@@ -1149,6 +1149,15 @@ function AllProductPageContent({ response, sellerInfo }) {
   return (
     <div className="products-page-wrapper w-full">
       <div className="container-x mx-auto">
+        {/* Main H1 for SEO - only if not seller page (seller info has its own H1) */}
+        {!sellerInfo && (
+          <h1 className="sr-only">
+            {searchParams.get("category")?.replaceAll('-', ' ') || 
+             searchParams.get("search") || 
+             "Tüm Ürünler"} - Seyfibaba
+          </h1>
+        )}
+        
         {/* Seller Information Section */}
         {renderSellerInfo()}
 
