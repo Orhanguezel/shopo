@@ -52,7 +52,7 @@ class OtpController extends Controller
         ]);
 
         $message = sprintf(
-            'Your Shopo verification code is %s. It expires in %d minutes.',
+            'Seyfibaba dogrulama kodunuz: %s. Bu kod %d dakika icerisinde gecerliliğini yitirecektir.',
             $otp->otp_code,
             (int) config('sms.otp.expire_minutes', 5)
         );

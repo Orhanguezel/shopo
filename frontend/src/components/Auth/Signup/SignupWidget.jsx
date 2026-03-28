@@ -81,7 +81,7 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
     fname: "",
     lname: "",
     email: "",
-    phone: "+880",
+    phone: "+90",
     password: "",
     confirmPassword: "",
   });
@@ -180,7 +180,7 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
         fname: "",
         lname: "",
         email: "",
-        phone: "+880",
+        phone: "+90",
         password: "",
         confirmPassword: "",
       });
