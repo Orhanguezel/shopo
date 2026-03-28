@@ -46,7 +46,7 @@
   <script src="{{ asset('backend/js/fontawesome-iconpicker.min.js') }}"></script>
   <script src="{{ asset('backend/js/bootstrap-datepicker.min.js') }}"></script>
   <script src="{{ asset('backend/summernote/summernote.min.js') }}"></script>
-  <script src="{{ asset('backend/clockpicker/dist/bootstrap-clockpicker.js') }}"></script>
+  @yield('clockpicker-js')
   <script src="{{ asset('backend/datetimepicker/jquery.datetimepicker.js') }}"></script>
   <script src="{{ asset('backend/js/iziToast.min.js') }}"></script>
   <script src="{{ asset('backend/js/modules-toastr.js') }}"></script>

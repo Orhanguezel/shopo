@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="{{ asset('backend/css/fontawesome-iconpicker.min.css') }}">
   <link rel="stylesheet" href="{{ asset('backend/css/bootstrap-datepicker.min.css') }}">
   <link rel="stylesheet" href="{{ asset('backend/summernote/summernote.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('backend/clockpicker/dist/bootstrap-clockpicker.css') }}">
+  @yield('clockpicker-css')
   <link rel="stylesheet" href="{{ asset('backend/datetimepicker/jquery.datetimepicker.css') }}">
   <link rel="stylesheet" href="{{ asset('backend/css/iziToast.min.css') }}">
 

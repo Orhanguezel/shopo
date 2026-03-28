@@ -3,6 +3,12 @@
 @section('title')
 <title>{{__('admin.Shop Details')}}</title>
 @endsection
+@section('clockpicker-css')
+<link rel="stylesheet" href="{{ asset('backend/clockpicker/dist/bootstrap-clockpicker.css') }}">
+@endsection
+@section('clockpicker-js')
+<script src="{{ asset('backend/clockpicker/dist/bootstrap-clockpicker.js') }}"></script>
+@endsection
 @section('admin-content')
       <!-- Main Content -->
       <div class="main-content">
