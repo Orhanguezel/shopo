@@ -412,7 +412,7 @@ $(document).on('click', '.view-conversation', function() {
     $('#conversationModal').modal('show');
 
     $.ajax({
-        url: "{{ url('admin/ai-chat-conversation') }}/" + id + "/messages",
+        url: "/admin/ai-chat-conversation/" + id + "/messages",
         type: 'GET',
         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
         success: function(data) {
