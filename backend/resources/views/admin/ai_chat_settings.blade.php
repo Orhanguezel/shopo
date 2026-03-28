@@ -408,23 +408,35 @@ $(document).on('click', '.view-conversation', function() {
     $body.html('<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>');
     $('#conversationModal').modal('show');
 
-    $.get("{{ url('admin/ai-chat-conversation') }}/" + id + "/messages", function(data) {
-        var html = '';
-        data.messages.forEach(function(msg) {
-            var isUser = msg.role === 'user';
-            var bg = isUser ? 'background:#e3f2fd;' : 'background:#f5f5f5;';
-            var icon = isUser ? '<i class="fas fa-user-circle text-primary mr-1"></i> Müşteri' : '<i class="fas fa-robot text-success mr-1"></i> AI Asistan';
-            var borderColor = isUser ? 'border-left:3px solid #2196f3;' : 'border-left:3px solid #4caf50;';
-            html += '<div class="p-3" style="' + bg + borderColor + '">' +
-                '<div class="d-flex justify-content-between mb-2">' +
-                '<small class="font-weight-bold">' + icon + '</small>' +
-                '<small class="text-muted">' + msg.created_at + '</small>' +
-                '</div>' +
-                '<div style="white-space:pre-wrap;font-size:14px;">' +
-                msg.content.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') +
-                '</div></div>';
-        });
-        $body.html(html || '<p class="text-center text-muted py-4"><i class="fas fa-inbox mr-1"></i>Mesaj bulunamadı.</p>');
+    $.ajax({
+        url: "{{ url('admin/ai-chat-conversation') }}/" + id + "/messages",
+        type: 'GET',
+        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        success: function(data) {
+            var html = '';
+            if (!data.messages || data.messages.length === 0) {
+                $body.html('<p class="text-center text-muted py-4"><i class="fas fa-inbox mr-1"></i>Mesaj bulunamadı.</p>');
+                return;
+            }
+            data.messages.forEach(function(msg) {
+                var isUser = msg.role === 'user';
+                var bg = isUser ? 'background:#e3f2fd;' : 'background:#f5f5f5;';
+                var icon = isUser ? '<i class="fas fa-user-circle text-primary mr-1"></i> Müşteri' : '<i class="fas fa-robot text-success mr-1"></i> AI Asistan';
+                var borderColor = isUser ? 'border-left:3px solid #2196f3;' : 'border-left:3px solid #4caf50;';
+                html += '<div class="p-3" style="' + bg + borderColor + '">' +
+                    '<div class="d-flex justify-content-between mb-2">' +
+                    '<small class="font-weight-bold">' + icon + '</small>' +
+                    '<small class="text-muted">' + msg.created_at + '</small>' +
+                    '</div>' +
+                    '<div style="white-space:pre-wrap;font-size:14px;">' +
+                    msg.content.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') +
+                    '</div></div>';
+            });
+            $body.html(html);
+        },
+        error: function(xhr) {
+            $body.html('<p class="text-center text-danger py-4"><i class="fas fa-exclamation-triangle mr-1"></i>Konuşma yüklenemedi. (HTTP ' + xhr.status + ')</p>');
+        }
     });
 });
 
