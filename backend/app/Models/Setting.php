@@ -24,6 +24,10 @@ class Setting extends Model
         'geliver_sender_address_id',
         'geliver_webhook_header_name',
         'geliver_webhook_header_secret',
+        'netgsm_usercode',
+        'netgsm_password',
+        'netgsm_msgheader',
+        'netgsm_enabled',
     ];
 
     protected $casts = [
@@ -32,6 +36,7 @@ class Setting extends Model
         'openai_enabled' => 'boolean',
         'claude_timeout' => 'integer',
         'claude_enabled' => 'boolean',
+        'netgsm_enabled' => 'boolean',
     ];
 
     protected $hidden = [
@@ -39,6 +44,7 @@ class Setting extends Model
         'claude_api_key',
         'geliver_api_token',
         'geliver_webhook_header_secret',
+        'netgsm_password',
     ];
 
     public function currency(){

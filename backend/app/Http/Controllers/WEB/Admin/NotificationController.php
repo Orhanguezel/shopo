@@ -4,8 +4,7 @@ namespace App\Http\Controllers\WEB\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\TwilioSms;
-use App\Models\BiztechSms;
+use App\Models\Setting;
 use App\Models\SmsTemplate;
 
 class NotificationController extends Controller
@@ -15,65 +14,36 @@ class NotificationController extends Controller
         $this->middleware('auth:admin');
     }
 
+    public function sms_configuration()
+    {
+        $setting = Setting::first();
 
-    public function twilio_sms(){
-        $twilio = TwilioSms::first();
-        $biztech = BiztechSms::first();
-
-        return view('admin.sms_configuration', compact('twilio','biztech'));
+        return view('admin.sms_configuration', compact('setting'));
     }
 
-    public function update_twilio_sms(Request $request){
+    public function update_netgsm(Request $request)
+    {
         $rules = [
-            'account_sid' => 'required',
-            'auth_token' => 'required',
-            'twilio_phone_number' => 'required',
+            'netgsm_usercode' => 'required',
+            'netgsm_password' => 'required',
+            'netgsm_msgheader' => 'required',
         ];
         $customMessages = [
-            'account_sid.required' => trans('Auth SID is required'),
-            'auth_token.required' => trans('Auth token is required'),
-            'twilio_phone_number.required' => trans('Twilio phone is required')
+            'netgsm_usercode.required' => 'Kullanıcı kodu zorunludur',
+            'netgsm_password.required' => 'Şifre zorunludur',
+            'netgsm_msgheader.required' => 'Mesaj başlığı zorunludur',
         ];
-        $this->validate($request, $rules,$customMessages);
+        $this->validate($request, $rules, $customMessages);
 
-        $twilio = TwilioSms::first();
-        $twilio->account_sid = $request->account_sid;
-        $twilio->auth_token = $request->auth_token;
-        $twilio->twilio_phone_number = $request->twilio_phone_number;
-        $twilio->enable_register_sms = $request->register_otp ? 1 : 0;
-        $twilio->enable_reset_pass_sms = $request->reset_pass_otp ? 1 : 0;
-        $twilio->enable_order_confirmation_sms = $request->order_confirmation ? 1 : 0;
-        $twilio->save();
+        $setting = Setting::first();
+        $setting->update([
+            'netgsm_usercode' => $request->netgsm_usercode,
+            'netgsm_password' => $request->netgsm_password,
+            'netgsm_msgheader' => $request->netgsm_msgheader,
+            'netgsm_enabled' => $request->has('netgsm_enabled') ? 1 : 0,
+        ]);
 
-        $notification = trans('Updated Successfully');
-        $notification = array('messege'=>$notification,'alert-type'=>'success');
-        return redirect()->back()->with($notification);
-    }
-
-    public function update_biztech_sms(Request $request){
-        $rules = [
-            'api_key' => 'required',
-            'client_id' => 'required',
-            'sender_id' => 'required',
-        ];
-        $customMessages = [
-            'api_key.required' => trans('Api key is required'),
-            'client_id.required' => trans('Client id is required'),
-            'sender_id.required' => trans('Sender id is required')
-        ];
-        $this->validate($request, $rules,$customMessages);
-
-        $biztech = BiztechSms::first();
-        $biztech->api_key = $request->api_key;
-        $biztech->client_id = $request->client_id;
-        $biztech->sender_id = $request->sender_id;
-        $biztech->enable_register_sms = $request->register_otp ? 1 : 0;
-        $biztech->enable_reset_pass_sms = $request->reset_pass_otp ? 1 : 0;
-        $biztech->enable_order_confirmation_sms = $request->order_confirmation ? 1 : 0;
-        $biztech->save();
-
-        $notification = trans('Updated Successfully');
-        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        $notification = array('messege' => 'Netgsm ayarları güncellendi', 'alert-type' => 'success');
         return redirect()->back()->with($notification);
     }
 

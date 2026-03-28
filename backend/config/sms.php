@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'default' => env('SMS_PROVIDER', 'iletimerkezi'),
+    'default' => env('SMS_PROVIDER', 'netgsm'),
 
     'providers' => [
-        'iletimerkezi' => [
-            'api_key' => env('ILETIMERKEZI_API_KEY'),
-            'api_hash' => env('ILETIMERKEZI_API_HASH'),
-            'sender' => env('ILETIMERKEZI_SENDER', 'SEYFIBABA'),
-            'endpoint' => 'https://api.iletimerkezi.com/v1/send-sms/json',
+        'netgsm' => [
+            'usercode' => env('NETGSM_USERCODE'),
+            'password' => env('NETGSM_PASSWORD'),
+            'msgheader' => env('NETGSM_MSGHEADER', 'SEYFIBABA'),
+            'endpoint' => env('NETGSM_ENDPOINT', 'https://api.netgsm.com.tr/sms/send/get'),
         ],
     ],
 

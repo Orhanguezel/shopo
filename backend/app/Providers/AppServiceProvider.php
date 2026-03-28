@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Models\Product;
 use App\Observers\ProductObserver;
-use App\Services\IletimMerkeziService;
+use App\Services\NetgsmService;
 use App\Services\SmsServiceInterface;
 use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
@@ -17,12 +17,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(SmsServiceInterface::class, function ($app) {
-            $provider = config('sms.provider', 'iletimerkezi');
-
-            return match ($provider) {
-                'iletimerkezi' => new IletimMerkeziService(),
-                default => new IletimMerkeziService(),
-            };
+            return new NetgsmService();
         });
     }
 

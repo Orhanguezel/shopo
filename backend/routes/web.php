@@ -765,9 +765,8 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::delete('language-delete/{id}', [AdminLanguageController::class, 'destroy'])->name('language-delete');
 
 
-        Route::get('sms-notification', [NotificationController::class, 'twilio_sms'])->name('sms-notification');
-        Route::put('update-twilio-configuration', [NotificationController::class, 'update_twilio_sms'])->name('update-twilio-configuration');
-        Route::put('update-biztech-configuration', [NotificationController::class, 'update_biztech_sms'])->name('update-biztech-configuration');
+        Route::get('sms-notification', [NotificationController::class, 'sms_configuration'])->name('sms-notification');
+        Route::put('update-netgsm-configuration', [NotificationController::class, 'update_netgsm'])->name('update-netgsm-configuration');
 
         Route::get('sms-template', [NotificationController::class, 'sms_template'])->name('sms-template');
         Route::get('edit-sms-template/{id}', [NotificationController::class, 'edit_sms_template'])->name('edit-sms-template');
