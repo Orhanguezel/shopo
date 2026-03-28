@@ -115,7 +115,7 @@
             format: 'yyyy-mm-dd',
             startDate: '-Infinity'
         });
-        $('.clockpicker').clockpicker();
+        if ($.fn.clockpicker) { $('.clockpicker').clockpicker(); }
 
     });
 
