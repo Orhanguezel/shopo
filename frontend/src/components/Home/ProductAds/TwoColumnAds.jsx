@@ -20,10 +20,15 @@ function TwoColumnAds({ bannerOne, bannerTwo }) {
                 <div data-aos="fade-right" className={`h-full sm:w-1/2 w-full rounded-xl overflow-hidden shadow-sm relative`}>
                   <Image
                     src={appConfig.BASE_URL + bannerOne.image}
-                    alt={bannerOne.title_two || "Banner 1"}
+                    alt={
+                      bannerOne.title_one || bannerOne.title_two
+                        ? `${bannerOne.title_one || "Seyfibaba"} ${bannerOne.title_two || "kampanya banneri"}`
+                        : "Seyfibaba sol kampanya banneri"
+                    }
                     fill
                     className="object-cover object-right"
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-white/60 to-transparent pointer-events-none"></div>
                   <div className="relative z-10 ltr:pl-[40px] rtl:pr-[40px] py-[30px] flex flex-col justify-center h-full max-w-[60%]">
@@ -73,10 +78,15 @@ function TwoColumnAds({ bannerOne, bannerTwo }) {
                 <div data-aos="fade-left" className={`h-full sm:w-1/2 w-full rounded-xl overflow-hidden shadow-sm relative`}>
                   <Image
                     src={appConfig.BASE_URL + bannerTwo.image}
-                    alt={bannerTwo.title_two || "Banner 2"}
+                    alt={
+                      bannerTwo.title_one || bannerTwo.title_two
+                        ? `${bannerTwo.title_one || "Seyfibaba"} ${bannerTwo.title_two || "kampanya banneri"}`
+                        : "Seyfibaba sag kampanya banneri"
+                    }
                     fill
                     className="object-cover object-right"
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-white/60 to-transparent pointer-events-none"></div>
                   <div className="relative z-10 ltr:pl-[40px] rtl:pr-[40px] py-[30px] flex flex-col justify-center h-full max-w-[60%]">

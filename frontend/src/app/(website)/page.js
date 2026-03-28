@@ -11,14 +11,14 @@ export const getHomeData = cache(async () => {
 
 // Static metadata — ensures description lands in <head> for SEO
 export const metadata = {
-  title: "Berber & Kuaför Malzemeleri – Profesyoneller İçin Alışveriş",
-  description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
+  title: "Berber & Kuaför Malzemeleri | Seyfibaba",
+  description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi. Hemen alışverişe başla!",
   alternates: {
     canonical: "/",
   },
 };
 
-import JsonLd, { generateOrganizationSchema, generateWebSiteSchema } from "@/components/Helpers/JsonLd";
+import JsonLd, { generateOrganizationSchema, generateWebSiteSchema, generateStoreSchema } from "@/components/Helpers/JsonLd";
 import appConfig from "@/appConfig";
 
 // main page
@@ -26,6 +26,7 @@ export default async function HomePage() {
   const data = await getHomeData();
   const orgSchema = generateOrganizationSchema();
   const websiteSchema = generateWebSiteSchema();
+  const storeSchema = generateStoreSchema();
 
   // Preload LCP hero image for faster paint
   const firstSliderImage = data?.sliders?.[0]?.image;
@@ -38,6 +39,7 @@ export default async function HomePage() {
       )}
       <JsonLd data={orgSchema} />
       <JsonLd data={websiteSchema} />
+      <JsonLd data={storeSchema} />
       <Home homepageData={data} />
     </>
   );

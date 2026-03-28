@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 import { useContext, useEffect, useRef, useState } from "react";
 import auth from "@/utils/auth";
 import BreadcrumbCom from "../BreadcrumbCom";
@@ -9,7 +10,6 @@ import ProductView from "./ProductView";
 import Reviews from "./Reviews";
 import SallerInfo from "./SallerInfo";
 import ServeLangItem from "../Helpers/ServeLangItem";
-import Lightbox from "yet-another-react-lightbox";
 import Video from "yet-another-react-lightbox/plugins/video";
 import "yet-another-react-lightbox/styles.css";
 import ProductCard from "../Helpers/Cards/ProductCard";
@@ -19,9 +19,16 @@ import { useProductReportApiMutation } from "@/redux/features/product/apiSlice";
 import { toast } from "react-toastify";
 import Multivendor from "../Shared/Multivendor";
 
+const Lightbox = dynamic(() => import("yet-another-react-lightbox"), {
+  ssr: false,
+});
+
 export default function SingleProductPage({ details }) {
   const safeDetails = details || {};
   const safeProduct = safeDetails?.product || null;
+  const productCategorySlug = safeProduct?.category?.slug;
+  const productBrandSlug = safeProduct?.brand?.slug;
+  const sellerSlug = safeDetails?.seller?.slug;
   const loginPopupBoard = useContext(LoginContext);
   const [open, setOpen] = useState(false);
   const [photoIndex, setIndex] = useState(0);
@@ -163,8 +170,16 @@ export default function SingleProductPage({ details }) {
               <BreadcrumbCom
                 paths={[
                   { name: ServeLangItem()?.home, path: "/" },
+                  ...(safeProduct?.category?.name && productCategorySlug
+                    ? [
+                        {
+                          name: safeProduct.category.name,
+                          path: `/products?category=${productCategorySlug}`,
+                        },
+                      ]
+                    : []),
                   {
-                    name: safeProduct?.slug || "",
+                    name: safeProduct?.name || safeProduct?.slug || "",
                     path: `/single-product?slug=${safeProduct?.slug || ""}`,
                   },
                 ]}
@@ -428,13 +443,64 @@ export default function SingleProductPage({ details }) {
             </div>
           </div>
         </div>
+        <div className="w-full bg-[#fffaf0] py-[40px]">
+          <div className="container-x mx-auto">
+            <div className="rounded-[28px] border border-[#efe4c8] bg-white px-6 py-8 shadow-sm">
+              <h2 className="text-[24px] font-semibold text-qblack mb-3">
+                Ilgili Kategoriler ve Sayfalar
+              </h2>
+              <p className="text-sm leading-7 text-qgray mb-6">
+                Bu urunle ilgili kategori, marka ve magaza sayfalarina gecerek
+                benzer berber ve kuafor ekipmanlarini daha hizli kesfedebilirsiniz.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {safeProduct?.category?.name && productCategorySlug && (
+                  <Link
+                    href={`/products?category=${productCategorySlug}`}
+                    className="rounded-full border border-[#e5d7b8] bg-[#fff8e8] px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
+                  >
+                    {safeProduct.category.name} kategorisindeki urunler
+                  </Link>
+                )}
+                {safeProduct?.brand?.name && productBrandSlug && (
+                  <Link
+                    href={`/products?brand=${productBrandSlug}`}
+                    className="rounded-full border border-[#e5d7b8] bg-[#fff8e8] px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
+                  >
+                    {safeProduct.brand.name} markasindaki urunler
+                  </Link>
+                )}
+                {sellerSlug && (
+                  <Link
+                    href={`/seller/${sellerSlug}`}
+                    className="rounded-full border border-[#e5d7b8] bg-[#fff8e8] px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
+                  >
+                    Bu saticinin magazasi
+                  </Link>
+                )}
+                <Link
+                  href="/products"
+                  className="rounded-full border border-[#e5d7b8] bg-[#fff8e8] px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
+                >
+                  Tum profesyonel urunleri incele
+                </Link>
+                <Link
+                  href="/sellers"
+                  className="rounded-full border border-[#e5d7b8] bg-[#fff8e8] px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
+                >
+                  Tum saticilar
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
         {relatedProducts.length > 0 && (
           <div className="related-product w-full bg-white">
             <div className="container-x mx-auto">
               <div className="w-full py-[60px]">
-                <h1 className="sm:text-3xl text-xl font-600 text-qblacktext leading-none mb-[30px]">
+                <h2 className="sm:text-3xl text-xl font-600 text-qblacktext leading-none mb-[30px]">
                   {ServeLangItem()?.Related_Product}
-                </h1>
+                </h2>
                 <div
                   data-aos="fade-up"
                   className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 xl:gap-[30px] gap-5"

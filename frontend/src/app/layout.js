@@ -24,10 +24,10 @@ const inter = localFont({
 export const metadata = {
   metadataBase: new URL(appConfig.APPLICATION_URL),
   title: {
-    default: "Berber & Kuaför Malzemeleri – Profesyoneller İçin Alışveriş",
+    default: "Berber & Kuaför Malzemeleri | Seyfibaba",
     template: "%s | Seyfibaba",
   },
-  description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
+  description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi. Hemen alışverişe başla!",
   icons: {
     icon: appConfig.BASE_URL + "uploads/website-images/favicon.png",
     shortcut: appConfig.BASE_URL + "uploads/website-images/favicon.png",
@@ -39,8 +39,8 @@ export const metadata = {
   openGraph: {
     type: "website",
     siteName: "Seyfibaba",
-    title: "Berber & Kuaför Malzemeleri – Profesyoneller İçin Alışveriş",
-    description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
+    title: "Berber & Kuaför Malzemeleri | Seyfibaba",
+    description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi. Hemen alışverişe başla!",
     url: appConfig.APPLICATION_URL,
     locale: "tr_TR",
     images: [
@@ -54,8 +54,9 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Berber & Kuaför Malzemeleri – Profesyoneller İçin Alışveriş",
-    description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
+    site: "@seyfibaba",
+    title: "Berber & Kuaför Malzemeleri | Seyfibaba",
+    description: "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi. Hemen alışverişe başla!",
     images: [appConfig.BASE_URL + "uploads/website-images/logo-2025-12-18-04-53-36-7704.png"],
   },
 };
@@ -71,8 +72,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="tr" translate="no" className="notranslate">
       <head>
-        <title>Berber &amp; Kuaför Malzemeleri – Profesyoneller İçin Alışveriş | Seyfibaba</title>
-        <meta name="description" content="Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi." />
         <link rel="preconnect" href="https://admin.seyfibaba.com/" />
         <link rel="dns-prefetch" href="https://admin.seyfibaba.com/" />
       </head>

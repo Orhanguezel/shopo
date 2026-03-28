@@ -8,6 +8,11 @@ function CategorySection({ sectionTitle, categories }) {
     <div data-aos="fade-up" className="category-section-wrapper w-full">
       <div className="container-x mx-auto pb-[60px]">
         <div>
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-qblacktext">
+              {sectionTitle}
+            </h2>
+          </div>
           <div className="w-full grid xl:grid-cols-8 md:grid-cols-4 grid-cols-2 gap-[30px]">
             {categories &&
               categories.length > 0 &&
@@ -34,7 +39,8 @@ function CategorySection({ sectionTitle, categories }) {
                               height={57}
                               className="object-contain"
                               src={appConfig.BASE_URL + item.image}
-                              alt={item.name}
+                              alt={`${item.name} kategori ikonu`}
+                              loading="lazy"
                             />
                           )}
                         </div>

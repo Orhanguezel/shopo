@@ -2,7 +2,11 @@ import { createServer } from "http";
 import { parse } from "url";
 import { createReadStream, existsSync, statSync } from "fs";
 import { join } from "path";
-import { createGzip } from "zlib";
+import {
+  constants as zlibConstants,
+  createBrotliCompress,
+  createGzip,
+} from "zlib";
 import next from "next";
 
 const port = parseInt(process.env.PORT || "3001", 10);
@@ -54,6 +58,30 @@ app.prepare().then(() => {
         res.setHeader("Content-Type", contentType);
         res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
         res.setHeader("Vary", "Accept-Encoding");
+
+        if (COMPRESSIBLE.has(ext) && acceptEncoding.includes("br")) {
+          const brPath = filePath + ".br";
+          if (existsSync(brPath)) {
+            res.setHeader("Content-Encoding", "br");
+            res.setHeader("Content-Length", statSync(brPath).size);
+            res.writeHead(200);
+            createReadStream(brPath).pipe(res);
+            return;
+          }
+
+          res.setHeader("Content-Encoding", "br");
+          res.writeHead(200);
+          createReadStream(filePath)
+            .pipe(
+              createBrotliCompress({
+                params: {
+                  [zlibConstants.BROTLI_PARAM_QUALITY]: 5,
+                },
+              })
+            )
+            .pipe(res);
+          return;
+        }
 
         if (COMPRESSIBLE.has(ext) && acceptEncoding.includes("gzip")) {
           const gzPath = filePath + ".gz";

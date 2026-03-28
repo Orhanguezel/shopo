@@ -12,7 +12,11 @@ function HomeSlider({ images, settings }) {
           <div key={i} className="item w-full h-full group relative overflow-hidden">
             <Image
                 src={process.env.NEXT_PUBLIC_BASE_URL + item.image}
-                alt={item.title_two}
+                alt={
+                  item.title_one || item.title_two
+                    ? `${item.title_one || "Seyfibaba"} ${item.title_two || "berber ve kuafor kampanyasi"}`
+                    : "Seyfibaba berber ve kuafor malzemeleri slider gorseli"
+                }
                 fill
                 priority={i === 0}
                 sizes="100vw"

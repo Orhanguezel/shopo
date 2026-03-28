@@ -64,7 +64,9 @@ export default function Banner({
       <div className={`w-full ${className || ""}`}>
         <div className="container-x mx-auto">
           <div className="main-wrapper w-full">
-            <h1 className="sr-only">Seyfibaba Pazaryeri - En Uygun Fiyatlı Alışverişin Adresi</h1>
+            <p className="sr-only">
+              Seyfibaba berber ve kuafor malzemeleri kampanya alani
+            </p>
             <div className="banner-card xl:flex xl:space-x-[30px] rtl:space-x-0 xl:h-[600px]  mb-[30px] ">
               <div
                 data-aos="fade-right"
@@ -88,7 +90,11 @@ export default function Banner({
                   >
                     <Image
                       src={sidebarImageOne}
-                      alt={sidebarImgOne.title_two || "Banner image"}
+                      alt={
+                        sidebarImgOne.title_one || sidebarImgOne.title_two
+                          ? `${sidebarImgOne.title_one || "Seyfibaba"} ${sidebarImgOne.title_two || "kampanya banneri"}`
+                          : "Seyfibaba berber ve kuafor kampanya banneri"
+                      }
                       fill
                       className="object-cover"
                       sizes="(max-width: 1200px) 100vw, 400px"
@@ -162,7 +168,11 @@ export default function Banner({
                   >
                     <Image
                       src={sidebarImageTwo}
-                      alt={sidebarImgTwo.title_two || "Banner image"}
+                      alt={
+                        sidebarImgTwo.title_one || sidebarImgTwo.title_two
+                          ? `${sidebarImgTwo.title_one || "Seyfibaba"} ${sidebarImgTwo.title_two || "kampanya banneri"}`
+                          : "Seyfibaba profesyonel salon ekipmanlari banneri"
+                      }
                       fill
                       className="object-cover"
                       sizes="(max-width: 1200px) 100vw, 400px"

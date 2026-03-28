@@ -27,6 +27,7 @@ return [
         'http://213.238.181.47:3000',
         'http://localhost:3000',
         'http://localhost:3001',
+        'http://localhost:3002',
     ],
 
     'allowed_origins_patterns' => [],

@@ -76,9 +76,9 @@ export default function CampaignCountDown({
                 </div>
                 <div>
                   <div className="countdown-title mb-4">
-                    <h1 className="sm:text-[36px] text-[24px] text-white font-700 leading-tight drop-shadow-lg">
+                    <h2 className="sm:text-[36px] text-[24px] text-white font-700 leading-tight drop-shadow-lg">
                       {flashSaleData.title}
-                    </h1>
+                    </h2>
                   </div>
                   <div className="w-auto">
                     <Link href="/flash-sale">
@@ -106,13 +106,13 @@ export default function CampaignCountDown({
                   <p className="text-[13px] font-600 text-qblack mb-3">
                     {ServeLangItem()?.MOBILE_APP_VERSION}
                   </p>
-                  <h1 className="lg:text-[30px] text-2xl font-600 text-qblack leading-10 mb-8">
+                  <h2 className="lg:text-[30px] text-2xl font-600 text-qblack leading-10 mb-8">
                     {ServeLangItem()?.Get_Our}
                     <span className="text-qred border-b-2 border-qred mx-2">
                       {ServeLangItem()?.Mobile_App}
                     </span>
                     <br /> {ServeLangItem()?.Its_Make_easy_for_you_life}
-                  </h1>
+                  </h2>
                   <div className="flex space-x-5 rtl:space-x-reverse items-center">
                     <div className="bg-white w-[170px] h-[60px] flex justify-center items-center cursor-pointer">
                       <Link
@@ -121,6 +121,7 @@ export default function CampaignCountDown({
                             ? downloadData?.play_store
                             : "#"
                         }
+                        aria-label="Google Play uzerinden mobil uygulamayi indir"
                       >
                         <GooglePlay />
                       </Link>
@@ -130,6 +131,7 @@ export default function CampaignCountDown({
                         href={
                           downloadData?.app_store ? downloadData.app_store : "#"
                         }
+                        aria-label="App Store uzerinden mobil uygulamayi indir"
                       >
                         <AppleStore />
                       </Link>

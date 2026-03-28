@@ -14,12 +14,7 @@ export default function Contact({ datas }) {
   const resolveMapUrl = (mapValue, address) => {
     const normalizedMap = String(mapValue || "").trim();
 
-    if (!normalizedMap) {
-      return address
-        ? `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`
-        : "";
-    }
-
+    // If admin pasted an iframe embed code, extract the src
     if (normalizedMap.startsWith("<")) {
       const srcMatch = normalizedMap.match(/src=["']([^"']+)["']/i);
       if (srcMatch?.[1]) {
@@ -27,6 +22,7 @@ export default function Contact({ datas }) {
       }
     }
 
+    // If it's already a URL, use it directly
     if (
       normalizedMap.startsWith("http://") ||
       normalizedMap.startsWith("https://") ||
@@ -35,7 +31,9 @@ export default function Contact({ datas }) {
       return normalizedMap;
     }
 
-    return `https://www.google.com/maps?q=${encodeURIComponent(address || normalizedMap)}&output=embed`;
+    // Fallback: Seyfibaba location — İstiklal Mah. Serdivan/Sakarya
+    const fallbackQuery = address || "İstiklal Mahallesi, Serdivan, Sakarya, Türkiye";
+    return `https://maps.google.com/maps?q=${encodeURIComponent(fallbackQuery)}&z=15&output=embed`;
   };
 
   const mapUrl = resolveMapUrl(rawMapValue, addressValue);

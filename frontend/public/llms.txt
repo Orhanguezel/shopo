@@ -1,38 +1,40 @@
-# Seyfibaba - E-Ticaret Pazaryeri
+# Seyfibaba — Berber & Kuaför Malzemeleri Pazaryeri
 # https://seyfibaba.com
 
-> Seyfibaba, Türkiye merkezli bir e-ticaret pazaryeridir. Birden fazla satıcının ürünlerini sergilediği, alıcıların güvenli alışveriş yapabildiği bir online mağaza platformudur.
+> Seyfibaba, Türkiye merkezli profesyonel berber ve kuaför malzemeleri pazaryeridir. Berber koltuğu, kuaför tezgahı, salon ekipmanları, saç bakım ürünleri ve profesyonel berber aletleri gibi geniş ürün yelpazesiyle sektördeki profesyonellere hizmet vermektedir.
 
 ## Hakkında
 
-Seyfibaba, satıcıları ve alıcıları bir araya getiren çok satıcılı bir pazaryeri platformudur. Platformda elektronik, moda, ev & yaşam, spor ve daha birçok kategoride ürünler bulunmaktadır.
+Seyfibaba, berber ve kuaför salonları için ekipman, mobilya, sarf malzeme ve salon teknolojilerini tek noktada bir araya getiren bir pazaryeridir. Birden fazla satıcının ürünlerini sergilediği platformda, salon kurulumundan günlük tedarike kadar tüm ihtiyaçlar karşılanmaktadır. Türkiye genelinde profesyonel berberler, kuaförler, güzellik merkezleri ve yeni salon açan girişimciler için en uygun fiyatlı alışveriş imkanı sunulmaktadır.
+
+## Ürün Kategorileri
+
+- Berber Koltuğu: Hidrolik, döner, klasik ve modern berber koltukları
+- Kuaför Tezgahı: Aynalı tezgahlar, çekmeceli modüller, salon mobilyaları
+- Salon Ekipmanları: Kurutma makineleri, sterilizatörler, boya arabaları
+- Berber Aletleri: Tıraş makineleri, makas setleri, jilet tutucular
+- Saç Bakım Ürünleri: Şampuanlar, saç boyaları, bakım kremleri
+- Kuaför Aksesuarları: Pelerin, havlu, saç tokası, fırça setleri
 
 ## Site Yapısı
 
 - Ana Sayfa: https://seyfibaba.com/
-- Ürünler: https://seyfibaba.com/products
+- Tüm Ürünler: https://seyfibaba.com/products
 - Satıcılar: https://seyfibaba.com/sellers
 - Fırsat Ürünleri: https://seyfibaba.com/flash-sale
 - Blog: https://seyfibaba.com/blogs
 - Hakkımızda: https://seyfibaba.com/about
 - İletişim: https://seyfibaba.com/contact
 - SSS: https://seyfibaba.com/faq
+- Gizlilik Politikası: https://seyfibaba.com/privacy-policy
+- Kullanım Koşulları: https://seyfibaba.com/terms-condition
 
-## API Bilgileri
+## Teknik Bilgiler
 
-Seyfibaba, REST API üzerinden çalışan bir Next.js + Laravel mimarisi kullanmaktadır. Tüm ürün verileri, kategoriler ve satıcı bilgileri API üzerinden sunulmaktadır.
-
-- API Base: https://admin.seyfibaba.com/api/
-- Ürün Detayı: /api/product/{slug}
-- Kategoriler: /api/ (ana endpoint içinde)
-- Satıcılar: /api/sellers
-- Blog: /api/blogs
-
-## İçerik Politikası
-
-- Ürün sayfaları dinamik olarak oluşturulur ve her ürün için benzersiz SEO metadata içerir.
-- Blog içerikleri editöryal olarak hazırlanır.
-- Satıcı profilleri satıcılar tarafından yönetilir.
+- Mimari: Next.js 15 (SSR) + Laravel 10 (API)
+- Ödeme: Iyzico (pazaryeri modeli, alt satıcı desteği)
+- Dil: Türkçe (tr_TR)
+- Para Birimi: TRY (Türk Lirası)
 
 ## Crawling Rehberi
 
@@ -41,8 +43,10 @@ Seyfibaba, REST API üzerinden çalışan bir Next.js + Laravel mimarisi kullanm
 - Ürün sayfaları: /single-product?slug={product-slug}
 - Satıcı profilleri: /seller/{seller-slug}
 - Blog detay: /blogs/{blog-slug}
+- Kategori: /products?category={category-slug}
 
 ## İletişim
 
 - Web: https://seyfibaba.com
 - İletişim Formu: https://seyfibaba.com/contact
+- Telefon: +90 543 501 1995

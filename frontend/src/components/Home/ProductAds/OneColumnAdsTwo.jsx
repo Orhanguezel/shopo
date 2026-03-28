@@ -24,10 +24,15 @@ function OneColumnAdsTwo({ data }) {
         >
           <Image
             src={appConfig.BASE_URL + data.image}
-            alt={data.title_one || "Banner"}
+            alt={
+              data.title_one || data.title_two
+                ? `${data.title_one || "Seyfibaba"} ${data.title_two || "kampanya banneri"}`
+                : "Seyfibaba tekli kampanya banneri"
+            }
             fill
             className="object-cover"
             sizes="100vw"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent pointer-events-none transition-opacity duration-300 group-hover:opacity-80"></div>
           

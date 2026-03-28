@@ -33,7 +33,7 @@ export default function FourZeroFour({ breadcrumb = true }) {
                       fill
                       style={{ objectFit: "scale-down" }}
                       src={appConfig.BASE_URL + siteDate}
-                      alt="404"
+                      alt="Sayfa bulunamadi gorseli"
                     />
                   </div>
                 )}

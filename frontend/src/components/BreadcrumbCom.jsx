@@ -1,22 +1,26 @@
+import JsonLd, { generateBreadcrumbSchema } from "./Helpers/JsonLd";
+import Link from "next/link";
+
 export default function BreadcrumbCom({
   paths = [{ name: "home", path: "/" }],
 }) {
   return (
-    <>
-      {paths && paths.length > 0 && (
-        <div key={Math.random()}>
-          <div className="breadcrumb-wrapper font-400 text-[13px] text-qblack mb-[23px] print:hidden">
-            {paths.map((path) => (
-              <span key={Math.random()}>
-                <a href={path.path}>
-                  <span className="mx-1 capitalize">{path.name}</span>
-                </a>
-                <span className="sperator">/</span>
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-    </>
+    <nav aria-label="Breadcrumb" className="breadcrumb-wrapper print:hidden">
+      {/* JSON-LD Schema for Google Rich Results */}
+      <JsonLd data={generateBreadcrumbSchema(paths)} />
+      
+      <div className="flex items-center flex-wrap font-400 text-[13px] text-[#6B7280] mb-[23px]">
+        {paths.map((path, index) => (
+          <span key={index} className="flex items-center">
+            <Link href={path.path} className="hover:text-qblack transition-colors">
+              <span className="capitalize">{path.name}</span>
+            </Link>
+            {index < paths.length - 1 && (
+              <span className="mx-2 text-[#D1D5DB]">/</span>
+            )}
+          </span>
+        ))}
+      </div>
+    </nav>
   );
 }

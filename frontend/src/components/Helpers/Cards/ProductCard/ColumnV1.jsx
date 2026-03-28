@@ -42,7 +42,7 @@ function ColumnV1({
           <div className="w-full h-full relative flex justify-center items-center transform scale-100 group-hover:scale-110 transition duration-300 ease-in-out">
             <Image
               src={productImage}
-              alt={datas.title || "Product image"}
+              alt={datas.title || "Profesyonel berber ve kuafor urunu gorseli"}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               style={{ objectFit: "scale-down" }}
@@ -94,9 +94,9 @@ function ColumnV1({
               query: { slug: datas.slug },
             }}
           >
-            <p className="title mb-2 text-[15px] font-600 text-qblack leading-[24px] line-clamp-2 hover:text-qyellow cursor-pointer ">
+            <h3 className="title mb-2 text-[15px] font-600 text-qblack leading-[24px] line-clamp-2 hover:text-qyellow cursor-pointer ">
               {datas.title}
-            </p>
+            </h3>
           </Link>
           <p className="price">
             <span

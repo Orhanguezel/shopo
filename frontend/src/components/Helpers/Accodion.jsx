@@ -17,13 +17,13 @@ export default function Accodion({ init, title, des }) {
         onClick={handler}
         type="button"
         className={`w-full h-[60px]  flex justify-between items-center px-5 ${
-          collaps ? "text-white" : "text-qblack"
+          collaps ? "text-qblack" : "text-qblack"
         }`}
       >
         <span className="sm:text-base text-sm font-semibold text-start capitalize">
           {title}
         </span>
-        <span className="text-[#6B7280]">
+        <span className={collaps ? "text-qblack" : "text-[#6B7280]"}>
           {collaps ? <MinusIcon /> : <PlusIcon />}
         </span>
       </button>
@@ -31,9 +31,7 @@ export default function Accodion({ init, title, des }) {
         <div className="faq-body p-5 border-t border-qgray-border">
           <div data-aos="fade-up">
             <div
-              className={`sm:text-[15px] text-xs ${
-                collaps ? "text-white" : ""
-              }`}
+              className="sm:text-[15px] text-xs text-qblack"
               dangerouslySetInnerHTML={{
                 __html: des,
               }}

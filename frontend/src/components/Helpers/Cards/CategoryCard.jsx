@@ -35,9 +35,9 @@ export default function CategoryCard({
         <div>
           {/* Card Title */}
           <div className="mb-6">
-            <h1 className="text-2xl font-black text-gray-900 leading-tight group-hover:scale-[1.02] transform transition-transform duration-300 uppercase italic">
+            <h3 className="text-2xl font-black text-gray-900 leading-tight group-hover:scale-[1.02] transform transition-transform duration-300 uppercase italic">
               {title}
-            </h1>
+            </h3>
             <div className="w-12 h-1 bg-qyellow rounded-full mt-2"></div>
           </div>
           {/* List of filtered categories */}

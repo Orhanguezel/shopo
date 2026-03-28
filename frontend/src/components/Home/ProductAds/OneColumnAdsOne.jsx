@@ -17,10 +17,15 @@ function OneColumnAdsOne({ data }) {
           >
             <Image
               src={appConfig.BASE_URL + data.image}
-              alt={data.title_two || "Banner"}
+              alt={
+                data.title_one || data.title_two
+                  ? `${data.title_one || "Seyfibaba"} ${data.title_two || "kampanya banneri"}`
+                  : "Seyfibaba promosyon banneri"
+              }
               fill
               className="object-cover"
               sizes="100vw"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-black/10 transition-colors duration-300 group-hover:bg-black/20"></div>
             <div className="relative z-10 w-full max-w-2xl px-6 py-10 flex flex-col items-center text-center">

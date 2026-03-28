@@ -131,8 +131,31 @@ use Artisan;
 
 
 class HomeController extends Controller
-
 {
+    public function productCount()
+    {
+        $count = Product::where(['status' => 1, 'approve_by_admin' => 1])->count();
+        return response()->json(['count' => $count]);
+    }
+
+    public function productSitemap()
+    {
+        $products = Product::where(['status' => 1, 'approve_by_admin' => 1])
+            ->select('slug', 'updated_at')
+            ->get();
+        return response()->json(['products' => $products]);
+    }
+
+    public function sellerSitemap()
+    {
+        $sellers = Vendor::where('status', 1)
+            ->select('slug', 'updated_at')
+            ->get();
+        return response()->json(['sellers' => $sellers]);
+    }
+
+
+
 
     public function websiteSetup(Request $request){
 

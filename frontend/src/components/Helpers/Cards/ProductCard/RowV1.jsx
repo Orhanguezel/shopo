@@ -38,7 +38,7 @@ function RowV1({
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               style={{ objectFit: "scale-down" }}
               src={productImage}
-              alt={datas.title || "Product image"}
+              alt={datas.title || "Profesyonel berber ve kuafor urunu gorseli"}
               className="w-full h-full object-contain"
               loading="lazy"
             />
@@ -72,9 +72,9 @@ function RowV1({
                   query: { slug: datas.slug },
                 }}
               >
-                <p className="title mb-2 sm:text-[15px] text-[13px] font-600 text-qblack leading-[24px] line-clamp-2 hover:text-qyellow cursor-pointer">
+                <h3 className="title mb-2 sm:text-[15px] text-[13px] font-600 text-qblack leading-[24px] line-clamp-2 hover:text-qyellow cursor-pointer">
                   {datas.title}
-                </p>
+                </h3>
               </Link>
               <p className="price mb-[26px]">
                 <span

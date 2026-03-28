@@ -60,7 +60,7 @@ export default function Ads() {
         setAds(true);
       }
     }
-  });
+  }, [announcment, websiteSetup]);
   const { logo } = settings();
   return (
     <>
@@ -90,7 +90,7 @@ export default function Ads() {
                           ? appConfig.BASE_URL + logo
                           : "/assets/images/logo.svg"
                       }`}
-                      alt="logo"
+                      alt="Seyfibaba logo"
                     />
                   </Link>
                 </div>

@@ -6,12 +6,26 @@ const { hostname, protocol } = new URL(baseUrl);
 const nextConfig = {
   compress: true,
   reactStrictMode: true,
+  experimental: {
+    optimizePackageImports: [
+      '@fortawesome/free-solid-svg-icons',
+      '@fortawesome/free-brands-svg-icons',
+      'react-toastify',
+      'react-share',
+      'date-fns',
+    ],
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
+    dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
         protocol: protocol.replace(":", ""),
         hostname: hostname,
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
       },
     ],
   },

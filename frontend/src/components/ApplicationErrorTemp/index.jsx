@@ -16,7 +16,7 @@ export default function ApplicationErrorTemp() {
                     width={700}
                     height={417}
                     src="/assets/images/server-error.svg"
-                    alt="Application Error"
+                    alt="Seyfibaba uygulama hatasi gorseli"
                     className="w-full h-full object-contain"
                   />
                 </div>

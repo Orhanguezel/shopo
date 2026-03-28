@@ -8,9 +8,9 @@ export default function BrandSection({ className, sectionTitle, brands = [] }) {
       <div className="container-x mx-auto">
         <div className="section-title flex justify-between items-center mb-10">
           <div className="relative">
-            <h1 className="sm:text-3xl text-2xl font-bold text-qblacktext leading-none relative z-10">
+            <h2 className="sm:text-3xl text-2xl font-bold text-qblacktext leading-none relative z-10">
               {sectionTitle}
-            </h1>
+            </h2>
             <div className="absolute -bottom-2 left-0 w-1/2 h-1 bg-qyellow rounded-full"></div>
           </div>
         </div>
@@ -34,7 +34,9 @@ export default function BrandSection({ className, sectionTitle, brands = [] }) {
                         fill
                         className="object-contain transition-opacity duration-300 opacity-80 group-hover:opacity-100"
                         src={`${appConfig.BASE_URL + datas.logo}`}
-                        alt={datas.name}
+                        alt={`${datas.name} marka logosu`}
+                        loading="lazy"
+                        sizes="(max-width: 768px) 50vw, 16vw"
                       />
                     </div>
                   </div>

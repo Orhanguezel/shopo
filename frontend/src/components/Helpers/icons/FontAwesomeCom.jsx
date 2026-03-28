@@ -38,6 +38,13 @@ import {
   faUsers,
   faQuestionCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFacebookF,
+  faInstagram,
+  faXTwitter,
+  faLinkedinIn,
+  faYoutube,
+} from "@fortawesome/free-brands-svg-icons";
 
 // Add only the icons we need
 library.add(
@@ -46,7 +53,8 @@ library.add(
   faShieldAlt, faClock, faCheck, faTimes, faPlus, faMinus,
   faArrowRight, faArrowLeft, faChevronRight, faChevronLeft,
   faBars, faEdit, faTrash, faCog, faTachometerAlt, faShoppingBag,
-  faHeadset, faComment, faSignOutAlt, faLock, faUsers, faQuestionCircle
+  faHeadset, faComment, faSignOutAlt, faLock, faUsers, faQuestionCircle,
+  faFacebookF, faInstagram, faXTwitter, faLinkedinIn, faYoutube
 );
 
 // Common icon mappings for fallback

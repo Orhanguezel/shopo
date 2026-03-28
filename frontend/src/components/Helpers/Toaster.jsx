@@ -1,7 +1,16 @@
-import React from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+"use client";
+import { useEffect, useState } from "react";
 
 export default function Toaster() {
-  return <ToastContainer />;
+  const [Container, setContainer] = useState(null);
+
+  useEffect(() => {
+    import("react-toastify/dist/ReactToastify.css");
+    import("react-toastify").then((mod) => {
+      setContainer(() => mod.ToastContainer);
+    });
+  }, []);
+
+  if (!Container) return null;
+  return <Container />;
 }

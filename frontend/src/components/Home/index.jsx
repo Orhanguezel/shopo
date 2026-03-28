@@ -1,18 +1,25 @@
 "use client";
-import SectionStyleFour from "../Helpers/SectionStyleFour";
-import SectionStyleOne from "../Helpers/SectionStyleOne";
-import SectionStyleThree from "../Helpers/SectionStyleThree";
-import SectionStyleTwo from "../Helpers/SectionStyleTwo";
-import ViewMoreTitle from "../Helpers/ViewMoreTitle";
-import Ads from "./Ads";
+import dynamic from "next/dynamic";
 import Banner from "./Banner";
-import BrandSection from "./BrandSection";
-import CampaignCountDown from "./CampaignCountDown";
-import TwoColumnAds from "./ProductAds/TwoColumnAds";
-import OneColumnAdsOne from "./ProductAds/OneColumnAdsOne";
-import OneColumnAdsTwo from "./ProductAds/OneColumnAdsTwo";
 import CategorySection from "./CategorySection";
 import appConfig from "@/appConfig";
+
+// Above-the-fold: Banner + CategorySection (static import)
+// Below-the-fold: everything else (dynamic import for code splitting)
+const Ads = dynamic(() => import("./Ads"));
+const ViewMoreTitle = dynamic(() => import("../Helpers/ViewMoreTitle"));
+const SectionStyleOne = dynamic(() => import("../Helpers/SectionStyleOne"));
+const SectionStyleTwo = dynamic(() => import("../Helpers/SectionStyleTwo"));
+const SectionStyleThree = dynamic(() => import("../Helpers/SectionStyleThree"));
+const SectionStyleFour = dynamic(() => import("../Helpers/SectionStyleFour"));
+const BrandSection = dynamic(() => import("./BrandSection"));
+const CampaignCountDown = dynamic(() => import("./CampaignCountDown"));
+const CategoryDescriptions = dynamic(() => import("./CategoryDescriptions"));
+const HomeFAQ = dynamic(() => import("./HomeFAQ"));
+const TwoColumnAds = dynamic(() => import("./ProductAds/TwoColumnAds"));
+const OneColumnAdsOne = dynamic(() => import("./ProductAds/OneColumnAdsOne"));
+const OneColumnAdsTwo = dynamic(() => import("./ProductAds/OneColumnAdsTwo"));
+const WhySeyfibaba = dynamic(() => import("./WhySeyfibaba"));
 
 export default function Home({ homepageData }) {
   const getsectionTitles = homepageData.section_title;
@@ -43,10 +50,9 @@ export default function Home({ homepageData }) {
   }
 
   const homepage = homepageData;
-  const isMultivendor = true; // Default to true on server, or fetch from shared config/API if possible
 
   return (
-    <div className="w-full pt-[40px] pb-[80px] space-y-[60px] md:space-y-[100px] bg-[#fdfdfd]">
+    <div className="w-full pt-[16px] pb-[80px] space-y-[60px] md:space-y-[100px] bg-[#fdfdfd]">
       <Ads />
       <div className="container-x mx-auto">
         {homepage?.sliders?.length > 0 && (
@@ -68,120 +74,159 @@ export default function Home({ homepageData }) {
             className="banner-wrapper shadow-xl rounded-3xl overflow-hidden"
           />
         )}
+        <section
+          aria-labelledby="home-main-heading"
+          className="mt-10 rounded-[32px] border border-[#ece7da] bg-gradient-to-r from-[#fff9ee] via-[#fffdf8] to-[#f4efe3] px-6 py-8 shadow-sm md:px-10"
+        >
+          <div className="max-w-4xl space-y-4">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#9f7b2f]">
+              Profesyonel ekipman pazaryeri
+            </p>
+            <h1
+              id="home-main-heading"
+              className="text-3xl font-black leading-tight text-[#1f2937] md:text-5xl"
+            >
+              Berber &amp; Kuaför Malzemeleri
+            </h1>
+            <p className="max-w-3xl text-base leading-8 text-[#4b5563] md:text-lg">
+              Seyfibaba, profesyonel berber ve kuaför salonları için ekipman,
+              mobilya, sarf malzeme ve salon teknolojilerini tek noktada bir
+              araya getiren bir pazaryeridir. Berber koltuğu, kuaför tezgahı,
+              makine ekipmanları, sterilizasyon ürünleri ve günlük salon
+              ihtiyaçları için kategorilere göre hızlı şekilde gezebilir,
+              markaları karşılaştırabilir ve işletmenize uygun ürünleri güvenle
+              inceleyebilirsiniz.
+            </p>
+          </div>
+        </section>
       </div>
 
-      <div className="py-10 bg-white/50 backdrop-blur-sm">
+      <section className="py-10 bg-white/50 backdrop-blur-sm">
         <CategorySection
           categories={homepage?.homepage_categories}
           sectionTitle={sectionTitles && sectionTitles.Trending_Category}
         />
-      </div>
+      </section>
 
-      <SectionStyleOne
-        products={homepage?.popularCategoryProducts}
-        categories={homepage?.popularCategories}
-        categoryBackground={
-          appConfig.BASE_URL + homepage.popularCategorySidebarBanner
-        }
-        categoryTitle={sectionTitles && sectionTitles.Popular_Category}
-        sectionTitle={sectionTitles && sectionTitles.Popular_Category}
-        seeMoreUrl={`/products?highlight=popular_category`}
-        className="category-products"
-      />
+      <section>
+        <SectionStyleOne
+          products={homepage?.popularCategoryProducts}
+          categories={homepage?.popularCategories}
+          categoryBackground={
+            appConfig.BASE_URL + homepage.popularCategorySidebarBanner
+          }
+          categoryTitle={sectionTitles && sectionTitles.Popular_Category}
+          sectionTitle={sectionTitles && sectionTitles.Popular_Category}
+          seeMoreUrl={`/products?highlight=popular_category`}
+          className="category-products"
+        />
+      </section>
 
-      <div className="py-16 bg-gray-50/50 border-y border-gray-100">
+      <section className="py-16 bg-gray-50/50 border-y border-gray-100">
         <BrandSection
           brands={homepage?.brands?.length > 0 ? homepage.brands : []}
           sectionTitle={sectionTitles && sectionTitles.Shop_by_Brand}
           className="brand-section-wrapper"
         />
-      </div>
+      </section>
 
       {homepage?.flashSale && (
-        <CampaignCountDown
-          className="md:mb-[60px] mb-[30px]"
-          flashSaleData={homepage.flashSale}
-          downloadData={homepage?.flashSaleSidebarBanner}
-          lastDate={homepage.flashSale?.end_time}
-        />
+        <section>
+          <CampaignCountDown
+            className="md:mb-[60px] mb-[30px]"
+            flashSaleData={homepage.flashSale}
+            downloadData={homepage?.flashSaleSidebarBanner}
+            lastDate={homepage.flashSale?.end_time}
+          />
+        </section>
       )}
 
-      <ViewMoreTitle
-        className="top-selling-product"
-        seeMoreUrl={`/products?highlight=top_product`}
-        categoryTitle={sectionTitles && sectionTitles.Top_Rated_Products}
-      >
-        <SectionStyleTwo
-          products={
-            homepage?.topRatedProducts?.length &&
-            homepage?.topRatedProducts?.length > 0
-              ? homepage?.topRatedProducts
-              : []
+      <section>
+        <ViewMoreTitle
+          className="top-selling-product"
+          seeMoreUrl={`/products?highlight=top_product`}
+          categoryTitle={sectionTitles && sectionTitles.Top_Rated_Products}
+        >
+          <SectionStyleTwo
+            products={
+              homepage?.topRatedProducts?.length &&
+              homepage?.topRatedProducts?.length > 0
+                ? homepage?.topRatedProducts
+                : []
+            }
+          />
+        </ViewMoreTitle>
+      </section>
+
+      <section aria-label="Promosyon bannerlari">
+        <TwoColumnAds
+          bannerOne={
+            homepage?.twoColumnBannerOne &&
+            parseInt(homepage?.twoColumnBannerOne?.status) === 1
+              ? homepage?.twoColumnBannerOne
+              : null
+          }
+          bannerTwo={
+            homepage?.twoColumnBannerTwo &&
+            parseInt(homepage?.twoColumnBannerTwo?.status) === 1
+              ? homepage?.twoColumnBannerTwo
+              : null
           }
         />
-      </ViewMoreTitle>
+      </section>
 
-      <TwoColumnAds
-        bannerOne={
-          homepage?.twoColumnBannerOne &&
-          parseInt(homepage?.twoColumnBannerOne?.status) === 1
-            ? homepage?.twoColumnBannerOne
-            : null
-        }
-        bannerTwo={
-          homepage?.twoColumnBannerTwo &&
-          parseInt(homepage?.twoColumnBannerTwo?.status) === 1
-            ? homepage?.twoColumnBannerTwo
-            : null
-        }
-      />
+      <section>
+        <SectionStyleOne
+          categories={
+            homepage?.featuredCategories?.length > 0
+              ? homepage?.featuredCategories
+              : []
+          }
+          categoryBackground={
+            appConfig.BASE_URL + homepage.featuredCategorySidebarBanner
+          }
+          categoryTitle={sectionTitles && sectionTitles.Featured_Products}
+          products={
+            homepage?.featuredCategoryProducts?.length > 0
+              ? homepage?.featuredCategoryProducts
+              : []
+          }
+          sectionTitle={sectionTitles && sectionTitles.Featured_Products}
+          seeMoreUrl={`/products?highlight=featured_product`}
+          className="category-products"
+        />
+      </section>
 
-      <SectionStyleOne
-        categories={
-          homepage?.featuredCategories?.length > 0
-            ? homepage?.featuredCategories
-            : []
-        }
-        categoryBackground={
-          appConfig.BASE_URL + homepage.featuredCategorySidebarBanner
-        }
-        categoryTitle={sectionTitles && sectionTitles.Featured_Products}
-        products={
-          homepage?.featuredCategoryProducts?.length > 0
-            ? homepage?.featuredCategoryProducts
-            : []
-        }
-        sectionTitle={sectionTitles && sectionTitles.Featured_Products}
-        seeMoreUrl={`/products?highlight=featured_product`}
-        className="category-products"
-      />
+      <section aria-label="Tekli kampanya banneri">
+        <OneColumnAdsOne
+          data={
+            homepage?.singleBannerOne &&
+            parseInt(homepage?.singleBannerOne?.status) === 1
+              ? homepage?.singleBannerOne
+              : null
+          }
+        />
+      </section>
 
-      <OneColumnAdsOne
-        data={
-          homepage?.singleBannerOne &&
-          parseInt(homepage?.singleBannerOne?.status) === 1
-            ? homepage?.singleBannerOne
-            : null
-        }
-      />
+      <section>
+        <SectionStyleThree
+          products={
+            homepage?.newArrivalProducts?.length > 0
+              ? homepage?.newArrivalProducts?.slice(
+                  0,
+                  homepage?.newArrivalProducts?.length > 16
+                    ? 16
+                    : homepage?.newArrivalProducts?.length
+                )
+              : []
+          }
+          sectionTitle={sectionTitles && sectionTitles.New_Arrivals}
+          seeMoreUrl={`/products?highlight=new_arrival`}
+          className="new-products"
+        />
+      </section>
 
-      <SectionStyleThree
-        products={
-          homepage?.newArrivalProducts?.length > 0
-            ? homepage?.newArrivalProducts?.slice(
-                0,
-                homepage?.newArrivalProducts?.length > 16
-                  ? 16
-                  : homepage?.newArrivalProducts?.length
-              )
-            : []
-        }
-        sectionTitle={sectionTitles && sectionTitles.New_Arrivals}
-        seeMoreUrl={`/products?highlight=new_arrival`}
-        className="new-products"
-      />
-
-      <div className="w-full text-white">
+      <section aria-label="Ikinci tekli kampanya banneri" className="w-full text-white">
         <div className="container-x mx-auto">
           <OneColumnAdsTwo
             data={
@@ -192,7 +237,11 @@ export default function Home({ homepageData }) {
             }
           />
         </div>
-      </div>
+      </section>
+
+      <CategoryDescriptions />
+      <WhySeyfibaba />
+      <HomeFAQ />
 
       <div className="pb-20">
         <SectionStyleFour

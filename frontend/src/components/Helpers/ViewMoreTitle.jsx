@@ -12,9 +12,9 @@ export default function ViewMoreTitle({
       <div className="container-x mx-auto">
         <div className="section-title flex justify-between items-center mb-8">
           <div className="relative">
-            <h1 className="sm:text-3xl text-2xl font-bold text-qblacktext leading-none relative z-10">
+            <h2 className="sm:text-3xl text-2xl font-bold text-qblacktext leading-none relative z-10">
               {categoryTitle}
-            </h1>
+            </h2>
             <div className="absolute -bottom-2 left-0 w-1/2 h-1 bg-qyellow rounded-full"></div>
           </div>
           <div className="view-more-btn">

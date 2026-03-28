@@ -155,6 +155,10 @@ Route::group([], function () {
     Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
     Route::get('/seller-terms-conditoins', [HomeController::class, 'sellerTemsCondition'])->name('seller-terms-conditoins');
 
+    Route::get('/products/sitemap', [HomeController::class, 'productSitemap'])->name('products.sitemap');
+    Route::get('/products/active-count', [HomeController::class, 'productCount'])->name('products.count');
+    Route::get('/sellers/sitemap', [HomeController::class, 'sellerSitemap'])->name('sellers.sitemap');
+
     Route::get('/sellers', [HomeController::class, 'seller'])->name('sellers');
     Route::get('/sellers/{shop_name}', [HomeController::class, 'sellerDetail'])->name('seller-detail');
     Route::get('/product', [HomeController::class, 'product'])->name('product');
@@ -168,9 +172,6 @@ Route::group([], function () {
     Route::get('/remove-compare/{id}', [HomeController::class, 'removeCompare'])->name('remove-compare');
     Route::get('/flash-sale', [HomeController::class, 'flashSale'])->name('flash-sale');
 
-    Route::get('/products/sitemap', [HomeController::class, 'productSitemap'])->name('products.sitemap');
-    Route::get('/products/active-count', [HomeController::class, 'productCount'])->name('products.count');
-    Route::get('/sellers/sitemap', [HomeController::class, 'sellerSitemap'])->name('sellers.sitemap');
     Route::post('subscribe-request', [HomeController::class, 'subscribeRequest'])->middleware('throttle:public-form', 'XSS')->name('subscribe-request');
 
     // Route::get('live-track-order/{id}', [HomeController::class, 'liveTrackOrder'])->name('live-track-order');

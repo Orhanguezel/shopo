@@ -92,17 +92,60 @@ export const generateOrganizationSchema = () => {
       "sameAs": [
         "https://facebook.com/seyfibaba",
         "https://instagram.com/seyfibaba",
-        "https://twitter.com/seyfibaba"
+        "https://twitter.com/seyfibaba",
+        "https://linkedin.com/company/seyfibaba",
+        "https://youtube.com/@seyfibaba"
       ],
       "contactPoint": {
         "@type": "ContactPoint",
-        "telephone": "+90-212-000-0000",
+        "telephone": "+90-543-501-1995",
         "contactType": "customer service",
         "areaServed": "TR",
         "availableLanguage": "Turkish"
       }
     };
   };
+
+/**
+ * Generate Store (LocalBusiness) Schema for Seyfibaba
+ * @returns {Object} JSON-LD structured data
+ */
+export const generateStoreSchema = () => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "Seyfibaba",
+    "url": appConfig.APPLICATION_URL,
+    "logo": `${appConfig.APPLICATION_URL}/assets/images/logo.png`,
+    "image": `${appConfig.BASE_URL}uploads/website-images/logo-2025-12-18-04-53-36-7704.png`,
+    "description": "Berber malzemeleri, kuaför malzemeleri, berber koltuğu, kuaför ekipmanları, salon ekipmanları. Profesyoneller için en uygun fiyatlı alışveriş sitesi.",
+    "telephone": "+905435011995",
+    "email": "info@seyfibaba.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "TR",
+      "addressLocality": "İstanbul"
+    },
+    "priceRange": "₺₺",
+    "currenciesAccepted": "TRY",
+    "paymentAccepted": "Kredi Kartı, Banka Kartı",
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "09:00",
+        "closes": "18:00"
+      }
+    ],
+    "sameAs": [
+      "https://facebook.com/seyfibaba",
+      "https://instagram.com/seyfibaba",
+      "https://twitter.com/seyfibaba",
+      "https://linkedin.com/company/seyfibaba",
+      "https://youtube.com/@seyfibaba"
+    ]
+  };
+};
 
 /**
  * Generate BreadcrumbList Schema

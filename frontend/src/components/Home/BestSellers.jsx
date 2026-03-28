@@ -21,7 +21,12 @@ export default function BestSellers({ className, sallers = [] }) {
                   height={170}
                   className="w-full h-full object-contain"
                   src={`${appConfig.BASE_URL + saller.logo}`}
-                  alt={saller.shop_name || "Seller Logo"}
+                  alt={
+                    saller.shop_name
+                      ? `${saller.shop_name} satici logosu`
+                      : "Seyfibaba satici magazasi logosu"
+                  }
+                  loading="lazy"
                 />
               </div>
               <p className="text-base font-500 text-center cursor-pointer">

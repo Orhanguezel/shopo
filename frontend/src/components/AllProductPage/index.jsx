@@ -52,6 +52,9 @@ function AllProductPageContent({ response, sellerInfo }) {
   );
   const [selectedBrandsFilterItem, setSelectedBrandsFilterItem] = useState([]);
 
+  const quickCategoryLinks = (response?.categories || []).slice(0, 6);
+  const quickBrandLinks = (response?.brands || []).slice(0, 6);
+
   // Helper function to ensure arrays are always arrays
   const ensureArray = (value) => {
     return Array.isArray(value) ? value : [];
@@ -1160,6 +1163,75 @@ function AllProductPageContent({ response, sellerInfo }) {
         
         {/* Seller Information Section */}
         {renderSellerInfo()}
+
+        {!sellerInfo && (
+          <section className="mb-8 rounded-[28px] border border-[#ece3cf] bg-[#fffaf0] px-6 py-6">
+            <h2 className="text-2xl font-semibold text-qblack mb-3">
+              Kesfetmeye Devam Et
+            </h2>
+            <p className="text-sm leading-7 text-qgray mb-5">
+              Kategori ve marka linkleriyle ilgili urun listelerine hizli gecis
+              yapabilir, ic baglanti yapisini guclu tutarak istediginiz salon
+              ekipmanlarina daha hizli ulasabilirsiniz.
+            </p>
+            <div className="flex flex-wrap gap-3 mb-4">
+              <Link
+                href="/products"
+                className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
+              >
+                Tum urunler
+              </Link>
+              <Link
+                href="/sellers"
+                className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
+              >
+                Tum saticilar
+              </Link>
+              <Link
+                href="/blogs"
+                className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
+              >
+                Blog icerikleri
+              </Link>
+            </div>
+            {quickCategoryLinks.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-base font-semibold text-qblack mb-3">
+                  One Cikan Kategoriler
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {quickCategoryLinks.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={`/products?category=${item.slug}`}
+                      className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+            {quickBrandLinks.length > 0 && (
+              <div>
+                <h3 className="text-base font-semibold text-qblack mb-3">
+                  Populer Markalar
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {quickBrandLinks.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={`/products?brand=${item.slug}`}
+                      className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         <div className="w-full lg:flex lg:space-x-[30px] rtl:space-x-reverse">
           {/* Left Sidebar - Filters and Banner */}

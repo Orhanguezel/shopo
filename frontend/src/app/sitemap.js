@@ -1,34 +1,8 @@
 import appConfig from "@/appConfig";
 
-const baseUrl = "https://seyfibaba.com";
+const baseUrl = appConfig.APPLICATION_URL || "https://seyfibaba.com";
 
-export async function generateSitemaps() {
-  try {
-    const res = await fetch(`${appConfig.BASE_URL}api/products/count`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return [{ id: 0 }];
-    const data = await res.json();
-    const pages = Math.ceil((data.count || 0) / 1000);
-    // id 0 = static + categories + blogs, id 1+ = products batches
-    return [{ id: 0 }, ...Array.from({ length: Math.max(pages, 1) }, (_, i) => ({ id: i + 1 }))];
-  } catch {
-    return [{ id: 0 }];
-  }
-}
-
-export default async function sitemap({ id }) {
-  // id 0: static pages + categories + blogs + sellers
-  if (id === 0) {
-    return await getStaticSitemap();
-  }
-
-  // id 1+: product pages (batched by 1000)
-  return await getProductSitemap(id - 1);
-}
-
-async function getStaticSitemap() {
-  // Static pages
+export default async function sitemap() {
   const routes = [
     "", "/products", "/about", "/contact", "/faq",
     "/terms-condition", "/privacy-policy", "/sellers",
@@ -44,13 +18,15 @@ async function getStaticSitemap() {
   let blogEntries = [];
   let blogCategoryEntries = [];
   let sellerEntries = [];
+  let productEntries = [];
 
   try {
-    const [homeRes, blogsRes, blogCatRes, sellersRes] = await Promise.all([
+    const [homeRes, blogsRes, blogCatRes, sellersRes, productsRes] = await Promise.all([
       fetch(`${appConfig.BASE_URL}api/`, { cache: "no-store" }),
       fetch(`${appConfig.BASE_URL}api/blogs`, { cache: "no-store" }),
       fetch(`${appConfig.BASE_URL}api/blog-category`, { cache: "no-store" }),
       fetch(`${appConfig.BASE_URL}api/sellers/sitemap`, { cache: "no-store" }),
+      fetch(`${appConfig.BASE_URL}api/products/sitemap`, { cache: "no-store" }),
     ]);
 
     if (homeRes.ok) {
@@ -92,31 +68,19 @@ async function getStaticSitemap() {
         priority: 0.7,
       }));
     }
-  } catch {
-    // Fail silently — return what we have
+
+    if (productsRes.ok) {
+        const productsData = await productsRes.json();
+        productEntries = (productsData?.products || []).map((product) => ({
+            url: `${baseUrl}/single-product?slug=${product.slug}`,
+            lastModified: product.updated_at ? new Date(product.updated_at) : new Date(),
+            changeFrequency: "weekly",
+            priority: 0.9,
+        }));
+    }
+  } catch (error) {
+    console.error("Sitemap generation error:", error);
   }
 
-  return [...routes, ...categories, ...sellerEntries, ...blogEntries, ...blogCategoryEntries];
-}
-
-async function getProductSitemap(page) {
-  try {
-    const res = await fetch(`${appConfig.BASE_URL}api/products/sitemap`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    const products = data.products || [];
-    const start = page * 1000;
-    const batch = products.slice(start, start + 1000);
-
-    return batch.map((product) => ({
-      url: `${baseUrl}/single-product?slug=${product.slug}`,
-      lastModified: product.updated_at ? new Date(product.updated_at) : new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    }));
-  } catch {
-    return [];
-  }
+  return [...routes, ...categories, ...sellerEntries, ...blogEntries, ...blogCategoryEntries, ...productEntries];
 }
