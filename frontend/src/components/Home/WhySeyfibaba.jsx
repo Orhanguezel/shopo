@@ -80,11 +80,23 @@ export default function WhySeyfibaba({ className, homepageData }) {
           <h3 className="text-2xl font-bold text-qblacktext">
             Profesyonel satin alma kararini destekleyen ana sinyaller
           </h3>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-600">
+          <p className="mt-3 max-w-4xl text-sm leading-7 text-gray-600">
             Seyfibaba, salon profesyonellerinin urun secimini yalnizca fiyat
             listesi uzerinden degil; kategori yapisi, marka karsilastirmasi,
             kampanya alani ve guncel urun akisi ile birlikte degerlendirebilmesi
             icin kurgulandi.
+          </p>
+          <p className="mt-3 max-w-4xl text-sm leading-7 text-gray-600">
+            Kisa cevap su: berber ve kuafor ekipmani alirken en dogru karar,
+            urunun hangi hizmet istasyonunda kullanilacagini netlestirmekle
+            baslar. Bir berber koltugu icin hidrolik sistem ve doseme dayanimi,
+            bir kuafor tezgahi icin depolama duzeni ve elektrik noktalarina
+            uyum, bir kurutma makinesi icin ise motor tipi ve servis
+            erisilebilirligi ayni tabloda degerlendirilmelidir. Seyfibaba
+            uzerindeki kategori, marka ve satici yapisi; bu kriterleri tek bir
+            akista karsilastirarak salon kurulumu, ekipman yenileme ve tekrarli
+            sarf tedarigi senaryolarinda daha savunulabilir satin alma karari
+            verilmesini kolaylastirir.
           </p>
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {signalCards.map((item) => (

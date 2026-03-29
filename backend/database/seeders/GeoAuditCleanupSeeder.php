@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Support\ProductSlug;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -39,6 +40,7 @@ class GeoAuditCleanupSeeder extends Seeder
             $this->syncFooterSocialLinks($now);
             $this->syncSeoSettingPageNames($now);
             $this->syncCategoryDescriptions($now);
+            $this->syncProductSlugs($now);
 
             $this->updateFiltered('products', ['slug' => 'test-urunu-5-tl'], [
                     'status' => 0,
@@ -315,6 +317,58 @@ class GeoAuditCleanupSeeder extends Seeder
                 'updated_at' => $now,
             ]));
         }
+    }
+
+    protected function syncProductSlugs($now): void
+    {
+        if (!Schema::hasTable('products') || !Schema::hasColumns('products', ['id', 'name', 'slug'])) {
+            return;
+        }
+
+        DB::table('products')
+            ->select('id', 'name', 'slug')
+            ->orderBy('id')
+            ->chunkById(100, function ($products) use ($now) {
+                foreach ($products as $product) {
+                    $normalizedSlug = ProductSlug::normalize($product->name ?: $product->slug);
+                    $currentSlug = trim((string) $product->slug);
+
+                    if ($normalizedSlug === '' || $normalizedSlug === $currentSlug) {
+                        continue;
+                    }
+
+                    $uniqueSlug = $this->resolveUniqueProductSlug($product->id, $normalizedSlug);
+
+                    if ($uniqueSlug === $currentSlug) {
+                        continue;
+                    }
+
+                    DB::table('products')
+                        ->where('id', $product->id)
+                        ->update([
+                            'slug' => $uniqueSlug,
+                            'updated_at' => $now,
+                        ]);
+                }
+            });
+    }
+
+    protected function resolveUniqueProductSlug(int $productId, string $baseSlug): string
+    {
+        $slug = $baseSlug;
+        $suffix = 2;
+
+        while (
+            DB::table('products')
+                ->where('slug', $slug)
+                ->where('id', '!=', $productId)
+                ->exists()
+        ) {
+            $slug = "{$baseSlug}-{$suffix}";
+            $suffix++;
+        }
+
+        return $slug;
     }
 
     protected function syncSeoSettingPageNames($now): void

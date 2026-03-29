@@ -24,6 +24,19 @@ function formatBlogDate(dateValue) {
   }
 }
 
+function getSummaryText(html) {
+  const plainText = String(html || "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!plainText) {
+    return "";
+  }
+
+  return plainText.split(" ").slice(0, 95).join(" ");
+}
+
 export default function BlogDetails({
   blog,
   relatedBlogs = [],
@@ -44,11 +57,13 @@ export default function BlogDetails({
       : `${appConfig.BASE_URL}${authorImage}`
     : null;
   const authorInitial = authorName.charAt(0).toUpperCase();
+  const summaryText = getSummaryText(blog?.description);
 
   return (
     <div className="w-full bg-white pb-[60px]">
       <PageTitle
         title={blog?.title || "Blog"}
+        headingAs="p"
         breadcrumb={[
           { name: "home", path: "/" },
           { name: "blogs", path: "/blogs/" },
@@ -123,6 +138,22 @@ export default function BlogDetails({
                     icin hazirlanir.
                   </p>
                 </div>
+                <h1 className="mb-6 text-3xl font-semibold leading-tight text-qblack md:text-4xl">
+                  {blog?.title || "Blog"}
+                </h1>
+                {summaryText && (
+                  <section className="mb-6 rounded-2xl border border-[#e6dcc6] bg-[#fffaf0] px-5 py-5">
+                    <h2 className="text-xl font-semibold text-qblack">
+                      Bu yazinin kisa cevabi
+                    </h2>
+                    <p className="mt-3 text-sm leading-7 text-qgray">
+                      {summaryText}. Bu rehber, satin alma kararini sadece fiyat
+                      uzerinden degil; kullanim yogunlugu, teknik uyum, servis
+                      erisimi ve salon akisi ile birlikte degerlendirmek isteyen
+                      profesyoneller icin hazirlandi.
+                    </p>
+                  </section>
+                )}
                 <div
                   className="blog details prose max-w-none text-qgray"
                   dangerouslySetInnerHTML={{

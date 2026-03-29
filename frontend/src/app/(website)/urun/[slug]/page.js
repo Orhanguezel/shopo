@@ -5,7 +5,11 @@ import SingleProductPage from "@/components/SingleProductPage";
 import JsonLd, {
   generateProductSchema,
 } from "@/components/Helpers/JsonLd";
-import { buildProductPath, buildProductUrl } from "@/utils/url";
+import {
+  buildProductPath,
+  buildProductUrl,
+  normalizeProductSlug,
+} from "@/utils/url";
 import { permanentRedirect } from "next/navigation";
 
 export const revalidate = 300;
@@ -16,6 +20,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const data = await getProductDetailsData(slug);
   const product = data?.product;
+  const canonicalSlug = normalizeProductSlug(product?.slug || slug) || slug;
   const title = product?.seo_title || product?.name;
   const description = product?.seo_description || product?.short_description;
   const imageUrl = product?.thumb_image ? appConfig.BASE_URL + product.thumb_image : null;
@@ -28,7 +33,7 @@ export async function generateMetadata({ params }) {
       siteName: "Seyfibaba",
       title,
       description,
-      url: buildProductUrl(appConfig.APPLICATION_URL, slug),
+      url: buildProductUrl(appConfig.APPLICATION_URL, canonicalSlug),
       images: imageUrl
         ? [
             {
@@ -47,7 +52,7 @@ export async function generateMetadata({ params }) {
       images: imageUrl ? [imageUrl] : [],
     },
     alternates: {
-      canonical: buildProductPath(slug),
+      canonical: buildProductPath(canonicalSlug),
     },
   };
 }
@@ -55,7 +60,7 @@ export async function generateMetadata({ params }) {
 export default async function ProductDetailsPage({ params }) {
   const { slug } = await params;
   const data = await getProductDetailsData(slug);
-  const canonicalSlug = data?.product?.slug;
+  const canonicalSlug = normalizeProductSlug(data?.product?.slug || slug);
 
   if (canonicalSlug && canonicalSlug !== slug) {
     permanentRedirect(buildProductPath(canonicalSlug));

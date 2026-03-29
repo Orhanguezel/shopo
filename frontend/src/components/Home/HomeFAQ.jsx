@@ -5,22 +5,22 @@ const faqItems = [
   {
     question: "Seyfibaba'da hangi berber ve kuaför malzemeleri bulunur?",
     answer:
-      "Seyfibaba; berber koltuğu, kuaför tezgahı, tıraş makineleri, makas setleri, salon ekipmanları, sarf malzemeler ve farklı profesyonel marka ürünlerini bir arada sunar. Kategori yapısı, salon kurulumundan günlük tedarike kadar farklı ihtiyaçlara göre ilerlemeyi kolaylaştırır.",
+      "Seyfibaba; berber koltugu, kuafor tezgahi, tiras makineleri, makas setleri, salon ekipmanlari, sarf malzemeler ve farkli profesyonel marka urunlerini bir arada sunar. Kategori yapisi salon kurulumundan gunluk tedarige kadar farkli ihtiyaclara gore ilerlemeyi kolaylastirir. Bu sayede kullanici yalnizca tek bir urune degil; ayni hizmet akisinin parcasi olan tamamlayici ekipmanlara da hizli sekilde ulasabilir.",
   },
   {
     question: "Salonum için doğru ekipmanı nasıl seçebilirim?",
     answer:
-      "Seçim yaparken ürünün kullanım yoğunluğu, malzeme kalitesi, teknik özellikleri, ölçüleri ve salonunuzun hizmet tipi birlikte değerlendirilmelidir. Berber koltuğu veya kuaför mobilyası gibi ürünlerde ergonomi, temizlik kolaylığı ve dayanıklılık uzun vadede daha belirleyicidir.",
+      "Secim yaparken urunun kullanim yogunlugu, malzeme kalitesi, teknik ozellikleri, olculeri ve salonunuzun hizmet tipi birlikte degerlendirilmelidir. Berber koltugu veya kuafor mobilyasi gibi urunlerde ergonomi, temizlik kolayligi ve dayaniklilik uzun vadede daha belirleyicidir. Pratikte dogru yontem; once hizmet istasyonu bazinda zorunlu ekipmani cikarmak, sonra marka, fiyat, stok ve servis kosullarini ayni karar listesinde toplamaktir.",
   },
   {
     question: "Seyfibaba profesyonel kullanıcılar için uygun mu?",
     answer:
-      "Evet. Platform, profesyonel berberler, kuaförler, güzellik merkezleri ve yeni salon kuran girişimciler için uygun ürün gruplarını bir araya getirir. Bu sayede hem tekli ürün arayanlar hem de toplu ekipman ihtiyacı olan işletmeler daha hızlı şekilde ilerleyebilir.",
+      "Evet. Platform, profesyonel berberler, kuaforler, guzellik merkezleri ve yeni salon kuran girisimciler icin uygun urun gruplarini bir araya getirir. Bu sayede hem tekli urun arayanlar hem de toplu ekipman ihtiyaci olan isletmeler daha hizli sekilde ilerleyebilir. Ozellikle salon acilisi, ekipman yenileme ve tekrarli sarf tedarigi gibi farkli satin alma senaryolari icin kategori akisi daha kullanisli bir karsilastirma zemini sunar.",
   },
   {
     question: "Marka ve fiyat karşılaştırması yapabilir miyim?",
     answer:
-      "Seyfibaba'da ürünler kategori ve marka bağlamında listelendiği için farklı seçenekleri karşılaştırmak daha kolaydır. Bu yapı, profesyonel kuaför ekipmanları ve salon malzemeleri için bütçeye uygun alternatifleri daha net görmenizi sağlar.",
+      "Seyfibaba'da urunler kategori ve marka baglaminda listelendigi icin farkli secenekleri karsilastirmak daha kolaydir. Bu yapi, profesyonel kuafor ekipmanlari ve salon malzemeleri icin butceye uygun alternatifleri daha net gormenizi saglar. Karsilastirma yaparken yalnizca etiket fiyatina degil; stok surekliligi, teknik ozellikler, kullanim amaci ve satici guven sinyallerine birlikte bakmak daha saglikli sonuc verir.",
   },
 ];
 
