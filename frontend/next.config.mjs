@@ -58,6 +58,9 @@ const nextConfig = {
           { key: "X-XSS-Protection", value: "1; mode=block" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
+          { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
         ],
       },
       {
@@ -98,18 +101,6 @@ const nextConfig = {
       },
       {
         source: "/urun/:slug*",
-        headers: [
-          { key: "Cache-Control", value: "public, s-maxage=300, stale-while-revalidate=600" },
-        ],
-      },
-      {
-        source: "/blogs/:slug*",
-        headers: [
-          { key: "Cache-Control", value: "public, s-maxage=300, stale-while-revalidate=600" },
-        ],
-      },
-      {
-        source: "/category-by-blogs/:slug*",
         headers: [
           { key: "Cache-Control", value: "public, s-maxage=300, stale-while-revalidate=600" },
         ],

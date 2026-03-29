@@ -3,11 +3,7 @@ import DefaultLayoutClient from "./DefaultLayoutClient";
 
 export default function DefaultLayout({ children }) {
   return (
-    <Suspense
-      fallback={
-        <main id="main-content">{children}</main>
-      }
-    >
+    <Suspense fallback={null}>
       <DefaultLayoutClient>{children}</DefaultLayoutClient>
     </Suspense>
   );
