@@ -1,5 +1,4 @@
 import appConfig from "@/appConfig";
-import { isPlaceholderBlogContent } from "@/utils/contentAudit";
 import { buildProductUrl } from "@/utils/url";
 
 const baseUrl = appConfig.APPLICATION_URL || "https://seyfibaba.com";
@@ -8,7 +7,7 @@ export default async function sitemap() {
   const routes = [
     "", "/products", "/about", "/contact", "/faq",
     "/terms-condition", "/privacy-policy", "/sellers",
-    "/flash-sale", "/blogs",
+    "/flash-sale",
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -17,16 +16,12 @@ export default async function sitemap() {
   }));
 
   let categories = [];
-  let blogEntries = [];
-  let blogCategoryEntries = [];
   let sellerEntries = [];
   let productEntries = [];
 
   try {
-    const [homeRes, blogsRes, blogCatRes, sellersRes, productsRes] = await Promise.all([
+    const [homeRes, sellersRes, productsRes] = await Promise.all([
       fetch(`${appConfig.BASE_URL}api/`, { cache: "no-store" }),
-      fetch(`${appConfig.BASE_URL}api/blogs`, { cache: "no-store" }),
-      fetch(`${appConfig.BASE_URL}api/blog-category`, { cache: "no-store" }),
       fetch(`${appConfig.BASE_URL}api/sellers/sitemap`, { cache: "no-store" }),
       fetch(`${appConfig.BASE_URL}api/products/sitemap`, { cache: "no-store" }),
     ]);
@@ -38,28 +33,6 @@ export default async function sitemap() {
         lastModified: new Date(),
         changeFrequency: "weekly",
         priority: 0.8,
-      }));
-    }
-
-    if (blogsRes.ok) {
-      const blogsData = await blogsRes.json();
-      blogEntries = (blogsData?.blogs || [])
-        .filter((blog) => !isPlaceholderBlogContent(blog))
-        .map((blog) => ({
-          url: `${baseUrl}/blogs/${blog.slug}`,
-          lastModified: blog.updated_at ? new Date(blog.updated_at) : new Date(),
-          changeFrequency: "weekly",
-          priority: 0.7,
-        }));
-    }
-
-    if (blogCatRes.ok) {
-      const catData = await blogCatRes.json();
-      blogCategoryEntries = (catData?.categories || []).map((category) => ({
-        url: `${baseUrl}/category-by-blogs/${category.slug}`,
-        lastModified: category.updated_at ? new Date(category.updated_at) : new Date(),
-        changeFrequency: "monthly",
-        priority: 0.6,
       }));
     }
 
@@ -88,5 +61,5 @@ export default async function sitemap() {
     console.error("Sitemap generation error:", error);
   }
 
-  return [...routes, ...categories, ...sellerEntries, ...blogEntries, ...blogCategoryEntries, ...productEntries];
+  return [...routes, ...categories, ...sellerEntries, ...productEntries];
 }

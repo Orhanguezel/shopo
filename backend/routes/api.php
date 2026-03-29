@@ -178,12 +178,6 @@ Route::group([], function () {
 
     Route::get('live-track-order', [HomeController::class, 'liveTrackOrder'])->name('live-track-order');
 
-    Route::get('/blogs', [App\Http\Controllers\BlogController::class, 'index'])->name('blogs');
-    Route::get('/blog-category', [App\Http\Controllers\BlogController::class, 'blogCategory'])->name('blog-category');
-    Route::get('/blog-category/{slug}', [App\Http\Controllers\BlogController::class, 'blogCategoryDetail'])->name('blog-category-detail');
-    Route::get('/blogs/{slug}', [App\Http\Controllers\BlogController::class, 'blogDetail'])->name('blog-detail');
-    Route::post('/blog-comment', [App\Http\Controllers\BlogController::class, 'blogComment'])->name('blog-comment');
-
     Route::get('/cart', [CartController::class, 'cart'])->name('cart');
     Route::get('/add-to-cart', [CartController::class, 'addToCart'])->name('add-to-cart');
     Route::get('/cart-clear', [CartController::class, 'cartClear'])->name('cart-clear');

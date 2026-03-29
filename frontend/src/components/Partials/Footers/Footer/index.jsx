@@ -9,7 +9,6 @@ import appConfig from "@/appConfig";
 const importantFooterLinks = [
   { href: "/products", label: "Tum Urunler" },
   { href: "/sellers", label: "Saticilar" },
-  { href: "/blogs", label: "Blog" },
   { href: "/about", label: "Hakkimizda" },
   { href: "/contact", label: "Iletisim" },
   { href: "/tracking-order", label: "Siparis Takip" },

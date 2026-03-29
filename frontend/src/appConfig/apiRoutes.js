@@ -52,8 +52,6 @@ const REMOVE_COMPARE_ITEM = "user/delete-compare-product";
 const WEBSITE_SETUP = "website-setup";
 const LOGOUT = "user/logout";
 const FAQ = "faq";
-const BLOGS = "blogs";
-const BLOG_CATEGORY = "blog-category";
 const FLASH_SALE = "flash-sale";
 const SELLER_TERMS_CONDITION = "seller-terms-conditoins";
 const PRIVACY_POLICY = "privacy-policy";
@@ -122,8 +120,6 @@ const apiRoutes = {
   contactUs: combinedUrl(CONTACT_US),
   subscribeRequest: combinedUrl(SUBSCRIBE_REQUEST),
   faq: combinedUrl(FAQ),
-  blogDetails: combinedUrl(BLOGS),
-  blogCategoryDetails: combinedUrl(BLOG_CATEGORY),
 
   // Cart
   addToCart: combinedUrl(ADD_TO_CART),
@@ -220,11 +216,6 @@ const apiRoutes = {
   googleCallback: combinedUrl(GOOGLE_CALLBACK),
   facebookCallback: combinedUrl(FACEBOOK_CALLBACK),
   twitterCallback: combinedUrl(TWITTER_CALLBACK),
-
-  // Blogs
-  blogs: combinedUrl("blogs"),
-  blogCategory: combinedUrl("blog-category"),
-  blogComment: combinedUrl("blog-comment"),
 
   // Sitemaps
   productSitemap: combinedUrl("products/sitemap"),

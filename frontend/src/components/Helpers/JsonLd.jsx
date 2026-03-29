@@ -254,65 +254,6 @@ export const generateItemListSchema = (products) => {
   };
 };
 
-export const generateBlogItemListSchema = (blogs) => {
-  const safeBlogs = Array.isArray(blogs) ? blogs : [];
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "itemListElement": safeBlogs.map((blog, index) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "url": `${appConfig.APPLICATION_URL}/blogs/${blog.slug}`,
-      "name": blog.title,
-    }))
-  };
-};
-
-export const generateBlogPostingSchema = (blog) => {
-  if (!blog) return null;
-
-  const authorName = blog.admin?.name || "Seyfibaba Editor";
-  const authorImage = blog.admin?.image || blog.admin?.provider_avatar;
-  const resolvedAuthorImage = authorImage
-    ? (authorImage.startsWith?.("http")
-        ? authorImage
-        : `${appConfig.BASE_URL}${authorImage}`)
-    : null;
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "@id": `${appConfig.APPLICATION_URL}/blogs/${blog.slug}#article`,
-    "headline": blog.seo_title || blog.title,
-    "description": blog.seo_description || blog.title,
-    "datePublished": blog.created_at,
-    "dateModified": blog.updated_at || blog.created_at,
-    "mainEntityOfPage": `${appConfig.APPLICATION_URL}/blogs/${blog.slug}`,
-    "author": {
-      "@type": "Person",
-      "name": authorName,
-      "jobTitle": "Seyfibaba Icerik Editoru",
-      "description": "Berber ve kuafor ekipmanlari, salon yonetimi ve profesyonel urun secimi uzerine icerik hazirlar.",
-      "url": `${appConfig.APPLICATION_URL}/blogs/${blog.slug}#author`,
-      ...(resolvedAuthorImage ? { "image": resolvedAuthorImage } : {}),
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Seyfibaba",
-      "logo": {
-        "@type": "ImageObject",
-        "url": `${appConfig.BASE_URL}uploads/website-images/logo-2025-12-18-04-53-36-7704.png`,
-      },
-    },
-    ...(blog.image || blog.thumb_image
-      ? {
-          "image": [`${appConfig.BASE_URL}${blog.image || blog.thumb_image}`],
-        }
-      : {}),
-  };
-};
-
 /**
  * Generate Seller (LocalBusiness) Schema
  * @param {Object} seller - Seller data from API

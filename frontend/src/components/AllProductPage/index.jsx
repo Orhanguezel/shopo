@@ -1319,12 +1319,6 @@ function AllProductPageContent({ response, sellerInfo }) {
               >
                 Tum saticilar
               </Link>
-              <Link
-                href="/blogs"
-                className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
-              >
-                Blog icerikleri
-              </Link>
             </div>
             {quickCategoryLinks.length > 0 && (
               <div className="mb-4">
