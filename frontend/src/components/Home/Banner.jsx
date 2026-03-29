@@ -64,9 +64,6 @@ export default function Banner({
       <div className={`w-full ${className || ""}`}>
         <div className="container-x mx-auto">
           <div className="main-wrapper w-full">
-            <p className="sr-only">
-              Seyfibaba berber ve kuafor malzemeleri kampanya alani
-            </p>
             <div className="banner-card xl:flex xl:space-x-[30px] rtl:space-x-0 xl:h-[600px]  mb-[30px] ">
               <div
                 data-aos="fade-right"

@@ -50,8 +50,9 @@ export default async function HomePage() {
       <JsonLd data={orgSchema} />
       <JsonLd data={websiteSchema} />
       <JsonLd data={storeSchema} />
-      {/* SSR H1 + intro — crawler'lar görebilsin */}
-      <section className="container-x mx-auto mt-4">
+      <Home homepageData={data} />
+      {/* SSR H1 + intro — slider altında, LCP'yi etkilemez ama crawler'lar görür */}
+      <section className="container-x mx-auto mt-4 mb-8">
         <div className="rounded-[32px] border border-[#ece7da] bg-gradient-to-r from-[#fff9ee] via-[#fffdf8] to-[#f4efe3] px-6 py-8 shadow-sm md:px-10">
           <div className="max-w-4xl space-y-4">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#9f7b2f]">
@@ -72,7 +73,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-      <Home homepageData={data} />
     </>
   );
 }
