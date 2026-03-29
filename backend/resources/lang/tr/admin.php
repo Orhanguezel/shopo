@@ -147,7 +147,7 @@ return array (
   'Select Brand' => 'Marka Seç',
   'SKU' => 'SKU',
   'Price' => 'Fiyat',
-  'Offer Price' => 'Teklif Fiyatı',
+  'Offer Price' => 'İndirimli Fiyat',
   'Stock Quantity' => 'Stok Miktarı',
   'Weight' => 'Ağırlık',
   'Short Description' => 'Kısa Açıklama',

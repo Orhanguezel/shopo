@@ -95,12 +95,12 @@
                                 </div>
 
                                 <div class="form-group col-12">
-                                    <label>{{__('admin.Price')}} <span class="text-danger">* ({{__('USD Price')}})</span></label>
+                                    <label>{{__('admin.Price')}} <span class="text-danger">* (TL)</span></label>
                                    <input type="text" class="form-control" name="price" value="{{ old('price') }}">
                                 </div>
 
                                 <div class="form-group col-12">
-                                    <label>{{__('admin.Offer Price')}} <span class="text-danger">({{__('USD Price')}})</span></label>
+                                    <label>{{__('admin.Offer Price')}} <span class="text-danger">(TL)</span></label>
                                    <input type="text" class="form-control" name="offer_price" value="{{ old('offer_price') }}">
                                 </div>
 
