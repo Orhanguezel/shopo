@@ -236,6 +236,13 @@ class GeoAuditCleanupSeeder extends Seeder
             ]);
         }
 
+        DB::table('blog_categories')
+            ->whereIn('slug', ['development', 'latest-news', 'start-up', 'technology'])
+            ->update([
+                'status' => 0,
+                'updated_at' => $now,
+            ]);
+
         return $ids;
     }
 

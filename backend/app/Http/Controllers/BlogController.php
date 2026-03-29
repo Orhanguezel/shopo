@@ -46,6 +46,9 @@ class BlogController extends Controller
             }
         ])
             ->where('status', 1)
+            ->whereHas('blogs', function ($query) {
+                $query->where('status', 1);
+            })
             ->orderBy('name', 'asc')
             ->get();
 
@@ -90,6 +93,9 @@ class BlogController extends Controller
             }
         ])
             ->where('status', 1)
+            ->whereHas('blogs', function ($query) {
+                $query->where('status', 1);
+            })
             ->orderBy('name', 'asc')
             ->get();
 
