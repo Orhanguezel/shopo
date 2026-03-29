@@ -18,6 +18,7 @@ class GeoAuditCleanupSeeder extends Seeder
             if (Schema::hasTable('settings')) {
                 $this->updateFiltered('settings', ['id' => 1], [
                     'contact_email' => 'info@seyfibaba.com',
+                    'popular_category' => 'Popüler Kategoriler',
                 ]);
             }
 
