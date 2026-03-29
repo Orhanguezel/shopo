@@ -1027,11 +1027,9 @@ function AllProductPageContent({ response, sellerInfo }) {
           <div className="flex justify-center">
             {Array.from(
               Array(parseInt(sellerInfo.seller.averageRating)),
-              () => (
+              (_, index) => (
                 <span
-                  key={
-                    parseInt(sellerInfo.seller.averageRating) + Math.random()
-                  }
+                  key={`seller-star-filled-${index}`}
                 >
                   <Star />
                 </span>
@@ -1041,12 +1039,9 @@ function AllProductPageContent({ response, sellerInfo }) {
               <>
                 {Array.from(
                   Array(5 - parseInt(sellerInfo.seller.averageRating)),
-                  () => (
+                  (_, index) => (
                     <span
-                      key={
-                        parseInt(sellerInfo.seller.averageRating) +
-                        Math.random()
-                      }
+                      key={`seller-star-empty-${index}`}
                       className="text-gray-500"
                     >
                       <svg

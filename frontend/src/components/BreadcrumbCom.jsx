@@ -1,8 +1,9 @@
 import JsonLd, { generateBreadcrumbSchema } from "./Helpers/JsonLd";
 import Link from "next/link";
+import ServeLangItem from "./Helpers/ServeLangItem";
 
 export default function BreadcrumbCom({
-  paths = [{ name: "home", path: "/" }],
+  paths = [{ name: ServeLangItem()?.home || "ana sayfa", path: "/" }],
 }) {
   return (
     <nav aria-label="Breadcrumb" className="breadcrumb-wrapper print:hidden">

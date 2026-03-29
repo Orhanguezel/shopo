@@ -35,16 +35,16 @@ export default function Reviews({ comments }) {
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="flex">
-                      {Array.from(Array(comment.review), () => (
-                        <span key={comment.review + Math.random()}>
+                      {Array.from(Array(comment.review), (_, index) => (
+                        <span key={`comment-star-filled-${comment.id}-${index}`}>
                           <Star />
                         </span>
                       ))}
                       {comment.review < 5 && (
                         <>
-                          {Array.from(Array(5 - comment.review), () => (
+                          {Array.from(Array(5 - comment.review), (_, index) => (
                             <span
-                              key={comment.review + Math.random()}
+                              key={`comment-star-empty-${comment.id}-${index}`}
                               className="text-gray-500"
                             >
                               <Star defaultValue={false} />

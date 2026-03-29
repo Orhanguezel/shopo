@@ -68,16 +68,16 @@ function ColumnV1({
             </button>
           </div>
           <div className="reviews flex space-x-[1px] mb-3">
-            {Array.from(Array(datas.review), () => (
-              <span key={datas.review + Math.random()}>
+            {Array.from(Array(datas.review), (_, index) => (
+              <span key={`star-filled-${datas.id}-${index}`}>
                 <Star />
               </span>
             ))}
             {datas.review < 5 && (
               <>
-                {Array.from(Array(5 - datas.review), () => (
+                {Array.from(Array(5 - datas.review), (_, index) => (
                   <span
-                    key={datas.review + Math.random()}
+                    key={`star-empty-${datas.id}-${index}`}
                     className="text-gray-500"
                   >
                     <Star defaultValue={false} />

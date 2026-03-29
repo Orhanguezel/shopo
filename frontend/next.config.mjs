@@ -2,14 +2,15 @@
 // Next.js config dosyasında direkt process.env kullanılmalı (build time'da çalışır)
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://admin.seyfibaba.com/';
 const { hostname, protocol } = new URL(baseUrl);
+const isDev = process.env.NODE_ENV === 'development';
 const contentSecurityPolicy = [
-  "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'",
-  "img-src 'self' https: data: blob:",
-  "media-src 'self' https: data: blob:",
+  `default-src 'self' https: ${isDev ? 'http:' : ''} data: blob: 'unsafe-inline' 'unsafe-eval'`,
+  `img-src 'self' https: ${isDev ? 'http:' : ''} data: blob:`,
+  `media-src 'self' https: ${isDev ? 'http:' : ''} data: blob:`,
   "font-src 'self' https: data:",
   "style-src 'self' https: 'unsafe-inline'",
-  "script-src 'self' https: 'unsafe-inline' 'unsafe-eval'",
-  "connect-src 'self' https: wss:",
+  `script-src 'self' https: ${isDev ? 'http:' : ''} 'unsafe-inline' 'unsafe-eval'`,
+  `connect-src 'self' https: ${isDev ? 'http:' : ''} wss: ${isDev ? 'ws:' : ''}`,
   "frame-src 'self' https://www.google.com https://*.google.com https://maps.google.com https://*.google.de https://www.youtube.com",
   "object-src 'none'",
   "base-uri 'self'",
@@ -58,9 +59,6 @@ const nextConfig = {
           { key: "X-XSS-Protection", value: "1; mode=block" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
-          { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
         ],
       },
       {

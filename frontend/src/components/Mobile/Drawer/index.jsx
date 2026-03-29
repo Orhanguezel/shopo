@@ -53,7 +53,7 @@ export default function Drawer({ className, open, action }) {
         <div className="w-full px-5 mt-5 mb-4">
           <div className="flex justify-between items-center">
             <div className="flex space-x-5 items-center">
-              <div className="compaire relative">
+              <div className="compare relative">
                 <Link href="/products-compare" aria-label="Karşılaştır">
                   <span>
                     <Compair className="text-qblack fill-current" />

@@ -136,7 +136,7 @@ export default function About({ aboutData }) {
                     key={item.label}
                     className="rounded-2xl border border-[#ece7da] bg-[#fffaf0] px-5 py-4"
                   >
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9f7b2f]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8b6b29]">
                       {item.label}
                     </p>
                     <p className="mt-2 text-sm font-semibold text-qblack">

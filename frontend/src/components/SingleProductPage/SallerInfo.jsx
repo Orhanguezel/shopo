@@ -51,8 +51,8 @@ export default function SallerInfo({ products, sellerInfo }) {
             </p>
             <div className="flex items-center mt-4">
               <div className="flex">
-                {Array.from(Array(parseInt(seller?.averageRating) || 0), () => (
-                  <span key={parseInt(seller?.averageRating) + Math.random()}>
+                {Array.from(Array(parseInt(seller?.averageRating) || 0), (_, index) => (
+                  <span key={`seller-v1-star-filled-${index}`}>
                     <Star />
                   </span>
                 ))}
@@ -60,9 +60,9 @@ export default function SallerInfo({ products, sellerInfo }) {
                   <>
                     {Array.from(
                       Array(5 - (parseInt(seller?.averageRating) || 0)),
-                      () => (
+                      (_, index) => (
                         <span
-                          key={parseInt(seller?.averageRating) + Math.random()}
+                          key={`seller-v1-star-empty-${index}`}
                           className="text-gray-500"
                         >
                           <Star defaultValue={false} />

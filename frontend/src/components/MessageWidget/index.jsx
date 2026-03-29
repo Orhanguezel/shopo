@@ -709,7 +709,7 @@ function MessageWidgetContent({ pusher }) {
                                 </div>
                               </div>
                               <div className="flex space-x-1.5 items-center">
-                                <p className="text-xs text-[#797979] leading-[24px] flex space-x-1.5 items-center">
+                                <p className="text-xs text-[#666666] leading-[24px] flex space-x-1.5 items-center">
                                   <Moment fromNow>{message.created_at}</Moment>
                                 </p>
                                 <span>
@@ -745,7 +745,7 @@ function MessageWidgetContent({ pusher }) {
                                       </div>
                                       <div className="flex justify-end">
                                         <div className="flex space-x-1.5 items-center">
-                                          <p className="text-xs text-[#797979] leading-[24px] text-end">
+                                          <p className="text-xs text-[#666666] leading-[24px] text-end">
                                             <Moment fromNow>
                                               {message.created_at}
                                             </Moment>
@@ -782,7 +782,7 @@ function MessageWidgetContent({ pusher }) {
                           <h2 className="text-[#1D1D1D] font-bold text-[20px] text-center">
                             {"Henüz mesaj yok"}
                           </h2>
-                          <p className="text-[#797979] text-sm text-center">
+                          <p className="text-[#666666] text-sm text-center">
                             {
                               "Ürünlerle ilgili soru sorabilir, özellik, fiyat ve stok bilgisi için bu alandan yardım alabilirsiniz."
                             }

@@ -112,7 +112,7 @@ export default function Middlebar({ className, settings }) {
             {/* Right Side Icons & Profile */}
             <div className="flex space-x-6 rtl:space-x-reverse items-center relative">
               {/* Compare Products */}
-              <div className="compaire relative">
+              <div className="compare relative">
                 <Link 
                   href={auth() ? "/products-compare" : "/login"}
                   aria-label={ServeLangItem()?.Compare || "Karşılaştır"}

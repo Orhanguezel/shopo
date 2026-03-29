@@ -15,16 +15,16 @@ function AboutUsSlider({ selector, settings, aboutData }) {
           >
             <div className="">
               <div className="rating flex space-x-1 rtl:space-x-reverse items-center mb-4">
-                {Array.from(Array(parseInt(item.rating)), () => (
-                  <span key={Math.random()}>
+                {Array.from(Array(parseInt(item.rating)), (_, index) => (
+                  <span key={`testimonial-star-filled-${i}-${index}`}>
                     <Star w="20" h="20" />
                   </span>
                 ))}
                 {parseInt(item.rating) < 5 && (
                   <>
-                    {Array.from(Array(5 - parseInt(item.rating)), () => (
+                    {Array.from(Array(5 - parseInt(item.rating)), (_, index) => (
                       <span
-                        key={parseInt(item.rating) + Math.random()}
+                        key={`testimonial-star-empty-${i}-${index}`}
                         className="text-gray-500"
                       >
                         <Star defaultValue={false} w="20" h="20" />

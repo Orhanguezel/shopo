@@ -104,13 +104,13 @@ export default function WhySeyfibaba({ className, homepageData }) {
                 key={item.label}
                 className="rounded-3xl bg-white px-5 py-5 ring-1 ring-[#eee0be]"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9f7b2f]">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b6b29]">
                   {item.label}
                 </p>
                 <p className="mt-3 text-xl font-bold text-qblacktext">
                   {item.value}
                 </p>
-                <p className="mt-3 text-sm leading-7 text-gray-500">
+                <p className="mt-3 text-sm leading-7 text-[#555555]">
                   {item.description}
                 </p>
               </article>

@@ -22,7 +22,7 @@ export default function FourZeroFour({ breadcrumb = true }) {
   return (
     <div className="cart-page-wrapper w-full h-screen flex items-center">
       <div className="container-x mx-auto">
-        {breadcrumb && <BreadcrumbCom paths={[{ name: "home", path: "/" }]} />}
+        {breadcrumb && <BreadcrumbCom paths={[{ name: ServeLangItem()?.home, path: "/" }]} />}
         <div className="empty-card-wrapper w-full">
           <div className="flex justify-center items-center w-full">
             <div>

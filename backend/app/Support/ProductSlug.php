@@ -6,6 +6,17 @@ use Illuminate\Support\Str;
 
 class ProductSlug
 {
+    protected const LEGACY_SLUG_MAP = [
+        'bayan-kuafr-tarama-koltuu-profesyonel-kuafr-tarama-' => 'bayan-kuaforu-tarama-koltugu-profesyonel-kuafor-tarama',
+        'bayan-kuafr-tarama-koltuu-profesyonel-kuafr-tarama' => 'bayan-kuaforu-tarama-koltugu-profesyonel-kuafor-tarama',
+        'ikili-erkek-kuafr-tezgh-profesyonel-berber-alma-tezgh' => 'ikili-erkek-kuafor-tezgahi-profesyonel-berber-calisma-tezgahi',
+        'erkek-kuafr-koltuu-profesyonel-berber-koltuu' => 'erkek-kuafor-koltugu-profesyonel-berber-koltugu',
+        'fonex-briyantin-saa-parlaklk-ve-ekil-veren-sa-ekillendirici' => 'fonex-briyantin-saca-parlaklik-ve-sekil-veren-sac-sekillendirici',
+        'zenix-yz-maskesi-cilt-temizleyici-ve-bakm-maskesi' => 'zenix-yuz-maskesi-cilt-temizleyici-ve-bakim-maskesi',
+        'erkek-kuafr-tra-seti-profesyonel-berber-ekipman-paketi' => 'erkek-kuafor-tiras-seti-profesyonel-berber-ekipman-paketi',
+        'profesyonel-erkek-kuafr-koltuu' => 'profesyonel-erkek-kuafor-koltugu',
+    ];
+
     public static function normalize(?string $value): string
     {
         $value = trim((string) $value);
@@ -43,11 +54,15 @@ class ProductSlug
             return [];
         }
 
+        $decodedValue = Str::lower(rawurldecode($value));
+        $legacySlug = self::LEGACY_SLUG_MAP[$decodedValue] ?? null;
+
         return collect([
             Str::lower($value),
-            Str::lower(rawurldecode($value)),
+            $decodedValue,
+            $legacySlug,
             self::normalize($value),
-            Str::slug(Str::ascii(rawurldecode($value))),
+            Str::slug(Str::ascii($decodedValue)),
         ])
             ->filter()
             ->unique()
