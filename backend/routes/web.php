@@ -174,6 +174,7 @@ Route::group(['middleware' => ['XSS']], function () {
             return redirect()->route('admin.login');
         })->name('home');
 
+        Route::redirect('seller', 'seller/dashboard');
         Route::get('seller/login', [SellerLoginController::class, 'sellerLoginPage'])->name('seller.login');
         Route::post('seller/login', [SellerLoginController::class, 'storeLogin'])->name('seller.login');
         Route::get('seller/logout', [SellerLoginController::class, 'adminLogout'])->name('seller.logout');
