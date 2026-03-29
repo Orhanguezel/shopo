@@ -32,6 +32,8 @@ class GeoAuditCleanupSeeder extends Seeder
             ]);
 
             $this->updateFooterContent($now);
+            $this->syncFooterLinks($now);
+            $this->syncFooterSocialLinks($now);
             $this->syncCategoryDescriptions($now);
 
             $this->updateFiltered('products', ['slug' => 'test-urunu-5-tl'], [
@@ -258,6 +260,57 @@ class GeoAuditCleanupSeeder extends Seeder
         $payload['about_us'] = 'Seyfibaba, berber ve kuaför salonlarının ekipman, mobilya ve sarf malzeme ihtiyaçlarını tek noktada buluşturan Türkiye merkezli bir pazaryeridir. Profesyonel satıcıları aynı çatı altında toplayarak salon kurulumundan günlük tedarike kadar hızlı ve güvenli alışveriş deneyimi sunar.';
 
         $this->updateOrInsertFiltered('footers', ['id' => 1], $payload);
+    }
+
+    protected function syncFooterLinks($now): void
+    {
+        if (!Schema::hasTable('footer_links')) {
+            return;
+        }
+
+        $footerLinks = [
+            ['id' => 1, 'column' => '1', 'link' => '/about', 'title' => 'Hakkımızda'],
+            ['id' => 2, 'column' => '1', 'link' => '/terms-condition', 'title' => 'Kullanım Koşulları'],
+            ['id' => 7, 'column' => '3', 'link' => '/about', 'title' => 'Hakkımızda'],
+            ['id' => 8, 'column' => '3', 'link' => '/products?highlight=popular_category', 'title' => 'Popüler Kategoriler'],
+            ['id' => 9, 'column' => '3', 'link' => '/contact', 'title' => 'İletişim'],
+            ['id' => 10, 'column' => '3', 'link' => '/privacy-policy', 'title' => 'Gizlilik Politikası'],
+            ['id' => 11, 'column' => '1', 'link' => '/mesafeli-satis-sozlemesi', 'title' => 'Mesafeli Satış Sözleşmesi'],
+            ['id' => 12, 'column' => '1', 'link' => '/teslimat-ve-iade', 'title' => 'Teslimat ve İade Şartları'],
+            ['id' => 13, 'column' => '1', 'link' => '/gizlilik-sozlesmesi', 'title' => 'Gizlilik Sözleşmesi'],
+            ['id' => 14, 'column' => '2', 'link' => '/products?highlight=best_product', 'title' => 'En İyi Ürünler'],
+            ['id' => 15, 'column' => '1', 'link' => '/faq', 'title' => 'Destek'],
+            ['id' => 16, 'column' => '1', 'link' => '/blogs', 'title' => 'Blog'],
+            ['id' => 17, 'column' => '1', 'link' => '/contact', 'title' => 'İletişim'],
+            ['id' => 18, 'column' => '3', 'link' => '/become-seller', 'title' => 'Satıcı Olun'],
+        ];
+
+        foreach ($footerLinks as $link) {
+            $this->updateOrInsertFiltered('footer_links', ['id' => $link['id']], array_merge($link, [
+                'updated_at' => $now,
+            ]));
+        }
+    }
+
+    protected function syncFooterSocialLinks($now): void
+    {
+        if (!Schema::hasTable('footer_social_links')) {
+            return;
+        }
+
+        $socialLinks = [
+            ['id' => 1, 'link' => 'https://facebook.com/seyfibaba', 'icon' => 'fab fa-facebook-f'],
+            ['id' => 2, 'link' => 'https://x.com/seyfibaba', 'icon' => 'fab fa-twitter'],
+            ['id' => 3, 'link' => 'https://linkedin.com/company/seyfibaba', 'icon' => 'fab fa-linkedin'],
+            ['id' => 4, 'link' => 'https://instagram.com/seyfibaba', 'icon' => 'fab fa-instagram'],
+            ['id' => 5, 'link' => 'https://youtube.com/@seyfibaba', 'icon' => 'fab fa-youtube'],
+        ];
+
+        foreach ($socialLinks as $link) {
+            $this->updateOrInsertFiltered('footer_social_links', ['id' => $link['id']], array_merge($link, [
+                'updated_at' => $now,
+            ]));
+        }
     }
 
     protected function updateAboutUsContent($now): void
