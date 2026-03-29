@@ -15,7 +15,6 @@ import FacebookLoginUrlIcon from "@/components/Helpers/icons/FacebookLoginUrlIco
 
 // Utilities and data
 import settings from "../../../utils/settings";
-import countries from "../../../data/CountryCodes.json";
 import { useUserSignupApiMutation, useSendOtpApiMutation } from "@/redux/features/auth/apiSlice";
 import {
   useFacebookGetLoginUrlApiQuery,
@@ -112,46 +111,20 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
     setCheck(!checked);
   };
 
-  // Country selection state
-  const [getCountries, setGetCountries] = useState(null);
-  const [countryDropToggle, setCountryDropToggle] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState("BD");
+  // Country selection state — locked to Turkey only
+  const trOnly = [{ name: "Turkey", dial_code: "+90", code: "TR" }];
+  const [getCountries] = useState(trOnly);
+  const [countryDropToggle] = useState(false);
+  const [selectedCountry] = useState("TR");
 
-  /**
-   * Initialize countries data on component mount
-   */
+  const { phone_number_required } = settings();
+
+  // Set +90 as default phone prefix on mount
   useEffect(() => {
-    if (!getCountries) {
-      setGetCountries(countries && countries.countries);
+    if (!formData.phone || formData.phone === "") {
+      handleInputChange("phone", "+90");
     }
-  }, [getCountries]);
-
-  /**
-   * Set default phone code based on settings
-   */
-  const { phone_number_required, default_phone_code } = settings();
-  useEffect(() => {
-    if (default_phone_code) {
-      let defaultCountry =
-        getCountries &&
-        getCountries.length > 0 &&
-        getCountries.find((item) => item.code === default_phone_code);
-      if (defaultCountry) {
-        handleInputChange("phone", defaultCountry.dial_code);
-        setSelectedCountry(defaultCountry.code);
-      }
-    }
-  }, [default_phone_code, getCountries]);
-
-  /**
-   * Handles country selection from dropdown
-   * @param {object} value - Country object with code and dial_code
-   */
-  const selectCountryhandler = (value) => {
-    setSelectedCountry(value.code);
-    handleInputChange("phone", value.dial_code);
-    setCountryDropToggle(false);
-  };
+  }, []);
 
   /**
    * Handles user Signup functionality
@@ -401,66 +374,14 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
               ""
             )}
 
-            {/* Country Code Selector */}
-            <button
-              onClick={() => setCountryDropToggle(!countryDropToggle)}
-              type="button"
-              className="w-[70px] h-[50px] bg-qgray-border absolute left-0 top-[29px] flex justify-center items-center"
-            >
-              <div className="flex items-center">
-                <span>
-                  <Image
-                    width="30"
-                    height="20"
-                    src={`/assets/images/countries/${selectedCountry}.svg`}
-                    alt="country"
-                  />
-                </span>
-                <span className="text-qgray">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                  >
-                    <path fill="none" d="M0 0h24v24H0z" />
-                    <path d="M12 14l-4-4h8z" />
-                  </svg>
-                </span>
-              </div>
-            </button>
-
-            {/* Country Dropdown */}
-            <div
-              style={{
-                boxShadow: "rgb(0 0 0 / 14%) 0px 15px 50px 0px",
-                display: countryDropToggle ? "block" : "none",
-              }}
-              className="country-dropdown-list w-[250px] h-[250px] bg-white absolute left-0 top-[80px] z-20 overflow-y-scroll"
-            >
-              <ul>
-                {getCountries &&
-                  getCountries.length > 0 &&
-                  getCountries.map((item, i) => (
-                    <li
-                      onClick={() => selectCountryhandler(item)}
-                      key={i}
-                      className="flex space-x-1.5 items-center px-3 py-1 cursor-pointer"
-                    >
-                      <span className="w-[25px]">
-                        <Image
-                          width="25"
-                          height="15"
-                          src={`/assets/images/countries/${item.code}.svg`}
-                          alt="country"
-                        />
-                      </span>
-                      <span className="text-sm text-qgray capitalize flex-1">
-                        {item.name}
-                      </span>
-                    </li>
-                  ))}
-              </ul>
+            {/* Country Flag — Turkey only */}
+            <div className="w-[70px] h-[50px] bg-qgray-border absolute left-0 top-[29px] flex justify-center items-center">
+              <Image
+                width="30"
+                height="20"
+                src="/assets/images/countries/TR.svg"
+                alt="Türkiye"
+              />
             </div>
           </div>
         )}
