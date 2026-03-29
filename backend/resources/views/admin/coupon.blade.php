@@ -230,7 +230,7 @@
     function changeCouponStatus(id){
         var isDemo = "{{ env('APP_VERSION') }}"
         if(isDemo == 0){
-            toastr.error('This Is Demo Version. You Can Not Change Anything');
+            toastr.error('Bu demo sürümdür. Herhangi bir değişiklik yapamazsınız.');
             return;
         }
         $.ajax({

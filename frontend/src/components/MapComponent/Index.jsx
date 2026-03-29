@@ -22,8 +22,8 @@ function BasicAddressInput({
       <InputCom
         value={searchInputValue}
         inputHandler={(e) => searchInputHandler(e.target.value)}
-        label="Address"
-        placeholder="Your Address here"
+        label="Adres"
+        placeholder="Adresinizi yazin"
         inputClasses="w-full h-[50px]"
         error={searchInputError}
         name="street-address"
@@ -267,7 +267,7 @@ function InteractiveMap({
           searchInputError={searchInputError}
         />
         <div className="mt-3 rounded-md border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
-          Google Maps could not be loaded. You can continue by entering the address manually.
+          Google Maps yuklenemedi. Adresi manuel olarak girmeye devam edebilirsiniz.
         </div>
       </div>
     );
@@ -281,7 +281,7 @@ function InteractiveMap({
           searchInputHandler={searchInputHandler}
           searchInputError={searchInputError}
         />
-        <div className="mt-3 text-sm text-qgray">Loading map...</div>
+        <div className="mt-3 text-sm text-qgray">Harita yukleniyor...</div>
       </div>
     );
   }
@@ -317,8 +317,8 @@ function InteractiveMap({
             onBlur={() => {
               setTimeout(() => setShowPredictions(false), 200);
             }}
-            label="Address"
-            placeholder="Your Address here"
+            label="Adres"
+            placeholder="Adresinizi yazin"
             inputClasses="w-full h-[50px]"
             error={searchInputError}
             name="street-address"

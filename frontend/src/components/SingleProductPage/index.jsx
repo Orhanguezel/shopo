@@ -1,12 +1,14 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useContext, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import auth from "@/utils/auth";
 import BreadcrumbCom from "../BreadcrumbCom";
 import DataIteration from "../Helpers/DataIteration";
 import InputCom from "../Helpers/InputCom";
 import LoaderStyleOne from "../Helpers/Loaders/LoaderStyleOne";
 import ProductView from "./ProductView";
+import { buildProductPath } from "@/utils/url";
 import Reviews from "./Reviews";
 import SallerInfo from "./SallerInfo";
 import ServeLangItem from "../Helpers/ServeLangItem";
@@ -22,6 +24,24 @@ import Multivendor from "../Shared/Multivendor";
 const Lightbox = dynamic(() => import("yet-another-react-lightbox"), {
   ssr: false,
 });
+
+const buildVideoSource = (video) => {
+  const rawSource =
+    video?.video_url ||
+    video?.url ||
+    video?.src ||
+    video?.source ||
+    video?.path ||
+    "";
+
+  if (!rawSource) {
+    return null;
+  }
+
+  return rawSource.startsWith("http")
+    ? rawSource
+    : `${appConfig.BASE_URL}${rawSource}`;
+};
 
 export default function SingleProductPage({ details }) {
   const safeDetails = details || {};
@@ -98,6 +118,26 @@ export default function SingleProductPage({ details }) {
           },
         }
       : null;
+  const safeVideoSlides = useMemo(() => {
+    if (!Array.isArray(safeDetails?.videos)) {
+      return [];
+    }
+
+    return safeDetails.videos
+      .map((video) => buildVideoSource(video))
+      .filter(Boolean)
+      .map((videoUrl) => ({
+        type: "video",
+        width: 1280,
+        height: 720,
+        sources: [
+          {
+            src: videoUrl,
+            type: "video/mp4",
+          },
+        ],
+      }));
+  }, [safeDetails?.videos]);
   const relatedProducts = safeDetails.relatedProducts
     ? safeDetails.relatedProducts.map((item) => {
         return {
@@ -180,7 +220,7 @@ export default function SingleProductPage({ details }) {
                     : []),
                   {
                     name: safeProduct?.name || safeProduct?.slug || "",
-                    path: `/single-product?slug=${safeProduct?.slug || ""}`,
+                    path: buildProductPath(safeProduct?.slug),
                   },
                 ]}
               />
@@ -192,6 +232,7 @@ export default function SingleProductPage({ details }) {
               <ProductView
                 key={safeProduct?.id}
                 product={safeProduct}
+                details={safeDetails}
                 images={safeDetails?.gellery}
                 reportHandler={ReportHandler}
                 seller={safeDetails?.seller ? safeDetails.seller : false}
@@ -207,9 +248,7 @@ export default function SingleProductPage({ details }) {
           <div className="tab-buttons w-full mb-10 mt-5 sm:mt-0">
             <div className="container-x mx-auto">
               <ul className="flex space-x-12 ">
-                {safeDetails.videos &&
-                  Array.isArray(safeDetails.videos) &&
-                  safeDetails.videos.length > 0 && (
+                {safeVideoSlides.length > 0 && (
                     <li>
                       <span
                         onClick={() => setTab("video")}
@@ -286,10 +325,8 @@ export default function SingleProductPage({ details }) {
               {tab === "video" && (
                 <>
                   <div className="grid grid-cols-5 gap-10">
-                    {safeDetails.videos &&
-                      Array.isArray(safeDetails.videos) &&
-                      safeDetails.videos.length > 0 &&
-                      safeDetails.videos.map((item, i) => (
+                    {safeVideoSlides.length > 0 &&
+                      safeVideoSlides.map((item, i) => (
                         <div key={i} className="item h-40">
                           {/*<p  onClick={() => popupHandler(i)}>video {i}</p>*/}
                           <div
@@ -324,44 +361,7 @@ export default function SingleProductPage({ details }) {
                     open={open}
                     close={() => setOpen(false)}
                     plugins={[Video]}
-                    slides={[
-                      {
-                        type: "video",
-                        width: 1280,
-                        height: 720,
-                        // poster: "/public/poster-image.jpg",
-                        sources: [
-                          {
-                            src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                            type: "video/mp4",
-                          },
-                        ],
-                      },
-                      {
-                        type: "video",
-                        width: 1280,
-                        height: 720,
-                        // poster: "/public/poster-image.jpg",
-                        sources: [
-                          {
-                            src: "https://www.w3schools.com/html/mov_bbb.mp4",
-                            type: "video/mp4",
-                          },
-                        ],
-                      },
-                      {
-                        type: "video",
-                        width: 1280,
-                        height: 720,
-                        // poster: "/public/poster-image.jpg",
-                        sources: [
-                          {
-                            src: "https://www.w3schools.com/html/mov_bbb.mp4",
-                            type: "video/mp4",
-                          },
-                        ],
-                      },
-                    ]}
+                    slides={safeVideoSlides}
                   />
                 </>
               )}
@@ -422,7 +422,7 @@ export default function SingleProductPage({ details }) {
               )}
               {tab === "info" && (
                 <div data-aos="fade-up" className="w-full tab-content-item">
-                  {safeDetails.seller && (
+                  {sellerInfo && (
                     <SallerInfo
                       sellerInfo={sellerInfo}
                       products={

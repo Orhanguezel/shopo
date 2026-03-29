@@ -222,20 +222,18 @@ export default function ProductCard({ datas, styleType = "column-v1" }) {
       if (enableMapOrCommission) {
         if (!vendorProduct) {
           if (checkProduct) {
-            toast.error("Product already in cart");
+            toast.error("Urun zaten sepette");
           } else {
             dispatch(addItem(product));
             // Trigger flying cart animation with event
             triggerFlyingCartAnimation(event);
           }
         } else {
-          toast.error(
-            "You cannot add another product from the same vendor to the cart."
-          );
+          toast.error("Ayni saticidan ikinci bir urun sepete eklenemez.");
         }
       } else {
         if (checkProduct) {
-          toast.error("Product already in cart");
+          toast.error("Urun zaten sepette");
         } else {
           dispatch(addItem(product));
           // Trigger flying cart animation with event

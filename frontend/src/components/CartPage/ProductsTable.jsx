@@ -6,6 +6,7 @@ import CheckProductIsExistsInFlashSale from "../Shared/CheckProductIsExistsInFla
 import ServeLangItem from "../Helpers/ServeLangItem";
 import CurrencyConvert from "../Shared/CurrencyConvert";
 import appConfig from "@/appConfig";
+import { buildProductPath } from "@/utils/url";
 
 /**
  * Calculate variant price from variants array
@@ -112,7 +113,7 @@ const VariantsDisplay = ({ variants }) => {
 
   return (
     <div className="border-t border-qyellow w-full pt-2">
-      <p className="font-medium text-sm mb-1">Variants : </p>
+      <p className="font-medium text-sm mb-1">Varyantlar:</p>
       <ul>
         {variants.map((variant, index) => (
           <li key={index} className="flex justify-between items-center">
@@ -166,10 +167,7 @@ const CartItemRow = ({
         <div className="flex-1 flex flex-col">
           <div className="mb-2">
             <Link
-              href={{
-                pathname: "/single-product",
-                query: { slug: item.product.slug },
-              }}
+              href={buildProductPath(item.product.slug)}
             >
               <p className="font-medium text-[15px] text-qblack hover:text-qyellow cursor-pointer notranslate">
                 {item.product.name}

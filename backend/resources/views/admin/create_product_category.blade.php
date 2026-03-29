@@ -43,6 +43,19 @@
                                     <input type="text" id="slug" class="form-control"  name="slug">
                                 </div>
                                 <div class="form-group col-12">
+                                    <label>{{__('admin.Description')}}</label>
+                                    <textarea
+                                        name="description"
+                                        cols="30"
+                                        rows="8"
+                                        class="form-control text-area-5"
+                                        placeholder="Bu kategori sayfasinda kullaniciya gosterilecek aciklayici metni girin."
+                                    >{{ old('description') }}</textarea>
+                                    <small class="text-muted d-block mt-2">
+                                        Bu alan urun listeleme sayfasindaki kategori rehberi ve aciklama bloklarinda kullanilir.
+                                    </small>
+                                </div>
+                                <div class="form-group col-12">
                                     <label>{{__('admin.Status')}} <span class="text-danger">*</span></label>
                                     <select name="status" class="form-control">
                                         <option value="1">{{__('admin.Active')}}</option>

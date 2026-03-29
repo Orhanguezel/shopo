@@ -1,22 +1,22 @@
 @extends('admin.master_layout')
 @section('title')
-<title>{{__('Edit Delivery Man')}}</title>
+<title>Teslimat Görevlisini Düzenle</title>
 @endsection
 @section('admin-content')
       <!-- Main Content -->
     <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>{{__('Edit Delivery Man')}}</h1>
+            <h1>Teslimat Görevlisini Düzenle</h1>
             <div class="section-header-breadcrumb">
-                <div class="breadcrumb-item active"><a href="{{ route('admin.dashboard') }}">Dashboard</a></div>
-              <div class="breadcrumb-item active"><a href="{{ route('admin.blog.index') }}">{{__('Delivery Man')}}</a></div>
-              <div class="breadcrumb-item">{{__('Edit')}}</div>
+                <div class="breadcrumb-item active"><a href="{{ route('admin.dashboard') }}">{{__('admin.Dashboard')}}</a></div>
+              <div class="breadcrumb-item active"><a href="{{ route('admin.delivery-man.index') }}">Teslimat Görevlileri</a></div>
+              <div class="breadcrumb-item">Düzenle</div>
             </div>
           </div>
 
           <div class="section-body">
-            <a href="{{ route('admin.delivery-man.index') }}" class="btn btn-primary"><i class="fas fa-list"></i> {{__('Delivery Man')}}</a>
+            <a href="{{ route('admin.delivery-man.index') }}" class="btn btn-primary"><i class="fas fa-list"></i> Teslimat Görevlileri</a>
             <div class="row mt-4">
                 <div class="col-12">
                     <form action="{{ route('admin.delivery-man.update', $deliveryman->id) }}" method="POST" enctype="multipart/form-data">
@@ -26,46 +26,46 @@
                                     @method('PUT')
                                 <div class="row">
                                     <div class="form-group col-12">
-                                        <label>{{__('Delivery Man Image')}} <span class="text-danger">*</span></label>
+                                        <label>Teslimat Görevlisi Görseli <span class="text-danger">*</span></label>
                                         <input type="file" class="form-control-file" name="man_image">
                                     </div>
                                     <div class="form-group col-6">
-                                        <label>{{__('First Name')}} <span class="text-danger">*</span></label>
+                                        <label>Ad <span class="text-danger">*</span></label>
                                         <input type="text" id="fname" class="form-control"  name="fname" value="{{ $deliveryman->fname }}">
                                     </div>
                                     <div class="form-group col-6">
-                                        <label>{{__('Last Name')}} <span class="text-danger">*</span></label>
+                                        <label>Soyad <span class="text-danger">*</span></label>
                                         <input type="text" id="lname" class="form-control"  name="lname" value="{{ $deliveryman->lname }}">
                                     </div>
                                     <div class="form-group col-6">
-                                        <label>{{__('Email')}} <span class="text-danger">*</span></label>
+                                        <label>E-posta <span class="text-danger">*</span></label>
                                         <input type="text" id="email" class="form-control"  name="email" value="{{ $deliveryman->email }}">
                                     </div>
                                     <div class="form-group col-6">
-                                        <label>{{__('Delivery Man Type')}} <span class="text-danger">*</span></label>
+                                        <label>Teslimat Görevlisi Türü <span class="text-danger">*</span></label>
                                         <select class="form-control" name="man_type" id="man_type">
-                                            <option value="freelancer" {{ $deliveryman->man_type=='freelancer'?'selected':'' }}>Freelancer</option>
-                                            <option value="salary based" {{ $deliveryman->man_type=='salary based'?'selected':'' }}>Salary based</option>
+                                            <option value="freelancer" {{ $deliveryman->man_type=='freelancer'?'selected':'' }}>Serbest Çalışan</option>
+                                            <option value="salary based" {{ $deliveryman->man_type=='salary based'?'selected':'' }}>Maaşlı</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-6">
-                                        <label>{{__('Identity Type')}} <span class="text-danger">*</span></label>
+                                        <label>Kimlik Türü <span class="text-danger">*</span></label>
                                         <select class="form-control" name="idn_type" id="idn_type">
-                                            <option value="passport" {{ $deliveryman->idn_type=='passport'?'selected':'' }}>Passport</option>
-                                            <option value="driving license" {{ $deliveryman->idn_type=='driving license'?'selected':'' }}>Driving license</option>
-                                            <option value="nid" {{ $deliveryman->idn_type=='passport'?'nid':'' }}>Nid</option>
+                                            <option value="passport" {{ $deliveryman->idn_type=='passport'?'selected':'' }}>Pasaport</option>
+                                            <option value="driving license" {{ $deliveryman->idn_type=='driving license'?'selected':'' }}>Sürücü Belgesi</option>
+                                            <option value="nid" {{ $deliveryman->idn_type=='nid'?'selected':'' }}>Kimlik Kartı</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-6">
-                                        <label>{{__('Identity Number')}} <span class="text-danger">*</span></label>
+                                        <label>Kimlik Numarası <span class="text-danger">*</span></label>
                                         <input type="text" id="idn_num" class="form-control"  name="idn_num" value="{{ $deliveryman->idn_num }}">
                                     </div>
                                     <div class="form-group col-6">
-                                        <label>{{__('Identity Image')}} <span class="text-danger">*</span></label>
+                                        <label>Kimlik Görseli <span class="text-danger">*</span></label>
                                         <input type="file" id="idn_image" class="form-control-file"  name="idn_image">
                                     </div>
                                     <div class="form-group col-6">
-                                        <label>{{__('Phone')}} <span class="text-danger">*</span></label>
+                                        <label>Telefon <span class="text-danger">*</span></label>
                                         <input type="text" id="phone" class="form-control"  name="phone" value="{{ $deliveryman->phone }}">
                                     </div>
                                 </div>

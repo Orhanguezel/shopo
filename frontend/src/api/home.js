@@ -1,6 +1,8 @@
 import apiRoutes from "@/appConfig/apiRoutes";
 import { notFound } from "next/navigation";
 
+const PUBLIC_CONTENT_REVALIDATE = 300;
+
 export default async function home() {
   // Debug: API URL'ini logla (production'da console.log çalışmaz ama hata mesajında görünebilir)
   const apiUrl = `${apiRoutes.shopo}`;
@@ -10,7 +12,9 @@ export default async function home() {
       headers: {
         "Content-Type": "application/json",
       },
-      cache: "no-store",
+      next: {
+        revalidate: PUBLIC_CONTENT_REVALIDATE,
+      },
     });
     
     if (!res.ok) {

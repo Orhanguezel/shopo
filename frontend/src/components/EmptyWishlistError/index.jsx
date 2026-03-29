@@ -34,7 +34,7 @@ export default function EmptyWishlistError() {
                     ? IMAGE_FALLBACK
                     : appConfig.BASE_URL + emptyWis
                 }
-                alt="Empty wishlist"
+                alt="Bos favori listesi gorseli"
               />
             </div>
           </div>

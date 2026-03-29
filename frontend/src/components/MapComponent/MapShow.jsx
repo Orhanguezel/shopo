@@ -101,13 +101,13 @@ function LoadedMapShow({ mapKey, origin, destination }) {
   if (loadError) {
     return (
       <div className="rounded-md border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
-        Google Maps could not be loaded for delivery tracking.
+        Teslimat takibi icin Google Maps yuklenemedi.
       </div>
     );
   }
 
   if (!isLoaded) {
-    return <div className="text-sm text-qgray">Loading map...</div>;
+    return <div className="text-sm text-qgray">Harita yukleniyor...</div>;
   }
 
   return (

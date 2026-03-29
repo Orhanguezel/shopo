@@ -1,15 +1,15 @@
 @extends('admin.master_layout')
 @section('title')
-<title>Seller KYC</title>
+<title>Satıcı KYC</title>
 @endsection
 @section('admin-content')
 <div class="main-content">
   <section class="section">
     <div class="section-header">
-      <h1>Seller KYC</h1>
+      <h1>Satıcı KYC</h1>
       <div class="section-header-breadcrumb">
         <div class="breadcrumb-item active"><a href="{{ route('admin.dashboard') }}">{{__('admin.Dashboard')}}</a></div>
-        <div class="breadcrumb-item">Seller KYC</div>
+        <div class="breadcrumb-item">Satıcı KYC</div>
       </div>
     </div>
 
@@ -22,7 +22,7 @@
             </div>
             <div class="card-wrap">
               <div class="card-header">
-                <h4>Pending Sellers</h4>
+                <h4>Bekleyen Satıcılar</h4>
               </div>
               <div class="card-body">
                 {{ $sellers->count() }}
@@ -39,12 +39,12 @@
               <thead>
                 <tr>
                   <th>SN</th>
-                  <th>Seller</th>
-                  <th>Contact</th>
-                  <th>Status</th>
-                  <th>Documents</th>
-                  <th>Submitted</th>
-                  <th>Action</th>
+                  <th>Satıcı</th>
+                  <th>İletişim</th>
+                  <th>Durum</th>
+                  <th>Belgeler</th>
+                  <th>Gönderim</th>
+                  <th>İşlem</th>
                 </tr>
               </thead>
               <tbody>

@@ -14,7 +14,7 @@ export default function TermsCondition({ datas }) {
               path: "/terms-conditions",
             },
           ]}
-          title="Terms and Condition"
+          title="Kullanim Kosullari"
         />
       </div>
       <div className="w-full">

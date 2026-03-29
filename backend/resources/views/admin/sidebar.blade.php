@@ -49,7 +49,7 @@
 
               <li class="{{ Route::is('admin.cash-on-delivery') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.cash-on-delivery') }}">{{__('admin.Cash On Delivery')}}</a></li>
               
-              <li class="{{ Route::is('admin.return-requests.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.return-requests.index') }}">{{__('admin.Return Requests')}}</a></li>
+              <li class="{{ Route::is('admin.return-requests.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.return-requests.index') }}">İade Talepleri</a></li>
 
             </ul>
 
@@ -71,7 +71,7 @@
                     <li class="{{ Route::is('admin.seller-list') || Route::is('admin.seller-show') || Route::is('admin.seller-shop-detail') || Route::is('admin.seller-reviews') || Route::is('admin.show-seller-review-details') || Route::is('admin.send-email-to-seller') || Route::is('admin.email-history') || Route::is('admin.product-by-seller') || Route::is('admin.send-email-to-all-seller') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.seller-list') }}">{{__('admin.Seller List')}}</a></li>
 
                     <li class="{{ Route::is('admin.pending-seller-list') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.pending-seller-list') }}">{{__('admin.Pending Sellers')}}</a></li>
-                    <li class="{{ Route::is('admin.kyc.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.kyc.index') }}">Seller KYC</a></li>
+                    <li class="{{ Route::is('admin.kyc.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.kyc.index') }}">Satıcı KYC</a></li>
 
                 </ul>
 
@@ -129,7 +129,7 @@
             <li class="{{ Route::is('admin.product.*') || Route::is('admin.product-variant') || Route::is('admin.create-product-variant') || Route::is('admin.edit-product-variant') || Route::is('admin.product-gallery') || Route::is('admin.product-variant-item') || Route::is('admin.create-product-variant-item') || Route::is('admin.edit-product-variant-item') || Route::is('admin.wholesale') || Route::is('admin.create-wholesale') || Route::is('admin.edit-wholesale') || Route::is('admin.product-highlight') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.product.index') }}">{{__('admin.Products')}}</a></li>
 
             <li class="{{ Route::is('admin.stockout-product') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.stockout-product') }}">{{__('admin.Stock out')}}</a></li>
-            <li class="{{ Route::is('admin.stock-alerts.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.stock-alerts.index') }}">Stock Alerts</a></li>
+            <li class="{{ Route::is('admin.stock-alerts.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.stock-alerts.index') }}">Stok Uyarıları</a></li>
 
             <li class="{{ Route::is('admin.seller-product') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.seller-product') }}">{{__('admin.Seller Products')}}</a></li>
 

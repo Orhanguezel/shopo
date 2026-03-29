@@ -57,6 +57,7 @@ class ProductCategoryController extends Controller
 
         $category->name = $request->name;
         $category->slug = $request->slug;
+        $category->description = $request->description;
         $category->status = $request->status;
         $category->icon = $request->icon;
         $category->save();
@@ -83,7 +84,7 @@ class ProductCategoryController extends Controller
         $category = Category::find($id);
         $rules = [
             'name'=>'required|unique:categories,name,'.$category->id,
-            'slug'=>'required|unique:categories,name,'.$category->id,
+            'slug'=>'required|unique:categories,slug,'.$category->id,
             'status'=>'required',
             'icon'=>'required'
         ];
@@ -100,6 +101,7 @@ class ProductCategoryController extends Controller
         $category->icon = $request->icon;
         $category->name = $request->name;
         $category->slug = $request->slug;
+        $category->description = $request->description;
         $category->status = $request->status;
         $category->save();
 

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class SiteContentSeeder extends Seeder
 {
@@ -14,7 +15,7 @@ class SiteContentSeeder extends Seeder
     public function run(): void
     {
         // Footer
-        DB::table('footers')->updateOrInsert(['id' => 1], [
+        $this->updateOrInsertFiltered('footers', ['id' => 1], [
             'about_us' => 'Kuaförler ve güzellik profesyonelleri için ihtiyaç duyulan tüm kuaför malzemelerini güvenilir satıcılarla buluşturan bir pazaryeri platformudur. Profesyonel ekipmanlardan sarf malzemelerine kadar geniş ürün yelpazemizle, sektöre hızlı, güvenli ve kolay alışveriş deneyimi sunuyoruz.',
             'phone' => '0 (543) 501 19 95',
             'email' => 'info@seyfibaba.com',
@@ -44,7 +45,7 @@ class SiteContentSeeder extends Seeder
         ];
 
         foreach ($footerLinks as $link) {
-            DB::table('footer_links')->updateOrInsert(['id' => $link['id']], $link);
+            $this->updateOrInsertFiltered('footer_links', ['id' => $link['id']], $link);
         }
 
         // Footer Social Links
@@ -55,7 +56,7 @@ class SiteContentSeeder extends Seeder
         ];
 
         foreach ($socialLinks as $sl) {
-            DB::table('footer_social_links')->updateOrInsert(['id' => $sl['id']], $sl);
+            $this->updateOrInsertFiltered('footer_social_links', ['id' => $sl['id']], $sl);
         }
 
         // Services
@@ -67,7 +68,7 @@ class SiteContentSeeder extends Seeder
         ];
 
         foreach ($services as $s) {
-            DB::table('services')->updateOrInsert(['id' => $s['id']], $s);
+            $this->updateOrInsertFiltered('services', ['id' => $s['id']], $s);
         }
 
         // SEO Settings
@@ -82,11 +83,11 @@ class SiteContentSeeder extends Seeder
         ];
 
         foreach ($seoSettings as $seo) {
-            DB::table('seo_settings')->updateOrInsert(['id' => $seo['id']], $seo);
+            $this->updateOrInsertFiltered('seo_settings', ['id' => $seo['id']], $seo);
         }
 
         // Contact Page
-        DB::table('contact_pages')->updateOrInsert(['id' => 1], [
+        $this->updateOrInsertFiltered('contact_pages', ['id' => 1], [
             'title' => 'İletişim',
             'description' => "Aşağıdaki iletişim formunu doldurarak ya da bize yazarak bizimle iletişime geçebilirsiniz.\nTalebinize en kısa sürede dönüş sağlanacaktır.",
             'email' => 'info@seyfibaba.com',
@@ -96,7 +97,7 @@ class SiteContentSeeder extends Seeder
         ]);
 
         // Flash Sale
-        DB::table('flash_sales')->updateOrInsert(['id' => 1], [
+        $this->updateOrInsertFiltered('flash_sales', ['id' => 1], [
             'title' => 'İndirimli Ürünler',
             'offer' => 20,
             'status' => 1,
@@ -114,7 +115,7 @@ class SiteContentSeeder extends Seeder
             ['key' => 'Best_Products', 'default' => 'Best Products', 'custom' => 'En İyi Ürünler'],
         ], JSON_UNESCAPED_UNICODE);
 
-        DB::table('settings')->where('id', 1)->update([
+        $this->updateFiltered('settings', ['id' => 1], [
             'homepage_section_title' => $sectionTitles,
             'sidebar_lg_header' => 'Seyfibaba',
             'sidebar_sm_header' => 'SB',
@@ -127,5 +128,46 @@ class SiteContentSeeder extends Seeder
             'favicon' => 'uploads/website-images/favicon.png',
             'logo' => 'uploads/website-images/logo-2025-12-18-04-53-36-7704.png',
         ]);
+    }
+
+    protected function updateOrInsertFiltered(string $table, array $attributes, array $values): void
+    {
+        if (!Schema::hasTable($table)) {
+            return;
+        }
+
+        $payload = $this->filterColumns($table, array_merge($attributes, $values));
+
+        if (count($payload) === 0) {
+            return;
+        }
+
+        DB::table($table)->updateOrInsert($attributes, $payload);
+    }
+
+    protected function updateFiltered(string $table, array $where, array $values): void
+    {
+        if (!Schema::hasTable($table)) {
+            return;
+        }
+
+        $payload = $this->filterColumns($table, $values);
+
+        if (count($payload) === 0) {
+            return;
+        }
+
+        DB::table($table)->where($where)->update($payload);
+    }
+
+    protected function filterColumns(string $table, array $payload): array
+    {
+        $existingColumns = Schema::getColumnListing($table);
+
+        return array_filter(
+            $payload,
+            static fn ($value, $column) => in_array($column, $existingColumns, true),
+            ARRAY_FILTER_USE_BOTH
+        );
     }
 }

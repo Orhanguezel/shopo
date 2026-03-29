@@ -63,7 +63,7 @@
 
           <li class="{{ Route::is('seller.my-withdraw.index') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.my-withdraw.index') }}"><i class="far fa-newspaper"></i> <span>{{__('admin.My Withdraw')}}</span></a></li>
 
-          <li class="{{ Route::is('seller.return-requests.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.return-requests.index') }}"><i class="fas fa-undo"></i> <span>Return Requests</span></a></li>
+          <li class="{{ Route::is('seller.return-requests.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.return-requests.index') }}"><i class="fas fa-undo"></i> <span>İade Talepleri</span></a></li>
 
            <li class="{{ Route::is('seller.message') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.message') }}"><i class="far fa-newspaper"></i> <span>{{__('Message')}}</span></a></li>
 

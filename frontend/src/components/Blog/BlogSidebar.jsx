@@ -16,7 +16,7 @@ export default function BlogSidebar({
 }) {
   return (
     <div className="space-y-6">
-      <SidebarSection title="Latest Posts">
+      <SidebarSection title="Son Yazilar">
         <div className="space-y-4">
           {latestBlogs.length > 0 ? (
             latestBlogs.map((blog) => (
@@ -34,12 +34,12 @@ export default function BlogSidebar({
               </Link>
             ))
           ) : (
-            <p className="text-sm text-qgray">No posts available.</p>
+            <p className="text-sm text-qgray">Henuz yazi bulunmuyor.</p>
           )}
         </div>
       </SidebarSection>
 
-      <SidebarSection title="Popular Posts">
+      <SidebarSection title="Populer Yazilar">
         <div className="space-y-4">
           {popularPosts.length > 0 ? (
             popularPosts.map((blog) => (
@@ -57,12 +57,12 @@ export default function BlogSidebar({
               </Link>
             ))
           ) : (
-            <p className="text-sm text-qgray">No popular posts yet.</p>
+            <p className="text-sm text-qgray">Populer yazi verisi henuz olusmadi.</p>
           )}
         </div>
       </SidebarSection>
 
-      <SidebarSection title="Categories">
+      <SidebarSection title="Kategoriler">
         <div className="space-y-3">
           {categories.length > 0 ? (
             categories.map((category) => (
@@ -76,7 +76,7 @@ export default function BlogSidebar({
               </Link>
             ))
           ) : (
-            <p className="text-sm text-qgray">No categories available.</p>
+            <p className="text-sm text-qgray">Kategori bulunmuyor.</p>
           )}
         </div>
       </SidebarSection>

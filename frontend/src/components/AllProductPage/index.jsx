@@ -55,6 +55,91 @@ function AllProductPageContent({ response, sellerInfo }) {
   const quickCategoryLinks = (response?.categories || []).slice(0, 6);
   const quickBrandLinks = (response?.brands || []).slice(0, 6);
 
+  const formatSlugLabel = (value = "") =>
+    value
+      .split("-")
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+
+  const resolvedCategorySlug = searchParams.get("category");
+  const resolvedBrandSlug = searchParams.get("brand");
+  const resolvedSearch = searchParams.get("search");
+  const resolvedCategoryData = response?.categories?.find(
+    (item) => item.slug === resolvedCategorySlug
+  );
+  const resolvedCategoryName =
+    resolvedCategoryData?.name ||
+    formatSlugLabel(resolvedCategorySlug || "");
+  const resolvedCategoryDescription = resolvedCategoryData?.description?.trim();
+  const resolvedBrandName =
+    response?.brands?.find((item) => item.slug === resolvedBrandSlug)?.name ||
+    formatSlugLabel(resolvedBrandSlug || "");
+  const listingHeading = resolvedCategoryName
+    ? `${resolvedCategoryName} urunleri`
+    : resolvedBrandName
+      ? `${resolvedBrandName} markali urunler`
+      : resolvedSearch
+        ? `"${resolvedSearch}" arama sonuclari`
+        : "Profesyonel berber ve kuafor urunleri";
+  const listingDescription = resolvedCategoryName
+    ? resolvedCategoryDescription ||
+      `${resolvedCategoryName} kategorisinde yer alan profesyonel urunleri, fiyat araliklarini, markalari ve teknik ozellikleri tek listede inceleyebilirsiniz.`
+    : resolvedBrandName
+      ? `${resolvedBrandName} markasina ait salon ekipmanlari ve sarf urunlerini filtreleyerek ihtiyaciniza uygun secenekleri karsilastirabilirsiniz.`
+      : resolvedSearch
+        ? `"${resolvedSearch}" ifadesiyle eslesen urunleri listeleyerek uygun fiyat, stok ve kategori bilgilerine hizli sekilde ulasabilirsiniz.`
+        : "Berber koltugu, kuafor tezgahi, salon ekipmanlari, sarf malzemeleri ve profesyonel aksesuarlar gibi farkli ihtiyaclara yonelik urunleri tek sayfada karsilastirabilirsiniz.";
+  const listingDeepDive = resolvedCategoryName
+    ? `${resolvedCategoryName} arayan isletmeler icin dayanıklılık, servis kolaylığı, parça uyumu ve günlük salon temposuna uygunluk gibi kriterler karar sürecinde kritik rol oynar. Bu sayfa; kategori bazında ürünleri aynı akışta inceleyip farklı satıcı ve marka seçeneklerini daha hızlı karşılaştırmanız için hazırlanmıştır.`
+    : resolvedBrandName
+      ? `${resolvedBrandName} markasına ait ürünleri incelerken yalnızca fiyat değil; garanti yapısı, stok sürekliliği, model çeşitliliği ve kullanım senaryosu uyumu da birlikte değerlendirilmelidir. Bu alan, markaya ait seçenekleri daha okunabilir hale getirerek satın alma sürecini kısaltmayı amaçlar.`
+      : resolvedSearch
+        ? `"${resolvedSearch}" sorgusuna ait sonuçlar; farklı kategori ve marka kümeleri içinde dağılabileceği için filtreleme, fiyat kırılımı ve stok durumu birlikte değerlendirilmelidir. Bu sayfa, arama sonucunu daha hızlı daraltıp ilgili ürün detaylarına geçişi kolaylaştırır.`
+        : "Profesyonel salon ekipmanı seçerken ürünün fiyatı kadar bakım maliyeti, servis erişimi, teknik dayanıklılığı ve iş akışına uygunluğu da önem taşır. Bu listeleme yapısı, farklı satıcı ve kategori kümelerini aynı ekranda görerek daha bilinçli ürün seçimi yapmanıza yardımcı olur.";
+  const listingUseCases = resolvedCategoryName
+    ? [
+        "Salon kurulumunda kullanılacak temel ekipmanları kategori bazında gruplayabilirsiniz.",
+        "Benzer ürünlerin fiyat ve marka dağılımını tek ekranda karşılaştırabilirsiniz.",
+        "Detay sayfalarına geçerek stok, satıcı ve görsel verisini birlikte inceleyebilirsiniz.",
+      ]
+    : [
+        "Öne çıkan kategori ve marka kümelerini filtrelerle daraltabilirsiniz.",
+        "Yeni kurulum, yenileme ve sarf tedarik senaryoları için farklı ürünleri kıyaslayabilirsiniz.",
+        "İlgili blog rehberlerine giderek satın alma öncesi daha fazla bağlam edinebilirsiniz.",
+      ];
+  const buyingChecklist = resolvedCategoryName
+    ? [
+        "Urunun gunluk kullanim yogunluguna uygun mekanik dayanikliligini kontrol edin.",
+        "Yedek parca, servis ve garanti kosullarinin salonunuzun bulundugu bolgede nasil isleyecegini inceleyin.",
+        "Ayni kategori icindeki urunleri sadece fiyat degil, olcu ve materyal farklariyla karsilastirin.",
+      ]
+    : resolvedBrandName
+      ? [
+          "Marka icindeki farkli serilerin hangi kullanim seviyesine hitap ettigini kontrol edin.",
+          "Garanti suresi ve servis yayginligini tek urun degil marka portfoyu bazinda degerlendirin.",
+          "Ayni markada butce ve performans dengesi acisindan daha uygun alternatif olup olmadigina bakin.",
+        ]
+      : [
+          "Arama sonucundaki urunleri once kategoriye gore daraltin, sonra fiyat ve stok filtresi ekleyin.",
+          "Salon kurulumu, yenileme veya sarf tedarik ihtiyacina gore ayni listede farkli urun siniflarini ayirin.",
+          "Karar vermeden once detay sayfasindaki satici, yorum ve teknik aciklama bloklarini birlikte okuyun.",
+        ];
+  const editorialContextTitle = resolvedCategoryName
+    ? `${resolvedCategoryName} seciminde hangi kriterler one cikar?`
+    : resolvedBrandName
+      ? `${resolvedBrandName} urunlerini degerlendirirken nelere bakilmali?`
+      : resolvedSearch
+        ? `Arama sonucunu satin alma kararina nasil donusturebilirsiniz?`
+        : "Profesyonel urun seciminde hangi kriterler belirleyicidir?";
+  const editorialContextBody = resolvedCategoryName
+    ? `${resolvedCategoryName} grubunda karar verirken yalnizca urunun gorunumu veya fiyat etiketi yeterli degildir. Urunun salon ici yogunlukta nasil performans gosterecegi, ne kadar kolay temizlenebilecegi, uzun sureli kullanimda hangi bakim ihtiyaclarini dogurabilecegi ve mevcut ekipmanlarla ne kadar uyumlu oldugu birlikte dusunulmelidir.`
+    : resolvedBrandName
+      ? `${resolvedBrandName} markali urunlerde ana farklar cogu zaman seri bazinda ortaya cikar. Bu nedenle marka guveni kadar urunun hitap ettigi kullanim seviyesi, malzeme kalitesi ve servis sureci de ayrica okunmalidir. Marka sayfasi mantigiyla filtrelemek, ayni ekosistem icinde daha hizli karsilastirma yapmayi saglar.`
+      : resolvedSearch
+        ? `Arama sonuclari farkli kategori ve kullanim tiplerini bir araya getirebilir. Bu nedenle once urunun ait oldugu kategori netlestirilmeli, daha sonra fiyat bandi, stok durumu ve satici bilgisi birlikte okunmalidir. Bu yaklasim, alakasiz sonuclari daha hizli elemenizi saglar.`
+        : "Profesyonel salon ekipmanlarinda satin alma karari verirken dayaniklilik, servis erisimi, kullanim senaryosu ve toplam sahip olma maliyeti birlikte degerlendirilmelidir. Listeleme sayfasi bu nedenle yalnizca urun gosteren bir vitrin degil, karar surecini hizlandiran bir on inceleme alani olarak tasarlanmistir.";
+
   // Helper function to ensure arrays are always arrays
   const ensureArray = (value) => {
     return Array.isArray(value) ? value : [];
@@ -259,6 +344,51 @@ function AllProductPageContent({ response, sellerInfo }) {
       };
     }
   };
+
+  const renderEditorialGuide = () => (
+    <section className="mb-8 rounded-[28px] border border-[#ece7da] bg-[#fffaf0] px-6 py-7 md:px-8">
+      <h2 className="text-2xl font-bold text-[#1f2937]">
+        {editorialContextTitle}
+      </h2>
+      <p className="mt-4 text-[15px] leading-8 text-[#4b5563]">
+        {listingDescription}
+      </p>
+      <p className="mt-4 text-[15px] leading-8 text-[#4b5563]">
+        {listingDeepDive}
+      </p>
+      <p className="mt-4 text-[15px] leading-8 text-[#4b5563]">
+        {editorialContextBody}
+      </p>
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <article className="rounded-3xl bg-white px-5 py-5 ring-1 ring-[#eee0be]">
+          <h3 className="text-lg font-semibold text-[#22223b]">
+            Bu sayfa ne icin kullanilir?
+          </h3>
+          <ul className="mt-4 space-y-2 text-sm leading-7 text-[#4b5563]">
+            {listingUseCases.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span className="mt-2 inline-block h-2 w-2 rounded-full bg-[#9f7b2f]" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+        <article className="rounded-3xl bg-white px-5 py-5 ring-1 ring-[#eee0be]">
+          <h3 className="text-lg font-semibold text-[#22223b]">
+            Satin alma oncesi hizli kontrol listesi
+          </h3>
+          <ul className="mt-4 space-y-2 text-sm leading-7 text-[#4b5563]">
+            {buyingChecklist.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span className="mt-2 inline-block h-2 w-2 rounded-full bg-[#9f7b2f]" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      </div>
+    </section>
+  );
 
   /**
    * Transform raw product data into standardized format for ProductCard components
@@ -946,7 +1076,7 @@ function AllProductPageContent({ response, sellerInfo }) {
                 height={170}
                 className="w-full h-full object-contain"
                 src={`${appConfig.BASE_URL + sellerInfo.seller.logo}`}
-                alt={sellerInfo.seller.shop_name || "Seller Logo"}
+                alt={sellerInfo.seller.shop_name || "Satici logosu"}
               />
             </div>
           </div>
@@ -978,7 +1108,7 @@ function AllProductPageContent({ response, sellerInfo }) {
       >
         <Image
           src={appConfig.BASE_URL + response.shopPageSidebarBanner.image}
-          alt={response.shopPageSidebarBanner.title_two || "Sidebar Banner"}
+          alt={response.shopPageSidebarBanner.title_two || "Yan kampanya gorseli"}
           fill
           className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
           sizes="270px"
@@ -1163,6 +1293,8 @@ function AllProductPageContent({ response, sellerInfo }) {
         
         {/* Seller Information Section */}
         {renderSellerInfo()}
+
+        {!sellerInfo && renderEditorialGuide()}
 
         {!sellerInfo && (
           <section className="mb-8 rounded-[28px] border border-[#ece3cf] bg-[#fffaf0] px-6 py-6">

@@ -67,7 +67,7 @@ export default function Middlebar({ className, settings }) {
     } else {
       // for force logout
       dispatch(setWishlistData(null));
-      toast.success("Logout Successfully");
+      toast.success("Cikis yapildi");
       localStorage.removeItem("auth");
       deleteCookie("access_token");
       router.push("/login");

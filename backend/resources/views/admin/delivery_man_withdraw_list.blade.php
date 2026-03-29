@@ -1,16 +1,16 @@
 @extends('admin.master_layout')
 @section('title')
-<title>{{__('Delivery Man withdraw')}}</title>
+<title>Teslimat Görevlisi Çekimleri</title>
 @endsection
 @section('admin-content')
       <!-- Main Content -->
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>{{__('Delivery man withdraw')}}</h1>
+            <h1>Teslimat Görevlisi Çekimleri</h1>
             <div class="section-header-breadcrumb">
               <div class="breadcrumb-item active"><a href="{{ route('admin.dashboard') }}">{{__('admin.Dashboard')}}</a></div>
-              <div class="breadcrumb-item">{{__('Delivery man withdraw')}}</div>
+              <div class="breadcrumb-item">Teslimat Görevlisi Çekimleri</div>
             </div>
           </div>
 
@@ -25,7 +25,7 @@
                             <thead>
                                 <tr>
                                     <th >{{__('admin.SN')}}</th>
-                                    <th >{{__('admin.Seller')}}</th>
+                                    <th >Teslimat Görevlisi</th>
                                     <th >{{__('admin.Method')}}</th>
                                     <th >{{__('admin.Charge')}}</th>
                                     <th >{{__('admin.Total Amount')}}</th>

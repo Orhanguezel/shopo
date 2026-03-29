@@ -1,6 +1,6 @@
 import SellerProfile from "@/components/Sellers/SellerProfile";
 import sellerDetails from "@/api/sellerDetails";
-import JsonLd, { generateSellerSchema, generateBreadcrumbSchema } from "@/components/Helpers/JsonLd";
+import JsonLd, { generateSellerSchema } from "@/components/Helpers/JsonLd";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -37,17 +37,11 @@ export default async function SellerPage({ params }) {
   const { slug } = await params;
 
   let sellerSchema = null;
-  let breadcrumbSchema = null;
 
   try {
     const data = await sellerDetails(slug);
     if (data?.seller) {
       sellerSchema = generateSellerSchema(data.seller);
-      breadcrumbSchema = generateBreadcrumbSchema([
-        { name: "Anasayfa", item: "/" },
-        { name: "Satıcılar", item: "/sellers" },
-        { name: data.seller.shop_name || slug },
-      ]);
     }
   } catch (error) {
     // Fail silently — schemas are non-critical
@@ -59,7 +53,6 @@ export default async function SellerPage({ params }) {
   return (
     <>
       {sellerSchema && <JsonLd data={sellerSchema} />}
-      {breadcrumbSchema && <JsonLd data={breadcrumbSchema} />}
       <SellerProfile slug={slug} />
     </>
   );

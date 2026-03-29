@@ -33,6 +33,7 @@ use App\Exports\ProductExport;
 use App\Imports\ProductImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Exception;
+use App\Support\ProductSlug;
 
 class SellerProductController extends Controller
 {
@@ -102,6 +103,9 @@ class SellerProductController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'slug' => ProductSlug::normalize($request->slug ?: $request->name),
+        ]);
 
         $rules = [
             'short_name' => 'required',
@@ -231,6 +235,9 @@ class SellerProductController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->merge([
+            'slug' => ProductSlug::normalize($request->slug ?: $request->name),
+        ]);
 
 
         $product = Product::find($id);

@@ -1,5 +1,6 @@
 import React from 'react';
 import appConfig from '@/appConfig';
+import { buildProductUrl } from '@/utils/url';
 
 /**
  * JSON-LD structured data component
@@ -25,9 +26,13 @@ export default JsonLd;
 export const generateProductSchema = (product) => {
   if (!product) return null;
 
-  const reviews = product.product?.active_reviews || [];
-  const ratingValue = reviews.length > 0 
-    ? (reviews.reduce((acc, rev) => acc + parseInt(rev.rating), 0) / reviews.length).toFixed(1)
+  const reviews = Array.isArray(product.productReviews)
+    ? product.productReviews
+    : [];
+  const reviewCount = parseInt(product.totalProductReviewQty || reviews.length || 0, 10);
+  const totalReviewScore = parseInt(product.totalReview || 0, 10);
+  const ratingValue = reviewCount > 0
+    ? (totalReviewScore / reviewCount).toFixed(1)
     : 0;
 
   const validUntil = new Date();
@@ -46,7 +51,7 @@ export const generateProductSchema = (product) => {
     },
     "offers": {
       "@type": "Offer",
-      "url": `${appConfig.APPLICATION_URL}/single-product?slug=${product.product?.slug}`,
+      "url": buildProductUrl(appConfig.APPLICATION_URL, product.product?.slug),
       "priceCurrency": "TRY",
       "price": product.product?.offer_price || product.product?.price,
       "priceValidUntil": validUntil.toISOString().split('T')[0],
@@ -54,22 +59,22 @@ export const generateProductSchema = (product) => {
       "availability": product.product?.qty > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       "seller": {
         "@type": "Organization",
-        "name": product.product?.vendor?.shop_name || "Seyfibaba"
+        "name": product.seller?.shop_name || product.seller?.user?.name || "Seyfibaba"
       }
     }
   };
 
-  if (reviews.length > 0) {
+  if (reviewCount > 0) {
     schema.aggregateRating = {
       "@type": "AggregateRating",
       "ratingValue": ratingValue,
-      "reviewCount": reviews.length,
+      "reviewCount": reviewCount,
       "bestRating": "5",
       "worstRating": "1"
     };
     schema.review = reviews.slice(0, 5).map(rev => ({
       "@type": "Review",
-      "author": { "@type": "Person", "name": rev.name },
+      "author": { "@type": "Person", "name": rev?.user?.name || rev?.name || "Seyfibaba Musterisi" },
       "reviewRating": { "@type": "Rating", "ratingValue": rev.rating },
       "reviewBody": rev.review
     }));
@@ -86,9 +91,12 @@ export const generateOrganizationSchema = () => {
     return {
       "@context": "https://schema.org",
       "@type": "Organization",
+      "@id": `${appConfig.APPLICATION_URL}#organization`,
       "name": "Seyfibaba",
       "url": appConfig.APPLICATION_URL,
       "logo": `${appConfig.APPLICATION_URL}/assets/images/logo.png`,
+      "description": "Seyfibaba, berber ve kuaför profesyonelleri için ekipman, mobilya, sarf malzeme ve salon teknolojilerini bir araya getiren Türkiye merkezli pazaryeridir.",
+      "foundingDate": "2025",
       "sameAs": [
         "https://facebook.com/seyfibaba",
         "https://instagram.com/seyfibaba",
@@ -114,6 +122,7 @@ export const generateStoreSchema = () => {
   return {
     "@context": "https://schema.org",
     "@type": "Store",
+    "@id": `${appConfig.APPLICATION_URL}#store`,
     "name": "Seyfibaba",
     "url": appConfig.APPLICATION_URL,
     "logo": `${appConfig.APPLICATION_URL}/assets/images/logo.png`,
@@ -124,7 +133,8 @@ export const generateStoreSchema = () => {
     "address": {
       "@type": "PostalAddress",
       "addressCountry": "TR",
-      "addressLocality": "İstanbul"
+      "addressLocality": "Sakarya",
+      "streetAddress": "İstiklal Mahallesi, Serdivan"
     },
     "priceRange": "₺₺",
     "currenciesAccepted": "TRY",
@@ -206,6 +216,27 @@ export const generateWebSiteSchema = () => {
   };
 };
 
+export const generateSpeakableSchema = ({ url, cssSelectors = [] }) => {
+  const selectors = Array.isArray(cssSelectors)
+    ? cssSelectors.filter(Boolean)
+    : [];
+
+  if (!url || !selectors.length) {
+    return null;
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": url,
+    "url": url,
+    "speakable": {
+      "@type": "SpeakableSpecification",
+      "cssSelector": selectors,
+    },
+  };
+};
+
 /**
  * Generate ItemList Schema for product listings
  * @param {Array} products - Array of product objects
@@ -218,8 +249,67 @@ export const generateItemListSchema = (products) => {
     "itemListElement": products.map((product, index) => ({
       "@type": "ListItem",
       "position": index + 1,
-      "url": `${appConfig.APPLICATION_URL}/single-product?slug=${product.slug}`
+      "url": buildProductUrl(appConfig.APPLICATION_URL, product.slug)
     }))
+  };
+};
+
+export const generateBlogItemListSchema = (blogs) => {
+  const safeBlogs = Array.isArray(blogs) ? blogs : [];
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": safeBlogs.map((blog, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `${appConfig.APPLICATION_URL}/blogs/${blog.slug}`,
+      "name": blog.title,
+    }))
+  };
+};
+
+export const generateBlogPostingSchema = (blog) => {
+  if (!blog) return null;
+
+  const authorName = blog.admin?.name || "Seyfibaba Editor";
+  const authorImage = blog.admin?.image || blog.admin?.provider_avatar;
+  const resolvedAuthorImage = authorImage
+    ? (authorImage.startsWith?.("http")
+        ? authorImage
+        : `${appConfig.BASE_URL}${authorImage}`)
+    : null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${appConfig.APPLICATION_URL}/blogs/${blog.slug}#article`,
+    "headline": blog.seo_title || blog.title,
+    "description": blog.seo_description || blog.title,
+    "datePublished": blog.created_at,
+    "dateModified": blog.updated_at || blog.created_at,
+    "mainEntityOfPage": `${appConfig.APPLICATION_URL}/blogs/${blog.slug}`,
+    "author": {
+      "@type": "Person",
+      "name": authorName,
+      "jobTitle": "Seyfibaba Icerik Editoru",
+      "description": "Berber ve kuafor ekipmanlari, salon yonetimi ve profesyonel urun secimi uzerine icerik hazirlar.",
+      "url": `${appConfig.APPLICATION_URL}/blogs/${blog.slug}#author`,
+      ...(resolvedAuthorImage ? { "image": resolvedAuthorImage } : {}),
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Seyfibaba",
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${appConfig.BASE_URL}uploads/website-images/logo-2025-12-18-04-53-36-7704.png`,
+      },
+    },
+    ...(blog.image || blog.thumb_image
+      ? {
+          "image": [`${appConfig.BASE_URL}${blog.image || blog.thumb_image}`],
+        }
+      : {}),
   };
 };
 

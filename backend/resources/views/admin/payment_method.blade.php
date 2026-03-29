@@ -44,17 +44,17 @@
                                                             @csrf
                                                             @method('PUT')
                                                             <div class="form-group">
-                                                                <label>Iyzico Status</label>
+                                                                <label>Iyzico Durumu</label>
                                                                 <div>
                                                                     <input id="status_toggle" type="checkbox" {{ optional($iyzico)->status == 1 ? 'checked' : '' }} data-toggle="toggle" data-on="{{ __('admin.Enable') }}" data-off="{{ __('admin.Disable') }}" data-onstyle="success" data-offstyle="danger" name="status">
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label>Iyzico API Key</label>
+                                                                <label>Iyzico API Anahtarı</label>
                                                                 <input type="text" class="form-control" name="api_key" value="{{ optional($iyzico)->api_key }}">
                                                             </div>
                                                             <div class="form-group">
-                                                                <label>Iyzico Secret Key</label>
+                                                                <label>Iyzico Gizli Anahtarı</label>
                                                                 <input type="text" class="form-control" name="secret_key" value="{{ optional($iyzico)->secret_key }}">
                                                             </div>
                                                             <div class="form-group">
@@ -67,23 +67,23 @@
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label>Test Mode</label>
+                                                                <label>Test Modu</label>
                                                                 <div>
                                                                     <input id="status_toggle" type="checkbox" {{ optional($iyzico)->is_test_mode == 1 ? 'checked' : '' }} data-toggle="toggle" data-on="{{ __('admin.Enable') }}" data-off="{{ __('admin.Disable') }}" data-onstyle="success" data-offstyle="danger" name="is_test_mode">
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label>Marketplace Mode</label>
+                                                                <label>Pazaryeri Modu</label>
                                                                 <div>
                                                                     <input id="status_toggle" type="checkbox" {{ optional($iyzico)->marketplace_mode == 1 ? 'checked' : '' }} data-toggle="toggle" data-on="{{ __('admin.Enable') }}" data-off="{{ __('admin.Disable') }}" data-onstyle="success" data-offstyle="danger" name="marketplace_mode">
                                                                 </div>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label>Default Sub Merchant Key</label>
+                                                                <label>Varsayılan Alt Satıcı Anahtarı</label>
                                                                 <input type="text" class="form-control" name="sub_merchant_key" value="{{ optional($iyzico)->sub_merchant_key }}">
                                                             </div>
                                                             <div class="form-group">
-                                                                <label>Store Sub Merchant Keys (JSON)</label>
+                                                                <label>Mağaza Alt Satıcı Anahtarları (JSON)</label>
                                                                 <textarea name="store_sub_merchant_keys" cols="30" rows="6" class="form-control text-area-5">{{ optional($iyzico)->store_sub_merchant_keys }}</textarea>
                                                             </div>
                                                             <button class="btn btn-primary">{{ __('admin.Update') }}</button>
@@ -146,7 +146,7 @@
     function changeCashOnDeliveryStatus() {
         var isDemo = "{{ env('APP_VERSION') }}";
         if (isDemo == 0) {
-            toastr.error('This Is Demo Version. You Can Not Change Anything');
+            toastr.error('Bu demo sürümdür. Herhangi bir değişiklik yapamazsınız.');
             return;
         }
 

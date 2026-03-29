@@ -127,7 +127,7 @@ function ProductsCompare() {
     () => [
       { name: ServeLangItem()?.home, path: "/" },
       {
-        name: ServeLangItem()?.Product_Compare || "Product Compare",
+        name: ServeLangItem()?.Product_Compare || "Urun Karsilastirma",
         path: "/products-compare",
       },
     ],
@@ -242,7 +242,7 @@ function ProductsCompare() {
           </ul>
         ))
       ) : (
-        <span className="text-[13px] font-normal text-qgraytwo">N/A</span>
+        <span className="text-[13px] font-normal text-qgraytwo">Bilgi yok</span>
       )}
     </td>
   );
@@ -281,7 +281,7 @@ function ProductsCompare() {
   return (
     <div className="products-compare-wrapper w-full bg-white pb-[40px]">
       <div className="w-full mb-5">
-        <PageTitle breadcrumb={breadcrumbData} title="Product Comparison" />
+        <PageTitle breadcrumb={breadcrumbData} title="Urun Karsilastirma" />
       </div>
       <div className="container-x mx-auto">
         {!viewLoading && productList ? (

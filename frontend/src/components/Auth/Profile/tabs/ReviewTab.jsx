@@ -7,6 +7,7 @@ import Star from "../../../Helpers/icons/Star";
 import ServeLangItem from "../../../Helpers/ServeLangItem";
 import Link from "next/link";
 import appConfig from "@/appConfig";
+import { buildProductPath } from "@/utils/url";
 
 export default function ReviewTab({ className, reviews }) {
   return (
@@ -52,12 +53,7 @@ export default function ReviewTab({ className, reviews }) {
                               </span>
                             ))}
                           </div>
-                          <Link
-                            href={{
-                              pathname: "/single-product",
-                              query: { slug: datas.product.slug },
-                            }}
-                          >
+                          <Link href={buildProductPath(datas.product.slug)}>
                             <p className="title mb-2 sm:text-[15px] text-[13px] font-600 text-qblack leading-[24px] line-clamp-1 hover:text-qyellow cursor-pointer notranslate">
                               {datas.product.name}
                             </p>

@@ -25,7 +25,7 @@
                             <thead>
                                 <tr>
                                     <th >{{__('admin.SN')}}</th>
-                                    <th >{{__('Delivery Man')}}</th>
+                                    <th >Teslimat Görevlisi</th>
                                     <th >{{__('admin.Total Amount')}}</th>
                                     <th >{{__('Date')}}</th>
                                     <th >{{__('admin.Action')}}</th>

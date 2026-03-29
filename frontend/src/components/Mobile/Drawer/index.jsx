@@ -87,7 +87,7 @@ export default function Drawer({ className, open, action }) {
                 onChange={(e) => setSearchkey(e.target.value)}
                 type="text"
                 className="w-full text-xs h-full focus:outline-none foucus:ring-0 placeholder:text-qgraytwo pl-2.5 "
-                placeholder="Search Product..."
+                placeholder="Urun ara..."
               />
             </div>
             <div

@@ -1,4 +1,6 @@
 import appConfig from "@/appConfig";
+import { isPlaceholderBlogContent } from "@/utils/contentAudit";
+import { buildProductUrl } from "@/utils/url";
 
 const baseUrl = appConfig.APPLICATION_URL || "https://seyfibaba.com";
 
@@ -41,12 +43,14 @@ export default async function sitemap() {
 
     if (blogsRes.ok) {
       const blogsData = await blogsRes.json();
-      blogEntries = (blogsData?.blogs || []).map((blog) => ({
-        url: `${baseUrl}/blogs/${blog.slug}`,
-        lastModified: blog.updated_at ? new Date(blog.updated_at) : new Date(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      }));
+      blogEntries = (blogsData?.blogs || [])
+        .filter((blog) => !isPlaceholderBlogContent(blog))
+        .map((blog) => ({
+          url: `${baseUrl}/blogs/${blog.slug}`,
+          lastModified: blog.updated_at ? new Date(blog.updated_at) : new Date(),
+          changeFrequency: "weekly",
+          priority: 0.7,
+        }));
     }
 
     if (blogCatRes.ok) {
@@ -71,12 +75,14 @@ export default async function sitemap() {
 
     if (productsRes.ok) {
         const productsData = await productsRes.json();
-        productEntries = (productsData?.products || []).map((product) => ({
-            url: `${baseUrl}/single-product?slug=${product.slug}`,
+        productEntries = (productsData?.products || [])
+          .filter((product) => product.slug !== "test-urunu-5-tl")
+          .map((product) => ({
+            url: buildProductUrl(baseUrl, product.slug),
             lastModified: product.updated_at ? new Date(product.updated_at) : new Date(),
             changeFrequency: "weekly",
             priority: 0.9,
-        }));
+          }));
     }
   } catch (error) {
     console.error("Sitemap generation error:", error);

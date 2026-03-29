@@ -10,7 +10,7 @@ function Sallers({ sellersData }) {
     <>
       <div className="sallers-page-wrapper w-full mb-[60px]">
         <PageTitle
-          title="All Seller "
+          title="Tum Saticilar"
           breadcrumb={[
             { name: ServeLangItem()?.home, path: "/" },
             { name: ServeLangItem()?.Sellers, path: "/sellers" },

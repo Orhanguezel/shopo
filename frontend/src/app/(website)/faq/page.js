@@ -1,7 +1,7 @@
 import faq from "@/api/faq";
 import FaqComponent from "@/components/Faq";
 import { cache } from "react";
-import JsonLd, { generateFAQSchema, generateBreadcrumbSchema } from "@/components/Helpers/JsonLd";
+import JsonLd, { generateFAQSchema } from "@/components/Helpers/JsonLd";
 
 export const dynamic = 'force-dynamic'; // Static export için gerekli
 
@@ -32,15 +32,9 @@ export default async function FaqPage() {
   })) || [];
   
   const faqSchema = generateFAQSchema(faqs);
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: "Anasayfa", item: "/" },
-    { name: "S.S.S." }
-  ]);
-
   return (
     <>
       <JsonLd data={faqSchema} />
-      <JsonLd data={breadcrumbSchema} />
       <FaqComponent datas={data} />
     </>
   );

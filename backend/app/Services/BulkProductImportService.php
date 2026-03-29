@@ -9,6 +9,7 @@ use App\Models\ChildCategory;
 use App\Models\Product;
 use App\Models\SubCategory;
 use App\Models\Vendor;
+use App\Support\ProductSlug;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -131,10 +132,12 @@ class BulkProductImportService
                 continue;
             }
 
+            $normalizedSlug = ProductSlug::normalize($normalizedRow['slug'] ?: $normalizedRow['name']);
+
             $product = Product::query()
                 ->when($vendor, fn ($query) => $query->where('vendor_id', $vendor->id))
-                ->where(function ($query) use ($normalizedRow) {
-                    $query->where('slug', $normalizedRow['slug']);
+                ->where(function ($query) use ($normalizedRow, $normalizedSlug) {
+                    $query->where('slug', $normalizedSlug);
 
                     if (! empty($normalizedRow['sku'])) {
                         $query->orWhere('sku', $normalizedRow['sku']);
@@ -149,7 +152,7 @@ class BulkProductImportService
 
             $product->short_name = $normalizedRow['short_name'];
             $product->name = $normalizedRow['name'];
-            $product->slug = Str::slug($normalizedRow['slug'] ?: $normalizedRow['name']);
+            $product->slug = $normalizedSlug;
             $product->category_id = $category->id;
             $product->sub_category_id = $subCategory?->id ?? 0;
             $product->child_category_id = $childCategory?->id ?? 0;

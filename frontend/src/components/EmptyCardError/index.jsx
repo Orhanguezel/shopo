@@ -34,7 +34,7 @@ export default function EmptyCardError() {
                     ? IMAGE_FALLBACK
                     : `${appConfig.BASE_URL}/${emptyCart}`.replace(/([^:])\/\//g, '$1/')
                 }
-                alt="Empty cart"
+                alt="Bos sepet gorseli"
               />
             </div>
           </div>

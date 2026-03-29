@@ -1,12 +1,16 @@
 import apiRoutes from "@/appConfig/apiRoutes";
 import { notFound } from "next/navigation";
 
+const PUBLIC_CONTENT_REVALIDATE = 300;
+
 export default async function getBlogCategoryDetails(slug) {
-  const res = await fetch(`${apiRoutes.blogCategoryDetails}/${slug}`, {
+  const res = await fetch(`${apiRoutes.blogCategoryDetails}/${encodeURIComponent(slug)}`, {
     headers: {
       "Content-Type": "application/json",
     },
-    cache: "no-store",
+    next: {
+      revalidate: PUBLIC_CONTENT_REVALIDATE,
+    },
   });
 
   if (!res.ok) {

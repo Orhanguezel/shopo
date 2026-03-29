@@ -28,6 +28,7 @@ use Image;
 use File;
 use Str;
 use Auth;
+use App\Support\ProductSlug;
 
 
 class SellerProductController extends Controller
@@ -77,6 +78,9 @@ class SellerProductController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'slug' => ProductSlug::normalize($request->slug ?: $request->name),
+        ]);
 
         $rules = [
             'short_name' => 'required',
@@ -195,20 +199,15 @@ class SellerProductController extends Controller
         $brands = Brand::all();
         $specificationKeys = ProductSpecificationKey::all();
         $productSpecifications = ProductSpecification::where('product_id',$product->id)->get();
-        $tagArray = json_decode($product->tags);
-        $tags = '';
-        if($product->tags){
-            foreach($tagArray as $index => $tag){
-                $tags .= $tag->value.',';
-            }
-        }
-
         return response()->json(['product' => $product, 'categories' => $categories , 'brands' => $brands, 'specificationKeys' => $specificationKeys, 'productSpecifications' => $productSpecifications, 'subCategories' => $subCategories, 'childCategories' => $childCategories , ], 200);
 
     }
 
     public function update(Request $request, $id)
     {
+        $request->merge([
+            'slug' => ProductSlug::normalize($request->slug ?: $request->name),
+        ]);
 
 
         $product = Product::find($id);

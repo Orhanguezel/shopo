@@ -32,7 +32,7 @@ function TrackingOrder() {
       return;
     }
 
-    toast.error(data?.message || "Order not found");
+    toast.error(data?.message || "Siparis bulunamadi");
   };
 
   const trackOrderErrorHandler = (error) => {
@@ -55,7 +55,7 @@ function TrackingOrder() {
         error: trackOrderErrorHandler,
       });
     } else {
-      toast.error("Order Number is required");
+      toast.error("Siparis numarasi zorunludur");
     }
   };
 
@@ -64,7 +64,7 @@ function TrackingOrder() {
       {/* Page Title Section */}
       <div className="page-title mb-[40px]">
         <PageTitle
-          title="Track Order"
+          title="Siparis Takibi"
           breadcrumb={[
             { name: ServeLangItem()?.home, path: "/" },
             { name: ServeLangItem()?.Track_Order, path: "/tracking-order" },
@@ -80,7 +80,7 @@ function TrackingOrder() {
             {ServeLangItem()?.Track_Your_Order}
           </h1>
           <p className="text-[15px] text-qgraytwo leading-8 mb-5">
-            Enter your order tracking number to see the latest order status.
+            Siparisinizin guncel durumunu gormek icin siparis numaranizi girin.
           </p>
 
           {/* Form and Thumbnail Section */}
@@ -97,8 +97,8 @@ function TrackingOrder() {
                       orderNumber: e.target.value,
                     }))
                   }
-                  placeholder="Order Number"
-                  label="Order Tracking Number*"
+                  placeholder="Siparis numarasi"
+                  label="Siparis Takip Numarasi*"
                   inputClasses="w-full h-[50px]"
                 />
               </div>

@@ -78,6 +78,7 @@ use App\Models\ShopPage;
 use App\Models\SeoSetting;
 
 use App\Models\FlashSale;
+use App\Support\ProductSlug;
 
 use App\Models\FlashSaleProduct;
 
@@ -573,7 +574,7 @@ class HomeController extends Controller
 
 
 
-        $homepage_categories = Category::where(['status' => 1])->select('id','name','slug','icon','image')->get()->take(15);
+        $homepage_categories = Category::where(['status' => 1])->select('id','name','slug','description','icon','image')->get()->take(15);
 
 
 
@@ -915,7 +916,7 @@ class HomeController extends Controller
 
         $searchBrandArr = [];
 
-        $categories = Category::with('activeSubCategories.activeChildCategories')->where(['status' => 1])->select('id','name','slug','icon')->get();
+        $categories = Category::with('activeSubCategories.activeChildCategories')->where(['status' => 1])->select('id','name','slug','description','icon')->get();
 
         $brands = Brand::where(['status' => 1])->select('id','name','slug')->get();
 
@@ -1108,7 +1109,7 @@ class HomeController extends Controller
 
         $searchBrandArr = [];
 
-        $categories = Category::with('activeSubCategories.activeChildCategories')->where(['status' => 1])->select('id','name','slug','icon')->get();
+        $categories = Category::with('activeSubCategories.activeChildCategories')->where(['status' => 1])->select('id','name','slug','description','icon')->get();
 
         $brands = Brand::where(['status' => 1])->select('id','name','slug')->get();
 
@@ -1588,8 +1589,17 @@ class HomeController extends Controller
 
 
     public function productDetail($slug){
+        $slugCandidates = ProductSlug::candidates($slug);
+        $product = Product::with('category','brand','activeVariants.activeVariantItems','avgReview')
+            ->where('status', 1)
+            ->where(function ($query) use ($slug, $slugCandidates) {
+                $query->where('slug', $slug);
 
-        $product = Product::with('category','brand','activeVariants.activeVariantItems','avgReview')->where(['status' => 1, 'slug' => $slug])->first();
+                if (!empty($slugCandidates)) {
+                    $query->orWhereIn('slug', $slugCandidates);
+                }
+            })
+            ->first();
 
 
 
@@ -1597,13 +1607,9 @@ class HomeController extends Controller
 
             $notification = trans('user_validation.Something went wrong');
 
-            return response()->json(['message' => $notification],403);
+            return response()->json(['message' => $notification],404);
 
         }
-
-
-
-        $paginateQty = CustomPagination::whereId('5')->first()->qty;
 
         $productReviews = ProductReview::with('user')->where(['status' => 1, 'product_id' =>$product->id])->get()->take(10);
 
@@ -1637,7 +1643,9 @@ class HomeController extends Controller
 
 
 
-        $seller = Vendor::with('user')->where('id', $product->vendor_id)->first();
+        $seller = $is_seller_product
+            ? Vendor::with('user')->where('id', $product->vendor_id)->first()
+            : null;
 
         $sellerTotalProducts = 0;
 
@@ -1667,19 +1675,7 @@ class HomeController extends Controller
 
 
 
-        $tagArray = json_decode($product->tags);
-
-        $tags = '';
-
-        if($product->tags){
-
-            foreach($tagArray as $index => $tag){
-
-                $tags .= $tag->value.',';
-
-            }
-
-        }
+        $tags = ProductSlug::tagsToText($product->tags);
 
 
 

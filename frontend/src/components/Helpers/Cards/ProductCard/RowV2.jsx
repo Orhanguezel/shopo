@@ -2,6 +2,7 @@ import CheckProductIsExistsInFlashSale from "@/components/Shared/CheckProductIsE
 import CurrencyConvert from "@/components/Shared/CurrencyConvert";
 import Image from "next/image";
 import Link from "next/link";
+import { buildProductPath } from "@/utils/url";
 
 const PRODUCT_IMAGE_FALLBACK = "/assets/images/server-error.png";
 
@@ -23,12 +24,7 @@ function RowV2({ styleType, datas, offerPrice, price, isProductInFlashSale }) {
             />
           </div>
           <div className="flex-1 h-full flex flex-col justify-center">
-            <Link
-              href={{
-                pathname: "/single-product",
-                query: { slug: datas.slug },
-              }}
-            >
+            <Link href={buildProductPath(datas.slug)}>
               <h3 className="title mb-2 sm:text-[15px] text-[13px] font-600 text-qblack leading-[24px] line-clamp-1 hover:text-qyellow cursor-pointer">
                 {datas.title}
               </h3>

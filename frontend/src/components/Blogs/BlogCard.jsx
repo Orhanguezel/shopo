@@ -19,7 +19,7 @@ export default function BlogCard({ blog }) {
         </Link>
         <div className="absolute top-4 left-4">
           <span className="bg-primary px-3 py-1 rounded-full text-white text-xs font-semibold shadow-lg">
-            {blog.category?.name || "Uncategorized"}
+            {blog.category?.name || "Genel"}
           </span>
         </div>
       </div>
@@ -35,7 +35,7 @@ export default function BlogCard({ blog }) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
             </svg>
-            {comments_count || 0} Comments
+            {comments_count || 0} Yorum
           </div>
         </div>
         <Link href={`/blogs/${slug}`}>
@@ -50,7 +50,7 @@ export default function BlogCard({ blog }) {
           href={`/blogs/${slug}`}
           className="inline-flex items-center gap-2 text-primary font-bold text-sm group/btn"
         >
-          Read More
+          Devamini Oku
           <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg>

@@ -164,7 +164,7 @@
                                     <label>{{__('admin.Specifications')}}</label>
                                     <div>
                                         <a href="javascript::void()" id="manageSpecificationBox">
-                                            <input name="is_specification" id="status_toggle" type="checkbox" checked data-toggle="toggle" data-on="Enable" data-off="Disabled" data-onstyle="success" data-offstyle="danger">
+                                            <input name="is_specification" id="status_toggle" type="checkbox" checked data-toggle="toggle" data-on="Açık" data-off="Kapalı" data-onstyle="success" data-offstyle="danger">
                                         </a>
                                     </div>
                                 </div>

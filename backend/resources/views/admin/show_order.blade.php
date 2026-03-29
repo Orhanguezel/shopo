@@ -118,19 +118,19 @@
                       @if ($order->deliveryman)
                       <div class="col-md-6">
                         <address>
-                          <strong>{{__('Delivery Man Information')}}:</strong><br>
+                          <strong>Teslimat Görevlisi Bilgileri:</strong><br>
                           {{__('Name')}}: {{ $order->deliveryman->fname }} {{ $order->deliveryman->lname }}<br>
                           {{__('admin.Status')}} :
                           @if ($order->order_request == 1)
-                          <span class="badge badge-success">{{__('Accept')}} </span>
+                          <span class="badge badge-success">Kabul Edildi </span>
                           @elseif ($order->order_request == 2)
-                          <span class="badge badge-success">{{__('Ignore')}} </span>
+                          <span class="badge badge-success">Yoksayıldı </span>
                           @elseif ($order->order_status == 3)
                           <span class="badge badge-success">{{__('admin.Completed')}} </span>
                           @elseif ($order->order_status == 4)
                           <span class="badge badge-danger">{{__('admin.Declined')}} </span>
                           @else
-                          <span class="badge badge-danger">{{__('No response')}}</span>
+                          <span class="badge badge-danger">Yanıt Yok</span>
                         @endif
                         </address>
                       </div>
@@ -266,9 +266,9 @@
                             </select>
                           </div>
                           <div class="form-group">
-                            <label for="">{{__('Assign Delivery Man')}}</label>
+                            <label for="">Teslimat Görevlisi Ata</label>
                           <select name="delivery_man_id" id="" class="form-control select2">
-                            <option value="0" {{ $order->order_status == 0 ? 'selected' : '' }}>Select</option>
+                            <option value="0" {{ $order->order_status == 0 ? 'selected' : '' }}>Seçiniz</option>
                               @foreach ($deliverymans as $deliveryman)
                               <option value="{{ $deliveryman->id }}" {{ $order->delivery_man_id == $deliveryman->id ? 'selected' : '' }}>{{ $deliveryman->fname }} {{ $deliveryman->lname }}</option>
                               @endforeach

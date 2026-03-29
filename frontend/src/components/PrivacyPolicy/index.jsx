@@ -12,7 +12,7 @@ export default function PrivacyPolicy({ datas }) {
             { name: ServeLangItem()?.home, path: "/" },
             { name: ServeLangItem()?.Privacy_Policy, path: "privacy-policy" },
           ]}
-          title="Privacy Policy"
+          title="Gizlilik Politikasi"
         />
       </div>
       <div className="w-full">

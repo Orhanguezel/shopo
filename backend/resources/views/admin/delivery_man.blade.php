@@ -1,16 +1,16 @@
 @extends('admin.master_layout')
 @section('title')
-<title>{{__('Delivery Man')}}</title>
+<title>Teslimat Görevlileri</title>
 @endsection
 @section('admin-content')
       <!-- Main Content -->
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>{{__('Delivery man')}}</h1>
+            <h1>Teslimat Görevlileri</h1>
             <div class="section-header-breadcrumb">
               <div class="breadcrumb-item active"><a href="{{ route('admin.dashboard') }}">{{__('admin.Dashboard')}}</a></div>
-              <div class="breadcrumb-item">{{__('Delivery Man')}}</div>
+              <div class="breadcrumb-item">Teslimat Görevlileri</div>
             </div>
           </div>
 
@@ -27,7 +27,7 @@
                                     <th width="5%">{{__('admin.SN')}}</th>
                                     <th width="10%">{{__('Name')}}</th>
                                     <th width="10%">{{__('Email')}}</th>
-                                    <th width="10%">{{__('Total order')}}</th>
+                                    <th width="10%">Toplam Sipariş</th>
                                     <th width="10%">{{__('Image')}}</th>
                                     <th width="10%">{{__('Status')}}</th>
                                     <th width="15%">{{__('admin.Action')}}</th>
@@ -81,7 +81,7 @@
     function manageDeliveryManStatus(id){
         var isDemo = "{{ env('APP_VERSION') }}"
         if(isDemo == 0){
-            toastr.error('This Is Demo Version. You Can Not Change Anything');
+            toastr.error('Bu demo sürümdür. Herhangi bir değişiklik yapamazsınız.');
             return;
         }
         $.ajax({

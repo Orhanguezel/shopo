@@ -1,8 +1,12 @@
 import products from "@/api/products";
 import AllProductPage from "@/components/AllProductPage";
 import { cache } from "react";
+import JsonLd, {
+  generateBreadcrumbSchema,
+  generateItemListSchema,
+} from "@/components/Helpers/JsonLd";
 
-export const dynamic = 'force-dynamic'; // Static export için gerekli
+export const revalidate = 300;
 
 const resolveSearchQuery = (searchParamsObj = {}) => {
   const query = {};
@@ -51,5 +55,17 @@ export async function generateMetadata({ searchParams }) {
 export default async function SearchProductsPage({ searchParams }) {
   const searchParamsObj = await searchParams;
   const data = await getSearchProductsData(resolveSearchQuery(searchParamsObj));
-  return <AllProductPage response={data} />;
+  const itemListSchema = generateItemListSchema(data?.products?.data || []);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Anasayfa", item: "/" },
+    { name: "Arama Sonuclari", item: "/search" },
+  ]);
+
+  return (
+    <>
+      <JsonLd data={itemListSchema} />
+      <JsonLd data={breadcrumbSchema} />
+      <AllProductPage response={data} />
+    </>
+  );
 }

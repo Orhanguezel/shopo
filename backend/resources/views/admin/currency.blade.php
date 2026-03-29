@@ -87,7 +87,7 @@
     function changeProductCategoryStatus(id){
         var isDemo = "{{ env('APP_MODE') }}"
         if(isDemo == 'DEMO'){
-            toastr.error('This Is Demo Version. You Can Not Change Anything');
+            toastr.error('Bu demo sürümdür. Herhangi bir değişiklik yapamazsınız.');
             return;
         }
         $.ajax({

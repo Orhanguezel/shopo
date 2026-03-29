@@ -1,20 +1,20 @@
-# Seyfibaba — Berber & Kuaför Malzemeleri Pazaryeri
+# Seyfibaba — Berber ve Kuafor Malzemeleri Pazaryeri
 # https://seyfibaba.com
 
-> Seyfibaba, Türkiye merkezli profesyonel berber ve kuaför malzemeleri pazaryeridir. Berber koltuğu, kuaför tezgahı, salon ekipmanları, saç bakım ürünleri ve profesyonel berber aletleri gibi geniş ürün yelpazesiyle sektördeki profesyonellere hizmet vermektedir.
+> Seyfibaba, Turkiye merkezli profesyonel berber ve kuafor malzemeleri pazaryeridir. Berber koltugu, kuafor tezgahi, salon ekipmanlari, sac bakim urunleri ve profesyonel berber aletleri gibi genis urun yelpazesiyle sektordeki profesyonellere hizmet verir.
 
 ## Hakkında
 
-Seyfibaba, berber ve kuaför salonları için ekipman, mobilya, sarf malzeme ve salon teknolojilerini tek noktada bir araya getiren bir pazaryeridir. Birden fazla satıcının ürünlerini sergilediği platformda, salon kurulumundan günlük tedarike kadar tüm ihtiyaçlar karşılanmaktadır. Türkiye genelinde profesyonel berberler, kuaförler, güzellik merkezleri ve yeni salon açan girişimciler için en uygun fiyatlı alışveriş imkanı sunulmaktadır.
+Seyfibaba, berber ve kuafor salonlari icin ekipman, mobilya, sarf malzeme ve salon teknolojilerini tek noktada bir araya getiren bir pazaryeridir. Birden fazla saticinin urunlerini sergiledigi platformda, salon kurulumundan gunluk tedarike kadar temel ihtiyaclar karsilanir. Hedef kitle; profesyonel berberler, kuaforler, guzellik merkezleri ve yeni salon acan girisimcilerdir.
 
 ## Ürün Kategorileri
 
-- Berber Koltuğu: Hidrolik, döner, klasik ve modern berber koltukları
-- Kuaför Tezgahı: Aynalı tezgahlar, çekmeceli modüller, salon mobilyaları
-- Salon Ekipmanları: Kurutma makineleri, sterilizatörler, boya arabaları
-- Berber Aletleri: Tıraş makineleri, makas setleri, jilet tutucular
-- Saç Bakım Ürünleri: Şampuanlar, saç boyaları, bakım kremleri
-- Kuaför Aksesuarları: Pelerin, havlu, saç tokası, fırça setleri
+- Berber Koltugu: Hidrolik, doner, klasik ve modern berber koltuklari
+- Kuafor Tezgahi: Aynali tezgahlar, cekmeceli moduller, salon mobilyalari
+- Salon Ekipmanlari: Kurutma makineleri, sterilizatorler, boya arabalari
+- Berber Aletleri: Tiras makineleri, makas setleri, jilet tutucular
+- Sac Bakim Urunleri: Sampuanlar, sac boyalari, bakim kremleri
+- Kuafor Aksesuarlari: Pelerin, havlu, sac tokasi, firca setleri
 
 ## Site Yapısı
 
@@ -23,30 +23,33 @@ Seyfibaba, berber ve kuaför salonları için ekipman, mobilya, sarf malzeme ve 
 - Satıcılar: https://seyfibaba.com/sellers
 - Fırsat Ürünleri: https://seyfibaba.com/flash-sale
 - Blog: https://seyfibaba.com/blogs
-- Hakkımızda: https://seyfibaba.com/about
-- İletişim: https://seyfibaba.com/contact
+- Hakkimizda: https://seyfibaba.com/about
+- Iletisim: https://seyfibaba.com/contact
 - SSS: https://seyfibaba.com/faq
-- Gizlilik Politikası: https://seyfibaba.com/privacy-policy
-- Kullanım Koşulları: https://seyfibaba.com/terms-condition
+- Gizlilik Politikasi: https://seyfibaba.com/privacy-policy
+- Kullanim Kosullari: https://seyfibaba.com/terms-condition
 
 ## Teknik Bilgiler
 
 - Mimari: Next.js 15 (SSR) + Laravel 10 (API)
-- Ödeme: Iyzico (pazaryeri modeli, alt satıcı desteği)
-- Dil: Türkçe (tr_TR)
-- Para Birimi: TRY (Türk Lirası)
+- Odeme: Iyzico (pazaryeri modeli, alt satici destegi)
+- Dil: Turkce (tr_TR)
+- Para Birimi: TRY (Turk Lirasi)
 
 ## Crawling Rehberi
 
 - Sitemap: https://seyfibaba.com/sitemap.xml
 - Robots: https://seyfibaba.com/robots.txt
-- Ürün sayfaları: /single-product?slug={product-slug}
-- Satıcı profilleri: /seller/{seller-slug}
+- llms.txt: https://seyfibaba.com/llms.txt
+- Urun sayfalari: /urun/{product-slug}
+- Eski urun URL'leri: /single-product?slug={product-slug} kalici yonlendirme ile desteklenir
+- Satici profilleri: /seller/{seller-slug}
 - Blog detay: /blogs/{blog-slug}
 - Kategori: /products?category={category-slug}
 
 ## İletişim
 
 - Web: https://seyfibaba.com
-- İletişim Formu: https://seyfibaba.com/contact
+- Iletisim Formu: https://seyfibaba.com/contact
+- E-posta: info@seyfibaba.com
 - Telefon: +90 543 501 1995

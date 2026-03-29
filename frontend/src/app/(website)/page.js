@@ -2,7 +2,7 @@ import { cache } from "react";
 import home from "@/api/home";
 import Home from "@/components/Home";
 
-export const dynamic = 'force-dynamic'; // Static export için gerekli
+export const revalidate = 300;
 
 // api data cache for reducing multiple request to the api
 export const getHomeData = cache(async () => {
@@ -18,7 +18,12 @@ export const metadata = {
   },
 };
 
-import JsonLd, { generateOrganizationSchema, generateWebSiteSchema, generateStoreSchema } from "@/components/Helpers/JsonLd";
+import JsonLd, {
+  generateOrganizationSchema,
+  generateSpeakableSchema,
+  generateStoreSchema,
+  generateWebSiteSchema,
+} from "@/components/Helpers/JsonLd";
 import appConfig from "@/appConfig";
 
 // main page
@@ -27,6 +32,18 @@ export default async function HomePage() {
   const orgSchema = generateOrganizationSchema();
   const websiteSchema = generateWebSiteSchema();
   const storeSchema = generateStoreSchema();
+  const speakableSchema = generateSpeakableSchema({
+    url: appConfig.APPLICATION_URL,
+    cssSelectors: [
+      "#home-geo-headline",
+      "#home-geo-intro",
+      "#home-geo-intro-secondary",
+    ],
+  });
+  const homeSchemaGraph = {
+    "@context": "https://schema.org",
+    "@graph": [orgSchema, websiteSchema, storeSchema, speakableSchema].filter(Boolean),
+  };
 
   // Preload LCP hero image — must match the exact URL that Next.js <Image> will request
   const firstSliderImage = data?.sliders?.[0]?.image;
@@ -47,9 +64,7 @@ export default async function HomePage() {
           type="image/avif"
         />
       )}
-      <JsonLd data={orgSchema} />
-      <JsonLd data={websiteSchema} />
-      <JsonLd data={storeSchema} />
+      <JsonLd data={homeSchemaGraph} />
       <Home homepageData={data} />
       {/* SSR H1 + intro — slider altında, LCP'yi etkilemez ama crawler'lar görür */}
       <section className="container-x mx-auto mt-4 mb-8">
@@ -58,10 +73,16 @@ export default async function HomePage() {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#9f7b2f]">
               Profesyonel ekipman pazaryeri
             </p>
-            <h1 className="text-3xl font-black leading-tight text-[#1f2937] md:text-5xl">
+            <h1
+              id="home-geo-headline"
+              className="text-3xl font-black leading-tight text-[#1f2937] md:text-5xl"
+            >
               Berber ve Kuaför Malzemeleri
             </h1>
-            <p className="max-w-3xl text-base leading-8 text-[#4b5563] md:text-lg">
+            <p
+              id="home-geo-intro"
+              className="max-w-3xl text-base leading-8 text-[#4b5563] md:text-lg"
+            >
               Seyfibaba, profesyonel berber ve kuaför salonları için ekipman,
               mobilya, sarf malzeme ve salon teknolojilerini tek noktada bir
               araya getiren bir pazaryeridir. Berber koltuğu, kuaför tezgahı,
@@ -69,6 +90,17 @@ export default async function HomePage() {
               ihtiyaçları için kategorilere göre hızlı şekilde gezebilir,
               markaları karşılaştırabilir ve işletmenize uygun ürünleri güvenle
               inceleyebilirsiniz.
+            </p>
+            <p
+              id="home-geo-intro-secondary"
+              className="max-w-3xl text-base leading-8 text-[#4b5563]"
+            >
+              Platform, salon kurulumuna hazirlanan yeni girisimcilerden mevcut
+              isletmesini buyutmek isteyen profesyonellere kadar farkli
+              ihtiyaclara hitap eder. Kategori, marka ve satici bazli gezinme
+              yapisi sayesinde kuafor tezgahi, yikama seti, berber aynasi,
+              sterilizasyon ekipmanlari ve tuketim urunleri ayni akista
+              karsilastirilabilir.
             </p>
           </div>
         </div>

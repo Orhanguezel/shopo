@@ -11,6 +11,16 @@ use App\Models\PopularPost;
 
 class BlogController extends Controller
 {
+    protected function resolveSlugCandidates(string $slug): array
+    {
+        return collect([
+            $slug,
+            rawurldecode($slug),
+            rtrim($slug, '-'),
+            rtrim(rawurldecode($slug), '-'),
+        ])->filter()->unique()->values()->all();
+    }
+
     protected function getSidebarData()
     {
         $popularPostIds = PopularPost::where('status', 1)
@@ -90,10 +100,9 @@ class BlogController extends Controller
 
     public function blogCategoryDetail($slug)
     {
-        $category = BlogCategory::where([
-            'slug' => $slug,
-            'status' => 1,
-        ])->first();
+        $category = BlogCategory::where('status', 1)
+            ->whereIn('slug', $this->resolveSlugCandidates($slug))
+            ->first();
 
         if (!$category) {
             return response()->json(['message' => 'Blog category not found'], 404);
@@ -117,7 +126,8 @@ class BlogController extends Controller
     public function blogDetail($slug)
     {
         $blog = Blog::with(['category:id,name,slug', 'admin:id,name'])
-            ->where(['slug' => $slug, 'status' => 1])
+            ->where('status', 1)
+            ->whereIn('slug', $this->resolveSlugCandidates($slug))
             ->first();
 
         if (!$blog) {

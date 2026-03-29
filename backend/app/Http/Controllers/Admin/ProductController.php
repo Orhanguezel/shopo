@@ -26,6 +26,7 @@ use App\Models\CompareProduct;
 use Image;
 use File;
 use Str;
+use App\Support\ProductSlug;
 class ProductController extends Controller
 {
     public function __construct()
@@ -70,6 +71,10 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'slug' => ProductSlug::normalize($request->slug ?: $request->name),
+        ]);
+
         $rules = [
             'short_name' => 'required',
             'name' => 'required',
@@ -181,14 +186,6 @@ class ProductController extends Controller
         $brands = Brand::all();
         $specificationKeys = ProductSpecificationKey::all();
         $productSpecifications = ProductSpecification::where('product_id',$product->id)->get();
-        $tagArray = json_decode($product->tags);
-        $tags = '';
-        if($product->tags){
-            foreach($tagArray as $index => $tag){
-                $tags .= $tag->value.',';
-            }
-        }
-
         return response()->json(['product' => $product, 'categories' => $categories , 'brands' => $brands, 'specificationKeys' => $specificationKeys, 'productSpecifications' => $productSpecifications, 'subCategories' => $subCategories, 'childCategories' => $childCategories , ], 200);
 
     }
@@ -196,6 +193,9 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->merge([
+            'slug' => ProductSlug::normalize($request->slug ?: $request->name),
+        ]);
 
         $product = Product::find($id);
         $rules = [

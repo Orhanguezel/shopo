@@ -1,12 +1,13 @@
 import getBlogCategoryDetails from "@/api/getBlogCategoryDetails";
 import BlogCategoryPage from "@/components/Blog/BlogCategoryPage";
 import { cache } from "react";
+import { permanentRedirect } from "next/navigation";
 
 export async function generateStaticParams() {
   return [];
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 const getBlogCategoryDetailsData = cache(async (slug) => {
   return await getBlogCategoryDetails(slug);
@@ -18,12 +19,12 @@ export async function generateMetadata({ params }) {
   const { category } = data;
 
   return {
-    title: category?.name ? `${category.name} Blogs` : "Blog Category",
+    title: category?.name ? `${category.name} Blog Yazilari` : "Blog Kategorisi",
     description: category?.name
-      ? `Browse articles in the ${category.name} category.`
-      : "Browse blog category articles.",
+      ? `${category.name} kategorisindeki blog yazilarini inceleyin.`
+      : "Blog kategorisindeki yazilari inceleyin.",
     alternates: {
-      canonical: `/category-by-blogs/${slug}`,
+      canonical: `/category-by-blogs/${category?.slug || slug}`,
     },
   };
 }
@@ -31,6 +32,11 @@ export async function generateMetadata({ params }) {
 export default async function BlogCategoryDetailsPage({ params }) {
   const { slug } = await params;
   const data = await getBlogCategoryDetailsData(slug);
+  const canonicalSlug = data?.category?.slug;
+
+  if (canonicalSlug && canonicalSlug !== slug) {
+    permanentRedirect(`/category-by-blogs/${canonicalSlug}`);
+  }
 
   return (
     <BlogCategoryPage

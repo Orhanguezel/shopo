@@ -8,6 +8,7 @@ import ThinLove from "../../icons/ThinLove";
 import Compair from "../../icons/Compair";
 import ServeLangItem from "../../ServeLangItem";
 import AddToCardIco from "../../icons/AddToCardIco";
+import { buildProductPath } from "@/utils/url";
 
 const PRODUCT_IMAGE_FALLBACK = "/assets/images/server-error.png";
 
@@ -33,10 +34,7 @@ function ColumnV1({
         style={{ boxShadow: "0px 15px 64px 0px rgba(0, 0, 0, 0.05)" }}
       >
         <Link
-          href={{
-            pathname: "/single-product",
-            query: { slug: datas.slug },
-          }}
+          href={buildProductPath(datas.slug)}
           className="product-card-img w-full h-[300px] -mt-2 block"
         >
           <div className="w-full h-full relative flex justify-center items-center transform scale-100 group-hover:scale-110 transition duration-300 ease-in-out">
@@ -88,12 +86,7 @@ function ColumnV1({
               </>
             )}
           </div>
-          <Link
-            href={{
-              pathname: "/single-product",
-              query: { slug: datas.slug },
-            }}
-          >
+          <Link href={buildProductPath(datas.slug)}>
             <h3 className="title mb-2 text-[15px] font-600 text-qblack leading-[24px] line-clamp-2 hover:text-qyellow cursor-pointer ">
               {datas.title}
             </h3>
@@ -142,10 +135,7 @@ function ColumnV1({
         <div className="quick-access-btns flex flex-col space-y-2">
           <Link
             className=" absolute group-hover:right-4 -right-10 top-20  transition-all ease-in-out"
-            href={{
-              pathname: "/single-product",
-              query: { slug: datas.slug },
-            }}
+            href={buildProductPath(datas.slug)}
             aria-label={ServeLangItem()?.Quick_View || "Hızlı Bakış"}
           >
             <span className="hover:bg-qyellow w-10 h-10 flex justify-center text-black hover:text-white items-center transition-all duration-300 ease-in-out hover-bg-qyellow bg-primarygray rounded">

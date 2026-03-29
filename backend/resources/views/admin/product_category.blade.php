@@ -26,6 +26,7 @@
                                 <tr>
                                     <th>{{__('admin.SN')}}</th>
                                     <th>{{__('admin.Name')}}</th>
+                                    <th>{{__('admin.Description')}}</th>
                                     <th>{{__('admin.Image')}}</th>
                                     <th>{{__('admin.Icon')}}</th>
                                     <th>{{__('admin.Status')}}</th>
@@ -37,6 +38,9 @@
                                     <tr>
                                         <td>{{ ++$index }}</td>
                                         <td>{{ $category->name }}</td>
+                                        <td class="text-muted" style="max-width: 360px; white-space: normal;">
+                                            {{ \Illuminate\Support\Str::limit(strip_tags($category->description), 140) ?: 'Aciklama girilmedi' }}
+                                        </td>
                                         <td>
                                             <img src="{{ asset($category->image) }}" alt="" width="150px">
                                         </td>
@@ -102,7 +106,7 @@
     function changeProductCategoryStatus(id){
         var isDemo = "{{ env('APP_VERSION') }}"
         if(isDemo == 0){
-            toastr.error('This Is Demo Version. You Can Not Change Anything');
+            toastr.error('Bu demo sürümdür. Herhangi bir değişiklik yapamazsınız.');
             return;
         }
         $.ajax({

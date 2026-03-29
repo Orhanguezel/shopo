@@ -3,7 +3,7 @@ import AllProductPage from "@/components/AllProductPage";
 import { cache } from "react";
 import JsonLd, { generateItemListSchema, generateBreadcrumbSchema } from "@/components/Helpers/JsonLd";
 
-export const dynamic = 'force-dynamic'; // Static export için gerekli
+export const revalidate = 300;
 
 const resolveProductsQuery = (searchParamsObj = {}) => {
   const query = {};
@@ -57,9 +57,17 @@ export async function generateMetadata({ searchParams }) {
   const query = resolveProductsQuery(searchParamsObj);
   const data = await getProductsData(query);
   const { seoSetting } = data;
+  const activeCategory = data?.categories?.find(
+    (item) => item.slug === query?.category
+  );
+
   return {
-    title: seoSetting?.seo_title || "Ürünler",
-    description: seoSetting?.seo_description,
+    title: activeCategory?.name
+      ? `${activeCategory.name} Ürünleri | Seyfibaba`
+      : seoSetting?.seo_title || "Ürünler",
+    description:
+      activeCategory?.description ||
+      seoSetting?.seo_description,
     alternates: {
       canonical: "/products",
     },

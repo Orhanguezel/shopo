@@ -594,7 +594,7 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
         >
           <GoogleLoginUrlIcon />
           <span className="text-[18px] text-qgraytwo font-normal">
-            Sign Up with Google
+            Google ile Kayit Ol
           </span>
         </a>
 
@@ -605,7 +605,7 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
         >
           <FacebookLoginUrlIcon />
           <span className="text-[18px] font-normal text-white">
-            Sign Up with Facebook
+            Facebook ile Kayit Ol
           </span>
         </a>
 

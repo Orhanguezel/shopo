@@ -8,21 +8,22 @@ import appConfig from "@/appConfig";
 export default function SallerInfo({ products, sellerInfo }) {
   const seller = sellerInfo?.seller;
   const rs =
-    products?.length > 0 &&
-    products.map((item) => {
-      return {
-        id: item.id,
-        title: item.name,
-        slug: item.slug,
-        image: appConfig.BASE_URL + item.thumb_image,
-        price: item.price,
-        offer_price: item.offer_price,
-        campaingn_product: null,
-        vendor_id: Number(item.vendor_id),
-        review: parseInt(item.averageRating),
-        variants: item.active_variants,
-      };
-    });
+    products?.length > 0
+      ? products.map((item) => {
+          return {
+            id: item.id,
+            title: item.name,
+            slug: item.slug,
+            image: appConfig.BASE_URL + item.thumb_image,
+            price: item.price,
+            offer_price: item.offer_price,
+            campaingn_product: null,
+            vendor_id: Number(item.vendor_id),
+            review: parseInt(item.averageRating),
+            variants: item.active_variants,
+          };
+        })
+      : [];
   return (
     <div className="saller-info-wrapper w-full">
       <div className="saller-info sm:flex justify-between items-center pb-[30px] border-b border-[#E8E8E8]">

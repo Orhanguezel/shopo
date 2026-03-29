@@ -220,7 +220,7 @@ function BecomeSaller() {
       {/* Page Title Section */}
       <div className="title mb-10">
         <PageTitle
-          title="Seller Application"
+          title="Satici Basvurusu"
           breadcrumb={[
             { name: ServeLangItem()?.home, path: "/" },
             { name: ServeLangItem()?.Become_seller, path: "/become-seller" },

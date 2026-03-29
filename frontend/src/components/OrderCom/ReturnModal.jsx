@@ -8,12 +8,12 @@ import auth from "@/utils/auth";
 export default function ReturnModal({ orderId, orderProductId, maxQty, setReturnModal }) {
   const reasonOptions = useMemo(
     () => [
-      { value: "defective", label: "Defective Product" },
-      { value: "wrong_item", label: "Wrong Item Received" },
-      { value: "not_as_described", label: "Not as Described" },
-      { value: "changed_mind", label: "Changed My Mind" },
-      { value: "damaged_in_shipping", label: "Damaged in Shipping" },
-      { value: "other", label: "Other" },
+      { value: "defective", label: "Arizali Urun" },
+      { value: "wrong_item", label: "Yanlis Urun Geldi" },
+      { value: "not_as_described", label: "Aciklamadaki Gibi Degil" },
+      { value: "changed_mind", label: "Kararim Degisti" },
+      { value: "damaged_in_shipping", label: "Kargoda Hasar Gordu" },
+      { value: "other", label: "Diger" },
     ],
     []
   );
@@ -59,10 +59,10 @@ export default function ReturnModal({ orderId, orderProductId, maxQty, setReturn
         toast.success(data.message);
         setReturnModal(false);
       } else {
-        toast.error(data.message || "Failed to submit request");
+        toast.error(data.message || "Talep gonderilemedi");
       }
     } catch (error) {
-      toast.error("An error occurred");
+      toast.error("Bir hata olustu");
     } finally {
       setLoading(false);
     }
@@ -77,7 +77,7 @@ export default function ReturnModal({ orderId, orderProductId, maxQty, setReturn
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl transform transition-all scale-100">
         <div className="bg-primary p-6 flex justify-between items-center text-white">
-          <h3 className="text-xl font-bold">Request Return</h3>
+          <h3 className="text-xl font-bold">Iade Talebi Olustur</h3>
           <button onClick={() => setReturnModal(false)} className="hover:rotate-90 transition-transform">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />

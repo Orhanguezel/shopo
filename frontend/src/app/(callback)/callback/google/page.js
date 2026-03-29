@@ -1,7 +1,7 @@
 import GoogleCallbackClient from "./GoogleCallbackClient";
 
 export const metadata = {
-  title: "Google Login Callback | Shopo",
+  title: "Google Giris Yonlendirmesi | Seyfibaba",
   robots: { index: false, follow: false },
   alternates: {
     canonical: "/callback/google",

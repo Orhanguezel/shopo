@@ -1,6 +1,8 @@
 import apiRoutes from "@/appConfig/apiRoutes";
 import { notFound } from "next/navigation";
 
+const PUBLIC_CONTENT_REVALIDATE = 300;
+
 const appendListParam = (params, key, value) => {
   if (!value) return;
 
@@ -100,7 +102,9 @@ export default async function products(
     headers: {
       "Content-Type": "application/json",
     },
-    cache: "no-store",
+    next: {
+      revalidate: PUBLIC_CONTENT_REVALIDATE,
+    },
   });
   if (!res.ok) {
     notFound();

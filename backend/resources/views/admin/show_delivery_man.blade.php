@@ -1,23 +1,23 @@
 
 @extends('admin.master_layout')
 @section('title')
-<title>{{__('Dalivery Man Details')}}</title>
+<title>Teslimat Görevlisi Detayları</title>
 @endsection
 @section('admin-content')
       <!-- Main Content -->
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>{{__('Delivery Man Details')}}</h1>
+            <h1>Teslimat Görevlisi Detayları</h1>
             <div class="section-header-breadcrumb">
               <div class="breadcrumb-item active"><a href="{{ route('admin.dashboard') }}">{{__('admin.Dashboard')}}</a></div>
-              <div class="breadcrumb-item active"><a href="{{ route('admin.delivery-man.index') }}">{{__('Delivery Man')}}</a></div>
-              <div class="breadcrumb-item">{{__('Dlivery Man Details')}}</div>
+              <div class="breadcrumb-item active"><a href="{{ route('admin.delivery-man.index') }}">Teslimat Görevlileri</a></div>
+              <div class="breadcrumb-item">Teslimat Görevlisi Detayları</div>
             </div>
           </div>
 
           <div class="section-body">
-            <a href="{{ route('admin.delivery-man.index') }}" class="btn btn-primary"><i class="fas fa-list"></i> {{__('Delivery Man')}}</a>
+            <a href="{{ route('admin.delivery-man.index') }}" class="btn btn-primary"><i class="fas fa-list"></i> Teslimat Görevlileri</a>
             <div class="row mt-5">
                   <div class="col-md-4">
                     <div class="card card-statistic-1">
@@ -26,7 +26,7 @@
                       </div>
                       <div class="card-wrap">
                         <div class="card-header">
-                          <h4>{{__('Current product Balance')}}</h4>
+                          <h4>Mevcut Ürün Bakiyesi</h4>
                         </div>
                         <div class="card-body">
                           {{ $setting->currency_icon }}{{ round($current_product_amount, 2) }}
@@ -41,7 +41,7 @@
                       </div>
                       <div class="card-wrap">
                         <div class="card-header">
-                          <h4>{{__('Completed order')}}</h4>
+                          <h4>Tamamlanan Sipariş</h4>
                         </div>
                         <div class="card-body">
                           {{ $completeOrder->count() }}
@@ -57,7 +57,7 @@
                       </div>
                       <div class="card-wrap">
                         <div class="card-header">
-                          <h4>{{__('Running order')}}</h4>
+                          <h4>Devam Eden Sipariş</h4>
                         </div>
                         <div class="card-body">
                           {{ $runingOrder->count() }}
@@ -73,7 +73,7 @@
                         </div>
                         <div class="card-wrap">
                         <div class="card-header">
-                            <h4>{{__('Total earn')}}</h4>
+                            <h4>Toplam Kazanç</h4>
                         </div>
                         <div class="card-body">
                             {{ $setting->currency_icon }}{{ $tota_earn }}
@@ -133,19 +133,19 @@
                                     <td>{{ $deliveryman->phone }}</td>
                                 </tr>
                                 <tr>
-                                    <td>{{__('Delivery Man Type')}}</td>
+                                    <td>Teslimat Görevlisi Türü</td>
                                     <td>{{ ucfirst($deliveryman->man_type) }}</td>
                                 </tr>
                                 <tr>
-                                    <td>{{__('Identity Type')}}</td>
+                                    <td>Kimlik Türü</td>
                                     <td>{{ ucfirst($deliveryman->idn_type) }}</td>
                                 </tr>
                                 <tr>
-                                    <td>{{__('Identity Number')}}</td>
+                                    <td>Kimlik Numarası</td>
                                     <td>{{ $deliveryman->idn_num }}</td>
                                 </tr>
                                 <tr>
-                                    <td>{{__('Identity Image')}}</td>
+                                    <td>Kimlik Görseli</td>
                                     <td><img alt="image" src="{{ asset($deliveryman->idn_image) }}" class="profile-widget-picture mt-3 mb-5"></td>
                                 </tr>
                                 <tr>
@@ -201,14 +201,14 @@
           var autocomplete;
 
           function initMap() {
-              // Default location set to India
-              var defaultLocation = { lat: 20.5937, lng: 78.9629 }; // Coordinates for India
+              // Default location fallback
+              var defaultLocation = { lat: 20.5937, lng: 78.9629 };
               var initialLocation = {
                   lat: parseFloat("{{ $deliveryman->latitude }}") || defaultLocation.lat,
                   lng: parseFloat("{{ $deliveryman->longitude }}") || defaultLocation.lng
               };
 
-              // Create the map centered on initial location (or default India)
+              // Create the map centered on initial location
               map = new google.maps.Map(document.getElementById('map'), {
                   center: initialLocation,
                   zoom: 6
@@ -234,7 +234,7 @@
                   var place = autocomplete.getPlace();
 
                   if (!place.geometry) {
-                      alert("No details available for the input: '" + place.name + "'");
+                      alert("Girilen konum için detay bulunamadı: '" + place.name + "'");
                       return;
                   }
 
@@ -280,7 +280,7 @@
     function manageDeliveryManStatus(id){
         var isDemo = "{{ env('APP_VERSION') }}"
         if(isDemo == 0){
-            toastr.error('This Is Demo Version. You Can Not Change Anything');
+            toastr.error('Bu demo sürümdür. Herhangi bir değişiklik yapamazsınız.');
             return;
         }
         $.ajax({

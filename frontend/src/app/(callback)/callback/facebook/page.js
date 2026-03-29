@@ -1,7 +1,7 @@
 import FacebookCallbackClient from "./FacebookCallbackClient";
 
 export const metadata = {
-  title: "Facebook Login Callback | Shopo",
+  title: "Facebook Giris Yonlendirmesi | Seyfibaba",
   robots: { index: false, follow: false },
   alternates: {
     canonical: "/callback/facebook",

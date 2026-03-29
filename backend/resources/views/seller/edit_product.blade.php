@@ -178,11 +178,11 @@
                                     <div>
                                         @if ($product->is_specification==1)
                                             <a href="javascript::void()" id="manageSpecificationBox">
-                                                <input name="is_specification" id="status_toggle" type="checkbox" checked data-toggle="toggle" data-on="{{__('admin.Enable')}}" data-off="{{__('admin.Disable')}}" data-onstyle="success" data-offstyle="danger">
+                                                <input name="is_specification" id="status_toggle" type="checkbox" checked data-toggle="toggle" data-on="Açık" data-off="Kapalı" data-onstyle="success" data-offstyle="danger">
                                             </a>
                                         @else
                                         <a href="javascript::void()" id="manageSpecificationBox">
-                                                <input name="is_specification" id="status_toggle" type="checkbox" data-toggle="toggle" data-on="{{__('admin.Enable')}}" data-off="{{__('admin.Disable')}}" data-onstyle="success" data-offstyle="danger">
+                                                <input name="is_specification" id="status_toggle" type="checkbox" data-toggle="toggle" data-on="Açık" data-off="Kapalı" data-onstyle="success" data-offstyle="danger">
                                             </a>
                                         @endif
 
@@ -407,7 +407,7 @@
             $(".removeExistSpecificationRow").on("click",function(){
                 var isDemo = "{{ env('APP_VERSION') }}"
                 if(isDemo == 0){
-                    toastr.error('This Is Demo Version. You Can Not Change Anything');
+                    toastr.error('Bu demo sürümdür. Herhangi bir değişiklik yapamazsınız.');
                     return;
                 }
 

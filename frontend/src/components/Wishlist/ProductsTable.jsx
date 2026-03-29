@@ -9,6 +9,7 @@ import { useLazyRemoveFromWishlistApiQuery } from "../../redux/features/product/
 import WishlistDltIco from "../Helpers/icons/WishlistDltIco";
 import auth from "../../utils/auth";
 import appConfig from "@/appConfig";
+import { buildProductPath } from "@/utils/url";
 
 export default function ProductsTable({ className, products }) {
   const router = useRouter();
@@ -97,10 +98,7 @@ export default function ProductsTable({ className, products }) {
           </div>
           <div className="flex-1 flex flex-col">
             <Link
-              href={{
-                pathname: "/single-product",
-                query: { slug: item.product.slug },
-              }}
+              href={buildProductPath(item.product.slug)}
             >
               <p className="font-medium text-[15px] text-qblack hover:text-qyellow cursor-pointer notranslate">
                 {item.product.name}

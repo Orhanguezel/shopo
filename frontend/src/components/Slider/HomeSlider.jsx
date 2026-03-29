@@ -3,6 +3,7 @@ import Slider from ".";
 import Link from "next/link";
 import Image from "next/image";
 import ShopNowBtn from "../Helpers/Buttons/ShopNowBtn";
+import { buildProductPath } from "@/utils/url";
 
 function HomeSlider({ images, settings }) {
   return (
@@ -43,10 +44,7 @@ function HomeSlider({ images, settings }) {
                 </div>
                 <div className="w-auto bg-white/90 p-2 rounded-full shadow-sm">
                   <Link
-                    href={{
-                      pathname: "/single-product",
-                      query: { slug: item.product_slug },
-                    }}
+                    href={buildProductPath(item.product_slug)}
                   >
                     <ShopNowBtn />
                   </Link>

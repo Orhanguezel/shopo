@@ -35,7 +35,7 @@ export default function Ads() {
           toast.error(err?.data?.message);
         });
     } else {
-      toast.error("Please enter your email");
+      toast.error("Lutfen e-posta adresinizi girin");
     }
   };
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function Ads() {
             >
               <Image
                 src={appConfig.BASE_URL + announcment.image}
-                alt={announcment.title || "Announcement"}
+                alt={announcment.title || "Duyuru gorseli"}
                 fill
                 priority
                 className="object-cover"
@@ -132,7 +132,7 @@ export default function Ads() {
                     type="email"
                     name="email"
                     className="w-full h-full focus:outline-none text-sm placeholder:uppercase placeholder:text-xs placeholder:text-qblack text-qblack font-400 tracking-wider"
-                    placeholder="Email Address"
+                    placeholder="E-posta adresi"
                     onChange={(e) => setEmail(e.target.value.trim())}
                     value={email}
                   />

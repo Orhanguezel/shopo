@@ -10,7 +10,7 @@ function formatBlogDate(dateValue) {
   }
 
   try {
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat("tr-TR", {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -32,7 +32,7 @@ export default function BlogCard({ blog }) {
           <Image
             fill
             src={imageUrl}
-            alt={blog?.title || "Blog image"}
+            alt={blog?.title || "Blog gorseli"}
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
@@ -54,7 +54,7 @@ export default function BlogCard({ blog }) {
         </Link>
         <div className="mb-4 flex items-center justify-between text-sm text-qgray">
           <span>{formatBlogDate(blog?.created_at)}</span>
-          <span>{blog?.views || 0} views</span>
+          <span>{blog?.views || 0} okunma</span>
         </div>
         {blog?.description && (
           <div

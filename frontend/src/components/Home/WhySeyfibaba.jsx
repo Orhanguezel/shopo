@@ -27,7 +27,43 @@ const features = [
   },
 ];
 
-export default function WhySeyfibaba({ className }) {
+const buildSignalCards = (homepageData) => {
+  const categoryCount = homepageData?.homepage_categories?.length || 0;
+  const brandCount = homepageData?.brands?.length || 0;
+  const featuredCount = homepageData?.featuredCategoryProducts?.length || 0;
+  const newArrivalCount = homepageData?.newArrivalProducts?.length || 0;
+
+  return [
+    {
+      label: "Kategori gorunurlugu",
+      value: categoryCount > 0 ? `${categoryCount}+ kategori` : "Kategori odakli kurgu",
+      description:
+        "Ana kategoriler, salon kurulumundan gunluk sarf tedarigine kadar farkli satin alma senaryolarina gore gruplanir.",
+    },
+    {
+      label: "Marka karsilastirmasi",
+      value: brandCount > 0 ? `${brandCount}+ marka` : "Marka filtreleme aktif",
+      description:
+        "Ayni ihtiyac icin farkli markalari filtreleyerek fiyat, stok ve kullanim amaci bazinda daha hizli karsilastirma yapabilirsiniz.",
+    },
+    {
+      label: "One cikan urunler",
+      value: featuredCount > 0 ? `${featuredCount}+ secili urun` : "Secili urun listeleri",
+      description:
+        "Featured ve popular alanlari, karar surecini hizlandiran daha gorunur urun vitrinleri olusturur.",
+    },
+    {
+      label: "Guncel akıs",
+      value: newArrivalCount > 0 ? `${newArrivalCount}+ yeni urun` : "Yeni urun akisi",
+      description:
+        "Yeni gelen urunler ve kampanya alanlari, tekrarli tedarik yapan salonlar icin guncel kesif noktasi saglar.",
+    },
+  ];
+};
+
+export default function WhySeyfibaba({ className, homepageData }) {
+  const signalCards = buildSignalCards(homepageData);
+
   return (
     <section className={`w-full ${className || ""}`}>
       <div className="container-x mx-auto">
@@ -39,6 +75,35 @@ export default function WhySeyfibaba({ className }) {
             Türkiye'nin en kapsamlı berber ve kuaför malzemeleri pazaryeri olarak
             profesyonellere özel hizmet sunuyoruz.
           </p>
+        </div>
+        <div className="mb-8 rounded-[28px] border border-[#ece3cf] bg-[#fffaf0] px-6 py-7 md:px-8">
+          <h3 className="text-2xl font-bold text-qblacktext">
+            Profesyonel satin alma kararini destekleyen ana sinyaller
+          </h3>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-600">
+            Seyfibaba, salon profesyonellerinin urun secimini yalnizca fiyat
+            listesi uzerinden degil; kategori yapisi, marka karsilastirmasi,
+            kampanya alani ve guncel urun akisi ile birlikte degerlendirebilmesi
+            icin kurgulandi.
+          </p>
+          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {signalCards.map((item) => (
+              <article
+                key={item.label}
+                className="rounded-3xl bg-white px-5 py-5 ring-1 ring-[#eee0be]"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9f7b2f]">
+                  {item.label}
+                </p>
+                <p className="mt-3 text-xl font-bold text-qblacktext">
+                  {item.value}
+                </p>
+                <p className="mt-3 text-sm leading-7 text-gray-500">
+                  {item.description}
+                </p>
+              </article>
+            ))}
+          </div>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (

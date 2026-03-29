@@ -213,7 +213,7 @@
                                     </div>
                                     @if($seller->kyc_status && $seller->kyc_status !== 'not_submitted')
                                     <div class="col-12">
-                                        <a href="{{ route('admin.kyc.show',$seller->id) }}" class="btn btn-dark btn-block btn-lg my-2">Seller KYC</a>
+                                        <a href="{{ route('admin.kyc.show',$seller->id) }}" class="btn btn-dark btn-block btn-lg my-2">Satıcı KYC</a>
                                     </div>
                                     @endif
                                 </div>
@@ -363,7 +363,7 @@
     function manageCustomerStatus(id){
         var isDemo = "{{ env('APP_VERSION') }}"
         if(isDemo == 0){
-            toastr.error('This Is Demo Version. You Can Not Change Anything');
+            toastr.error('Bu demo sürümdür. Herhangi bir değişiklik yapamazsınız.');
             return;
         }
         $.ajax({
@@ -383,7 +383,7 @@
     function manageShopStatus(id){
         var isDemo = "{{ env('APP_VERSION') }}"
         if(isDemo == 0){
-            toastr.error('This Is Demo Version. You Can Not Change Anything');
+            toastr.error('Bu demo sürümdür. Herhangi bir değişiklik yapamazsınız.');
             return;
         }
         $.ajax({

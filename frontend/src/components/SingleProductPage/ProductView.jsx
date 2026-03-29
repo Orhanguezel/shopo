@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useContext, useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FacebookShareButton, TwitterShareButton } from "react-share";
+import { buildProductPath } from "@/utils/url";
 import { toast } from "react-toastify";
 import auth from "../../utils/auth";
 import settings from "../../utils/settings";
@@ -123,7 +124,8 @@ const VariantSelector = ({ variants, onSelectVariant }) => {
       {variants.length > 0 &&
         variants.map((item, i) => (
           <div key={i}>
-            {item.active_variant_items.length > 0 && (
+            {Array.isArray(item?.active_variant_items) &&
+              item.active_variant_items.length > 0 && (
               <div className="w-full mb-5">
                 <div className="border border-qgray-border h-[50px] flex justify-between items-center cursor-pointer">
                   <Selectbox
@@ -164,7 +166,7 @@ const SocialShareButtons = ({ product }) => {
   const safeProduct = product || {};
   const shareUrl =
     typeof window !== "undefined" && window.location.origin
-      ? `${window.location.origin}/single-product?slug=${safeProduct.slug || ""}`
+      ? `${window.location.origin}${buildProductPath(safeProduct.slug || "")}`
       : "";
 
   return (
@@ -188,9 +190,11 @@ export default function ProductView({
   reportHandler,
   images = [],
   product,
+  details,
   seller,
 }) {
   const safeProduct = product || {};
+  const safeDetails = details || {};
   const safeVariants = safeProduct?.active_variants || [];
   const safeImages = Array.isArray(images) ? images : [];
 
@@ -230,16 +234,26 @@ export default function ProductView({
   const tags = useMemo(() => {
     if (!safeProduct?.tags) return [];
     try {
-      return typeof safeProduct.tags === "string"
+      const parsedTags =
+        typeof safeProduct.tags === "string"
         ? JSON.parse(safeProduct.tags)
         : safeProduct.tags;
+      return Array.isArray(parsedTags) ? parsedTags : [];
     } catch (e) {
-      console.error("Tags parse error", e);
       return [];
     }
   }, [safeProduct?.tags]);
 
   const { map_status, commission_type } = settings();
+  const reviewCount = parseInt(
+    safeDetails?.totalProductReviewQty ||
+      safeDetails?.productReviews?.length ||
+      0,
+    10
+  );
+  const averageRating = parseFloat(safeProduct?.averageRating || 0);
+  const sellerProductCount = parseInt(safeDetails?.sellerTotalProducts || 0, 10);
+  const sellerReviewCount = parseInt(safeDetails?.sellerTotalReview || 0, 10);
 
   // Update state when props change - improved synchronization
   useEffect(() => {
@@ -334,7 +348,7 @@ export default function ProductView({
               );
               return {
                 ...v,
-                product_variant_name: variantObj ? variantObj.name : "Variant",
+                product_variant_name: variantObj ? variantObj.name : "Varyant",
               };
             })
           : [];
@@ -576,8 +590,45 @@ export default function ProductView({
           >
             <StarRating rating={safeProduct?.averageRating} />
             <span className="text-[13px] font-normal text-qblack">
-              {parseInt(safeProduct?.averageRating || 0, 10)} {ServeLangItem()?.Reviews}
+              {averageRating > 0 ? averageRating.toFixed(1) : "0.0"} puan
             </span>
+            <span className="text-[13px] text-qgray">
+              ({reviewCount} degerlendirme)
+            </span>
+          </div>
+
+          <div className="mb-6 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-[#e6dcc6] bg-[#fffaf0] px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9f7b2f]">
+                Musteri puani
+              </p>
+              <p className="mt-2 text-lg font-semibold text-qblack">
+                {averageRating > 0 ? averageRating.toFixed(1) : "0.0"} / 5
+              </p>
+              <p className="text-sm text-qgray">{reviewCount} yorum baz alindi</p>
+            </div>
+            <div className="rounded-xl border border-[#e6e8ec] bg-[#f8fafc] px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4b5563]">
+                Satici olcegi
+              </p>
+              <p className="mt-2 text-lg font-semibold text-qblack">
+                {sellerProductCount} urun
+              </p>
+              <p className="text-sm text-qgray">
+                {sellerReviewCount} satici degerlendirmesi
+              </p>
+            </div>
+            <div className="rounded-xl border border-[#dbe7d6] bg-[#f3fbf4] px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4c7a45]">
+                Alisveris sinyali
+              </p>
+              <p className="mt-2 text-lg font-semibold text-qblack">
+                Guvenli siparis akisi
+              </p>
+              <p className="text-sm text-qgray">
+                Stok, fiyat ve satici bilgileri anlik guncellenir
+              </p>
+            </div>
           </div>
 
           {/* Price */}
@@ -703,11 +754,15 @@ export default function ProductView({
             <span className="text-qblack">Kategori:</span>{" "}
             {safeProduct?.category?.name || ""}
           </p>
-          {tags && (
+          {tags.length > 0 && (
             <p className="text-[13px] text-qgray leading-7">
               <span className="text-qblack">Etiketler:</span>{" "}
-              {tags.length > 0 &&
-                tags.map((item, i) => <span key={i}>{item.value + ", "}</span>)}
+              {tags.map((item, i) => (
+                <span key={i}>
+                  {(item?.value || item?.name || item || "") +
+                    (i < tags.length - 1 ? ", " : "")}
+                </span>
+              ))}
             </p>
           )}
           <p className="text-[13px] text-qgray leading-7">

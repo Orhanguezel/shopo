@@ -12,7 +12,7 @@ export default function SellerProfile({ slug }) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
 
     if (isLoading) return <Loader />;
-    if (isError || !data?.seller) return <div className="py-20 text-center">Seller not found.</div>;
+    if (isError || !data?.seller) return <div className="py-20 text-center">Satici bulunamadi.</div>;
 
     const { seller, products } = data;
 
@@ -21,8 +21,8 @@ export default function SellerProfile({ slug }) {
             <Breadcrumb
                 title={seller.shop_name}
                 paths={[
-                    { name: "Home", path: "/" },
-                    { name: "Sellers", path: "/sellers" },
+                    { name: "Anasayfa", path: "/" },
+                    { name: "Saticilar", path: "/sellers" },
                     { name: seller.shop_name, path: `/seller/${slug}` }
                 ]}
             />
@@ -47,7 +47,7 @@ export default function SellerProfile({ slug }) {
                                 <h1 className="text-4xl font-extrabold text-gray-900">{seller.shop_name}</h1>
                                 <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-1">
                                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                    Verified Seller
+                                    Onayli Satici
                                 </span>
                             </div>
 
@@ -58,7 +58,7 @@ export default function SellerProfile({ slug }) {
                                     ))}
                                 </div>
                                 <span className="text-gray-900 font-bold ml-1">({seller.averageRating || 0})</span>
-                                <span className="text-gray-400 text-sm ml-4 border-l border-gray-200 pl-4">{products?.total || 0} Products</span>
+                                <span className="text-gray-400 text-sm ml-4 border-l border-gray-200 pl-4">{products?.total || 0} urun</span>
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -69,7 +69,7 @@ export default function SellerProfile({ slug }) {
                                         </svg>
                                     </div>
                                     <div className="overflow-hidden">
-                                        <span className="block text-[10px] uppercase font-bold tracking-widest text-gray-400">Email</span>
+                                        <span className="block text-[10px] uppercase font-bold tracking-widest text-gray-400">E-posta</span>
                                         <span className="text-gray-900 font-medium truncate block">{seller.email}</span>
                                     </div>
                                 </div>
@@ -80,7 +80,7 @@ export default function SellerProfile({ slug }) {
                                         </svg>
                                     </div>
                                     <div>
-                                        <span className="block text-[10px] uppercase font-bold tracking-widest text-gray-400">Phone</span>
+                                        <span className="block text-[10px] uppercase font-bold tracking-widest text-gray-400">Telefon</span>
                                         <span className="text-gray-900 font-medium">{seller.phone}</span>
                                     </div>
                                 </div>
@@ -92,7 +92,7 @@ export default function SellerProfile({ slug }) {
                                         </svg>
                                     </div>
                                     <div>
-                                        <span className="block text-[10px] uppercase font-bold tracking-widest text-gray-400">Location</span>
+                                        <span className="block text-[10px] uppercase font-bold tracking-widest text-gray-400">Konum</span>
                                         <span className="text-gray-900 font-medium line-clamp-1">{seller.address}</span>
                                     </div>
                                 </div>
@@ -102,7 +102,7 @@ export default function SellerProfile({ slug }) {
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
-                                Contact Shop
+                                Saticiya Ulas
                             </button>
                         </div>
                     </div>
@@ -110,7 +110,7 @@ export default function SellerProfile({ slug }) {
                     {/* Shop Products Section */}
                     <div className="mb-20">
                         <div className="flex items-center justify-between mb-10">
-                            <h2 className="text-2xl font-extrabold text-gray-900 border-l-4 border-primary pl-4">Products from {seller.shop_name}</h2>
+                            <h2 className="text-2xl font-extrabold text-gray-900 border-l-4 border-primary pl-4">{seller.shop_name} magazasinin urunleri</h2>
                         </div>
                         
                         {products?.data?.length > 0 ? (
@@ -123,7 +123,7 @@ export default function SellerProfile({ slug }) {
                             </div>
                         ) : (
                             <div className="text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                                <p className="text-gray-500">This seller has no products yet.</p>
+                                <p className="text-gray-500">Bu saticinin henuz yayinda urunu bulunmuyor.</p>
                             </div>
                         )}
                     </div>

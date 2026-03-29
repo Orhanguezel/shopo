@@ -7,6 +7,7 @@ import Link from "next/link";
 import QuickViewIco from "../../icons/QuickViewIco";
 import ThinLove from "../../icons/ThinLove";
 import Compair from "../../icons/Compair";
+import { buildProductPath } from "@/utils/url";
 
 const PRODUCT_IMAGE_FALLBACK = "/assets/images/server-error.png";
 
@@ -66,12 +67,7 @@ function RowV1({
                 )}
               </div>
 
-              <Link
-                href={{
-                  pathname: "/single-product",
-                  query: { slug: datas.slug },
-                }}
-              >
+              <Link href={buildProductPath(datas.slug)}>
                 <h3 className="title mb-2 sm:text-[15px] text-[13px] font-600 text-qblack leading-[24px] line-clamp-2 hover:text-qyellow cursor-pointer">
                   {datas.title}
                 </h3>
@@ -133,10 +129,7 @@ function RowV1({
         <div className="quick-access-btns flex flex-col space-y-2">
           <Link
             className=" absolute group-hover:left-4 -left-10 top-5  transition-all ease-in-out"
-            href={{
-              pathname: "/single-product",
-              query: { slug: datas.slug },
-            }}
+            href={buildProductPath(datas.slug)}
             aria-label={ServeLangItem()?.Quick_View || "Hızlı Bakış"}
           >
             <span className="hover:bg-qyellow w-10 h-10 flex justify-center text-black hover:text-white items-center transition-all duration-300 ease-in-out hover-bg-qyellow bg-primarygray rounded">

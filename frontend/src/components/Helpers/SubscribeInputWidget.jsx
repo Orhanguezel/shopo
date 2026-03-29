@@ -18,7 +18,7 @@ function SubscribeInputWidget() {
           toast.error(err?.data?.message);
         });
     } else {
-      toast.error("Please enter your email");
+      toast.error("Lutfen e-posta adresinizi girin");
     }
   };
   return (
@@ -55,7 +55,7 @@ function SubscribeInputWidget() {
           type="email"
           name="email"
           className="w-full h-full focus:outline-none text-sm placeholder:text-xs placeholder:text-qblack text-qblack font-400 tracking-wider"
-          placeholder="EMAIL ADDRESS"
+          placeholder="E-POSTA ADRESI"
           onChange={(e) => setEmail(e.target.value.trim())}
           value={email}
         />

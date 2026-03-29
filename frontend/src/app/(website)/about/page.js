@@ -1,8 +1,10 @@
 import about from "@/api/about";
 import About from "@/components/About";
+import JsonLd, { generateSpeakableSchema } from "@/components/Helpers/JsonLd";
+import appConfig from "@/appConfig";
 import { cache } from "react";
 
-export const dynamic = 'force-dynamic'; // Static export için gerekli
+export const revalidate = 300;
 
 export const getAboutData = cache(async () => {
   return await about();
@@ -14,7 +16,9 @@ export async function generateMetadata() {
   const { seoSetting } = data;
   return {
     title: seoSetting?.seo_title || "Hakkımızda | Seyfibaba",
-    description: seoSetting?.seo_description,
+    description:
+      seoSetting?.seo_description ||
+      "Seyfibaba'nin berber ve kuafor profesyonelleri icin kurdugu pazaryeri yapisini, hizmet alanlarini ve operasyon anlayisini kesfedin.",
     alternates: {
       canonical: "/about",
     },
@@ -24,6 +28,15 @@ export async function generateMetadata() {
 // main page
 export default async function aboutPage() {
   const data = await getAboutData();
+  const speakableSchema = generateSpeakableSchema({
+    url: `${appConfig.APPLICATION_URL}/about`,
+    cssSelectors: ["#about-editorial-content", "#about-mission-heading"],
+  });
 
-  return <About aboutData={data} />;
+  return (
+    <>
+      {speakableSchema && <JsonLd data={speakableSchema} />}
+      <About aboutData={data} />
+    </>
+  );
 }

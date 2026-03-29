@@ -32,6 +32,7 @@ use App\Imports\ProductImport;
 use App\Http\Requests\Seller\UploadBulkProductImportRequest;
 use App\Models\BulkImport;
 use App\Services\BulkProductImportService;
+use App\Support\ProductSlug;
 use Maatwebsite\Excel\Facades\Excel;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -48,7 +49,7 @@ class ProductController extends Controller
         $orderProducts = OrderProduct::all();
         $setting = Setting::first();
         $frontend_url = $setting->frontend_url;
-        $frontend_url = $frontend_url.'/single-product?slug=';
+        $frontend_url = rtrim($frontend_url, '/').'/urun/';
         return view('admin.product',compact('products','orderProducts','setting','frontend_url'));
     }
 
@@ -58,7 +59,7 @@ class ProductController extends Controller
         $orderProducts = OrderProduct::all();
         $setting = Setting::first();
         $frontend_url = $setting->frontend_url;
-        $frontend_url = $frontend_url.'/single-product?slug=';
+        $frontend_url = rtrim($frontend_url, '/').'/urun/';
         return view('admin.product',compact('products','orderProducts','setting','frontend_url'));
     }
 
@@ -67,7 +68,7 @@ class ProductController extends Controller
         $orderProducts = OrderProduct::all();
         $setting = Setting::first();
         $frontend_url = $setting->frontend_url;
-        $frontend_url = $frontend_url.'/single-product?slug=';
+        $frontend_url = rtrim($frontend_url, '/').'/urun/';
 
         return view('admin.pending_product',compact('products','orderProducts','setting','frontend_url'));
 
@@ -78,7 +79,7 @@ class ProductController extends Controller
         $orderProducts = OrderProduct::all();
         $setting = Setting::first();
         $frontend_url = $setting->frontend_url;
-        $frontend_url = $frontend_url.'/single-product?slug=';
+        $frontend_url = rtrim($frontend_url, '/').'/urun/';
 
         return view('admin.stockout_product',compact('products','orderProducts','setting','frontend_url'));
 
@@ -99,6 +100,10 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'slug' => ProductSlug::normalize($request->slug ?: $request->name),
+        ]);
+
         $rules = [
             'short_name' => 'required',
             'name' => 'required',
@@ -222,6 +227,9 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->merge([
+            'slug' => ProductSlug::normalize($request->slug ?: $request->name),
+        ]);
 
         $product = Product::find($id);
         $rules = [

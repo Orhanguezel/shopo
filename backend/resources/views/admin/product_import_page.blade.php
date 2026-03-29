@@ -14,9 +14,9 @@
           <div class="section-body">
             <a href="{{ route('admin.product.index') }}" class="btn btn-primary"><i class="fas fa-list"></i> {{__('admin.Product List')}}</a>
 
-            <a href="{{ route('admin.product-bulk-import-template') }}" class="btn btn-success"><i class="fas fa-file-download"></i> Download CSV Template</a>
+            <a href="{{ route('admin.product-bulk-import-template') }}" class="btn btn-success"><i class="fas fa-file-download"></i> CSV Şablonunu İndir</a>
 
-            <a href="{{ route('admin.product-export') }}" class="btn btn-info"><i class="fas fa-file-export"></i> Legacy Export</a>
+            <a href="{{ route('admin.product-export') }}" class="btn btn-info"><i class="fas fa-file-export"></i> Eski Dışa Aktarma</a>
 
             <div class="row mt-4">
                 <div class="col-12">
@@ -47,9 +47,9 @@
                 <div class="card-body">
                     <table class="table">
                         @php
-                            $required = 'This Field is required';
-                            $not_required = 'Not required';
-                            $required_and_unique = 'This Field is required and unique';
+                            $required = 'Bu alan zorunludur';
+                            $not_required = 'Zorunlu değil';
+                            $required_and_unique = 'Bu alan zorunludur ve benzersiz olmalıdır';
                         @endphp
                         <tr>
                             <td>{{__('Name')}}</td>
@@ -68,22 +68,22 @@
 
                         <tr>
                             <td>{{__('Category')}}</td>
-                            <td>{{ $required }}. Use category name from admin panel.</td>
+                            <td>{{ $required }}. Yönetim panelindeki kategori adını kullanın.</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Sub category')}}</td>
-                            <td>{{ $not_required }}. Use sub category name.</td>
+                            <td>{{ $not_required }}. Alt kategori adını kullanın.</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Child category')}}</td>
-                            <td>{{ $not_required }}. Use child category name.</td>
+                            <td>{{ $not_required }}. Çocuk kategori adını kullanın.</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Brand')}}</td>
-                            <td>{{ $not_required }}. Use brand name.</td>
+                            <td>{{ $not_required }}. Marka adını kullanın.</td>
                         </tr>
 
                         <tr>
@@ -135,20 +135,20 @@
         <div class="section-body">
             <div class="card">
                 <div class="card-header">
-                    <h4>Recent Bulk Imports</h4>
+                    <h4>Son Toplu İçe Aktarmalar</h4>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>File</th>
-                                    <th>Status</th>
-                                    <th>Rows</th>
-                                    <th>Success</th>
-                                    <th>Errors</th>
-                                    <th>Started</th>
-                                    <th>Completed</th>
+                                    <th>Dosya</th>
+                                    <th>Durum</th>
+                                    <th>Satır</th>
+                                    <th>Başarılı</th>
+                                    <th>Hata</th>
+                                    <th>Başlangıç</th>
+                                    <th>Tamamlanma</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -166,17 +166,17 @@
                                         <tr>
                                             <td colspan="7" class="bg-light">
                                                 @foreach(array_slice($import->error_log, 0, 3) as $error)
-                                                    <div>Row {{ $error['row'] ?? '?' }}: {{ $error['message'] ?? 'Unknown error' }}</div>
+                                                    <div>Satır {{ $error['row'] ?? '?' }}: {{ $error['message'] ?? 'Bilinmeyen hata' }}</div>
                                                 @endforeach
                                                 @if(count($import->error_log) > 3)
-                                                    <div class="text-muted">+{{ count($import->error_log) - 3 }} more errors</div>
+                                                    <div class="text-muted">+{{ count($import->error_log) - 3 }} ek hata</div>
                                                 @endif
                                             </td>
                                         </tr>
                                     @endif
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center">No bulk import history found.</td>
+                                        <td colspan="7" class="text-center">Toplu içe aktarma geçmişi bulunamadı.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
