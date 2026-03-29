@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import PaymentFailed from "../../../components/PaymentFailed";
 
 export const metadata = {
@@ -10,7 +10,11 @@ export const metadata = {
 };
 
 function PaymentFailedPage() {
-  return <PaymentFailed />;
+  return (
+    <Suspense fallback={<div className="min-h-[70vh]" />}>
+      <PaymentFailed />
+    </Suspense>
+  );
 }
 
 export default PaymentFailedPage;

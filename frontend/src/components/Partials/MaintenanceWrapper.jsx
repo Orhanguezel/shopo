@@ -15,13 +15,10 @@ function MaintenanceWrapper({ children }) {
       }
     }
   }, [websiteSetup]);
-  if (mode === 0) {
-    return children;
-  } else if (mode === 1) {
+  if (mode === 1) {
     return <Maintain />;
-  } else {
-    return false;
   }
+  return children;
 }
 
 export default MaintenanceWrapper;
