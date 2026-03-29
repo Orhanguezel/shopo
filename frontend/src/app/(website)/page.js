@@ -28,14 +28,24 @@ export default async function HomePage() {
   const websiteSchema = generateWebSiteSchema();
   const storeSchema = generateStoreSchema();
 
-  // Preload LCP hero image for faster paint
+  // Preload LCP hero image — must match the exact URL that Next.js <Image> will request
   const firstSliderImage = data?.sliders?.[0]?.image;
-  const heroImageUrl = firstSliderImage ? appConfig.BASE_URL + firstSliderImage : null;
+  const heroRawUrl = firstSliderImage ? appConfig.BASE_URL + firstSliderImage : null;
+  // Next.js Image rewrites to /_next/image?url=...&w=...&q=75 — preload must match that
+  const heroPreloadUrl = heroRawUrl
+    ? `/_next/image?url=${encodeURIComponent(heroRawUrl)}&w=1920&q=75`
+    : null;
 
   return (
     <>
-      {heroImageUrl && (
-        <link rel="preload" as="image" href={heroImageUrl} fetchPriority="high" />
+      {heroPreloadUrl && (
+        <link
+          rel="preload"
+          as="image"
+          href={heroPreloadUrl}
+          fetchPriority="high"
+          type="image/avif"
+        />
       )}
       <JsonLd data={orgSchema} />
       <JsonLd data={websiteSchema} />

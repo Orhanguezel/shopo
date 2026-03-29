@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import CountDown from "../Helpers/CountDown";
 import ShopNowBtn from "../Helpers/Buttons/ShopNowBtn";
 import GooglePlay from "../Helpers/icons/GooglePlay";
@@ -90,18 +91,21 @@ export default function CampaignCountDown({
             </div>
             <div
               data-aos="fade-left"
-              className="download-app flex-1 lg:h-full h-[430px] xl:p-12 p-5"
-              style={{
-                backgroundImage: `url(${
+              className="download-app flex-1 lg:h-full h-[430px] xl:p-12 p-5 relative overflow-hidden"
+            >
+              <Image
+                src={
                   downloadData?.image
                     ? appConfig.BASE_URL + downloadData.image
                     : "/assets/images/download-app-cover.png"
-                })`,
-                backgroundRepeat: "no-repeat",
-                backgroundSize: "cover",
-              }}
-            >
-              <div className="flex flex-col h-full justify-between">
+                }
+                alt="Seyfibaba mobil uygulama"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1200px) 100vw, 560px"
+                loading="lazy"
+              />
+              <div className="flex flex-col h-full justify-between relative z-10">
                 <div className="get-app">
                   <p className="text-[13px] font-600 text-qblack mb-3">
                     {ServeLangItem()?.MOBILE_APP_VERSION}
