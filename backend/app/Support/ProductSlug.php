@@ -32,7 +32,7 @@ class ProductSlug
             'ç' => 'c',
         ]);
 
-        return Str::slug($value);
+        return Str::slug(Str::ascii($value));
     }
 
     public static function candidates(?string $value): array

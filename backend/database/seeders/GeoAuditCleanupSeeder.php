@@ -40,6 +40,7 @@ class GeoAuditCleanupSeeder extends Seeder
             $this->syncFooterSocialLinks($now);
             $this->syncSeoSettingPageNames($now);
             $this->syncCategoryDescriptions($now);
+            $this->syncProductSlugOverrides($now);
             $this->syncProductSlugs($now);
 
             $this->updateFiltered('products', ['slug' => 'test-urunu-5-tl'], [
@@ -351,6 +352,41 @@ class GeoAuditCleanupSeeder extends Seeder
                         ]);
                 }
             });
+    }
+
+    protected function syncProductSlugOverrides($now): void
+    {
+        if (!Schema::hasTable('products') || !Schema::hasColumns('products', ['id', 'slug'])) {
+            return;
+        }
+
+        $slugMap = [
+            'bayan-kuafr-tarama-koltuu-profesyonel-kuafr-tarama-' => 'bayan-kuaforu-tarama-koltugu-profesyonel-kuafor-tarama',
+            'bayan-kuafr-tarama-koltuu-profesyonel-kuafr-tarama' => 'bayan-kuaforu-tarama-koltugu-profesyonel-kuafor-tarama',
+            'ikili-erkek-kuafr-tezgh-profesyonel-berber-alma-tezgh' => 'ikili-erkek-kuafor-tezgahi-profesyonel-berber-calisma-tezgahi',
+            'erkek-kuafr-koltuu-profesyonel-berber-koltuu' => 'erkek-kuafor-koltugu-profesyonel-berber-koltugu',
+            'fonex-briyantin-saa-parlaklk-ve-ekil-veren-sa-ekillendirici' => 'fonex-briyantin-saca-parlaklik-ve-sekil-veren-sac-sekillendirici',
+            'zenix-yz-maskesi-cilt-temizleyici-ve-bakm-maskesi' => 'zenix-yuz-maskesi-cilt-temizleyici-ve-bakim-maskesi',
+            'erkek-kuafr-tra-seti-profesyonel-berber-ekipman-paketi' => 'erkek-kuafor-tiras-seti-profesyonel-berber-ekipman-paketi',
+            'profesyonel-erkek-kuafr-koltuu' => 'profesyonel-erkek-kuafor-koltugu',
+        ];
+
+        foreach ($slugMap as $legacySlug => $targetSlug) {
+            $productId = DB::table('products')->where('slug', $legacySlug)->value('id');
+
+            if (!$productId) {
+                continue;
+            }
+
+            $uniqueSlug = $this->resolveUniqueProductSlug($productId, $targetSlug);
+
+            DB::table('products')
+                ->where('id', $productId)
+                ->update([
+                    'slug' => $uniqueSlug,
+                    'updated_at' => $now,
+                ]);
+        }
     }
 
     protected function resolveUniqueProductSlug(int $productId, string $baseSlug): string
