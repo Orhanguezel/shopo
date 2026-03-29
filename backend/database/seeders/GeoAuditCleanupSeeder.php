@@ -20,6 +20,8 @@ class GeoAuditCleanupSeeder extends Seeder
                     'contact_email' => 'info@seyfibaba.com',
                     'popular_category' => 'Popüler Kategoriler',
                 ]);
+
+                $this->syncHomepageSectionTitles($now);
             }
 
             $this->updateOrInsertFiltered('contact_pages', ['id' => 1], [
@@ -35,6 +37,7 @@ class GeoAuditCleanupSeeder extends Seeder
             $this->updateFooterContent($now);
             $this->syncFooterLinks($now);
             $this->syncFooterSocialLinks($now);
+            $this->syncSeoSettingPageNames($now);
             $this->syncCategoryDescriptions($now);
 
             $this->updateFiltered('products', ['slug' => 'test-urunu-5-tl'], [
@@ -312,6 +315,84 @@ class GeoAuditCleanupSeeder extends Seeder
                 'updated_at' => $now,
             ]));
         }
+    }
+
+    protected function syncSeoSettingPageNames($now): void
+    {
+        if (!Schema::hasTable('seo_settings')) {
+            return;
+        }
+
+        $pageNames = [
+            1 => 'Ana Sayfa',
+            2 => 'Hakkımızda',
+            3 => 'İletişim',
+            5 => 'Mağazalar',
+            6 => 'Blog',
+            8 => 'İndirimli Ürünler',
+            9 => 'Mağaza',
+        ];
+
+        foreach ($pageNames as $id => $pageName) {
+            $this->updateFiltered('seo_settings', ['id' => $id], [
+                'page_name' => $pageName,
+                'updated_at' => $now,
+            ]);
+        }
+    }
+
+    protected function syncHomepageSectionTitles($now): void
+    {
+        if (
+            !Schema::hasTable('settings') ||
+            !Schema::hasColumn('settings', 'homepage_section_title')
+        ) {
+            return;
+        }
+
+        $setting = DB::table('settings')->where('id', 1)->first(['homepage_section_title']);
+        if (!$setting) {
+            return;
+        }
+
+        $sections = json_decode($setting->homepage_section_title ?? '[]', true);
+        if (!is_array($sections)) {
+            return;
+        }
+
+        $translations = [
+            'Trending_Category' => ['default' => 'Öne Çıkan Kategoriler', 'custom' => 'Öne Çıkan Kategoriler'],
+            'Popular_Category' => ['default' => 'Popüler Kategoriler', 'custom' => 'En Çok Tercih Edilen Kategoriler'],
+            'Shop_by_Brand' => ['default' => 'Markaya Göre Alışveriş', 'custom' => 'Markaya Göre Alışveriş'],
+            'Top_Rated_Products' => ['default' => 'En Yüksek Puanlı Ürünler', 'custom' => 'En Yüksek Puanlı Ürünler'],
+            'Best_Seller' => ['default' => 'Çok Satanlar', 'custom' => 'Çok Satanlar'],
+            'Featured_Products' => ['default' => 'Öne Çıkan Ürünler', 'custom' => 'Öne Çıkan Ürünler'],
+            'New_Arrivals' => ['default' => 'Yeni Gelen Ürünler', 'custom' => 'Yeni Gelen Ürünler'],
+            'Best_Products' => ['default' => 'En İyi Ürünler', 'custom' => 'En İyi Ürünler'],
+        ];
+
+        $updated = false;
+
+        foreach ($sections as &$section) {
+            $key = $section['key'] ?? null;
+            if (!$key || !isset($translations[$key])) {
+                continue;
+            }
+
+            $section['default'] = $translations[$key]['default'];
+            $section['custom'] = $translations[$key]['custom'];
+            $updated = true;
+        }
+        unset($section);
+
+        if (!$updated) {
+            return;
+        }
+
+        $this->updateFiltered('settings', ['id' => 1], [
+            'homepage_section_title' => json_encode($sections, JSON_UNESCAPED_UNICODE),
+            'updated_at' => $now,
+        ]);
     }
 
     protected function updateAboutUsContent($now): void
