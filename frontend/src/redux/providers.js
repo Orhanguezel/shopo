@@ -1,9 +1,8 @@
 "use client";
 
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 import store, { persistor } from "./store";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // default layout
 import DefaultLayout from "@/components/Partials/DefaultLayout";
 
@@ -14,6 +13,11 @@ import LoginContext from "@/components/Contexts/LoginContext";
 import { FlyingCartProvider } from "@/components/Contexts/FlyingCartContext";
 
 export function Providers({ children }) {
+  // Bootstrap redux-persist without blocking render
+  useEffect(() => {
+    persistor.persist();
+  }, []);
+
   // auth login popup
   const [loginPopup, setLoginPopup] = useState(false);
   const handlerPopup = (value) => {
@@ -34,23 +38,21 @@ export function Providers({ children }) {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <MessageContext.Provider
-          value={{
-            toggle: toggleMessage,
-            toggleHandler: toggleHandler,
-            newSeller: addNewSeller,
-          }}
+      <MessageContext.Provider
+        value={{
+          toggle: toggleMessage,
+          toggleHandler: toggleHandler,
+          newSeller: addNewSeller,
+        }}
+      >
+        <LoginContext.Provider
+          value={{ loginPopup: loginPopup, handlerPopup: handlerPopup }}
         >
-          <LoginContext.Provider
-            value={{ loginPopup: loginPopup, handlerPopup: handlerPopup }}
-          >
-            <FlyingCartProvider>
-              <DefaultLayout>{children}</DefaultLayout>
-            </FlyingCartProvider>
-          </LoginContext.Provider>
-        </MessageContext.Provider>
-      </PersistGate>
+          <FlyingCartProvider>
+            <DefaultLayout>{children}</DefaultLayout>
+          </FlyingCartProvider>
+        </LoginContext.Provider>
+      </MessageContext.Provider>
     </Provider>
   );
 }
