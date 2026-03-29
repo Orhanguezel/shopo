@@ -10,7 +10,7 @@ const contentSecurityPolicy = [
   "style-src 'self' https: 'unsafe-inline'",
   "script-src 'self' https: 'unsafe-inline' 'unsafe-eval'",
   "connect-src 'self' https: wss:",
-  "frame-src 'self' https://www.google.com https://maps.google.com https://www.youtube.com",
+  "frame-src 'self' https://www.google.com https://*.google.com https://maps.google.com https://*.google.de https://www.youtube.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self' https:",
