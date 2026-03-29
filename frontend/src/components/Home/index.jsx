@@ -4,22 +4,22 @@ import Banner from "./Banner";
 import CategorySection from "./CategorySection";
 import appConfig from "@/appConfig";
 
-// Above-the-fold: Banner + CategorySection (static import)
-// Below-the-fold: everything else (dynamic import for code splitting)
-const Ads = dynamic(() => import("./Ads"));
-const ViewMoreTitle = dynamic(() => import("../Helpers/ViewMoreTitle"));
-const SectionStyleOne = dynamic(() => import("../Helpers/SectionStyleOne"));
-const SectionStyleTwo = dynamic(() => import("../Helpers/SectionStyleTwo"));
-const SectionStyleThree = dynamic(() => import("../Helpers/SectionStyleThree"));
-const SectionStyleFour = dynamic(() => import("../Helpers/SectionStyleFour"));
-const BrandSection = dynamic(() => import("./BrandSection"));
-const CampaignCountDown = dynamic(() => import("./CampaignCountDown"));
-const CategoryDescriptions = dynamic(() => import("./CategoryDescriptions"));
-const HomeFAQ = dynamic(() => import("./HomeFAQ"));
-const TwoColumnAds = dynamic(() => import("./ProductAds/TwoColumnAds"));
-const OneColumnAdsOne = dynamic(() => import("./ProductAds/OneColumnAdsOne"));
-const OneColumnAdsTwo = dynamic(() => import("./ProductAds/OneColumnAdsTwo"));
-const WhySeyfibaba = dynamic(() => import("./WhySeyfibaba"));
+// Above-the-fold: Banner + CategorySection (static import, SSR'd)
+// Below-the-fold: dynamic + ssr:false to keep initial HTML small for fast FCP/LCP
+const Ads = dynamic(() => import("./Ads"), { ssr: false });
+const ViewMoreTitle = dynamic(() => import("../Helpers/ViewMoreTitle"), { ssr: false });
+const SectionStyleOne = dynamic(() => import("../Helpers/SectionStyleOne"), { ssr: false });
+const SectionStyleTwo = dynamic(() => import("../Helpers/SectionStyleTwo"), { ssr: false });
+const SectionStyleThree = dynamic(() => import("../Helpers/SectionStyleThree"), { ssr: false });
+const SectionStyleFour = dynamic(() => import("../Helpers/SectionStyleFour"), { ssr: false });
+const BrandSection = dynamic(() => import("./BrandSection"), { ssr: false });
+const CampaignCountDown = dynamic(() => import("./CampaignCountDown"), { ssr: false });
+const CategoryDescriptions = dynamic(() => import("./CategoryDescriptions"), { ssr: false });
+const HomeFAQ = dynamic(() => import("./HomeFAQ"), { ssr: false });
+const TwoColumnAds = dynamic(() => import("./ProductAds/TwoColumnAds"), { ssr: false });
+const OneColumnAdsOne = dynamic(() => import("./ProductAds/OneColumnAdsOne"), { ssr: false });
+const OneColumnAdsTwo = dynamic(() => import("./ProductAds/OneColumnAdsTwo"), { ssr: false });
+const WhySeyfibaba = dynamic(() => import("./WhySeyfibaba"), { ssr: false });
 
 export default function Home({ homepageData }) {
   const getsectionTitles = homepageData.section_title;
