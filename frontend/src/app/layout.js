@@ -49,6 +49,9 @@ export const metadata = {
   alternates: {
     canonical: "/",
   },
+  facebook: {
+    appId: process.env.NEXT_PUBLIC_FB_APP_ID || "",
+  },
   openGraph: {
     type: "website",
     siteName: "Seyfibaba",
