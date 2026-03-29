@@ -52,8 +52,8 @@ Admin paneli: `http://localhost:8000/admin`
 | `DB_DATABASE` | MySQL veritabani adi |
 | `DB_USERNAME` / `DB_PASSWORD` | MySQL kullanici bilgileri |
 | `JWT_SECRET` | `php artisan jwt:secret` ile olusturulur |
-| `SMS_PROVIDER` | SMS saglayici: `iletimerkezi` veya `netgsm` |
-| `ILETIMERKEZI_API_KEY` / `API_HASH` | Iletimerkezi API bilgileri |
+| `SMS_PROVIDER` | SMS saglayici: `netgsm` |
+| `NETGSM_USERCODE` / `NETGSM_PASSWORD` / `NETGSM_MSGHEADER` | Netgsm API bilgileri |
 | `FRONTEND_URL` | Frontend URL (CORS ve callback icin) |
 | `MAIL_*` | SMTP mail ayarlari |
 | `PUSHER_*` | Real-time bildirimler icin Pusher ayarlari |
