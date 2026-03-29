@@ -133,6 +133,23 @@ use Artisan;
 
 class HomeController extends Controller
 {
+    protected function normalizeLanguagePayload(array $language): array
+    {
+        $normalized = [];
+
+        foreach ($language as $key => $value) {
+            $normalizedKey = str_replace(
+                ['-', ',', '.', "'", '!', '?', ' '],
+                [' ', ' ', ' ', '', '', '', '_'],
+                (string) $key
+            );
+
+            $normalized[$normalizedKey] = $value;
+        }
+
+        return $normalized;
+    }
+
     public function productCount()
     {
         $count = Product::where(['status' => 1, 'approve_by_admin' => 1])->count();
@@ -169,6 +186,8 @@ class HomeController extends Controller
             $language = include(resource_path('lang/en/user.php'));
             $default_language = Language::where('is_default','Yes')->first();
         }
+
+        $language = $this->normalizeLanguagePayload($language);
 
         $currencies = MultiCurrency::where('status',1)->orderBy('currency_name','asc')->get();
 
