@@ -23,12 +23,23 @@ class NetgsmService implements SmsServiceInterface
             return app()->environment('local', 'testing');
         }
 
+        // Strip everything except digits and leading +
+        $hasPlus = str_starts_with(trim($phone), '+');
         $phone = preg_replace('/[^0-9]/', '', $phone);
-        if (str_starts_with($phone, '0')) {
+
+        if ($hasPlus) {
+            // +491723846068 → 491723846068 (already international)
+        } elseif (str_starts_with($phone, '00')) {
+            // 00491723846068 → 491723846068
+            $phone = substr($phone, 2);
+        } elseif (str_starts_with($phone, '0')) {
+            // 05435011995 → 905435011995 (Turkish local)
             $phone = '90' . substr($phone, 1);
-        } elseif (!str_starts_with($phone, '90')) {
+        } elseif (!str_starts_with($phone, '90') && strlen($phone) === 10) {
+            // 5435011995 → 905435011995 (Turkish without leading 0)
             $phone = '90' . $phone;
         }
+        // else: already has country code (491723846068, 905435011995)
 
         try {
             $response = Http::get($endpoint, [
