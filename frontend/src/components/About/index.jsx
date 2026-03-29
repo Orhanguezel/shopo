@@ -211,9 +211,9 @@ export default function About({ aboutData }) {
 
       <div className="customer-feedback w-full bg-white py-[60px]">
         <div className="title flex justify-center mb-5">
-          <h1 className="text-[30px] font-semibold text-qblack">
+          <h2 className="text-[30px] font-semibold text-qblack">
             {ServeLangItem()?.Customers_Feedback}
-          </h1>
+          </h2>
         </div>
         <div className="feedback-slider-wrapper w-vw relative overflow-hidden">
           <AboutUsSlider aboutData={aboutData} settings={settingTestimonial} />

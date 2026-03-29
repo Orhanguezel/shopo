@@ -73,12 +73,12 @@ export default async function HomePage() {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#9f7b2f]">
               Profesyonel ekipman pazaryeri
             </p>
-            <h2
+            <h1
               id="home-geo-headline"
               className="text-3xl font-black leading-tight text-[#1f2937] md:text-5xl"
             >
               Berber ve Kuaför Malzemeleri
-            </h2>
+            </h1>
             <p
               id="home-geo-intro"
               className="max-w-3xl text-base leading-8 text-[#4b5563] md:text-lg"

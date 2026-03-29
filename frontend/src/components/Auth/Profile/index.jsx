@@ -268,9 +268,9 @@ function ProfileContent() {
           />
           <div className="w-full bg-white xl:p-10 p-5">
             <div className="title-area w-full flex justify-between items-center">
-              <h1 className="text-[22px] font-bold text-qblack">
+              <h2 className="text-[22px] font-bold text-qblack">
                 {ServeLangItem()?.Your_Dashboard}
-              </h1>
+              </h2>
               {/* Seller dashboard switch (if applicable) */}
               {Multivendor() === 1 &&
                 dashboardApi &&

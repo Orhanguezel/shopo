@@ -435,9 +435,9 @@ export default function ProfileTab({ profileInfo }) {
             </div>
             {/* Country dropdown */}
             <div className="mb-6">
-              <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
+              <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
                 {ServeLangItem()?.Country}*
-              </h1>
+              </h2>
               <div
                 className={`w-full h-[50px] border border-qgray-border flex justify-between items-center mb-2 ${
                   !!(errors && Object.hasOwn(errors, "country"))
@@ -492,9 +492,9 @@ export default function ProfileTab({ profileInfo }) {
             <div className="md:flex md:space-x-5 rtl:space-x-reverse items-center mb-6">
               {/* State dropdown */}
               <div className="md:w-1/2 mb-8 md:mb-0">
-                <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
+                <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
                   {ServeLangItem()?.State}*
-                </h1>
+                </h2>
                 <div
                   className={`w-full h-[50px] border border-qgray-border flex justify-between items-center mb-2 ${
                     !!(errors && Object.hasOwn(errors, "state"))
@@ -545,9 +545,9 @@ export default function ProfileTab({ profileInfo }) {
               </div>
               {/* City dropdown */}
               <div className="md:w-1/2 w-full">
-                <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
+                <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
                   {ServeLangItem()?.City}*
-                </h1>
+                </h2>
                 <div
                   className={`w-full h-[50px] border border-qgray-border flex justify-between items-center mb-2 ${
                     !!(errors && Object.hasOwn(errors, "city"))
@@ -621,12 +621,12 @@ export default function ProfileTab({ profileInfo }) {
           {/* Right: Profile image section */}
           <div className="flex-1">
             <div className="update-logo w-full mb-9">
-              <h1 className="text-xl tracking-wide font-bold text-qblack flex items-center mb-2">
+              <h2 className="text-xl tracking-wide font-bold text-qblack flex items-center mb-2">
                 {ServeLangItem()?.Update_Profile}
                 <span className="ml-1">
                   <InfoQuestion />
                 </span>
-              </h1>
+              </h2>
               <p className="text-sm text-qgraytwo mb-5 ">
                 {ServeLangItem()?.Profile_of_at_least_Size}
                 <span className="ml-1 text-qblack">300x300</span>

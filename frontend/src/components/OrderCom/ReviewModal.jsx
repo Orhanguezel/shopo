@@ -79,9 +79,9 @@ function ReviewModal({ productId, setReviewModal }) {
       >
         {/* Modal header with title and close icon */}
         <div className="title-bar flex items-center justify-between mb-3">
-          <h1 className="text-2xl font-medium text-qblack mb-5">
+          <h2 className="text-2xl font-medium text-qblack mb-5">
             {ServeLangItem()?.Write_Your_Reviews}
-          </h1>
+          </h2>
           <span
             className="cursor-pointer"
             onClick={() => setReviewModal(false)}

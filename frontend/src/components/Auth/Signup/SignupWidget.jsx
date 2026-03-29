@@ -252,9 +252,9 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
     return (
       <div className="w-full">
         <div className="title-area flex flex-col justify-center items-center relative text-center mb-7">
-          <h1 className="text-[34px] font-bold leading-[74px] text-qblack">
+          <h2 className="text-[34px] font-bold leading-[74px] text-qblack">
             {ServeLangItem()?.Verify_OTP || "Doğrula"}
-          </h1>
+          </h2>
           <div className="shape -mt-6">
             <SignupShape />
           </div>
@@ -283,9 +283,9 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
           HEADER SECTION
           =========================================== */}
       <div className="title-area flex flex-col justify-center items-center relative text-center mb-7">
-        <h1 className="text-[34px] font-bold leading-[74px] text-qblack">
+        <h2 className="text-[34px] font-bold leading-[74px] text-qblack">
           {ServeLangItem()?.Create_Account}
-        </h1>
+        </h2>
         <div className="shape -mt-6">
           <SignupShape />
         </div>

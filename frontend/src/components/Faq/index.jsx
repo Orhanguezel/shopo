@@ -43,9 +43,9 @@ export default function Faq({ datas }) {
         <div className="container-x mx-auto">
           <div className="main-wrapper w-full lg:flex lg:space-x-[30px] rtl:space-x-reverse">
             <div className="lg:w-1/2 w-full mb-10 lg:mb-0">
-              <h1 className="text-qblack font-bold text-[22px] mb-4">
+              <h2 className="text-qblack font-bold text-[22px] mb-4">
                 {ServeLangItem()?.Frequently_asked_questions}
-              </h1>
+              </h2>
               <div className="flex flex-col space-y-7 justify-between">
                 {faqs.map((faq) => (
                   <Accodion
@@ -59,9 +59,9 @@ export default function Faq({ datas }) {
             <div className="flex-1">
               <div className="bg-white sm:p-10 p-5">
                 <div className="title flex flex-col items-center">
-                  <h1 className="lg:text-[34px] text-xl font-bold text-qblack">
+                  <h2 className="lg:text-[34px] text-xl font-bold text-qblack">
                     {ServeLangItem()?.Have_Any_Qustion}
-                  </h1>
+                  </h2>
                   <span className="-mt-3 block">
                     <TitleShape />
                   </span>

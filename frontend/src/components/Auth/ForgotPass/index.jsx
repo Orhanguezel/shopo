@@ -236,9 +236,9 @@ export default function ForgotPass() {
     <div className="w-full">
       {/* Form Title */}
       <div className="title-area flex flex-col justify-center items-center relative text-center mb-7">
-        <h1 className="text-[34px] font-bold leading-[74px] text-qblack capitalize">
+        <h2 className="text-[34px] font-bold leading-[74px] text-qblack capitalize">
           {ServeLangItem()?.Forgot_password}
-        </h1>
+        </h2>
         <div className="shape -mt-6">
           <LineShapeTwo />
         </div>
@@ -289,9 +289,9 @@ export default function ForgotPass() {
     <div className="w-full">
       {/* Form Title */}
       <div className="title-area flex flex-col justify-center items-center relative text-center mb-7">
-        <h1 className="text-[34px] font-bold leading-[74px] text-qblack">
+        <h2 className="text-[34px] font-bold leading-[74px] text-qblack">
           {ServeLangItem()?.Reset_Password}
-        </h1>
+        </h2>
         <div className="shape -mt-6">
           <LineShape />
         </div>

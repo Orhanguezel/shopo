@@ -39,9 +39,9 @@ export default function EmptyCardError() {
             </div>
           </div>
           <div data-aos="fade-up" className="empty-content w-full">
-            <h1 className="sm:text-xl text-base font-semibold text-center mb-5">
+            <h2 className="sm:text-xl text-base font-semibold text-center mb-5">
               {ServeLangItem()?.Empty_You_dont_Cart_any_Products}
-            </h1>
+            </h2>
             <div
               onClick={() => router.back()}
               className="flex justify-center w-full cursor-pointer"

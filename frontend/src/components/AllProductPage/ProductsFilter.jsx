@@ -29,9 +29,9 @@ export default function ProductsFilter({
       >
         <div className="filter-subject-item pb-10 border-b border-qgray-border last:border-none">
           <div className="subject-title mb-[30px]">
-            <h1 className="text-black text-base font-500">
+            <h2 className="text-black text-base font-500">
               {ServeLangItem()?.Product_categories}
-            </h1>
+            </h2>
           </div>
           <div className="filter-items">
             <ul>
@@ -64,9 +64,9 @@ export default function ProductsFilter({
         </div>
         <div className="filter-subject-item pb-10 border-b border-qgray-border last:border-none mt-10">
           <div className="subject-title mb-[30px]">
-            <h1 className="text-black text-base font-500">
+            <h2 className="text-black text-base font-500">
               {ServeLangItem()?.Price_Range}
-            </h1>
+            </h2>
           </div>
           {volume && (
             <>
@@ -87,9 +87,9 @@ export default function ProductsFilter({
         </div>
         <div className="filter-subject-item pb-10 border-b border-qgray-border last:border-none mt-10">
           <div className="subject-title mb-[30px]">
-            <h1 className="text-black text-base font-500">
+            <h2 className="text-black text-base font-500">
               {ServeLangItem()?.Brands}
-            </h1>
+            </h2>
           </div>
           <div className="filter-items">
             <ul>
@@ -129,9 +129,9 @@ export default function ProductsFilter({
               className={`filter-subject-item pb-10  border-b border-qgray-border last:border-none mt-10`}
             >
               <div className="subject-title mb-[30px]">
-                <h1 className="text-black text-base font-500">
+                <h2 className="text-black text-base font-500">
                   {variant.name}
-                </h1>
+                </h2>
               </div>
               <div className="filter-items">
                 <ul>

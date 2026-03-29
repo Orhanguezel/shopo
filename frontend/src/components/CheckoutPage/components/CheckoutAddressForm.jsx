@@ -303,9 +303,9 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
     <div data-aos="zoom-in" className="w-full">
       {/* Form Header */}
       <div className="flex justify-between items-center">
-        <h1 className="sm:text-2xl text-xl text-qblack font-medium mb-5">
+        <h2 className="sm:text-2xl text-xl text-qblack font-medium mb-5">
           Yeni Adres Ekle
-        </h1>
+        </h2>
         <span onClick={onCancel} className="text-qyellow cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -391,9 +391,9 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
 
           {/* Country Selection */}
           <div className="mb-6">
-            <h1 className="input-label capitalize block mb-2 text-qgray text-[13px] font-normal">
+            <h2 className="input-label capitalize block mb-2 text-qgray text-[13px] font-normal">
               Ülke*
-            </h1>
+            </h2>
             <div
               className={`w-full h-[50px] border flex justify-between items-center border-qgray-border mb-2 ${
                 hasError("country") ? "border-qred" : "border-qgray-border"
@@ -441,9 +441,9 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
           {/* State and City Selection */}
           <div className="flex rtl:space-x-reverse space-x-5 items-center mb-6">
             <div className="w-1/2">
-              <h1 className="input-label capitalize block mb-2 text-qgray text-[13px] font-normal">
+              <h2 className="input-label capitalize block mb-2 text-qgray text-[13px] font-normal">
                 İl*
-              </h1>
+              </h2>
               <div
                 className={`w-full h-[50px] border flex justify-between items-center border-qgray-border mb-2 ${
                   hasError("state") ? "border-qred" : "border-qgray-border"
@@ -488,9 +488,9 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
               )}
             </div>
             <div className="w-1/2">
-              <h1 className="input-label capitalize block mb-2 text-qgray text-[13px] font-normal">
+              <h2 className="input-label capitalize block mb-2 text-qgray text-[13px] font-normal">
                 İlçe*
-              </h1>
+              </h2>
               <div
                 className={`w-full h-[50px] border flex justify-between items-center border-qgray-border mb-2 ${
                   hasError("city") ? "border-qred" : "border-qgray-border"

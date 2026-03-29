@@ -237,9 +237,9 @@ function BecomeSaller() {
               <div className="xl:w-[824px]">
                 {/* Seller Information Section */}
                 <div className="title w-full mb-4">
-                  <h1 className="text-[22px] font-semibold text-qblack mb-1">
+                  <h2 className="text-[22px] font-semibold text-qblack mb-1">
                     {ServeLangItem()?.Seller_Information}
-                  </h1>
+                  </h2>
                   <p className="text-[15px] text-qgraytwo">
                     {
                       ServeLangItem()
@@ -299,9 +299,9 @@ function BecomeSaller() {
 
                 {/* Shop Information Section */}
                 <div className="title w-full mt-10 mb-4">
-                  <h1 className="text-[22px] font-semibold text-qblack mb-1">
+                  <h2 className="text-[22px] font-semibold text-qblack mb-1">
                     {ServeLangItem()?.Shop_Information}
-                  </h1>
+                  </h2>
                   <p className="text-[15px] text-qgraytwo">
                     {
                       ServeLangItem()
@@ -407,9 +407,9 @@ function BecomeSaller() {
               <div className="flex-1 mb-10 xl:mb-0">
                 {/* Logo Upload Section */}
                 <div className="update-logo w-full mb-9">
-                  <h1 className="text-xl tracking-wide font-bold text-qblack mb-2">
+                  <h2 className="text-xl tracking-wide font-bold text-qblack mb-2">
                     {ServeLangItem()?.Update_Logo}
-                  </h1>
+                  </h2>
                   <p className="text-sm text-qgraytwo mb-5">
                     {ServeLangItem()?.Profile_of_at_least_Size}
                     <span className="ml-1 text-qblack">300x300</span>.{" "}
@@ -459,9 +459,9 @@ function BecomeSaller() {
 
                 {/* Cover Image Upload Section */}
                 <div className="update-cover w-full">
-                  <h1 className="text-xl tracking-wide font-bold text-qblack mb-2">
+                  <h2 className="text-xl tracking-wide font-bold text-qblack mb-2">
                     {ServeLangItem()?.Update_Cover}
-                  </h1>
+                  </h2>
                   <p className="text-sm text-qgraytwo mb-5">
                     {ServeLangItem()?.Cover_of_at_least_Size}
                     <span className="ml-1 text-qblack">1170x920</span>.

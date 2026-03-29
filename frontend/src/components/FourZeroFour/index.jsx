@@ -39,9 +39,9 @@ export default function FourZeroFour({ breadcrumb = true }) {
                 )}
               </div>
               <div data-aos="fade-up" className="empty-content w-full">
-                <h1 className="sm:text-xl text-base font-semibold text-center mb-5">
+                <h2 className="sm:text-xl text-base font-semibold text-center mb-5">
                   {ServeLangItem()?.Sorry_We_cantt_Find_that_page}
-                </h1>
+                </h2>
                 <div className="flex justify-center w-full">
                   <button type="button" onClick={() => router.back()}>
                     <div className="flex justify-center w-full">

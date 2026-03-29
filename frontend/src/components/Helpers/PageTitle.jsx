@@ -3,7 +3,7 @@ import BreadcrumbCom from "../BreadcrumbCom";
 export default function PageTitle({
   title,
   breadcrumb = [],
-  headingAs = "p",
+  headingAs = "h1",
 }) {
   const HeadingTag = headingAs;
 

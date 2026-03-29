@@ -35,9 +35,9 @@ function Sallers({ sellersData }) {
                     <div className="flex sm:flex-row flex-col-reverse sm:items-center justify-between w-full h-full">
                       <div className="flex flex-col justify-between h-full">
                         <div className="">
-                          <h1 className="text-[30px] font-semibold text-qblack notranslate">
+                          <h2 className="text-[30px] font-semibold text-qblack notranslate">
                             {seller.shop_name}
-                          </h1>
+                          </h2>
                           <div className="flex space-x-2 items-center mb-[30px]">
                             <div className="flex ">
                               {Array.from(
@@ -192,9 +192,9 @@ function Sallers({ sellersData }) {
                           </div>
                         </div>
 
-                        <h1 className="sm:block hidden text-[30px] font-semibold  text-qblack text-center leading-none">
+                        <h2 className="sm:block hidden text-[30px] font-semibold  text-qblack text-center leading-none">
                           {seller.shop_name}
-                        </h1>
+                        </h2>
                       </div>
                     </div>
                   </div>

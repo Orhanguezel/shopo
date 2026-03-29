@@ -81,9 +81,9 @@ export default function Dashboard({ dashBoardData, userLocation }) {
           <p className="text-qblack text-lg">
             {ServeLangItem()?.Hello}, {dashBoardData.personInfo.name}
           </p>
-          <h1 className="font-bold text-[24px] text-qblack">
+          <h2 className="font-bold text-[24px] text-qblack">
             {ServeLangItem()?.Welcome_to_your_Profile}
-          </h1>
+          </h2>
         </div>
       </div>
 

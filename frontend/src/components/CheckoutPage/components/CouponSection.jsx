@@ -20,9 +20,9 @@ const CouponSection = ({
 
   return (
     <div className="mb-10">
-      <h1 className="sm:text-2xl text-xl text-qblack font-medium mt-5 mb-5">
+      <h2 className="sm:text-2xl text-xl text-qblack font-medium mt-5 mb-5">
         Kupon Uygula
-      </h1>
+      </h2>
       <div className="discount-code w-full mb-5 sm:mb-0 h-[50px] flex">
         <div className="flex-1 h-full">
           <InputCom

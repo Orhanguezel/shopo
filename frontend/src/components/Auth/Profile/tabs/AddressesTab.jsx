@@ -420,9 +420,9 @@ export default function AddressesTab({ countryLists }) {
         <div data-aos="zoom-in" className="w-full">
           {/* Form Header */}
           <div className="flex justify-between items-center">
-            <h1 className="sm:text-2xl text-xl text-qblack font-medium mb-5">
+            <h2 className="sm:text-2xl text-xl text-qblack font-medium mb-5">
               {ServeLangItem()?.Add_New_Address}
-            </h1>
+            </h2>
             <span
               onClick={() => setNewAddress(!newAddress)}
               className="text-qyellow cursor-pointer"
@@ -512,9 +512,9 @@ export default function AddressesTab({ countryLists }) {
 
               {/* Country Selection */}
               <div className="mb-6">
-                <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
+                <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
                   {ServeLangItem()?.Country}*
-                </h1>
+                </h2>
                 <div
                   className={`w-full h-[50px] border flex justify-between items-center border-qgray-border mb-2 ${
                     !!(errors && Object.hasOwn(errors, "country"))
@@ -579,9 +579,9 @@ export default function AddressesTab({ countryLists }) {
               {/* State and City Selection */}
               <div className="flex rtl:space-x-reverse space-x-5 items-center mb-6">
                 <div className="w-1/2">
-                  <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
+                  <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
                     {ServeLangItem()?.State}*
-                  </h1>
+                  </h2>
                   <div
                     className={`w-full h-[50px] border flex justify-between items-center border-qgray-border mb-2 ${
                       !!(errors && Object.hasOwn(errors, "state"))
@@ -641,9 +641,9 @@ export default function AddressesTab({ countryLists }) {
                   )}
                 </div>
                 <div className="w-1/2">
-                  <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
+                  <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
                     {ServeLangItem()?.City}*
-                  </h1>
+                  </h2>
                   <div
                     className={`w-full h-[50px] border flex justify-between items-center border-qgray-border mb-2 ${
                       !!(errors && Object.hasOwn(errors, "city"))

@@ -1021,9 +1021,9 @@ function AllProductPageContent({ response, sellerInfo }) {
 
         {/* Seller Name and Rating - Desktop */}
         <div className="saller-name lg:block hidden">
-          <h1 className="text-[60px] font-bold notranslate">
+          <h2 className="text-[60px] font-bold notranslate">
             {sellerInfo.seller.shop_name}
-          </h1>
+          </h2>
           <div className="flex justify-center">
             {Array.from(
               Array(parseInt(sellerInfo.seller.averageRating)),
@@ -1421,9 +1421,9 @@ function AllProductPageContent({ response, sellerInfo }) {
               </div>
             ) : (
               <div className="mt-5 flex justify-center">
-                <h1 className="text-2xl font-medium text-tblack">
+                <h2 className="text-2xl font-medium text-tblack">
                   Urun bulunamadi
-                </h1>
+                </h2>
               </div>
             )}
           </div>

@@ -84,9 +84,9 @@ export default function Contact({ datas }) {
               {datas.contact && (
                 <div>
                   {/* Contact title and description */}
-                  <h1 className="text-[22px] font-semibold text-qblack leading-[30px] mb-1">
+                  <h2 className="text-[22px] font-semibold text-qblack leading-[30px] mb-1">
                     {datas.contact.title}
-                  </h1>
+                  </h2>
                   <p className="text-[15px] text-qgraytwo leading-[30px] mb-5">
                     {datas.contact.description}
                   </p>
@@ -118,9 +118,9 @@ export default function Contact({ datas }) {
                         <ContactLocationIco />
                       </span>
                       <div>
-                        <h1 className="text-[22px] font-semibold text-qblack leading-[30px] mb-2">
+                        <h2 className="text-[22px] font-semibold text-qblack leading-[30px] mb-2">
                           {ServeLangItem()?.Address}
-                        </h1>
+                        </h2>
                         <p className="text-[15px] text-qblack leading-[30px]">
                           {datas.contact.address}
                         </p>
@@ -150,9 +150,9 @@ export default function Contact({ datas }) {
             {/* Contact Form Section (right) */}
             <div className="flex-1 bg-white sm:p-10 p-3">
               <div className="title flex flex-col items-center">
-                <h1 className="text-[34px] font-bold text-qblack">
+                <h2 className="text-[34px] font-bold text-qblack">
                   {ServeLangItem()?.Get_In_Touch || "Bizimle İletişime Geçin"}
-                </h1>
+                </h2>
                 <span className="-mt-5 block">
                   {/* Decorative SVG underline */}
                   <svg

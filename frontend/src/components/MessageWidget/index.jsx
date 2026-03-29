@@ -779,9 +779,9 @@ function MessageWidgetContent({ pusher }) {
                           />
                         </div>
                         <div>
-                          <h1 className="text-[#1D1D1D] font-bold text-[20px] text-center">
+                          <h2 className="text-[#1D1D1D] font-bold text-[20px] text-center">
                             {"Henüz mesaj yok"}
-                          </h1>
+                          </h2>
                           <p className="text-[#797979] text-sm text-center">
                             {
                               "Ürünlerle ilgili soru sorabilir, özellik, fiyat ve stok bilgisi için bu alandan yardım alabilirsiniz."

@@ -242,9 +242,9 @@ function GuestCheckoutAddressForm({
           </div>
         </div>
         <div className="mb-6">
-          <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
+          <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
             Ülke*
-          </h1>
+          </h2>
           <div
             className={`w-full h-[50px] border flex justify-between items-center mb-2 ${
               !!(errors && Object.hasOwn(errors, "country"))
@@ -289,9 +289,9 @@ function GuestCheckoutAddressForm({
         </div>
         <div className="flex space-x-5 items-center mb-6">
           <div className="w-1/2">
-            <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
+            <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
               İl*
-            </h1>
+            </h2>
             <div
               className={`w-full h-[50px] border flex justify-between items-center mb-2 ${
                 !!(errors && Object.hasOwn(errors, "state"))
@@ -327,9 +327,9 @@ function GuestCheckoutAddressForm({
             )}
           </div>
           <div className="w-1/2">
-            <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
+            <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
               İlçe*
-            </h1>
+            </h2>
             <div
               className={`w-full h-[50px] border flex justify-between items-center mb-2 ${
                 !!(errors && Object.hasOwn(errors, "city"))

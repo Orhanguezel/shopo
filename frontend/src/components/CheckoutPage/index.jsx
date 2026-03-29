@@ -695,9 +695,9 @@ export default function CheckoutPage() {
               <div className="w-full lg:flex lg:space-x-[30px] rtl:space-x-reverse">
                 {/* Left Column - Address Section */}
                 <div className="lg:w-4/6 w-full">
-                  <h1 className="sm:text-2xl text-xl text-qblack font-medium mt-5 mb-5">
+                  <h2 className="sm:text-2xl text-xl text-qblack font-medium mt-5 mb-5">
                     Adresler
-                  </h1>
+                  </h2>
 
                   {auth() ? (
                     <AddressTabs
@@ -728,9 +728,9 @@ export default function CheckoutPage() {
                   />
 
                   {/* Order Summary */}
-                  <h1 className="sm:text-2xl text-xl text-qblack font-medium mt-5 mb-5">
+                  <h2 className="sm:text-2xl text-xl text-qblack font-medium mt-5 mb-5">
                     Sipariş Özeti
-                  </h1>
+                  </h2>
 
                   <OrderSummary
                     carts={carts}

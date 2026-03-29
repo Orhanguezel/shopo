@@ -76,9 +76,9 @@ function TrackingOrder() {
       <div className="content-wrapper w-full mb-[40px]">
         <div className="container-x mx-auto">
           {/* Heading and Description */}
-          <h1 className="text-[22px] text-qblack font-semibold leading-9">
+          <h2 className="text-[22px] text-qblack font-semibold leading-9">
             {ServeLangItem()?.Track_Your_Order}
-          </h1>
+          </h2>
           <p className="text-[15px] text-qgraytwo leading-8 mb-5">
             Siparisinizin guncel durumunu gormek icin siparis numaranizi girin.
           </p>

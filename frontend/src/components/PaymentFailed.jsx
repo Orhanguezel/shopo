@@ -45,9 +45,9 @@ export default function PaymentFailed() {
             </svg>
           </div>
 
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
+          <h2 className="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
             {ServeLangItem()?.Payment_Declined || "Ödeme Başarısız"}
-          </h1>
+          </h2>
           
           <p className="text-gray-500 text-lg mb-10 leading-relaxed max-w-sm mx-auto">
             {detailMessage}

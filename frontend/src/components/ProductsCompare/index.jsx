@@ -293,9 +293,9 @@ function ProductsCompare() {
                     {/*image*/}
                     <tr className="table-row-wrapper">
                       <TableHeaderCell>
-                        <h1 className="text-[18px] font-medium text-qblack mb-4">
+                        <h2 className="text-[18px] font-medium text-qblack mb-4">
                           {ServeLangItem()?.Product_Comparison}
-                        </h1>
+                        </h2>
                         <p className="text-[13px] text-qgraytwo">
                           {
                             ServeLangItem()
@@ -311,9 +311,9 @@ function ProductsCompare() {
                     {/*rating*/}
                     <tr className="table-row-wrapper">
                       <TableHeaderCell>
-                        <h1 className="text-[15px] font-medium text-qblack">
+                        <h2 className="text-[15px] font-medium text-qblack">
                           {ServeLangItem()?.Star_Rating}
-                        </h1>
+                        </h2>
                       </TableHeaderCell>
                       {compareData.ratings.map((item, i) => (
                         <StarRating key={i} rating={item} index={i} />
@@ -323,9 +323,9 @@ function ProductsCompare() {
                     {/*Availability*/}
                     <tr className="table-row-wrapper">
                       <TableHeaderCell>
-                        <h1 className="text-[15px] font-medium text-qblack">
+                        <h2 className="text-[15px] font-medium text-qblack">
                           {ServeLangItem()?.Availability}
-                        </h1>
+                        </h2>
                       </TableHeaderCell>
                       {compareData.stocks?.map((item, i) => (
                         <AvailabilityStatus key={i} stock={item} index={i} />
@@ -334,9 +334,9 @@ function ProductsCompare() {
 
                     <tr className="table-row-wrapper">
                       <TableHeaderCell>
-                        <h1 className="text-[15px] font-medium text-qblack">
+                        <h2 className="text-[15px] font-medium text-qblack">
                           {ServeLangItem()?.Specification}
-                        </h1>
+                        </h2>
                       </TableHeaderCell>
                       {compareData.imagesRow?.map((item, i) => (
                         <ProductSpecification

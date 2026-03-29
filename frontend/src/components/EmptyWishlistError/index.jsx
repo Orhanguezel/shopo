@@ -39,9 +39,9 @@ export default function EmptyWishlistError() {
             </div>
           </div>
           <div data-aos="fade-up" className="wishlist-content w-full">
-            <h1 className="sm:text-xl text-base font-semibold text-center mb-5">
+            <h2 className="sm:text-xl text-base font-semibold text-center mb-5">
               {ServeLangItem()?.Empty_You_dont_Wishlist_any_Products}
-            </h1>
+            </h2>
             <div className="flex justify-center w-full cursor-pointer">
               <button
                 type="button"

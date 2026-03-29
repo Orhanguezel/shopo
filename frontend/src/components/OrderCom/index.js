@@ -188,10 +188,10 @@ function OrderComContent({ resData, orderStatus, orderId }) {
             <div id="printSection">
               <div className="sm:flex justify-between items-center mb-4">
                 <div>
-                  <h1 className="text-[26px] font-semibold text-qblack mb-2.5">
+                  <h2 className="text-[26px] font-semibold text-qblack mb-2.5">
                     {resData.order_address &&
                       resData.order_address.billing_name}
-                  </h1>
+                  </h2>
                   <ul className="flex flex-col space-y-0.5">
                     <li className="text-[22px]n text-[#4F5562]">
                       {ServeLangItem()?.Order_ID}:{" "}
