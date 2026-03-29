@@ -42,6 +42,12 @@ class NetgsmService implements SmsServiceInterface
         // else: already has country code (491723846068, 905435011995)
 
         try {
+            Log::info('Netgsm SMS sending', [
+                'phone' => $phone,
+                'msgheader' => $msgheader,
+                'endpoint' => $endpoint,
+            ]);
+
             $response = Http::get($endpoint, [
                 'usercode' => $usercode,
                 'password' => $password,
@@ -51,6 +57,12 @@ class NetgsmService implements SmsServiceInterface
             ]);
 
             $body = trim($response->body());
+
+            Log::info('Netgsm API response', [
+                'phone' => $phone,
+                'response_body' => $body,
+                'http_status' => $response->status(),
+            ]);
 
             // Netgsm success codes: 00, 01, 02 mean message accepted
             if (in_array($body, ['00', '01', '02']) || str_starts_with($body, '00')) {
