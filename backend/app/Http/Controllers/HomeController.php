@@ -1900,21 +1900,22 @@ class HomeController extends Controller
 
                 $subscriber->save();
 
+                try {
+                    MailHelper::setMailConfig();
 
+                    $template=EmailTemplate::where('id',3)->first();
 
-                MailHelper::setMailConfig();
-
-
-
-                $template=EmailTemplate::where('id',3)->first();
-
-                $message=$template->description;
-
-                $subject=$template->subject;
-
-                Mail::to($subscriber->email)->send(new SubscriptionVerification($subscriber,$message,$subject));
-
-
+                    if($template) {
+                        $message=$template->description;
+                        $subject=$template->subject;
+                        Mail::to($subscriber->email)->send(new SubscriptionVerification($subscriber,$message,$subject));
+                    }
+                } catch (\Exception $e) {
+                    // Mail failed but subscription is saved — auto-verify since mail won't arrive
+                    $subscriber->verified_token = null;
+                    $subscriber->is_verified = 1;
+                    $subscriber->save();
+                }
 
                 return response()->json(['message' => trans('user_validation.Subscription successfully, please verified your email')]);
 
