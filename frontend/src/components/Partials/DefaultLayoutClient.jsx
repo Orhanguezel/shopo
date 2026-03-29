@@ -1,5 +1,5 @@
 "use client";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import hexToRgb from "@/utils/hexToRgb";
@@ -28,7 +28,6 @@ export default function DefaultLayoutClient({ children }) {
   const [messageWidget, setMessageWidget] = useState(null);
 
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const { text_direction } = settings();
 
@@ -183,7 +182,7 @@ export default function DefaultLayoutClient({ children }) {
   // Track route changes for Facebook Pixel
   useEffect(() => {
     trackFacebookPixelPageView();
-  }, [pathname, searchParams, trackFacebookPixelPageView]);
+  }, [pathname, trackFacebookPixelPageView]);
 
   // Set text direction
   useEffect(() => {
