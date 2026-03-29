@@ -576,12 +576,12 @@ export default function ProductView({
           )}
 
           {/* Product Name */}
-          <h1
+          <h2
             data-aos="fade-up"
             className="text-xl font-medium text-qblack mb-4 notranslate"
           >
             {safeProduct?.name}
-          </h1>
+          </h2>
 
           {/* Rating */}
           <div

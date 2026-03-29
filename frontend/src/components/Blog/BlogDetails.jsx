@@ -138,9 +138,9 @@ export default function BlogDetails({
                     icin hazirlanir.
                   </p>
                 </div>
-                <h1 className="mb-6 text-3xl font-semibold leading-tight text-qblack md:text-4xl">
+                <h2 className="mb-6 text-3xl font-semibold leading-tight text-qblack md:text-4xl">
                   {blog?.title || "Blog"}
-                </h1>
+                </h2>
                 {summaryText && (
                   <section className="mb-6 rounded-2xl border border-[#e6dcc6] bg-[#fffaf0] px-5 py-5">
                     <h2 className="text-xl font-semibold text-qblack">
