@@ -39,7 +39,6 @@ class SiteContentSeeder extends Seeder
             ['id' => 13, 'column' => '1', 'link' => '/gizlilik-sozlesmesi', 'title' => 'Gizlilik Sözleşmesi'],
             ['id' => 14, 'column' => '2', 'link' => '/products?highlight=best_product', 'title' => 'En İyi Ürünler'],
             ['id' => 15, 'column' => '1', 'link' => '/faq', 'title' => 'Destek'],
-            ['id' => 16, 'column' => '1', 'link' => '/blogs', 'title' => 'Blog'],
             ['id' => 17, 'column' => '1', 'link' => '/contact', 'title' => 'İletişim'],
             ['id' => 18, 'column' => '3', 'link' => '/become-seller', 'title' => 'Satıcı Olun'],
         ];

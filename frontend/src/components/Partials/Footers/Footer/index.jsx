@@ -99,6 +99,15 @@ export default function Footer({ settings }) {
     footerData;
   const resolvedSocialLinks =
     socialLinks?.length > 0 ? socialLinks : fallbackSocialLinks;
+  const filterFooterLinks = (links) =>
+    Array.isArray(links)
+      ? links.filter(
+          (item) =>
+            item?.link !== "/blogs" &&
+            item?.link !== "/category-by-blogs" &&
+            String(item?.title || "").trim().toLowerCase() !== "blog"
+        )
+      : [];
 
   return (
     <footer className="footer-section-wrapper bg-white print:hidden">
@@ -146,8 +155,8 @@ export default function Footer({ settings }) {
                   </div>
                   <div>
                     <ul className="flex flex-col space-y-4">
-                      {firstColumn.col_links?.length > 0 &&
-                        firstColumn.col_links.map((item, i) => (
+                      {filterFooterLinks(firstColumn.col_links).length > 0 &&
+                        filterFooterLinks(firstColumn.col_links).map((item, i) => (
                           <li key={i}>
                               <Link href={item.link}>
                                 <span className="text-[#4B5563] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
@@ -174,8 +183,8 @@ export default function Footer({ settings }) {
                     </div>
                     <div>
                       <ul className="flex flex-col space-y-4">
-                        {secondColumn.col_links?.length > 0 &&
-                          secondColumn.col_links.map((item, i) => (
+                        {filterFooterLinks(secondColumn.col_links).length > 0 &&
+                          filterFooterLinks(secondColumn.col_links).map((item, i) => (
                             <li key={i}>
                               <Link href={item.link}>
                                 <span className="text-[#6B7280] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
@@ -203,8 +212,8 @@ export default function Footer({ settings }) {
                     </div>
                     <div>
                       <ul className="flex flex-col space-y-4">
-                        {thirdColumn.col_links?.length > 0 &&
-                          thirdColumn.col_links.map((item, i) => (
+                        {filterFooterLinks(thirdColumn.col_links).length > 0 &&
+                          filterFooterLinks(thirdColumn.col_links).map((item, i) => (
                             <li key={i}>
                               <Link href={item.link}>
                                 <span className="text-[#6B7280] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
