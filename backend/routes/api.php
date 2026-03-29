@@ -173,6 +173,7 @@ Route::group([], function () {
     Route::get('/flash-sale', [HomeController::class, 'flashSale'])->name('flash-sale');
 
     Route::post('subscribe-request', [HomeController::class, 'subscribeRequest'])->middleware('throttle:public-form', 'XSS')->name('subscribe-request');
+    Route::get('subscriber-verification/{token}', [HomeController::class, 'subscriberVerifcation'])->name('subscriber-verification');
 
     // Route::get('live-track-order/{id}', [HomeController::class, 'liveTrackOrder'])->name('live-track-order');
 
