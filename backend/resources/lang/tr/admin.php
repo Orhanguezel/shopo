@@ -2,6 +2,8 @@
 return array (
   'About Us' => 'Hakkımızda',
   'Dashboard' => 'Kontrol Paneli',
+  'Seller Dashboard' => 'Satıcı Paneli',
+  'Login Your  fashion shopping Seller Dashboard' => 'Seyfibaba satıcı panelinize giriş yapın',
   'Existing Image' => 'Mevcut Resim',
   'New Image' => 'Yeni Resim',
   'Description' => 'Açıklama',
