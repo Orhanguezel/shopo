@@ -128,28 +128,7 @@
 
 
 
-                                <div class="form-group col-12">
-                                    <label>{{__('admin.Highlight')}}</label>
-                                    <div>
-                                        <input type="checkbox"name="top_product" id="top_product"> <label for="top_product" class="mr-3" >{{__('admin.Top Product')}}</label>
-
-                                        <input type="checkbox" name="new_arrival" id="new_arrival"> <label for="new_arrival" class="mr-3" >{{__('admin.New Arrival')}}</label>
-
-                                        <input type="checkbox" name="best_product" id="best_product"> <label for="best_product" class="mr-3" >{{__('admin.Best Product')}}</label>
-
-                                        <input type="checkbox" name="is_featured" id="is_featured"> <label for="is_featured" class="mr-3" >{{__('admin.Featured Product')}}</label>
-                                    </div>
-                                </div>
-
-                                <div class="form-group col-12">
-                                    <label>{{__('admin.SEO Title')}}</label>
-                                   <input type="text" class="form-control" name="seo_title" value="{{ old('seo_title') }}">
-                                </div>
-
-                                <div class="form-group col-12">
-                                    <label>{{__('admin.SEO Description')}}</label>
-                                    <textarea name="seo_description" id="" cols="30" rows="10" class="form-control text-area-5">{{ old('seo_description') }}</textarea>
-                                </div>
+                                {{-- Highlight ve SEO alanları satıcılardan gizlendi (#29) — admin yönetir --}}
 
                                 <div class="form-group col-12">
                                     <label>{{__('admin.Specifications')}}</label>

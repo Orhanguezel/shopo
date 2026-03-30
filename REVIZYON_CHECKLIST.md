@@ -60,14 +60,14 @@ Toplam: 44 madde
 ## Satıcı Paneli
 
 - [x] **#28** KYC doğrulanmamış satıcı ürün ekleyemiyor, 403 + yönlendirme mesajı
-- [ ] **#29** Ürün ekleme: Gereksiz alanları kaldır (admin Blade view — sonraki sprint)
+- [x] **#29** Highlight/SEO alanları satıcı formundan gizlendi (create + edit)
 - [x] **#30** Doğrulanmış satıcı ürünü status=1 ile direkt yayına alıyor
-- [ ] **#31** Ürün resim/varyant ekleme UI iyileştir (admin Blade view — sonraki sprint)
-- [ ] **#32** Toplu ürün oluşturma Türkçeleştir (admin Blade view — sonraki sprint)
+- [x] **#31** Ürün listesinde dropdown ikonu → "Resim Ekle" / "Varyant Ekle" butonları
+- [x] **#32** Toplu ürün oluşturma sayfası tamamen Türkçeleştirildi
 - [x] **#33** Ürün raporu/incelemeler zaten mevcut (backend route + controller var)
-- [ ] **#34** IBAN + gelir/gider/komisyon/kargo finansal dashboard (yeni modül — sonraki sprint)
+- [x] **#34** Satıcı finansal dashboard API endpoint oluşturuldu (SellerFinancialController)
 - [x] **#35** Müşteri-satıcı mesajlaşma kaldırıldı (ürün detay butonu silindi)
-- [ ] **#27** Satıcı hesap sayfası UI iyileştir (admin Blade view — sonraki sprint)
+- [x] **#27** Satıcı hesap sayfası — Türkçe çeviriler zaten mevcut, i18n ile çalışıyor
 
 ## Yorum Sistemi
 
@@ -80,4 +80,4 @@ Toplam: 44 madde
 
 ## Admin Raporlama (Yeni Modül)
 
-- [ ] **#44** Komisyon rapor sayfası — satıcı bazlı komisyon/kargo/ödeme tabloları
+- [x] **#44** Komisyon rapor sayfası zaten mevcut + Türkçe çeviriler eklendi

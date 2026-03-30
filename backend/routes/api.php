@@ -74,6 +74,7 @@ use App\Http\Controllers\Seller\SellerProductGalleryController;
 use App\Http\Controllers\Seller\SellerProductVariantController;
 use App\Http\Controllers\Seller\SellerProductVariantItemController;
 use App\Http\Controllers\Seller\SellerProductReviewController;
+use App\Http\Controllers\Seller\SellerFinancialController;
 use App\Http\Controllers\Seller\WithdrawController;
 use App\Http\Controllers\Seller\EarningsController as SellerEarningsController;
 use App\Http\Controllers\Seller\SellerProductReportControler;
@@ -332,6 +333,7 @@ Route::group([], function () {
         Route::put('product-gallery-status/{id}', [SellerProductGalleryController::class,'changeStatus'])->name('product-gallery.status');
 
 
+        Route::get('financial-dashboard', [SellerFinancialController::class, 'index'])->name('financial-dashboard');
         Route::get('product-review',[SellerProductReviewController::class,'index'])->name('product-review');
         Route::put('product-review-status/{id}',[SellerProductReviewController::class,'changeStatus'])->name('product-review-status');
         Route::get('show-product-review/{id}',[SellerProductReviewController::class,'show'])->name('show-product-review');

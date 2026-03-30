@@ -80,17 +80,13 @@
                                             <a href="javascript:;" data-toggle="modal" data-target="#canNotDeleteModal" class="btn btn-danger btn-sm" disabled><i class="fa fa-trash" aria-hidden="true"></i></a>
                                         @endif
 
-                                        <div class="dropdown d-inline">
-                                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                              <i class="fas fa-cog"></i>
-                                            </button>
-
-                                            <div class="dropdown-menu" x-placement="top-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, -131px, 0px);">
-                                              <a class="dropdown-item has-icon" href="{{ route('seller.product-gallery',$product->id) }}"><i class="far fa-image"></i> {{__('admin.Image Gallery')}}</a>
-
-                                              <a class="dropdown-item has-icon" href="{{ route('seller.product-variant',$product->id) }}"><i class="fas fa-cog"></i> {{__('admin.Product Variant')}}</a>
-                                            </div>
-                                          </div>
+                                        {{-- Resim ve varyant butonları — ikon yerine yazı (#31) --}}
+                                        <a class="btn btn-info btn-sm" href="{{ route('seller.product-gallery',$product->id) }}">
+                                            <i class="far fa-image"></i> Resim Ekle
+                                        </a>
+                                        <a class="btn btn-warning btn-sm" href="{{ route('seller.product-variant',$product->id) }}">
+                                            <i class="fas fa-layer-group"></i> Varyant Ekle
+                                        </a>
 
                                         </td>
                                     </tr>

@@ -139,39 +139,7 @@
                                     <textarea name="long_description" id="" cols="30" rows="10" class="summernote">{{ $product->long_description }}</textarea>
                                 </div>
 
-                                <div class="form-group col-12">
-                                    <label>{{__('admin.Highlight')}}</label>
-                                    <div>
-
-                                        <input {{ $product->is_top == 1 ? 'checked' : '' }} type="checkbox"name="top_product" id="top_product"> <label for="top_product" class="mr-3" >{{__('admin.Top Product')}}</label>
-
-                                        <input {{ $product->new_product == 1 ? 'checked' : '' }}  type="checkbox" name="new_arrival" id="new_arrival"> <label for="new_arrival" class="mr-3" >{{__('admin.New Arrival')}}</label>
-
-                                        <input {{ $product->is_best == 1 ? 'checked' : '' }}  type="checkbox" name="best_product" id="best_product"> <label for="best_product" class="mr-3" >{{__('admin.Best Product')}}</label>
-
-                                        <input {{ $product->is_featured == 1 ? 'checked' : '' }}  type="checkbox" name="is_featured" id="is_featured"> <label for="is_featured" class="mr-3" >{{__('admin.Featured Product')}}</label>
-                                    </div>
-                                </div>
-
-                                @if ($product->approve_by_admin == 1)
-                                    <div class="form-group col-12">
-                                        <label>{{__('admin.Status')}} <span class="text-danger">*</span></label>
-                                        <select name="status" class="form-control">
-                                            <option {{ $product->status == 1 ? 'selected' : '' }} value="1">{{__('admin.Active')}}</option>
-                                            <option {{ $product->status == 0 ? 'selected' : '' }} value="0">{{__('admin.Inactive')}}</option>
-                                        </select>
-                                    </div>
-                                @endif
-
-                                <div class="form-group col-12">
-                                    <label>{{__('admin.SEO Title')}}</label>
-                                   <input type="text" class="form-control" name="seo_title" value="{{ $product->seo_title }}">
-                                </div>
-
-                                <div class="form-group col-12">
-                                    <label>{{__('admin.SEO Description')}}</label>
-                                    <textarea name="seo_description" id="" cols="30" rows="10" class="form-control text-area-5">{{ $product->seo_description }}</textarea>
-                                </div>
+                                {{-- Highlight, Status ve SEO alanları satıcılardan gizlendi (#29) — admin yönetir --}}
 
                                 <div class="form-group col-12">
                                     <label>{{__('admin.Specifications')}}</label>

@@ -47,9 +47,9 @@
                 <div class="card-body">
                     <table class="table">
                         @php
-                            $required = 'This Field is required';
-                            $not_required = 'Not required';
-                            $required_and_unique = 'This Field is required and unique';
+                            $required = 'Bu alan zorunludur';
+                            $not_required = 'Zorunlu değil';
+                            $required_and_unique = 'Bu alan zorunludur ve benzersiz olmalıdır';
                         @endphp
                         <tr>
                             <td>{{__('Thumbnail Image')}}</td>
@@ -68,7 +68,7 @@
 
                         <tr>
                             <td>{{__('Slug')}}</td>
-                            <td>{{ $required_and_unique }} , {{__('Slug and manufacture part no both are same')}}</td>
+                            <td>{{ $required_and_unique }}. Slug ve ürün parça numarası aynıdır.</td>
                         </tr>
 
                         <tr>
@@ -78,17 +78,17 @@
 
                         <tr>
                             <td>{{__('Sub category id')}}</td>
-                            <td> Haven't any sub category please set 0</td>
+                            <td>Alt kategori yoksa 0 yazın</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Child category id')}}</td>
-                            <td>Haven't any child category please set 0</td>
+                            <td>Alt alt kategori yoksa 0 yazın</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Brand id')}}</td>
-                            <td>Haven't any child category please set 0</td>
+                            <td>Marka yoksa 0 yazın</td>
                         </tr>
 
                         <tr>
@@ -99,27 +99,27 @@
 
                         <tr>
                             <td>{{__('Price')}}</td>
-                            <td>{{ $required }}.{{__('Allowed only numeric value')}}</td>
+                            <td>{{ $required }}. Sadece sayısal değer giriniz.</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Offer price')}}</td>
-                            <td>{{ $not_required }}.{{__('You can put only numeric value')}}</td>
+                            <td>{{ $not_required }}.Sadece sayısal değer giriniz.</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Quantity')}}</td>
-                            <td>{{ $required }}.{{__('You can put only numeric value')}}</td>
+                            <td>{{ $required }}.Sadece sayısal değer giriniz.</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Weight')}}</td>
-                            <td>{{ $required }}.{{__('You can put only numeric value')}}</td>
+                            <td>{{ $required }}.Sadece sayısal değer giriniz.</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Vendor Id')}}</td>
-                            <td>{{ $required }}. Your vendor id is = {{ $seller->id }}</td>
+                            <td>{{ $required }}. Satıcı kimliğiniz = {{ $seller->id }}</td>
                         </tr>
 
 
@@ -135,37 +135,37 @@
 
                         <tr>
                             <td>{{__('Top Product')}}</td>
-                            <td>{{ $required }}. Please set 0 or 1. 0 means = No and 1 means = Yes</td>
+                            <td>{{ $required }}. 0 veya 1 yazın. 0 = Hayır, 1 = Evet</td>
                         </tr>
 
                         <tr>
                             <td>{{__('New Arrival')}}</td>
-                            <td>{{ $required }}. Please set 0 or 1. 0 means = No and 1 means = Yes</td>
+                            <td>{{ $required }}. 0 veya 1 yazın. 0 = Hayır, 1 = Evet</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Best Product')}}</td>
-                            <td>{{ $required }}. Please set 0 or 1. 0 means = No and 1 means = Yes</td>
+                            <td>{{ $required }}. 0 veya 1 yazın. 0 = Hayır, 1 = Evet</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Featured Product')}}</td>
-                            <td>{{ $required }}. Please set 0 or 1. 0 means = No and 1 means = Yes</td>
+                            <td>{{ $required }}. 0 veya 1 yazın. 0 = Hayır, 1 = Evet</td>
                         </tr>
 
                         <tr>
                             <td>{{__('status')}}</td>
-                            <td>{{ $required }}. Yes = 1, No= 0</td>
+                            <td>{{ $required }}. Evet = 1, Hayır = 0</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Is specification')}}</td>
-                            <td>{{ $required }}. Yes = 1, No= 0</td>
+                            <td>{{ $required }}. Evet = 1, Hayır = 0</td>
                         </tr>
 
                         <tr>
                             <td>{{__('Approve by admin')}}</td>
-                            <td>{{ $required }}. Yes = 1, No= 0</td>
+                            <td>{{ $required }}. Evet = 1, Hayır = 0</td>
                         </tr>
 
                     </table>

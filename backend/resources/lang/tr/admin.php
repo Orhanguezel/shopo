@@ -808,6 +808,23 @@ return array (
   'Return Requests' => 'İade Talepleri',
   'Commission Settings' => 'Komisyon Ayarları',
   'Commission Report' => 'Komisyon Raporu',
+  'Total Sales' => 'Toplam Satış',
+  'Total Commission' => 'Toplam Komisyon',
+  'Sellers Net Profit' => 'Satıcı Net Kazanç',
+  'Pending Seller Net' => 'Bekleyen Satıcı Ödemesi',
+  'Settled Seller Net' => 'Ödenen Satıcı Tutarı',
+  'Seller Breakdown' => 'Satıcı Bazlı Dağılım',
+  'Net for Seller' => 'Satıcı Net Tutarı',
+  'Transaction Details' => 'İşlem Detayları',
+  'Gross Amount' => 'Brüt Tutar',
+  'Commission Rate' => 'Komisyon Oranı',
+  'Commission Amount' => 'Komisyon Tutarı',
+  'Seller Net' => 'Satıcı Net',
+  'Settled' => 'Ödendi',
+  'Refunded' => 'İade Edildi',
+  'Filter' => 'Filtrele',
+  'Reset' => 'Sıfırla',
+  'N/A' => 'Yok',
 );
 ?>
 
