@@ -53,11 +53,16 @@ export default function ChatWidget() {
   // Check if AI chat is enabled
   useEffect(() => {
     fetch(`${appConfig.BASE_URL}api/ai-chat/status`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
-        if (data.success) {
+        if (data?.success) {
           const canUse = data.data.enabled && (token || data.data.guest_enabled);
           setEnabled(canUse);
+        } else {
+          setEnabled(false);
         }
       })
       .catch(() => setEnabled(false));

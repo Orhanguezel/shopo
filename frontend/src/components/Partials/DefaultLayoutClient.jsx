@@ -150,7 +150,7 @@ export default function DefaultLayoutClient({ children }) {
       ReactPixel.init(fbPixel.app_id);
       ReactPixel.pageView();
     } catch (error) {
-      console.error("Facebook Pixel initialization error:", error);
+      // Facebook Pixel init silently failed
     }
   }, [fbPixel]);
 
@@ -164,7 +164,7 @@ export default function DefaultLayoutClient({ children }) {
       const ReactPixel = (await import("react-facebook-pixel")).default;
       ReactPixel.pageView();
     } catch (error) {
-      console.error("Facebook Pixel page view error:", error);
+      // Facebook Pixel pageView silently failed
     }
   }, [fbPixel]);
 

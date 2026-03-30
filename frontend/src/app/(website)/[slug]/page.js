@@ -36,7 +36,7 @@ export async function generateMetadata({ params }) {
       };
     }
   } catch (error) {
-    console.error("Error generating metadata for custom page:", error);
+    // metadata generation failed silently
   }
 
   return {

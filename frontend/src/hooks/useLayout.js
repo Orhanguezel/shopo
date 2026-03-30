@@ -45,7 +45,7 @@ export const useWebsiteSetup = (websiteSetup) => {
 
         setError(null);
       } catch (err) {
-        console.error("Error processing website setup:", err);
+        // silently handle setup processing errors
         setError(ERROR_MESSAGES.WEBSITE_SETUP_FAILED);
       }
     }
@@ -86,7 +86,7 @@ export const useCurrencyManagement = (
           setDefaultCurrency(JSON.parse(storedCurrency));
         }
       } catch (err) {
-        console.error("Error loading currency from localStorage:", err);
+        // silently handle currency load error
         localStorage.removeItem(storageKey);
         setError(ERROR_MESSAGES.CURRENCY_LOAD_FAILED);
       }
@@ -106,7 +106,7 @@ export const useCurrencyManagement = (
           window.location.reload();
         }, changeDelay);
       } catch (err) {
-        console.error("Error saving currency:", err);
+        // silently handle currency save error
         setError(ERROR_MESSAGES.CURRENCY_UPDATE_FAILED);
       }
     },

@@ -58,7 +58,7 @@ export default async function sitemap() {
           }));
     }
   } catch (error) {
-    console.error("Sitemap generation error:", error);
+    // sitemap generation failed silently
   }
 
   return [...routes, ...categories, ...sellerEntries, ...productEntries];

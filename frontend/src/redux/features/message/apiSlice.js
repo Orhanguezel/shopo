@@ -38,7 +38,7 @@ export const messageApi = apiSlice.injectEndpoints({
           const { data, meta } = await queryFulfilled;
           info.success(data, meta.response.status);
         } catch (error) {
-          console.error("Failed to send message:", error);
+          // message send failed silently
         }
       },
     }),
