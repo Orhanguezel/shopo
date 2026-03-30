@@ -20,15 +20,25 @@ class AiChatController extends Controller
      */
     public function status()
     {
-        $settings = Setting::first();
+        try {
+            $settings = Setting::first();
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'enabled' => (bool) $settings->ai_chat_enabled,
-                'guest_enabled' => (bool) $settings->ai_chat_guest_enabled,
-            ],
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'enabled' => (bool) ($settings->ai_chat_enabled ?? false),
+                    'guest_enabled' => (bool) ($settings->ai_chat_guest_enabled ?? false),
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'enabled' => false,
+                    'guest_enabled' => false,
+                ],
+            ]);
+        }
     }
 
     /**

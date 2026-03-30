@@ -176,8 +176,7 @@ class HomeController extends Controller
 
 
     public function websiteSetup(Request $request){
-
-
+      try {
 
         if($request->lang_code){
             $language = include(resource_path('lang/'.$request->lang_code.'/user.php'));
@@ -362,8 +361,9 @@ class HomeController extends Controller
 
         ]);
 
-
-
+      } catch (\Throwable $e) {
+        return response()->json(['error' => 'Website setup could not be loaded.'], 500);
+      }
     }
 
 
