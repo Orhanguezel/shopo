@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             DemoDataCleanupSeeder::class,
             GeoAuditCleanupSeeder::class,
             CouponSeeder::class,
+            CleanDemoProductsSeeder::class,
         ]);
     }
 }
