@@ -126,7 +126,7 @@ const AccountLink = ({ auth }) => {
   return (
     <Link href="/login" aria-label={ServeLangItem()?.Account || "Hesap"}>
       <span className={`${linkClass} lg:block hidden`}>
-        {ServeLangItem()?.Account}
+        {ServeLangItem()?.Account || "Hesap"}
       </span>
       <span className={`${linkClass} lg:hidden block`}>
         {ServeLangItem()?.Login || "Giriş Yap"}

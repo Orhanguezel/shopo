@@ -31,6 +31,14 @@ function ServeLangItem() {
           Reset: "Sıfırla",
           Clear_Cart: "Sepeti Temizle",
           Update_Cart: "Güncelle",
+          Account: "Hesap",
+          Track_Order: "Sipariş Takip",
+          Forgot_password: "Şifremi Unuttum",
+          Reset_Password: "Şifre Sıfırla",
+          Create_Account: "Hesap Oluştur",
+          Already_have_an_Account: "Zaten hesabınız var mı",
+          Dontt_have_an_account: "Hesabınız yok mu",
+          sign_up_free: "Ücretsiz Kayıt Ol",
         };
 }
 

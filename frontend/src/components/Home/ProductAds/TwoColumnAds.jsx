@@ -16,7 +16,7 @@ function TwoColumnAds({ bannerOne, bannerTwo }) {
             <div
               className={`sm:flex xl:space-x-[30px] md:space-x-5 rtl:space-x-reverse items-center w-full h-full  overflow-hidden`}
             >
-              {bannerOne && (
+              {bannerOne && bannerOne.image && (
                 <div data-aos="fade-right" className={`h-full sm:w-1/2 w-full rounded-xl overflow-hidden shadow-sm relative`}>
                   <Image
                     src={appConfig.BASE_URL + bannerOne.image}
@@ -74,7 +74,7 @@ function TwoColumnAds({ bannerOne, bannerTwo }) {
                   </div>
                 </div>
               )}
-              {bannerTwo && (
+              {bannerTwo && bannerTwo.image && (
                 <div data-aos="fade-left" className={`h-full sm:w-1/2 w-full rounded-xl overflow-hidden shadow-sm relative`}>
                   <Image
                     src={appConfig.BASE_URL + bannerTwo.image}

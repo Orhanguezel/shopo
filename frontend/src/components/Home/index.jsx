@@ -107,7 +107,9 @@ export default function Home({ homepageData }) {
           products={homepage?.popularCategoryProducts}
           categories={homepage?.popularCategories}
           categoryBackground={
-            appConfig.BASE_URL + homepage.popularCategorySidebarBanner
+            homepage.popularCategorySidebarBanner
+              ? appConfig.BASE_URL + homepage.popularCategorySidebarBanner
+              : null
           }
           categoryTitle={sectionTitles && sectionTitles.Popular_Category}
           sectionTitle={sectionTitles && sectionTitles.Popular_Category}
@@ -177,7 +179,9 @@ export default function Home({ homepageData }) {
               : []
           }
           categoryBackground={
-            appConfig.BASE_URL + homepage.featuredCategorySidebarBanner
+            homepage.featuredCategorySidebarBanner
+              ? appConfig.BASE_URL + homepage.featuredCategorySidebarBanner
+              : null
           }
           categoryTitle={sectionTitles && sectionTitles.Featured_Products}
           products={

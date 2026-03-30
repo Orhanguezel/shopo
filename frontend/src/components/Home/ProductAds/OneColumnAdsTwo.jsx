@@ -15,7 +15,7 @@ function OneColumnAdsTwo({ data }) {
     return translations[text] || text;
   };
 
-  if (data) {
+  if (data && data.image) {
     return (
       <div className={`one-column-ads-two md:h-[220px] h-[140px] w-full mb-[30px]`}>
         <div

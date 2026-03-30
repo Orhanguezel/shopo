@@ -27,7 +27,7 @@ export default function CampaignCountDown({
                 background: `url(${
                   flashSaleData?.homepage_image
                     ? appConfig.BASE_URL + flashSaleData.homepage_image
-                    : "/assets/images/campaign-cover-countdown.jpg"
+                    : ""
                 }) no-repeat`,
                 backgroundSize: "cover",
               }}

@@ -5,7 +5,7 @@ import ServeLangItem from "../../Helpers/ServeLangItem";
 import appConfig from "@/appConfig";
 
 function OneColumnAdsOne({ data }) {
-  if (data) {
+  if (data && data.image) {
     return (
       <div
         className={`one-column-ads-one md:h-[295px] h-[190px] md:mb-[60px] mb-[30px] w-full`}
