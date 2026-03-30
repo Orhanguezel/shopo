@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-export function middleware(request) {
+
+export function proxy(request) {
   const { pathname } = request.nextUrl;
 
   // Get access_token from cookies
@@ -36,14 +37,14 @@ export function middleware(request) {
     const homeUrl = new URL("/", request.url);
     return NextResponse.redirect(homeUrl);
   }
+
   // Allow the request to continue
   return NextResponse.next();
 }
 
-// Configure which routes the middleware should run on
+// Configure which routes the proxy should run on
 export const config = {
   matcher: [
-    // Only protect the private routes that need authentication
     "/profile/:path*",
     "/wishlist",
     "/products-compare",

@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import ServeLangItem from "./ServeLangItem";
 
+const COOKIE_MESSAGE = "Seyfibaba, size daha iyi bir alışveriş deneyimi sunmak için çerezleri kullanmaktadır. Sitemizi kullanmaya devam ederek çerez politikamızı kabul etmiş olursunuz.";
+
 function Consent() {
   const { websiteSetup } = useSelector((state) => state.websiteSetup);
   const [consent, setConsent] = useState(true);
@@ -49,11 +51,11 @@ function Consent() {
           <div className="w-full h-full flex flex-col justify-between relative">
             <div>
               <h3 className="text-base text-qgray line-clamp-4">
-                {consentData.message}
+                {COOKIE_MESSAGE}
               </h3>
               <Link href="/privacy-policy">
                 <span className="text-sm text-blue-500 cursor-pointer">
-                  {ServeLangItem()?.Read_more}...
+                  Devamını oku...
                 </span>
               </Link>
             </div>
@@ -65,14 +67,14 @@ function Consent() {
                 type="button"
                 className="w-1/2 h-full rounded text-base font-bold bg-qyellow text-qblack antialiased tracking-wide"
               >
-                {ServeLangItem()?.Accept_All}
+                Tümünü Kabul Et
               </button>
               <button
                 onClick={(e) => denyCookie()}
                 type="button"
                 className="w-1/2 h-full rounded text-base font-bold bg-qyellowlow/10 text-qblack antialiased tracking-wide"
               >
-                {ServeLangItem()?.Deny}
+                Reddet
               </button>
             </div>
             <button
