@@ -107,7 +107,7 @@ export default function Drawer({ className, open, action }) {
               tab === "category" ? "text-qblack" : "text-qgray"
             }`}
           >
-            {ServeLangItem()?.Categories}
+            {ServeLangItem()?.Categories || "Kategoriler"}
           </span>
           <span className="w-[1px] h-[14px] bg-qgray"></span>
           <span
@@ -116,7 +116,7 @@ export default function Drawer({ className, open, action }) {
               tab === "menu" ? "text-qblack" : "text-qgray "
             }`}
           >
-            {ServeLangItem()?.Main_Menu}
+            {ServeLangItem()?.Main_Menu || "Ana Menü"}
           </span>
         </div>
         {tab === "category" ? (

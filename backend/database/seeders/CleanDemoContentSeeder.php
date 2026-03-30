@@ -50,15 +50,23 @@ class CleanDemoContentSeeder extends Seeder
             ->update(['image' => '']);
         $this->command->info("✓ Demo mega menu banner görselleri temizlendi.");
 
-        // 6. Demo advertisement banner'ları temizle
+        // 6. Flash sale görselleri temizle
         try {
-            DB::table('advertisements')
-                ->where('image', 'LIKE', '%2022%')
-                ->update(['status' => 0]);
-            $this->command->info("✓ Demo reklam banner'ları devre dışı bırakıldı.");
-        } catch (\Throwable $e) {
-            // Tablo veya kolon yoksa atla
+            DB::table('flash_sales')->update(['homepage_image' => '', 'flashsale_page_image' => '']);
+            $this->command->info("✓ Flash sale görselleri temizlendi.");
+        } catch (\Throwable $e) {}
+
+        // 7. Kategori demo görselleri temizle
+        $catCount = DB::table('categories')->where('image', 'LIKE', '%2022%')->count();
+        DB::table('categories')->where('image', 'LIKE', '%2022%')->update(['image' => '']);
+        if ($catCount > 0) {
+            $this->command->info("✓ {$catCount} kategori demo görseli temizlendi.");
         }
+
+        // 8. Kalan banner ve breadcrumb görselleri temizle
+        DB::table('banner_images')->where('image', 'LIKE', '%2022%')->update(['image' => '']);
+        DB::table('breadcrumb_images')->where('image', 'LIKE', '%2022%')->update(['image' => '']);
+        $this->command->info("✓ Demo banner ve breadcrumb görselleri temizlendi.");
 
         $this->command->info('');
         $this->command->info('Demo içerik temizliği tamamlandı.');
