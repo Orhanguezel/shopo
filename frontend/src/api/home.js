@@ -1,7 +1,23 @@
 import apiRoutes from "@/appConfig/apiRoutes";
-import { notFound } from "next/navigation";
 
 const PUBLIC_CONTENT_REVALIDATE = 300;
+
+const EMPTY_HOMEPAGE = {
+  sliders: [],
+  services: [],
+  homepage_categories: [],
+  popularCategories: [],
+  popularCategoryProducts: [],
+  featuredCategories: [],
+  featuredCategoryProducts: [],
+  topRatedProducts: [],
+  newArrivalProducts: [],
+  bestProducts: [],
+  brands: [],
+  section_title: [],
+  flashSale: null,
+  flashSaleProducts: [],
+};
 
 export default async function home() {
   const apiUrl = `${apiRoutes.shopo}`;
@@ -17,15 +33,15 @@ export default async function home() {
     });
 
     if (!res.ok) {
-      notFound();
+      return EMPTY_HOMEPAGE;
     }
 
     try {
       return await res.json();
     } catch {
-      notFound();
+      return EMPTY_HOMEPAGE;
     }
   } catch {
-    notFound();
+    return EMPTY_HOMEPAGE;
   }
 }
