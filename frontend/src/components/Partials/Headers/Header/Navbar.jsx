@@ -10,6 +10,7 @@ import FontAwesomeCom from "../../../Helpers/icons/FontAwesomeCom";
 import Multivendor from "../../../Shared/Multivendor";
 import ServeLangItem from "../../../Helpers/ServeLangItem";
 import appConfig from "@/appConfig";
+import auth from "@/utils/auth";
 
 /**
  * Navbar Component
@@ -431,45 +432,31 @@ export default function Navbar({ className }) {
   );
 
   /**
-   * Render become seller button
+   * Render seller button — giriş yapmış satıcıya "Satıcı Paneli", yoksa gizle
    */
-  const renderBecomeSellerButton = () => (
-    <div className="become-seller-btn">
-      <Link href="/become-seller">
-        <div className="w-[161px] h-[40px] flex justify-center items-center cursor-pointer">
-          <div className="flex rtl:space-x-reverse space-x-2 items-center">
-            <span className="text-sm font-600">
-              {ServeLangItem()?.Become_seller}
-            </span>
-            <span className="transform rtl:rotate-180 fill-current">
-              <svg
-                width="6"
-                height="10"
-                viewBox="0 0 6 10"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="fill-current"
-              >
-                <rect
-                  x="1.08984"
-                  width="6.94106"
-                  height="1.54246"
-                  transform="rotate(45 1.08984 0)"
-                />
-                <rect
-                  x="6"
-                  y="4.9082"
-                  width="6.94106"
-                  height="1.54246"
-                  transform="rotate(135 6 4.9082)"
-                />
-              </svg>
-            </span>
-          </div>
+  const renderSellerButton = () => {
+    const userData = auth();
+    const isSeller = userData?.user?.seller;
+
+    if (!userData) return null; // Giriş yapmamış → buton gizli
+
+    if (isSeller) {
+      // Satıcı → Satıcı Paneline yönlendir
+      return (
+        <div className="become-seller-btn">
+          <a href={`${appConfig.BASE_URL || "https://admin.seyfibaba.com/"}seller/dashboard`} target="_blank" rel="noopener noreferrer">
+            <div className="w-[161px] h-[40px] flex justify-center items-center cursor-pointer bg-purple rounded">
+              <span className="text-sm font-600 text-white">
+                Satıcı Paneli
+              </span>
+            </div>
+          </a>
         </div>
-      </Link>
-    </div>
-  );
+      );
+    }
+
+    return null; // Satıcı değilse → buton gizli (Satıcı Ol footer'da var)
+  };
 
   return (
     <div
@@ -490,16 +477,8 @@ export default function Navbar({ className }) {
                 <ul className="nav-wrapper flex xl:space-x-10 rtl:space-x-reverse space-x-5">
                   {renderNavLink("/", "Anasayfa")}
 
-                  {/* Shop Menu */}
-                  <li>
-                    <span className={navLinkClass}>
-                      <span>{ServeLangItem()?.Shop || "Mağaza"}</span>
-                      <span className="ml-1.5">
-                        <Arrow className="fill-current" />
-                      </span>
-                    </span>
-                    {renderMegaMenu()}
-                  </li>
+                  {/* Blog Link */}
+                  {renderNavLink("/blogs", "Blog")}
 
                   {/* Pages Dropdown */}
                   <li className="relative">
@@ -518,8 +497,8 @@ export default function Navbar({ className }) {
               </div>
             </div>
 
-            {/* Right Section: Become Seller Button */}
-            {Multivendor() === 1 && renderBecomeSellerButton()}
+            {/* Right Section: Seller Panel Button */}
+            {Multivendor() === 1 && renderSellerButton()}
           </div>
         </div>
       </div>

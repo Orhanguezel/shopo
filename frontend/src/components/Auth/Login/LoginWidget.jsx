@@ -279,8 +279,8 @@ function LoginWidget({ redirect = true, loginActionPopup, notVerifyHandler }) {
         {/* Email Input Field */}
         <div className="input-item mb-5">
           <InputCom
-            placeholder={ServeLangItem()?.Email_or_Phone + " (+Country Code)"}
-            label={ServeLangItem()?.Email_or_Phone + "*"}
+            placeholder="(5XX) XXX XX XX"
+            label="Telefon Numarası*"
             name="email"
             type="text"
             inputClasses="h-[50px]"
@@ -353,7 +353,7 @@ function LoginWidget({ redirect = true, loginActionPopup, notVerifyHandler }) {
         >
           <GoogleLoginUrlIcon />
           <span className="text-[18px] text-qgraytwo font-normal">
-            Sign In with Google
+            Google ile Giriş Yap
           </span>
         </a>
 
@@ -364,7 +364,7 @@ function LoginWidget({ redirect = true, loginActionPopup, notVerifyHandler }) {
         >
           <FacebookLoginUrlIcon />
           <span className="text-[18px] font-normal text-white">
-            Sign In with Facebook
+            Facebook ile Giriş Yap
           </span>
         </a>
 

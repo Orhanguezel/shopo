@@ -40,15 +40,15 @@
                                 <div class="col-md-4 mb-3">
                                     <div class="border rounded p-3 h-100">
                                         <small class="text-muted d-block">Müşteri</small>
-                                        <strong>{{ $return->user->name }}</strong><br>
-                                        <span class="text-muted">{{ $return->user->email }}</span><br>
-                                        <span class="text-muted">{{ $return->user->phone ?: '-' }}</span>
+                                        <strong>{{ optional($return->user)->name ?: 'Silinmiş Kullanıcı' }}</strong><br>
+                                        <span class="text-muted">{{ optional($return->user)->email ?: '-' }}</span><br>
+                                        <span class="text-muted">{{ optional($return->user)->phone ?: '-' }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <div class="border rounded p-3 h-100">
                                         <small class="text-muted d-block">Sipariş</small>
-                                        <strong>#{{ $return->order->order_id }}</strong><br>
+                                        <strong>#{{ optional($return->order)->order_id ?: 'N/A' }}</strong><br>
                                         <span class="text-muted">{{ optional($return->created_at)->format('d M Y H:i') }}</span><br>
                                         <span class="text-muted">Adet: {{ $return->qty }}</span>
                                     </div>
@@ -76,10 +76,10 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <strong>{{ $return->orderProduct->product_name }}</strong><br>
+                                                <strong>{{ optional($return->orderProduct)->product_name ?: 'Silinmiş Ürün' }}</strong><br>
                                                 <span class="text-muted text-capitalize">{{ str_replace('_', ' ', $return->reason) }}</span>
                                             </td>
-                                            <td>{{ $setting->currency_icon }}{{ number_format((float) $return->orderProduct->unit_price, 2) }}</td>
+                                            <td>{{ $setting->currency_icon }}{{ number_format((float) optional($return->orderProduct)->unit_price, 2) }}</td>
                                             <td>{{ $return->qty }}</td>
                                             <td>{{ $setting->currency_icon }}{{ number_format((float) ($return->refund_amount ?? 0), 2) }}</td>
                                         </tr>
@@ -214,7 +214,7 @@
                             <h4>Satıcı Bilgisi</h4>
                         </div>
                         <div class="card-body">
-                            <strong>Satıcı:</strong> <a href="{{ route('admin.seller-show', $return->seller_id) }}">{{ $return->seller->shop_name }}</a><br>
+                            <strong>Satıcı:</strong> <a href="{{ route('admin.seller-show', $return->seller_id) }}">{{ optional($return->seller)->shop_name ?: 'Bilinmiyor' }}</a><br>
                             <strong>Son Satıcı Notu:</strong><br>
                             <p class="mt-2 text-muted">{{ $return->seller_note ?: 'Henüz yanıt yok.' }}</p>
                         </div>

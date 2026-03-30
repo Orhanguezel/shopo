@@ -126,19 +126,19 @@ function AllProductPageContent({ response, sellerInfo }) {
           "Karar vermeden once detay sayfasindaki satici, yorum ve teknik aciklama bloklarini birlikte okuyun.",
         ];
   const editorialContextTitle = resolvedCategoryName
-    ? `${resolvedCategoryName} seciminde hangi kriterler one cikar?`
+    ? `${resolvedCategoryName} Ürünleri`
     : resolvedBrandName
-      ? `${resolvedBrandName} urunlerini degerlendirirken nelere bakilmali?`
+      ? `${resolvedBrandName} Ürünleri`
       : resolvedSearch
-        ? `Arama sonucunu satin alma kararina nasil donusturebilirsiniz?`
-        : "Profesyonel urun seciminde hangi kriterler belirleyicidir?";
+        ? `"${resolvedSearch}" için Arama Sonuçları`
+        : "Tüm Ürünler";
   const editorialContextBody = resolvedCategoryName
-    ? `${resolvedCategoryName} grubunda karar verirken yalnizca urunun gorunumu veya fiyat etiketi yeterli degildir. Urunun salon ici yogunlukta nasil performans gosterecegi, ne kadar kolay temizlenebilecegi, uzun sureli kullanimda hangi bakim ihtiyaclarini dogurabilecegi ve mevcut ekipmanlarla ne kadar uyumlu oldugu birlikte dusunulmelidir.`
+    ? `${resolvedCategoryName} kategorisindeki ürünleri inceleyin. Fiyat, marka ve satıcı seçeneklerini karşılaştırarak en uygun ürünü bulun.`
     : resolvedBrandName
-      ? `${resolvedBrandName} markali urunlerde ana farklar cogu zaman seri bazinda ortaya cikar. Bu nedenle marka guveni kadar urunun hitap ettigi kullanim seviyesi, malzeme kalitesi ve servis sureci de ayrica okunmalidir. Marka sayfasi mantigiyla filtrelemek, ayni ekosistem icinde daha hizli karsilastirma yapmayi saglar.`
+      ? `${resolvedBrandName} markasına ait tüm ürünleri keşfedin. Farklı modelleri karşılaştırarak ihtiyacınıza en uygun olanı seçin.`
       : resolvedSearch
-        ? `Arama sonuclari farkli kategori ve kullanim tiplerini bir araya getirebilir. Bu nedenle once urunun ait oldugu kategori netlestirilmeli, daha sonra fiyat bandi, stok durumu ve satici bilgisi birlikte okunmalidir. Bu yaklasim, alakasiz sonuclari daha hizli elemenizi saglar.`
-        : "Profesyonel salon ekipmanlarinda satin alma karari verirken dayaniklilik, servis erisimi, kullanim senaryosu ve toplam sahip olma maliyeti birlikte degerlendirilmelidir. Listeleme sayfasi bu nedenle yalnizca urun gosteren bir vitrin degil, karar surecini hizlandiran bir on inceleme alani olarak tasarlanmistir.";
+        ? `Arama sonuçlarını fiyat, kategori ve satıcıya göre filtreleyerek aradığınız ürüne hızlıca ulaşın.`
+        : "Seyfibaba'daki tüm ürünleri inceleyin. Kategoriler ve markalar arasında kolayca gezinin.";
 
   // Helper function to ensure arrays are always arrays
   const ensureArray = (value) => {
@@ -1307,12 +1307,6 @@ function AllProductPageContent({ response, sellerInfo }) {
                 className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
               >
                 Tum urunler
-              </Link>
-              <Link
-                href="/sellers"
-                className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
-              >
-                Tum saticilar
               </Link>
             </div>
             {quickCategoryLinks.length > 0 && (

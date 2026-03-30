@@ -69,7 +69,17 @@ class RegisterController extends Controller
         if ($enable_phone_required == 1 && $request->phone && $request->otp_verified_token) {
             $cached = Cache::get('otp_verified_token:' . $request->otp_verified_token);
 
-            if (!$cached || $cached['phone'] !== $request->phone || $cached['purpose'] !== 'register') {
+            // Normalize phone for comparison (strip non-digits, ensure +90 prefix)
+            $normalizedPhone = preg_replace('/[^0-9]/', '', $request->phone);
+            if (str_starts_with($normalizedPhone, '90') && strlen($normalizedPhone) === 12) {
+                $normalizedPhone = '+' . $normalizedPhone;
+            } elseif (strlen($normalizedPhone) === 10 && str_starts_with($normalizedPhone, '5')) {
+                $normalizedPhone = '+90' . $normalizedPhone;
+            } else {
+                $normalizedPhone = str_starts_with($request->phone, '+') ? '+' . $normalizedPhone : $normalizedPhone;
+            }
+
+            if (!$cached || $cached['phone'] !== $normalizedPhone || $cached['purpose'] !== 'register') {
                 return response()->json([
                     'message' => trans('user_validation.Phone number not verified'),
                 ], 422);
@@ -82,7 +92,7 @@ class RegisterController extends Controller
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->phone = $request->phone ? $request->phone : '';
+        $user->phone = $request->phone ? $normalizedPhone ?? $request->phone : '';
         $user->agree_policy = $request->agree ? 1 : 0;
         $user->password = Hash::make($request->password);
         $user->verify_token = random_int(100000, 999999);
@@ -93,15 +103,19 @@ class RegisterController extends Controller
         }
         $user->save();
 
-        MailHelper::setMailConfig();
+        // OTP ile doğrulanmış kullanıcıya email doğrulama maili göndermeye gerek yok
+        if (!($enable_phone_required == 1 && $request->otp_verified_token)) {
+            MailHelper::setMailConfig();
+            $template = EmailTemplate::where('id', 4)->first();
+            $subject = $template->subject;
+            $message = $template->description;
+            $message = str_replace('{{user_name}}', $request->name, $message);
+            Mail::to($user->email)->send(new UserRegistration($message, $subject, $user));
+        }
 
-        $template = EmailTemplate::where('id', 4)->first();
-        $subject = $template->subject;
-        $message = $template->description;
-        $message = str_replace('{{user_name}}', $request->name, $message);
-        Mail::to($user->email)->send(new UserRegistration($message, $subject, $user));
-
-        $notification = trans('user_validation.Register Successfully. Please Verify your email');
+        $notification = ($enable_phone_required == 1 && $request->otp_verified_token)
+            ? 'Kayıt başarılı! Giriş yapabilirsiniz.'
+            : trans('user_validation.Register Successfully. Please Verify your email');
         return response()->json(['notification' => $notification]);
     }
 

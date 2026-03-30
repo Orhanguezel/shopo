@@ -211,6 +211,7 @@ const apiRoutes = {
   sellerBulkImportTemplate: combinedUrl("seller/products/bulk-import/template"),
   sellerLowStockProducts: combinedUrl("seller/products/low-stock"),
   sellerNotifications: combinedUrl("seller/notifications"),
+  sellerUpdateOrderStatus: combinedUrl("seller/update-order-status"),
 
   // callback
   googleCallback: combinedUrl(GOOGLE_CALLBACK),

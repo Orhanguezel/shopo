@@ -139,16 +139,6 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
 
   const signupSuccessHandler = (data, statusCode) => {
     if (statusCode === 200) {
-      toast.success(data.notification);
-      if (redirect) {
-        router.push(`/verify-you?email=${formData.email}`);
-      } else {
-        if (changeContent) {
-          changeContent();
-        } else {
-          router.push("/login");
-        }
-      }
       setFormData({
         fname: "",
         lname: "",
@@ -158,6 +148,31 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
         confirmPassword: "",
       });
       setCheck(false);
+
+      // OTP ile kayıt olan kullanıcı zaten doğrulanmış — direkt login'e yönlendir
+      if (otpToken) {
+        toast.success("Kayıt başarılı! Giriş yapabilirsiniz.");
+        if (redirect) {
+          router.push("/login");
+        } else {
+          if (changeContent) {
+            changeContent();
+          } else {
+            router.push("/login");
+          }
+        }
+      } else {
+        toast.success(data.notification);
+        if (redirect) {
+          router.push(`/verify-you?email=${formData.email}`);
+        } else {
+          if (changeContent) {
+            changeContent();
+          } else {
+            router.push("/login");
+          }
+        }
+      }
     } else {
       toast.error(data.message);
     }
@@ -450,13 +465,13 @@ function SignupWidget({ redirect = true, signupActionPopup, changeContent }) {
             {redirect ? (
               <Link href="/seller-terms-condition">
                 <span className="text-base text-black cursor-pointer">
-                  {ServeLangItem()?.I_agree_all_terms_and_condition_in_ecoShop}
+                  Seyfibaba kullanım şartlarını ve gizlilik politikasını kabul ediyorum
                 </span>
               </Link>
             ) : (
               <button type="button">
                 <span className="text-base text-black cursor-pointer">
-                  {ServeLangItem()?.I_agree_all_terms_and_condition_in_ecoShop}
+                  Seyfibaba kullanım şartlarını ve gizlilik politikasını kabul ediyorum
                 </span>
               </button>
             )}

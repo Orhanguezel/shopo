@@ -64,15 +64,27 @@ class LoginController extends Controller
         $this->validate($request, $rules,$customMessages);
 
         $login_by = 'email';
-        if(filter_var($request->email, FILTER_VALIDATE_EMAIL)){
-            $login_by = 'email';
-            $user = User::where('email',$request->email)->first();
+        $input = trim($request->email);
 
-        }else if(is_numeric($request->email)){
-            $login_by = 'phone';
-            $user = User::where('phone',$request->email)->first();
+        if(filter_var($input, FILTER_VALIDATE_EMAIL)){
+            $login_by = 'email';
+            $user = User::where('email', $input)->first();
         }else{
-            return response()->json(['message' => trans('user_validation.Please provide valid email or phone')],422);
+            // Telefon numarası olarak dene — normalize et
+            $login_by = 'phone';
+            $digits = preg_replace('/[^0-9]/', '', $input);
+            if (str_starts_with($digits, '90') && strlen($digits) === 12) {
+                $normalizedPhone = '+' . $digits;
+            } elseif (strlen($digits) === 10 && str_starts_with($digits, '5')) {
+                $normalizedPhone = '+90' . $digits;
+            } else {
+                $normalizedPhone = str_starts_with($input, '+') ? '+' . $digits : $digits;
+            }
+            $user = User::where('phone', $normalizedPhone)->first();
+        }
+
+        if (!$user && $login_by === 'phone') {
+            return response()->json(['message' => 'Telefon numarası veya şifre hatalı.'], 422);
         }
 
         if($user){
@@ -85,12 +97,12 @@ class LoginController extends Controller
 
                     if($login_by == 'email'){
                         $credential=[
-                            'email'=> $request->email,
+                            'email'=> $input,
                             'password'=> $request->password
                         ];
                     }else{
                         $credential=[
-                            'phone'=> $request->email,
+                            'phone'=> $normalizedPhone,
                             'password'=> $request->password
                         ];
                     }
@@ -99,9 +111,9 @@ class LoginController extends Controller
                     }
 
                     if($login_by == 'email'){
-                        $user = User::where('email',$request->email)->select('id','name','email','phone','image','status')->first();
+                        $user = User::where('email', $input)->select('id','name','email','phone','image','status')->first();
                     }else{
-                        $user = User::where('phone',$request->email)->select('id','name','email','phone','image','status')->first();
+                        $user = User::where('phone', $normalizedPhone)->select('id','name','email','phone','image','status')->first();
                     }
 
 

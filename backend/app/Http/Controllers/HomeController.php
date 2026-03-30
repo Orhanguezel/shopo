@@ -1744,12 +1744,30 @@ class HomeController extends Controller
 
     public function productReviewList($id){
 
-        $reviews = ProductReview::with('user')->where(['product_id' => $id, 'status' => 1])->paginate(10);
+        $reviews = ProductReview::with('user:id,name,image')->where(['product_id' => $id, 'status' => 1])->paginate(10);
 
-
+        // Müşteri gizliliği: isim maskeleme (#39)
+        $reviews->getCollection()->transform(function ($review) {
+            if ($review->user) {
+                $review->user->name = $this->maskName($review->user->name);
+            }
+            return $review;
+        });
 
         return response()->json(['reviews' => $reviews]);
 
+    }
+
+    /**
+     * İsim maskeleme: "Hüseyin Coşkun" → "H**** C****"
+     */
+    private function maskName(string $name): string
+    {
+        $parts = explode(' ', trim($name));
+        return implode(' ', array_map(function ($part) {
+            if (mb_strlen($part) <= 1) return $part;
+            return mb_substr($part, 0, 1) . str_repeat('*', mb_strlen($part) - 1);
+        }, $parts));
     }
 
 

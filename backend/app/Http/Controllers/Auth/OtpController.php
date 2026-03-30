@@ -16,10 +16,30 @@ class OtpController extends Controller
         $this->middleware('guest:api');
     }
 
+    /**
+     * Normalize phone: keep only digits and leading +
+     */
+    protected function normalizePhone(string $phone): string
+    {
+        // Strip everything except digits
+        $digits = preg_replace('/[^0-9]/', '', $phone);
+
+        // Ensure +90 prefix for Turkey
+        if (str_starts_with($digits, '90') && strlen($digits) === 12) {
+            return '+' . $digits;
+        }
+        if (strlen($digits) === 10 && str_starts_with($digits, '5')) {
+            return '+90' . $digits;
+        }
+
+        // Fallback: return with + prefix if original had it
+        return str_starts_with($phone, '+') ? '+' . $digits : $digits;
+    }
+
     public function send(Request $request)
     {
         $data = $this->validateRequest($request);
-        $phone = $data['phone'];
+        $phone = $this->normalizePhone($data['phone']);
         $purpose = $data['purpose'];
 
         $latestOtp = OtpVerification::where('phone', $phone)
@@ -31,7 +51,7 @@ class OtpController extends Controller
         if ($latestOtp && $latestOtp->created_at->diffInSeconds(now()) < $cooldownSeconds) {
             return response()->json([
                 'success' => false,
-                'message' => 'Please wait before requesting a new code.',
+                'message' => 'Lütfen yeni kod istemeden önce bekleyin.',
                 'retry_after' => $cooldownSeconds - $latestOtp->created_at->diffInSeconds(now()),
             ], 429);
         }
@@ -62,20 +82,20 @@ class OtpController extends Controller
         if (!$smsSent) {
             return response()->json([
                 'success' => false,
-                'message' => 'OTP could not be sent at this time.',
+                'message' => 'Doğrulama kodu gönderilemedi. Lütfen daha sonra tekrar deneyin.',
             ], 500);
         }
 
         $response = [
             'success' => true,
-            'message' => 'OTP sent successfully.',
+            'message' => 'Doğrulama kodu gönderildi.',
             'expires_in' => (int) config('sms.otp.expire_minutes', 5) * 60,
         ];
 
         // In local/testing, include OTP in response so developers can test without real SMS
         if (app()->environment('local', 'testing')) {
             $response['otp_code'] = $otp->otp_code;
-            $response['message'] = "OTP: {$otp->otp_code} (dev mode — SMS not sent)";
+            $response['message'] = "OTP: {$otp->otp_code} (geliştirici modu — SMS gönderilmedi)";
         }
 
         return response()->json($response);
@@ -89,7 +109,7 @@ class OtpController extends Controller
             'purpose' => ['nullable', 'in:register,password_reset,phone_verify'],
         ]);
 
-        $phone = $validated['phone'];
+        $phone = $this->normalizePhone($validated['phone']);
         $purpose = $validated['purpose'] ?? 'register';
 
         $otp = OtpVerification::where('phone', $phone)
@@ -99,10 +119,15 @@ class OtpController extends Controller
             ->first();
 
         if (!$otp) {
+            \Log::warning('OTP verify: kayıt bulunamadı', [
+                'phone' => $phone,
+                'purpose' => $purpose,
+                'raw_phone' => $validated['phone'],
+            ]);
             return response()->json([
                 'success' => false,
                 'verified' => false,
-                'message' => 'No active OTP was found.',
+                'message' => 'Aktif doğrulama kodu bulunamadı. Lütfen yeni kod isteyin.',
             ], 404);
         }
 
@@ -110,7 +135,7 @@ class OtpController extends Controller
             return response()->json([
                 'success' => false,
                 'verified' => false,
-                'message' => 'OTP has expired. Please request a new code.',
+                'message' => 'Doğrulama kodunun süresi doldu. Lütfen yeni kod isteyin.',
             ], 422);
         }
 
@@ -118,7 +143,7 @@ class OtpController extends Controller
             return response()->json([
                 'success' => false,
                 'verified' => false,
-                'message' => 'Maximum verification attempts reached. Please request a new code.',
+                'message' => 'Maksimum deneme sayısına ulaşıldı. Lütfen yeni kod isteyin.',
             ], 429);
         }
 
@@ -129,7 +154,7 @@ class OtpController extends Controller
             return response()->json([
                 'success' => false,
                 'verified' => false,
-                'message' => 'The verification code is invalid.',
+                'message' => 'Doğrulama kodu hatalı.',
                 'attempts_left' => max(0, $otp->max_attempts - $otp->attempts),
             ], 422);
         }

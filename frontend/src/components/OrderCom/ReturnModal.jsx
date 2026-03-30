@@ -88,14 +88,14 @@ export default function ReturnModal({ orderId, orderProductId, maxQty, setReturn
         <form onSubmit={handleSubmit} className="p-8 space-y-5 overflow-y-auto max-h-[80vh]">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Reason</label>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">İade Nedeni</label>
               <select
                 required
                 className="w-full bg-gray-50 border-0 rounded-2xl p-4 focus:ring-2 focus:ring-primary/20 transition-all text-sm"
                 value={formData.reason}
                 onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
               >
-                <option value="">Select a reason</option>
+                <option value="">Bir neden seçin</option>
                 {reasonOptions.map((reason) => (
                   <option key={reason.value} value={reason.value}>
                     {reason.label}
@@ -104,7 +104,7 @@ export default function ReturnModal({ orderId, orderProductId, maxQty, setReturn
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Quantity</label>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Adet</label>
               <select
                 required
                 className="w-full bg-gray-50 border-0 rounded-2xl p-4 focus:ring-2 focus:ring-primary/20 transition-all text-sm"
@@ -119,26 +119,26 @@ export default function ReturnModal({ orderId, orderProductId, maxQty, setReturn
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Additional Details</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Ek Açıklama</label>
             <textarea
               className="w-full bg-gray-50 border-0 rounded-2xl p-4 focus:ring-2 focus:ring-primary/20 transition-all resize-none text-sm"
               rows="3"
-              placeholder="Please provide more information about the problem..."
+              placeholder="Lütfen sorun hakkında detaylı bilgi verin..."
               value={formData.details}
               onChange={(e) => setFormData({ ...formData, details: e.target.value })}
             ></textarea>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Evidence Photos</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Kanıt Fotoğrafları</label>
             <div className="mt-1 flex justify-center px-4 pt-4 pb-4 border-2 border-gray-100 border-dashed rounded-2xl hover:border-primary/30 transition-all cursor-pointer relative group">
                 <div className="space-y-1 text-center">
                     <svg className="mx-auto h-8 w-8 text-gray-400 group-hover:text-primary transition-colors" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                         <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     <div className="flex text-xs text-gray-600">
-                        <span className="relative cursor-pointer rounded-md font-bold text-primary hover:text-primary-dark">Upload files</span>
-                        <p className="pl-1">or drag and drop</p>
+                        <span className="relative cursor-pointer rounded-md font-bold text-primary hover:text-primary-dark">Dosya yükle</span>
+                        <p className="pl-1">veya sürükle bırak</p>
                     </div>
                     <p className="text-[10px] text-gray-400">PNG, JPG, JPEG up to 10MB</p>
                 </div>

@@ -454,17 +454,20 @@ class UserProfileController extends Controller
         $this->validate($request, $rules,$customMessages);
 
         $user = Auth::guard('api')->user();
-        $isExistOrder = false;
-        $orders = Order::where(['user_id' => $user->id])->get();
-        foreach ($orders as $key => $order) {
-            foreach ($order->orderProducts as $key => $orderProduct) {
+        // Teslim edilmiş sipariş kontrolü — teslim edilmeden yorum yapılamaz (#38)
+        $isDeliveredOrder = false;
+        $orders = Order::where(['user_id' => $user->id])
+            ->where('order_status', '>=', 2) // 2 = teslim edildi, 3 = tamamlandı
+            ->get();
+        foreach ($orders as $order) {
+            foreach ($order->orderProducts as $orderProduct) {
                 if($orderProduct->product_id == $request->product_id){
-                    $isExistOrder = true;
+                    $isDeliveredOrder = true;
                 }
             }
         }
 
-        if($isExistOrder){
+        if($isDeliveredOrder){
             $isReview = ProductReview::where(['product_id' => $request->product_id, 'user_id' => $user->id])->count();
             if($isReview > 0){
                 $message = trans('user_validation.You have already submited review');
@@ -482,7 +485,7 @@ class UserProfileController extends Controller
             $message = trans('user_validation.Review Submited successfully');
             return response()->json(['message' => $message]);
         }else{
-            $message = trans('user_validation.Opps! You can not review this product');
+            $message = 'Yorum yapabilmek için ürünün teslim edilmiş olması gerekmektedir.';
             return response()->json(['message' => $message],403);
         }
 

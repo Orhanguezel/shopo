@@ -146,7 +146,7 @@ function BecomeSaller() {
   const sellerRequestSuccessHandler = (data, statusCode) => {
     if (statusCode === 200 || statusCode === 201) {
       toast.success(
-        "Congratulation Your seller request successfully delivered"
+        "Tebrikler! Satıcı başvurunuz başarıyla iletildi."
       );
       router.push("/");
     }
@@ -370,10 +370,7 @@ function BecomeSaller() {
                     </button>
                     <Link href="/seller-terms-condition">
                       <span className="text-base text-black cursor-pointer">
-                        {
-                          ServeLangItem()
-                            ?.I_agree_all_terms_and_condition_in_ecoShop
-                        }
+Seyfibaba satıcı şartlarını ve gizlilik politikasını kabul ediyorum
                       </span>
                     </Link>
                   </div>

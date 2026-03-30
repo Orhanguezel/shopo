@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\IyzicoPayment;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\ProductVariantItem;
 use App\Models\ShoppingCart;
 use App\Models\Setting;
@@ -441,10 +442,15 @@ class IyzicoController extends Controller
                 return redirect()->to($successUrl);
             }
 
+            // Ödeme başarısız — siparişi iptal et ve stoku geri al
             $order->payment_status = 0;
+            $order->order_status = 4; // 4 = ödeme başarısız / iptal
+            $order->is_draft = 'no';
             $order->save();
 
-            Log::warning('Iyzico payment not completed', [
+            $this->restoreStockForOrder($order);
+
+            Log::warning('Iyzico payment not completed — stock restored', [
                 'order_id' => $order->id,
                 'status' => $result->getStatus(),
                 'payment_status' => $result->getPaymentStatus(),
@@ -459,7 +465,16 @@ class IyzicoController extends Controller
                 ])
             );
         } catch (\Throwable $e) {
-            Log::error('Iyzico callback exception', [
+            // Exception durumunda da stok geri al
+            if (isset($order) && $order) {
+                $order->payment_status = 0;
+                $order->order_status = 4;
+                $order->is_draft = 'no';
+                $order->save();
+                $this->restoreStockForOrder($order);
+            }
+
+            Log::error('Iyzico callback exception — stock restored', [
                 'order_id' => $orderId,
                 'message' => $e->getMessage(),
             ]);
@@ -634,5 +649,31 @@ class IyzicoController extends Controller
 
         array_shift($parts);
         return implode(' ', $parts);
+    }
+
+    /**
+     * Ödeme başarısız olduğunda sipariş ürünlerinin stoğunu geri yükle
+     */
+    private function restoreStockForOrder(Order $order): void
+    {
+        try {
+            $orderProducts = $order->orderProducts;
+            foreach ($orderProducts as $orderProduct) {
+                $product = Product::find($orderProduct->product_id);
+                if ($product) {
+                    $product->qty += $orderProduct->qty;
+                    $product->save();
+                }
+            }
+            Log::info('Stock restored for failed order', [
+                'order_id' => $order->id,
+                'products_count' => $orderProducts->count(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Failed to restore stock', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

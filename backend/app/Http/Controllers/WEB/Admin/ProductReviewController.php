@@ -35,9 +35,9 @@ class ProductReviewController extends Controller
     {
         $review = ProductReview::find($id);
         $review->delete();
-        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        $notification = trans('admin_validation.Delete Successfully');
+        $notification = array('messege' => $notification, 'alert-type' => 'success');
         return redirect()->back()->with($notification);
-
     }
 
     public function changeStatus($id){

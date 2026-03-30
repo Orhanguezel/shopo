@@ -145,9 +145,12 @@ function CartPage() {
   // Render cart with items
   return (
     <div className="cart-page-wrapper w-full bg-white pb-[60px]">
-      {/* Page header */}
-      <div className="w-full">
-        <PageTitle title={ServeLangItem()?.cart || "Sepetim"} breadcrumb={breadcrumbItems} />
+      {/* Page header — iyileştirildi (#11) */}
+      <div className="w-full bg-gradient-to-r from-[#f8f5f0] to-[#fff8ee] py-8">
+        <div className="container-x mx-auto">
+          <h1 className="text-2xl font-bold text-qblack">{ServeLangItem()?.cart || "Sepetim"}</h1>
+          <p className="text-sm text-qgray mt-1">Sepetinizde {cartItems.length} ürün bulunuyor</p>
+        </div>
       </div>
 
       {/* Cart content */}

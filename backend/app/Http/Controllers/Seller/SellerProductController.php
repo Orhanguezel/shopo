@@ -78,6 +78,15 @@ class SellerProductController extends Controller
 
     public function store(Request $request)
     {
+        // KYC/IBAN/belge olmadan ürün eklemeyi engelle (#28)
+        $seller = Auth::guard('api')->user()->seller;
+        if (!$seller || !$seller->is_verified) {
+            return response()->json([
+                'message' => 'Ürün ekleyebilmek için satıcı doğrulamanızı tamamlamanız gerekmektedir. Lütfen belgelerinizi ve IBAN bilgilerinizi yükleyin.',
+                'redirect' => 'kyc',
+            ], 403);
+        }
+
         $request->merge([
             'slug' => ProductSlug::normalize($request->slug ?: $request->name),
         ]);
@@ -140,7 +149,9 @@ class SellerProductController extends Controller
         $product->short_description = $request->short_description;
         $product->long_description = $request->long_description;
         $product->tags = $request->tags;
-        $product->status = $request->status;
+        // Doğrulanmış satıcılar ürünü direkt yayına alabilir, diğerleri onay bekler (#30)
+        $seller = Auth::guard('api')->user()->seller;
+        $product->status = ($seller && $seller->is_verified) ? 1 : 0;
         $product->weight = $request->weight;
         $product->is_undefine = 1;
         $product->is_specification = $request->is_specification ? 1 : 0;

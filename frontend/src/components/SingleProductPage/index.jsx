@@ -316,6 +316,30 @@ export default function SingleProductPage({ details }) {
                     </span>
                   </li>
                 )}
+                <li>
+                  <span
+                    onClick={() => setTab("shipping")}
+                    className={`py-[15px] sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
+                      tab === "shipping"
+                        ? "border-qyellow text-qblack "
+                        : "border-transparent text-qgray"
+                    }`}
+                  >
+                    Teslimat Bilgisi
+                  </span>
+                </li>
+                <li>
+                  <span
+                    onClick={() => setTab("return")}
+                    className={`py-[15px] sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
+                      tab === "return"
+                        ? "border-qyellow text-qblack "
+                        : "border-transparent text-qgray"
+                    }`}
+                  >
+                    İade Politikası
+                  </span>
+                </li>
               </ul>
             </div>
             <div className="w-full h-[1px] bg-[#E8E8E8] absolute left-0 sm:top-[50px] top-[36px] -z-10"></div>
@@ -440,6 +464,32 @@ export default function SingleProductPage({ details }) {
                   )}
                 </div>
               )}
+              {tab === "shipping" && (
+                <div data-aos="fade-up" className="w-full tab-content-item">
+                  <div className="prose max-w-none text-qgray text-sm leading-7">
+                    <h3 className="text-lg font-semibold text-qblack mb-4">Teslimat Bilgisi</h3>
+                    <ul className="list-disc pl-5 space-y-2">
+                      <li>Siparişiniz onaylandıktan sonra 1-3 iş günü içinde kargoya verilir.</li>
+                      <li>Kargo süresi bulunduğunuz bölgeye göre 2-5 iş günü arasında değişir.</li>
+                      <li>Kargo takip numarası sipariş detaylarınızda görüntülenecektir.</li>
+                      <li>Teslimat sırasında alıcının kimliği kontrol edilebilir.</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+              {tab === "return" && (
+                <div data-aos="fade-up" className="w-full tab-content-item">
+                  <div className="prose max-w-none text-qgray text-sm leading-7">
+                    <h3 className="text-lg font-semibold text-qblack mb-4">İade Politikası</h3>
+                    <ul className="list-disc pl-5 space-y-2">
+                      <li>Ürünü teslim aldıktan sonra 14 gün içinde iade talebinde bulunabilirsiniz.</li>
+                      <li>İade edilecek ürün kullanılmamış ve orijinal ambalajında olmalıdır.</li>
+                      <li>İade talebi onaylandıktan sonra ürünü belirtilen adrese göndermeniz gerekmektedir.</li>
+                      <li>İade tutarı, ürün tarafımıza ulaştıktan sonra 3-5 iş günü içinde ödeme yönteminize iade edilir.</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -483,12 +533,6 @@ export default function SingleProductPage({ details }) {
                   className="rounded-full border border-[#e5d7b8] bg-[#fff8e8] px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
                 >
                   Tum profesyonel urunleri incele
-                </Link>
-                <Link
-                  href="/sellers"
-                  className="rounded-full border border-[#e5d7b8] bg-[#fff8e8] px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
-                >
-                  Tum saticilar
                 </Link>
               </div>
             </div>

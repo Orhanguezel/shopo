@@ -83,6 +83,25 @@ export default function Home({ homepageData }) {
         />
       </section>
 
+      {/* Tüm Ürünler — anasayfada üst kısımda (#1) */}
+      <section>
+        <ViewMoreTitle
+          className="all-products-section"
+          seeMoreUrl="/products"
+          categoryTitle="Tüm Ürünler"
+        >
+          <SectionStyleTwo
+            products={
+              homepage?.newArrivalProducts?.length > 0
+                ? homepage.newArrivalProducts.slice(0, 8)
+                : homepage?.topRatedProducts?.length > 0
+                  ? homepage.topRatedProducts.slice(0, 8)
+                  : []
+            }
+          />
+        </ViewMoreTitle>
+      </section>
+
       <section>
         <SectionStyleOne
           products={homepage?.popularCategoryProducts}

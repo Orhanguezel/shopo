@@ -597,51 +597,19 @@ export default function ProductView({
             </span>
           </div>
 
-          <div className="mb-6 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-[#e6dcc6] bg-[#fffaf0] px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9f7b2f]">
-                Musteri puani
-              </p>
-              <p className="mt-2 text-lg font-semibold text-qblack">
-                {averageRating > 0 ? averageRating.toFixed(1) : "0.0"} / 5
-              </p>
-              <p className="text-sm text-qgray">{reviewCount} yorum baz alindi</p>
-            </div>
-            <div className="rounded-xl border border-[#e6e8ec] bg-[#f8fafc] px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4b5563]">
-                Satici olcegi
-              </p>
-              <p className="mt-2 text-lg font-semibold text-qblack">
-                {sellerProductCount} urun
-              </p>
-              <p className="text-sm text-qgray">
-                {sellerReviewCount} satici degerlendirmesi
-              </p>
-            </div>
-            <div className="rounded-xl border border-[#dbe7d6] bg-[#f3fbf4] px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4c7a45]">
-                Alisveris sinyali
-              </p>
-              <p className="mt-2 text-lg font-semibold text-qblack">
-                Guvenli siparis akisi
-              </p>
-              <p className="text-sm text-qgray">
-                Stok, fiyat ve satici bilgileri anlik guncellenir
-              </p>
-            </div>
-          </div>
+          {/* Müşteri puanı/Satıcı ölçeği/Alışveriş sinyali — kaldırıldı (#6) */}
 
-          {/* Price */}
+          {/* Price — belirgin UI (#8) */}
           <div
             data-aos="fade-up"
-            className="flex space-x-2 items-baseline mb-7"
+            className="flex items-baseline gap-3 mb-7 p-4 bg-gradient-to-r from-[#fff5f5] to-[#fff0f0] rounded-xl border border-[#ffe0e0]"
           >
               <span
                 suppressHydrationWarning
-                className={`main-price font-600 ${
+                className={`main-price font-700 ${
                 offerPrice
-                  ? "line-through text-qgray text-[15px]"
-                  : "text-qred text-[24px]"
+                  ? "line-through text-qgray text-[16px]"
+                  : "text-qred text-[28px]"
               }`}
             >
               {offerPrice ? (
@@ -656,7 +624,7 @@ export default function ProductView({
             {offerPrice && (
               <span
                 suppressHydrationWarning
-                className="offer-price text-qred font-600 text-[24px] ml-2"
+                className="offer-price text-qred font-700 text-[28px]"
               >
                 <CheckProductIsExistsInFlashSale
                   id={safeProduct.id}
@@ -684,17 +652,7 @@ export default function ProductView({
             </button>
           </div>
 
-          {/* Availability */}
-          <div className="p-3 bg-qyellowlow/10 flex items-center space-x-2 mb-[30px] w-fit">
-            <span className="text-base font-bold text-qblack">
-              {ServeLangItem()?.Availability} :
-            </span>
-            <span className="text-base font-bold text-qyellow">
-              {safeProduct?.qty !== "0"
-                ? `${safeProduct.qty} urun stokta`
-                : `Urun stokta yok`}
-            </span>
-          </div>
+          {/* Availability — gizlendi (#5) */}
 
           {/* Variants */}
           <VariantSelector
@@ -801,23 +759,7 @@ export default function ProductView({
           <SocialShareButtons product={safeProduct} />
         </div>
 
-        {/* Chat with Seller */}
-        {seller && (
-          <div data-aos="fade-up" className="message-btn">
-            <button
-              onClick={popupMessageHandler}
-              className="flex px-5 py-2 bg-qyellow text-qblack items-center space-x-2.5"
-              type="button"
-            >
-              <span>
-                <MessageIco />
-              </span>
-              <span className="text-base font-medium text-qblack capitalize">
-                Saticiya mesaj gonder
-              </span>
-            </button>
-          </div>
-        )}
+        {/* Satıcıya mesaj — müşteri-satıcı mesajlaşma kaldırıldı (#35) */}
       </div>
     </div>
   );

@@ -120,7 +120,7 @@ export default function ForgotPass() {
         setDevOtpCode(data.otp_code);
       }
       toast.success(
-        data?.notification || data?.message || "Verification code sent.",
+        data?.notification || data?.message || "Doğrulama kodu gönderildi.",
         { autoClose: data?.otp_code ? 15000 : 5000 }
       );
     } else {
@@ -131,7 +131,7 @@ export default function ForgotPass() {
     toast.error(
       error?.data?.notification ||
         error?.data?.message ||
-        "Verification code could not be sent."
+        "Doğrulama kodu gönderilemedi."
     );
   };
   const doForgot = async () => {
@@ -180,7 +180,7 @@ export default function ForgotPass() {
       purpose: "password_reset",
       success: async (data, statusCode) => {
         if (statusCode !== 200 || !data?.token) {
-          toast.error(data?.message || "Verification failed.");
+          toast.error(data?.message || "Doğrulama başarısız.");
           return;
         }
 
@@ -199,7 +199,7 @@ export default function ForgotPass() {
         toast.error(
           error?.data?.message ||
             error?.data?.notification ||
-            "Verification failed."
+            "Doğrulama başarısız."
         );
       },
     });
@@ -211,17 +211,17 @@ export default function ForgotPass() {
       purpose: "password_reset",
       success: (data, statusCode) => {
         if (statusCode === 200 || statusCode === 201) {
-          toast.success(data?.message || "Verification code sent again.");
+          toast.success(data?.message || "Doğrulama kodu tekrar gönderildi.");
           return;
         }
 
-        toast.error(data?.message || "Verification code could not be resent.");
+        toast.error(data?.message || "Doğrulama kodu tekrar gönderilemedi.");
       },
       error: (error) => {
         toast.error(
           error?.data?.message ||
             error?.data?.notification ||
-            "Verification code could not be resent."
+            "Doğrulama kodu tekrar gönderilemedi."
         );
       },
     });
@@ -249,8 +249,8 @@ export default function ForgotPass() {
         {/* Phone Input Field */}
         <div className="input-item mb-5">
           <InputCom
-            placeholder="+905551234567"
-            label={(ServeLangItem()?.Phone_Number || "Phone Number") + "*"}
+            placeholder="(5XX) XXX XX XX"
+            label="Telefon Numarası*"
             name="phone"
             type="tel"
             inputClasses="h-[50px]"
@@ -343,7 +343,7 @@ export default function ForgotPass() {
         </div>
 
         <div className="mb-5 text-sm text-qgraytwo">
-          A verification code was sent to {fields.phone}.
+          {fields.phone} numarasına doğrulama kodu gönderildi.
         </div>
 
         {/* Confirm Password Input Field */}
@@ -407,7 +407,7 @@ export default function ForgotPass() {
             }}
             className="text-qgraytwo underline"
           >
-            Change phone number
+            Telefon numarasını değiştir
           </button>
 
           <button
@@ -416,7 +416,7 @@ export default function ForgotPass() {
             disabled={!fields.phone || isResendLoading}
             className="text-qblack underline disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Resend code
+            Kodu tekrar gönder
           </button>
         </div>
       </div>

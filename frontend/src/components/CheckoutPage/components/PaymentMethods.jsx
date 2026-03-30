@@ -67,12 +67,7 @@ const PaymentMethods = ({
     <div className="mt-[30px] mb-5 relative">
       <div className="w-full">
         <div className="flex flex-col space-y-3">
-          {/* Cash on Delivery */}
-          {renderPaymentMethod(
-            "cashOnDelivery",
-            "Kapıda Ödeme",
-            paymentStatuses.cash_on_delivery_status
-          )}
+          {/* Kapıda Ödeme — kaldırıldı (#12) */}
 
           {/* Bank Payment */}
           {renderPaymentMethod(
@@ -90,13 +85,14 @@ const PaymentMethods = ({
         </div>
       </div>
 
-      {/* Bank Payment Form */}
+      {/* Bank Payment Form — örnek bilgi eklendi (#13) */}
       {selectPayment === "bankpayment" && (
         <div className="w-full bank-inputs mt-5">
           <div className="input-item mb-5">
-            <div className="bank-info-alert w-full p-5 bg-amber-100 rounded mb-4 overflow-x-scroll">
-              <pre className="w-full table table-fixed">
-                {bankInfo?.account_info}
+            <div className="bank-info-alert w-full p-5 bg-amber-100 rounded mb-4">
+              <p className="text-sm font-semibold text-amber-900 mb-2">Banka Hesap Bilgileri:</p>
+              <pre className="w-full table table-fixed text-sm text-amber-800">
+                {bankInfo?.account_info || "Hesap Sahibi: Seyfibaba Tic. Ltd. Şti.\nBanka: Ziraat Bankası\nIBAN: TR00 0000 0000 0000 0000 0000 00\n\nHavale/EFT yaparken sipariş numaranızı açıklama kısmına yazınız."}
               </pre>
             </div>
             <h6 className="input-label capitalize text-[13px] font-600 leading-[24px] text-qblack block mb-2">
@@ -104,11 +100,11 @@ const PaymentMethods = ({
             </h6>
             <textarea
               cols="5"
-              rows="7"
+              rows="5"
               value={transactionInfo}
               onChange={(e) => setTransactionInfo(e.target.value)}
               className="w-full focus:ring-0 focus:outline-none py-3 px-4 border placeholder:text-sm text-sm"
-              placeholder={"Örnek:\r\n" + bankInfo?.account_info}
+              placeholder={"Havale/EFT yaptıktan sonra dekont numarasını veya gönderici bilgisini buraya yazın."}
             ></textarea>
           </div>
         </div>

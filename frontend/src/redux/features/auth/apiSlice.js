@@ -201,12 +201,7 @@ export const authApis = apiSlice.injectEndpoints({
           method: "GET",
         };
       },
-      serializeQueryArgs: ({ endpointName }) => {
-        return endpointName;
-      },
-      forceRefetch({ currentArg, previousArg }) {
-        return currentArg !== previousArg;
-      },
+      keepUnusedDataFor: 0,
     }),
     orderListApi: builder.query({
       query: (data) => {
@@ -588,6 +583,27 @@ export const authApis = apiSlice.injectEndpoints({
         }
       },
     }),
+    sellerUpdateOrderStatusApi: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${apiRoutes.sellerUpdateOrderStatus}/${data.orderId}?token=${data.token}`,
+          method: "PUT",
+          body: { order_status: data.order_status },
+        };
+      },
+      async onQueryStarted(info, { queryFulfilled }) {
+        try {
+          const { data, meta } = await queryFulfilled;
+          if (info && typeof info.success === "function") {
+            info.success(data, meta.response.status);
+          }
+        } catch (error) {
+          if (info && typeof info.error === "function") {
+            info.error(error?.error);
+          }
+        }
+      },
+    }),
   }),
 });
 
@@ -621,4 +637,5 @@ export const {
   useSellerNotificationsApiQuery,
   useMarkSellerNotificationReadApiMutation,
   useMarkAllSellerNotificationsReadApiMutation,
+  useSellerUpdateOrderStatusApiMutation,
 } = authApis;
