@@ -3,19 +3,41 @@
 <title>Satıcı KYC Detayları</title>
 @endsection
 @section('admin-content')
+@php
+  $typeLabels = [
+    'identity_front' => 'Kimlik Ön Yüz',
+    'identity_back' => 'Kimlik Arka Yüz',
+    'tax_certificate' => 'Vergi Belgesi',
+    'address_proof' => 'Adres Belgesi',
+    'bank_statement' => 'Banka Hesap Özeti',
+    'iban_document' => 'IBAN Belgesi',
+  ];
+  $statusLabels = [
+    'not_submitted' => 'Belge Yüklenmedi',
+    'pending' => 'Onay Bekliyor',
+    'approved' => 'Onaylı',
+    'rejected' => 'Reddedildi',
+  ];
+  $statusBadge = [
+    'not_submitted' => 'badge-secondary',
+    'pending' => 'badge-warning',
+    'approved' => 'badge-success',
+    'rejected' => 'badge-danger',
+  ];
+@endphp
 <div class="main-content">
   <section class="section">
     <div class="section-header">
       <h1>Satıcı KYC Detayları</h1>
       <div class="section-header-breadcrumb">
-        <div class="breadcrumb-item active"><a href="{{ route('admin.dashboard') }}">{{__('admin.Dashboard')}}</a></div>
+        <div class="breadcrumb-item active"><a href="{{ route('admin.dashboard') }}">Kontrol Paneli</a></div>
         <div class="breadcrumb-item active"><a href="{{ route('admin.kyc.index') }}">Satıcı KYC</a></div>
         <div class="breadcrumb-item">Detaylar</div>
       </div>
     </div>
 
     <div class="section-body">
-      <a href="{{ route('admin.kyc.index') }}" class="btn btn-primary mb-4"><i class="fas fa-list"></i> Satıcı KYC</a>
+      <a href="{{ route('admin.kyc.index') }}" class="btn btn-primary mb-4"><i class="fas fa-list"></i> Satıcı KYC Listesi</a>
 
       <div class="row">
         <div class="col-md-3">
@@ -59,28 +81,31 @@
       <div class="row mt-4">
         <div class="col-lg-4">
           <div class="card">
-            <div class="card-header">
-              <h4>Satıcı Bilgileri</h4>
-            </div>
+            <div class="card-header"><h4>Satıcı Bilgileri</h4></div>
             <div class="card-body">
-              <table class="table table-bordered">
-                <tr><td>Ad Soyad</td><td>{{ optional($seller->user)->name }}</td></tr>
-                <tr><td>Mağaza</td><td>{{ $seller->shop_name }}</td></tr>
-                <tr><td>E-posta</td><td>{{ optional($seller->user)->email }}</td></tr>
-                <tr><td>Telefon</td><td>{{ optional($seller->user)->phone }}</td></tr>
-                <tr><td>Durum</td><td><span class="badge badge-warning text-uppercase">{{ $status['kyc_status'] }}</span></td></tr>
-                <tr><td>Gönderim Tarihi</td><td>{{ optional($status['submitted_at'])->format('d M Y H:i') ?: '-' }}</td></tr>
-                <tr><td>Onay Tarihi</td><td>{{ optional($status['approved_at'])->format('d M Y H:i') ?: '-' }}</td></tr>
-                <tr><td>IBAN</td><td>{{ $seller->iban ?: '-' }}</td></tr>
-                <tr><td>Vergi Numarası</td><td>{{ $seller->tax_number ?: '-' }}</td></tr>
-                <tr><td>Alt Üye İşyeri Anahtarı</td><td>{{ $seller->iyzico_sub_merchant_key ?: '-' }}</td></tr>
+              <table class="table table-bordered table-sm">
+                <tr><td><strong>Ad Soyad</strong></td><td>{{ optional($seller->user)->name ?? '-' }}</td></tr>
+                <tr><td><strong>Mağaza</strong></td><td>{{ $seller->shop_name }}</td></tr>
+                <tr><td><strong>E-posta</strong></td><td>{{ optional($seller->user)->email ?? '-' }}</td></tr>
+                <tr><td><strong>Telefon</strong></td><td>{{ optional($seller->user)->phone ?? $seller->phone ?? '-' }}</td></tr>
+                <tr>
+                  <td><strong>KYC Durumu</strong></td>
+                  <td><span class="badge {{ $statusBadge[$status['kyc_status']] ?? 'badge-secondary' }}">{{ $statusLabels[$status['kyc_status']] ?? $status['kyc_status'] }}</span></td>
+                </tr>
+                <tr><td><strong>TC Kimlik</strong></td><td>{{ $seller->tc_identity ?: '-' }}</td></tr>
+                <tr><td><strong>IBAN</strong></td><td>{{ $seller->iban ?: '-' }}</td></tr>
+                <tr><td><strong>Vergi No</strong></td><td>{{ $seller->tax_number ?: '-' }}</td></tr>
+                <tr><td><strong>Vergi Dairesi</strong></td><td>{{ $seller->tax_office ?: '-' }}</td></tr>
+                <tr><td><strong>Gönderim Tarihi</strong></td><td>{{ optional($status['submitted_at'])->format('d.m.Y H:i') ?: '-' }}</td></tr>
+                <tr><td><strong>Onay Tarihi</strong></td><td>{{ optional($status['approved_at'])->format('d.m.Y H:i') ?: '-' }}</td></tr>
+                <tr><td><strong>Iyzico Anahtarı</strong></td><td><code class="small">{{ $seller->iyzico_sub_merchant_key ?: '-' }}</code></td></tr>
               </table>
 
               @if($status['kyc_status'] === 'approved' && empty($seller->iyzico_sub_merchant_key))
                 <form action="{{ route('admin.kyc.create-sub-merchant', $seller->id) }}" method="POST" class="mt-3">
                   @csrf
                   <button class="btn btn-dark btn-block" type="submit">
-                    <i class="fas fa-store"></i> Iyzico Alt Üye İşyeri Oluştur
+                    <i class="fas fa-store mr-1"></i> Iyzico Alt Üye İşyeri Oluştur
                   </button>
                 </form>
               @endif
@@ -90,31 +115,23 @@
 
         <div class="col-lg-8">
           <div class="card">
-            <div class="card-header">
-              <h4>Belgeler</h4>
-            </div>
+            <div class="card-header"><h4>Belgeler</h4></div>
             <div class="card-body">
               @forelse($seller->kycDocuments as $document)
                 <div class="border rounded p-3 mb-4">
                   <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                      <h6 class="mb-1 text-uppercase">{{ str_replace('_', ' ', $document->document_type) }}</h6>
+                      <h6 class="mb-1">{{ $typeLabels[$document->document_type] ?? $document->document_type }}</h6>
                       <div class="text-muted small">{{ $document->original_name }} | {{ number_format(($document->file_size ?? 0) / 1024, 1) }} KB</div>
                     </div>
-                    <div>
-                      @if($document->status === 'approved')
-                        <span class="badge badge-success text-uppercase">{{ $document->status }}</span>
-                      @elseif($document->status === 'rejected')
-                        <span class="badge badge-danger text-uppercase">{{ $document->status }}</span>
-                      @else
-                        <span class="badge badge-warning text-uppercase">{{ $document->status }}</span>
-                      @endif
-                    </div>
+                    <span class="badge {{ $statusBadge[$document->status] ?? 'badge-secondary' }}">
+                      {{ $statusLabels[$document->status] ?? $document->status }}
+                    </span>
                   </div>
 
                   <div class="mb-3">
-                      <a href="{{ route('admin.kyc.download', $document->id) }}" class="btn btn-info btn-sm">
-                      <i class="fas fa-download"></i> İndir
+                    <a href="{{ route('admin.kyc.download', $document->id) }}" class="btn btn-info btn-sm">
+                      <i class="fas fa-download mr-1"></i> İndir
                     </a>
                   </div>
 
@@ -125,10 +142,10 @@
                         @method('PUT')
                         <div class="form-group">
                           <label>Yönetici Notu</label>
-                          <textarea name="admin_note" class="form-control" rows="3">{{ $document->admin_note }}</textarea>
+                          <textarea name="admin_note" class="form-control" rows="3" placeholder="Onay notu (opsiyonel)">{{ $document->admin_note }}</textarea>
                         </div>
                         <button class="btn btn-success btn-block" type="submit">
-                          <i class="fas fa-check"></i> Belgeyi Onayla
+                          <i class="fas fa-check mr-1"></i> Onayla
                         </button>
                       </form>
                     </div>
@@ -137,25 +154,25 @@
                         @csrf
                         @method('PUT')
                         <div class="form-group">
-                          <label>Red Notu <span class="text-danger">*</span></label>
-                          <textarea name="admin_note" class="form-control" rows="3" required>{{ $document->status === 'rejected' ? $document->admin_note : '' }}</textarea>
+                          <label>Red Nedeni <span class="text-danger">*</span></label>
+                          <textarea name="admin_note" class="form-control" rows="3" required placeholder="Reddetme nedenini yazın">{{ $document->status === 'rejected' ? $document->admin_note : '' }}</textarea>
                         </div>
                         <button class="btn btn-danger btn-block" type="submit">
-                          <i class="fas fa-times"></i> Belgeyi Reddet
+                          <i class="fas fa-times mr-1"></i> Reddet
                         </button>
                       </form>
                     </div>
                   </div>
 
                   <div class="mt-3 text-muted small">
-                    İncelenme Tarihi: {{ optional($document->reviewed_at)->format('d M Y H:i') ?: '-' }}
+                    İncelenme: {{ optional($document->reviewed_at)->format('d.m.Y H:i') ?: 'Henüz incelenmedi' }}
                     @if($document->reviewer)
                       | İnceleyen: {{ $document->reviewer->name }}
                     @endif
                   </div>
                 </div>
               @empty
-                <div class="alert alert-info mb-0">Bu satıcı için KYC belgesi bulunamadı.</div>
+                <div class="alert alert-info mb-0">Bu satıcı henüz KYC belgesi yüklememiş.</div>
               @endforelse
             </div>
           </div>

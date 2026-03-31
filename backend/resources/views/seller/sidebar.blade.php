@@ -63,7 +63,7 @@
 
           <li class="{{ Route::is('seller.return-requests.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.return-requests.index') }}"><i class="fas fa-undo"></i> <span>İade Talepleri</span></a></li>
 
-           <li class="{{ Route::is('seller.message') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.message') }}"><i class="far fa-envelope"></i> <span>Mesajlar</span></a></li>
+          <li class="{{ Route::is('seller.kyc') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.kyc') }}"><i class="fas fa-id-card"></i> <span>Hesap Doğrulama</span></a></li>
 
           <li class="{{ Route::is('seller.contact-admin') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.contact-admin') }}"><i class="fas fa-headset"></i> <span>Admin'e Mesaj</span></a></li>
 

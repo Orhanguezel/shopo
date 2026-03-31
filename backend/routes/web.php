@@ -294,6 +294,60 @@ Route::group(['middleware' => ['XSS']], function () {
                 return redirect()->route('seller.contact-admin')->with(['messege' => 'Mesajınız admin\'e iletildi.', 'alert-type' => 'success']);
             })->name('send-admin-message');
 
+            // KYC Hesap Doğrulama
+            Route::get('kyc', function () {
+                $setting = \App\Models\Setting::first();
+                $seller = \Auth::guard('web')->user()->seller;
+                $documents = $seller->kycDocuments()->orderBy('document_type')->get();
+                return view('seller.kyc', compact('setting', 'seller', 'documents'));
+            })->name('kyc');
+
+            Route::post('kyc/upload', function (\Illuminate\Http\Request $request) {
+                $request->validate([
+                    'document_type' => 'required|string',
+                    'document' => 'required|file|max:5120|mimes:pdf,jpg,jpeg,png',
+                ]);
+
+                $seller = \Auth::guard('web')->user()->seller;
+                $file = $request->file('document');
+                $documentType = $request->document_type;
+
+                $storedPath = $file->storeAs(
+                    'private/kyc/' . $seller->id,
+                    $documentType . '-' . \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension(),
+                    'local'
+                );
+
+                // Mevcut belge varsa güncelle
+                $existing = $seller->kycDocuments()->where('document_type', $documentType)->first();
+                if ($existing && $existing->file_path) {
+                    \Illuminate\Support\Facades\Storage::disk('local')->delete($existing->file_path);
+                }
+
+                \App\Models\SellerKycDocument::updateOrCreate(
+                    ['seller_id' => $seller->id, 'document_type' => $documentType],
+                    [
+                        'file_path' => $storedPath,
+                        'original_name' => $file->getClientOriginalName(),
+                        'file_size' => (int) $file->getSize(),
+                        'status' => 'pending',
+                        'admin_note' => null,
+                        'reviewed_by' => null,
+                        'reviewed_at' => null,
+                    ]
+                );
+
+                // TC/IBAN/Vergi bilgilerini güncelle
+                if ($request->filled('tc_identity')) $seller->tc_identity = $request->tc_identity;
+                if ($request->filled('iban')) $seller->iban = $request->iban;
+                if ($request->filled('tax_number')) $seller->tax_number = $request->tax_number;
+                $seller->kyc_status = 'pending';
+                $seller->kyc_submitted_at = now();
+                $seller->save();
+
+                return redirect()->route('seller.kyc')->with(['messege' => 'Belge başarıyla yüklendi.', 'alert-type' => 'success']);
+            })->name('kyc.upload');
+
             Route::get('inventory', [SellerInventoryController::class, 'index'])->name('inventory');
             Route::get('stock-history/{id}', [SellerInventoryController::class, 'show_inventory'])->name('stock-history');
             Route::post('add-stock', [SellerInventoryController::class, 'add_stock'])->name('add-stock');

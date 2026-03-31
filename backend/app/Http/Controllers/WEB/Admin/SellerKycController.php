@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SellerKycController extends Controller
 {
@@ -107,26 +108,45 @@ class SellerKycController extends Controller
 
         if ($vendor->kyc_status !== 'approved') {
             return redirect()->back()->with([
-                'messege' => 'Sub-merchant can only be created for approved KYC sellers.',
+                'messege' => 'Alt üye işyeri sadece KYC onaylı satıcılar için oluşturulabilir.',
                 'alert-type' => 'error',
             ]);
         }
 
         if ($vendor->iyzico_sub_merchant_key) {
             return redirect()->back()->with([
-                'messege' => 'Sub-merchant already exists for this seller.',
+                'messege' => 'Bu satıcının zaten bir alt üye işyeri anahtarı var.',
                 'alert-type' => 'info',
             ]);
         }
 
-        $this->createIyzicoSubMerchant($vendor);
+        // Zorunlu alan kontrolü
+        $missing = [];
+        if (empty($vendor->tc_identity) && empty(optional($vendor->user)->tc_identity)) $missing[] = 'TC Kimlik';
+        if (empty($vendor->iban)) $missing[] = 'IBAN';
+        if (empty($vendor->phone) && empty(optional($vendor->user)->phone)) $missing[] = 'Telefon';
+        if (empty($vendor->address) && empty(optional($vendor->user)->address)) $missing[] = 'Adres';
+
+        if (!empty($missing)) {
+            return redirect()->back()->with([
+                'messege' => 'Eksik bilgiler: ' . implode(', ', $missing) . '. Satıcının bu bilgileri profilinden doldurması gerekiyor.',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        $errorMessage = $this->createIyzicoSubMerchant($vendor);
         $vendor->refresh();
 
+        if ($vendor->iyzico_sub_merchant_key) {
+            return redirect()->back()->with([
+                'messege' => 'Iyzico alt üye işyeri başarıyla oluşturuldu! Anahtar: ' . Str::limit($vendor->iyzico_sub_merchant_key, 20),
+                'alert-type' => 'success',
+            ]);
+        }
+
         return redirect()->back()->with([
-            'messege' => $vendor->iyzico_sub_merchant_key
-                ? 'Sub-merchant created successfully.'
-                : 'Sub-merchant could not be created. Check application logs.',
-            'alert-type' => $vendor->iyzico_sub_merchant_key ? 'success' : 'error',
+            'messege' => 'Alt üye işyeri oluşturulamadı. ' . ($errorMessage ?: 'Loglara bakın.'),
+            'alert-type' => 'error',
         ]);
     }
 
@@ -182,7 +202,7 @@ class SellerKycController extends Controller
         ];
     }
 
-    private function createIyzicoSubMerchant(Vendor $vendor): void
+    private function createIyzicoSubMerchant(Vendor $vendor): ?string
     {
         try {
             $iyzicoService = app(IyzicoService::class);
@@ -193,17 +213,17 @@ class SellerKycController extends Controller
                 ? \Iyzipay\Model\SubMerchantType::LIMITED_OR_JOINT_STOCK_COMPANY
                 : \Iyzipay\Model\SubMerchantType::PERSONAL;
 
-            $nameParts = $user ? explode(' ', trim($user->name ?? ''), 2) : ['Seller'];
+            $nameParts = $user ? explode(' ', trim($user->name ?? ''), 2) : ['Satıcı'];
 
             $data = [
                 'external_id' => 'VENDOR_' . $vendor->id,
                 'type' => $type,
-                'name' => $vendor->shop_name ?? ('Vendor ' . $vendor->id),
+                'name' => $vendor->shop_name ?? ('Satıcı ' . $vendor->id),
                 'email' => $user->email ?? '',
                 'gsm_number' => $vendor->phone ?? $user->phone ?? '',
                 'iban' => $vendor->iban ?? '',
                 'identity_number' => (string) ($vendor->tc_identity ?: data_get($user, 'tc_identity') ?: '00000000000'),
-                'address' => $vendor->address ?? data_get($user, 'address', ''),
+                'address' => $vendor->address ?? data_get($user, 'address', 'Türkiye'),
                 'contact_name' => $nameParts[0] ?? '',
                 'contact_surname' => $nameParts[1] ?? ($nameParts[0] ?? ''),
             ];
@@ -221,22 +241,26 @@ class SellerKycController extends Controller
                 $vendor->iyzico_sub_merchant_type = $type;
                 $vendor->save();
 
-                Log::info('Iyzico sub-merchant created from web admin', [
+                Log::info('Iyzico sub-merchant oluşturuldu', [
                     'vendor_id' => $vendor->id,
                     'sub_merchant_key' => $result->getSubMerchantKey(),
                 ]);
+                return null; // başarılı
             } else {
-                Log::error('Iyzico sub-merchant creation failed from web admin', [
+                $errorMsg = $result->getErrorMessage() ?: ('Hata kodu: ' . $result->getErrorCode());
+                Log::error('Iyzico sub-merchant oluşturulamadı', [
                     'vendor_id' => $vendor->id,
                     'error_code' => $result->getErrorCode(),
                     'error_message' => $result->getErrorMessage(),
                 ]);
+                return 'Iyzico hatası: ' . $errorMsg;
             }
         } catch (\Throwable $e) {
-            Log::error('Iyzico sub-merchant exception from web admin', [
+            Log::error('Iyzico sub-merchant exception', [
                 'vendor_id' => $vendor->id,
                 'message' => $e->getMessage(),
             ]);
+            return 'Sistem hatası: ' . $e->getMessage();
         }
     }
 }
