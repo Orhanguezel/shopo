@@ -286,12 +286,6 @@
         });
     })(jQuery);
 
-    function convertToSlug(Text){
-            return Text
-                .toLowerCase()
-                .replace(/[^\w ]+/g,'')
-                .replace(/ +/g,'-');
-    }
 
     function previewThumnailImage(event) {
         var reader = new FileReader();

@@ -36,8 +36,14 @@
                                 @foreach ($reviews as $index => $review)
                                     <tr>
                                         <td>{{ ++$index }}</td>
-                                        <td>{{ $review->user->name }}</td>
-                                        <td><a href="{{ route('admin.product.edit', $review->product->id) }}">{{ $review->product->name }}</a></td>
+                                        <td>{{ $review->user->name ?? 'Silinmiş Kullanıcı' }}</td>
+                                        <td>
+                                            @if($review->product)
+                                                <a href="{{ route('admin.product.edit', $review->product->id) }}">{{ $review->product->name }}</a>
+                                            @else
+                                                <span class="text-muted">Silinmiş Ürün</span>
+                                            @endif
+                                        </td>
 
                                         <td>{{ $review->rating }}</td>
                                         <td>

@@ -25,6 +25,7 @@ class Blog extends Model
         return $this->hasMany(BlogComment::class)->where('status',1);
     }
 
-
-
+    public function gallery(){
+        return $this->hasMany(BlogGallery::class);
+    }
 }

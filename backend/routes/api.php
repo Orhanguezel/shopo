@@ -168,6 +168,13 @@ Route::group([], function () {
     Route::get('/product/{slug}', [HomeController::class, 'productDetail'])->name('product-detail');
     Route::get('/product-review-list/{id}', [HomeController::class, 'productReviewList'])->name('product-review-list');
 
+    // Blog API
+    Route::get('/blogs', [\App\Http\Controllers\BlogController::class, 'index'])->name('blogs');
+    Route::get('/blog-categories', [\App\Http\Controllers\BlogController::class, 'blogCategory'])->name('blog-categories');
+    Route::get('/blog-category/{slug}', [\App\Http\Controllers\BlogController::class, 'blogCategoryDetail'])->name('blog-category-detail');
+    Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'blogDetail'])->name('blog-detail');
+    Route::post('/blog-comment', [\App\Http\Controllers\BlogController::class, 'blogComment'])->name('blog-comment');
+
     Route::get('/compare', [HomeController::class, 'compare'])->name('compare');
     Route::get('/add-to-compare/{id}', [HomeController::class, 'addToCompare'])->name('add-to-compare');
     Route::get('/remove-compare/{id}', [HomeController::class, 'removeCompare'])->name('remove-compare');

@@ -1,44 +1,28 @@
 "use client";
+import { useEffect, useState, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import Banner from "./Banner";
 import CategorySection from "./CategorySection";
 import appConfig from "@/appConfig";
+import ProductCard from "../Helpers/Cards/ProductCard";
 
-// Above-the-fold: Banner + CategorySection (static import, SSR'd)
-// Below-the-fold: dynamic import + SSR to keep code-splitting while preserving crawler-visible HTML
 const Ads = dynamic(() => import("./Ads"));
 const ViewMoreTitle = dynamic(() => import("../Helpers/ViewMoreTitle"));
-const SectionStyleOne = dynamic(() => import("../Helpers/SectionStyleOne"));
 const SectionStyleTwo = dynamic(() => import("../Helpers/SectionStyleTwo"));
-const SectionStyleThree = dynamic(() => import("../Helpers/SectionStyleThree"));
-const SectionStyleFour = dynamic(() => import("../Helpers/SectionStyleFour"));
 const BrandSection = dynamic(() => import("./BrandSection"));
 const CampaignCountDown = dynamic(() => import("./CampaignCountDown"));
-const CategoryDescriptions = dynamic(() => import("./CategoryDescriptions"));
-const HomeFAQ = dynamic(() => import("./HomeFAQ"));
-const TwoColumnAds = dynamic(() => import("./ProductAds/TwoColumnAds"));
-const OneColumnAdsOne = dynamic(() => import("./ProductAds/OneColumnAdsOne"));
-const OneColumnAdsTwo = dynamic(() => import("./ProductAds/OneColumnAdsTwo"));
-const WhySeyfibaba = dynamic(() => import("./WhySeyfibaba"));
 
 export default function Home({ homepageData }) {
   const getsectionTitles = homepageData.section_title;
-  
+
   const getTurkishSectionTitle = (key, value) => {
     const titleMap = {
       Trending_Category: "Öne Çıkan Kategoriler",
-      Popular_Category: "Popüler Kategoriler",
       Shop_by_Brand: "Markalara Göre Alışveriş",
-      Top_Rated_Products: "En Çok Beğenilen Ürünler",
-      Best_Seller: "En İyi Satıcılar",
-      Featured_Products: "Öne Çıkan Ürünler",
-      New_Arrivals: "Yeni Gelenler",
-      Best_Products: "En İyi Ürünler",
     };
     return titleMap[key] || value;
   };
 
-  // Pre-calculate section titles on server
   let sectionTitles = {};
   if (getsectionTitles && getsectionTitles.length > 0) {
     getsectionTitles.forEach((item) => {
@@ -51,9 +35,65 @@ export default function Home({ homepageData }) {
 
   const homepage = homepageData;
 
+  // Tüm Ürünler — sonsuz scroll (tekrarsız birleştir)
+  const allProducts = [
+    ...(homepage?.newArrivalProducts || []),
+    ...(homepage?.topRatedProducts || []),
+    ...(homepage?.bestProducts || []),
+    ...(homepage?.popularCategoryProducts || []),
+    ...(homepage?.featuredCategoryProducts || []),
+  ];
+  const uniqueProducts = allProducts.filter(
+    (product, index, self) => index === self.findIndex((p) => p.id === product.id)
+  );
+
+  const ITEMS_PER_PAGE = 8;
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const loaderRef = useRef(null);
+
+  const loadMore = useCallback(() => {
+    setVisibleCount((prev) => {
+      if (prev >= uniqueProducts.length) return prev;
+      return prev + ITEMS_PER_PAGE;
+    });
+  }, [uniqueProducts.length]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    const currentRef = loaderRef.current;
+    if (currentRef) observer.observe(currentRef);
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, [loadMore]);
+
+  const visibleProducts = uniqueProducts.slice(0, visibleCount);
+
+  const formatProduct = (item) => ({
+    id: item.id,
+    title: item.name,
+    slug: item.slug,
+    image: appConfig.BASE_URL + item.thumb_image,
+    price: item.price,
+    offer_price: item.offer_price,
+    campaingn_product: null,
+    vendor_id: Number(item.vendor_id),
+    review: parseInt(item.averageRating),
+    variants: item.active_variants ? item.active_variants : [],
+  });
+
   return (
-    <div className="w-full pt-[16px] pb-[80px] space-y-[60px] md:space-y-[100px] bg-[#fdfdfd]">
+    <div className="w-full pt-[8px] pb-[80px] space-y-[40px] md:space-y-[60px] bg-[#fdfdfd]">
       <Ads />
+
+      {/* Slider / Banner */}
       <div className="container-x mx-auto">
         {homepage?.sliders?.length > 0 && (
           <Banner
@@ -76,6 +116,7 @@ export default function Home({ homepageData }) {
         )}
       </div>
 
+      {/* 1. Öne Çıkan Kategoriler */}
       <section className="py-10 bg-white/50 backdrop-blur-sm">
         <CategorySection
           categories={homepage?.homepage_categories}
@@ -83,41 +124,59 @@ export default function Home({ homepageData }) {
         />
       </section>
 
-      {/* Tüm Ürünler — anasayfada üst kısımda (#1) */}
-      <section>
-        <ViewMoreTitle
-          className="all-products-section"
-          seeMoreUrl="/products"
-          categoryTitle="Tüm Ürünler"
-        >
-          <SectionStyleTwo
-            products={
-              homepage?.newArrivalProducts?.length > 0
-                ? homepage.newArrivalProducts.slice(0, 8)
-                : homepage?.topRatedProducts?.length > 0
-                  ? homepage.topRatedProducts.slice(0, 8)
-                  : []
-            }
-          />
-        </ViewMoreTitle>
-      </section>
+      {/* 2. Popüler Ürünler (is_top) */}
+      {homepage?.topRatedProducts?.length > 0 && (
+        <section>
+          <ViewMoreTitle
+            className="popular-products-section"
+            seeMoreUrl="/products?highlight=top_product"
+            categoryTitle="Popüler Ürünler"
+          >
+            <SectionStyleTwo products={homepage.topRatedProducts.slice(0, 4)} />
+          </ViewMoreTitle>
+        </section>
+      )}
 
-      <section>
-        <SectionStyleOne
-          products={homepage?.popularCategoryProducts}
-          categories={homepage?.popularCategories}
-          categoryBackground={
-            homepage.popularCategorySidebarBanner
-              ? appConfig.BASE_URL + homepage.popularCategorySidebarBanner
-              : null
-          }
-          categoryTitle={sectionTitles && sectionTitles.Popular_Category}
-          sectionTitle={sectionTitles && sectionTitles.Popular_Category}
-          seeMoreUrl={`/products?highlight=popular_category`}
-          className="category-products"
-        />
-      </section>
+      {/* 3. Yeni Gelenler (new_product) */}
+      {homepage?.newArrivalProducts?.length > 0 && (
+        <section>
+          <ViewMoreTitle
+            className="new-arrival-section"
+            seeMoreUrl="/products?highlight=new_arrival"
+            categoryTitle="Yeni Gelenler"
+          >
+            <SectionStyleTwo products={homepage.newArrivalProducts.slice(0, 4)} />
+          </ViewMoreTitle>
+        </section>
+      )}
 
+      {/* 4. En Çok Satanlar (is_best) */}
+      {homepage?.bestProducts?.length > 0 && (
+        <section>
+          <ViewMoreTitle
+            className="best-selling-section"
+            seeMoreUrl="/products?highlight=best_product"
+            categoryTitle="En Çok Satanlar"
+          >
+            <SectionStyleTwo products={homepage.bestProducts.slice(0, 4)} />
+          </ViewMoreTitle>
+        </section>
+      )}
+
+      {/* 5. Öne Çıkan Ürünler (is_featured) */}
+      {homepage?.featuredCategoryProducts?.length > 0 && (
+        <section>
+          <ViewMoreTitle
+            className="featured-products-section"
+            seeMoreUrl="/products?highlight=featured_product"
+            categoryTitle="Öne Çıkan Ürünler"
+          >
+            <SectionStyleTwo products={homepage.featuredCategoryProducts.slice(0, 4)} />
+          </ViewMoreTitle>
+        </section>
+      )}
+
+      {/* Markalar */}
       <section className="py-16 bg-gray-50/50 border-y border-gray-100">
         <BrandSection
           brands={homepage?.brands?.length > 0 ? homepage.brands : []}
@@ -126,6 +185,7 @@ export default function Home({ homepageData }) {
         />
       </section>
 
+      {/* Flash Sale */}
       {homepage?.flashSale && (
         <section>
           <CampaignCountDown
@@ -137,120 +197,39 @@ export default function Home({ homepageData }) {
         </section>
       )}
 
-      <section>
-        <ViewMoreTitle
-          className="top-selling-product"
-          seeMoreUrl={`/products?highlight=top_product`}
-          categoryTitle={sectionTitles && sectionTitles.Top_Rated_Products}
-        >
-          <SectionStyleTwo
-            products={
-              homepage?.topRatedProducts?.length &&
-              homepage?.topRatedProducts?.length > 0
-                ? homepage?.topRatedProducts
-                : []
-            }
-          />
-        </ViewMoreTitle>
-      </section>
-
-      <section aria-label="Promosyon bannerlari">
-        <TwoColumnAds
-          bannerOne={
-            homepage?.twoColumnBannerOne &&
-            parseInt(homepage?.twoColumnBannerOne?.status) === 1
-              ? homepage?.twoColumnBannerOne
-              : null
-          }
-          bannerTwo={
-            homepage?.twoColumnBannerTwo &&
-            parseInt(homepage?.twoColumnBannerTwo?.status) === 1
-              ? homepage?.twoColumnBannerTwo
-              : null
-          }
-        />
-      </section>
-
-      <section>
-        <SectionStyleOne
-          categories={
-            homepage?.featuredCategories?.length > 0
-              ? homepage?.featuredCategories
-              : []
-          }
-          categoryBackground={
-            homepage.featuredCategorySidebarBanner
-              ? appConfig.BASE_URL + homepage.featuredCategorySidebarBanner
-              : null
-          }
-          categoryTitle={sectionTitles && sectionTitles.Featured_Products}
-          products={
-            homepage?.featuredCategoryProducts?.length > 0
-              ? homepage?.featuredCategoryProducts
-              : []
-          }
-          sectionTitle={sectionTitles && sectionTitles.Featured_Products}
-          seeMoreUrl={`/products?highlight=featured_product`}
-          className="category-products"
-        />
-      </section>
-
-      <section aria-label="Tekli kampanya banneri">
-        <OneColumnAdsOne
-          data={
-            homepage?.singleBannerOne &&
-            parseInt(homepage?.singleBannerOne?.status) === 1
-              ? homepage?.singleBannerOne
-              : null
-          }
-        />
-      </section>
-
-      <section>
-        <SectionStyleThree
-          products={
-            homepage?.newArrivalProducts?.length > 0
-              ? homepage?.newArrivalProducts?.slice(
-                  0,
-                  homepage?.newArrivalProducts?.length > 16
-                    ? 16
-                    : homepage?.newArrivalProducts?.length
-                )
-              : []
-          }
-          sectionTitle={sectionTitles && sectionTitles.New_Arrivals}
-          seeMoreUrl={`/products?highlight=new_arrival`}
-          className="new-products"
-        />
-      </section>
-
-      <section aria-label="Ikinci tekli kampanya banneri" className="w-full text-white">
-        <div className="container-x mx-auto">
-          <OneColumnAdsTwo
-            data={
-              homepage?.singleBannerTwo &&
-              parseInt(homepage?.singleBannerTwo?.status) === 1
-                ? homepage?.singleBannerTwo
-                : null
-            }
-          />
-        </div>
-      </section>
-
-      <CategoryDescriptions />
-      <WhySeyfibaba homepageData={homepage} />
-      <HomeFAQ />
-
-      <div className="pb-20">
-        <SectionStyleFour
-          products={
-            homepage?.bestProducts?.length > 0 ? homepage?.bestProducts : []
-          }
-          sectionTitle={sectionTitles && sectionTitles.Best_Products}
-          seeMoreUrl={`/products?highlight=best_product`}
-          className="category-products"
-        />
-      </div>
+      {/* Tüm Ürünler — sonsuz scroll */}
+      {uniqueProducts.length > 0 && (
+        <section>
+          <div className="container-x mx-auto">
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-xl font-semibold text-qblack">
+                Tüm Ürünler
+              </h2>
+            </div>
+            <div className="w-full grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 xl:gap-[30px] gap-5">
+              {visibleProducts.map((item) => (
+                <div key={item.id} data-aos="fade-up">
+                  <ProductCard datas={formatProduct(item)} />
+                </div>
+              ))}
+            </div>
+            {visibleCount < uniqueProducts.length && (
+              <div
+                ref={loaderRef}
+                className="w-full flex justify-center py-10"
+              >
+                <div className="flex items-center space-x-2 text-qgray">
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  <span>Yükleniyor...</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 @endphp
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
    <link rel="shortcut icon"  href="{{ asset($setting->favicon) }}"  type="image/x-icon">
   <meta charset="UTF-8">

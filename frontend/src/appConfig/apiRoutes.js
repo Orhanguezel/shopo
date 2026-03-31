@@ -218,6 +218,11 @@ const apiRoutes = {
   facebookCallback: combinedUrl(FACEBOOK_CALLBACK),
   twitterCallback: combinedUrl(TWITTER_CALLBACK),
 
+  // Blog
+  blogs: combinedUrl("blogs"),
+  blogDetail: combinedUrl("blog"),
+  blogCategories: combinedUrl("blog-categories"),
+
   // Sitemaps
   productSitemap: combinedUrl("products/sitemap"),
   productCount: combinedUrl("products/active-count"),

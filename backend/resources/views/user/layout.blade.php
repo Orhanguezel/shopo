@@ -3,7 +3,7 @@
     $user = Auth::guard('web')->user();
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">

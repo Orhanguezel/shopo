@@ -299,6 +299,31 @@
 
           </li>
 
+          <li class="nav-item dropdown {{ Route::is('admin.blog.*') || Route::is('admin.blog-category.*') ? 'active' : '' }}">
+            <a href="#" class="nav-link has-dropdown">
+              <div class="icon"><i class="fas fa-blog"></i></div>
+              <span>Blog</span>
+            </a>
+            <ul class="dropdown-menu">
+                <li class="{{ Route::is('admin.blog.index') || Route::is('admin.blog.create') || Route::is('admin.blog.edit') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.blog.index') }}">Blog Yazıları</a></li>
+                <li class="{{ Route::is('admin.blog-category.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.blog-category.index') }}">Blog Kategorileri</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown {{ Route::is('admin.report.*') ? 'active' : '' }}">
+            <a href="#" class="nav-link has-dropdown">
+              <div class="icon"><i class="fas fa-chart-bar"></i></div>
+              <span>Raporlar</span>
+            </a>
+            <ul class="dropdown-menu">
+                <li class="{{ Route::is('admin.report.orders') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.report.orders') }}">Sipariş Raporu</a></li>
+                <li class="{{ Route::is('admin.report.sellers') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.report.sellers') }}">Satıcı Raporu</a></li>
+                <li class="{{ Route::is('admin.report.products') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.report.products') }}">Ürün Raporu</a></li>
+                <li class="{{ Route::is('admin.report.transactions') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.report.transactions') }}">İşlem Raporu</a></li>
+                <li class="{{ Route::is('admin.report.returns') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.report.returns') }}">İade Raporu</a></li>
+            </ul>
+          </li>
+
           <li class="nav-item dropdown {{ Route::is('admin.about-us.*') || Route::is('admin.custom-page.*') || Route::is('admin.terms-and-condition.*') || Route::is('admin.privacy-policy.*') || Route::is('admin.faq.*') || Route::is('admin.error-page.*') || Route::is('admin.contact-us.*') || Route::is('admin.login-page') ? 'active' : '' }}">
 
             <a href="#" class="nav-link has-dropdown">

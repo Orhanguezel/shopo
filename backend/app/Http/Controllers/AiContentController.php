@@ -27,6 +27,7 @@ class AiContentController extends Controller
         $validator = Validator::make($request->all(), [
             'prompt' => 'nullable|string|max:5000',
             'action' => 'nullable|string|in:full,enhance,translate,generate_meta',
+            'content_type' => 'nullable|string|in:product,blog',
             'product_name' => 'nullable|string|max:500',
             'category_name' => 'nullable|string|max:500',
             'existing_content' => 'nullable|array',
@@ -50,8 +51,12 @@ class AiContentController extends Controller
 
         $action = $request->input('action');
 
+        $contentType = $request->input('content_type', 'product');
+
         if ($action) {
-            $prompt = $this->buildActionPrompt($action, $request->all());
+            $prompt = $contentType === 'blog'
+                ? $this->buildBlogPrompt($action, $request->all())
+                : $this->buildActionPrompt($action, $request->all());
         } else {
             if (!$request->prompt) {
                 return response()->json([
@@ -101,7 +106,7 @@ class AiContentController extends Controller
         $existingContent = $params['existing_content'] ?? [];
         $targetLang = $params['target_lang'] ?? 'en';
 
-        $systemBase = "Sen profesyonel bir e-ticaret ürün içerik yazarısın. SEO uyumlu, çekici ve satış odaklı ürün içerikleri yazarsın. Türkiye pazarına yönelik içerik üretirsin.\n";
+        $systemBase = "Sen profesyonel bir e-ticaret ürün içerik yazarısın. SEO uyumlu, çekici ve satış odaklı ürün içerikleri yazarsın. Türkiye pazarına yönelik içerik üretirsin. Tüm içerikleri sadece Türkçe olarak yaz, kesinlikle başka dil kullanma.\n";
 
         $jsonStructure = '{"name":"","short_description":"","long_description":"","seo_title":"","seo_description":"","tags":"","return_policy_text":"","delivery_time_text":""}';
 
@@ -166,6 +171,60 @@ SADECE geçerli JSON döndür, markdown veya açıklama ekleme. Şema:
 
             default:
                 return "\"{$productName}\" için ürün içeriği oluştur.";
+        }
+    }
+
+    private function buildBlogPrompt(string $action, array $params): string
+    {
+        $title = $params['product_name'] ?? 'Blog Yazısı';
+        $categoryName = $params['category_name'] ?? '';
+        $existingContent = $params['existing_content'] ?? [];
+
+        $systemBase = "Sen profesyonel bir blog yazarısın. Kuaför ve berber sektörüne yönelik SEO uyumlu, bilgilendirici ve okuyucu dostu blog yazıları yazarsın. Tüm içerikleri sadece Türkçe olarak yaz.\n";
+
+        $jsonStructure = '{"title":"","description":"","seo_title":"","seo_description":""}';
+
+        switch ($action) {
+            case 'full':
+                $categoryCtx = $categoryName ? "\nBlog kategorisi: {$categoryName}" : '';
+                return $systemBase . "\"{$title}\" başlıklı bir blog yazısı oluştur.{$categoryCtx}
+
+Aşağıdaki alanların HEPSİNİ Türkçe olarak doldur:
+- title: Blog başlığı (SEO uyumlu, dikkat çekici, max 80 karakter)
+- description: Blog içeriği (HTML formatında, en az 800 kelime. <h2>, <h3>, <p>, <ul>, <li>, <strong> etiketleri kullan. Giriş paragrafı, ana bölümler, sonuç paragrafı olsun. Okuyucuya pratik bilgi ve tavsiyeler ver.)
+- seo_title: SEO başlığı (max 60 karakter)
+- seo_description: SEO açıklaması (max 155 karakter, eylem çağrısı içersin)
+
+SADECE geçerli JSON döndür, markdown veya açıklama ekleme. Şema:
+{$jsonStructure}";
+
+            case 'enhance':
+                $existingJson = json_encode($existingContent, JSON_UNESCAPED_UNICODE);
+                return $systemBase . "Aşağıdaki blog içeriğini iyileştir ve zenginleştir. Daha detaylı, bilgilendirici ve SEO uyumlu hale getir. HTML yapısını koru ve geliştir.
+
+Mevcut içerik:
+{$existingJson}
+
+Tüm alanlar dolu olmalı. Kaliteyi artır, içeriği genişlet, alt başlıklar ekle.
+SADECE geçerli JSON döndür, markdown veya açıklama ekleme. Şema:
+{$jsonStructure}";
+
+            case 'generate_meta':
+                $existingJson = json_encode($existingContent, JSON_UNESCAPED_UNICODE);
+                return $systemBase . "Aşağıdaki blog içeriğine dayalı olarak SEO meta etiketleri oluştur.
+
+Blog içeriği:
+{$existingJson}
+
+Sadece şu alanları güncelle (diğerlerini mevcut içerikten koru):
+- seo_title: SEO başlığı (max 60 karakter)
+- seo_description: SEO açıklaması (max 155 karakter)
+
+SADECE geçerli JSON döndür, markdown veya açıklama ekleme. Şema:
+{$jsonStructure}";
+
+            default:
+                return "\"{$title}\" başlıklı blog yazısı oluştur.";
         }
     }
 

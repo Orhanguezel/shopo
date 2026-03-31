@@ -16,13 +16,9 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
         $this->call([
             SeyfibabaDumpSeeder::class,
-            CurrencySeeder::class,
-            SiteContentSeeder::class,
-            DemoDataCleanupSeeder::class,
-            GeoAuditCleanupSeeder::class,
-            CouponSeeder::class,
-            CleanDemoProductsSeeder::class,
-            CleanDemoContentSeeder::class,
+            HomepageProductFlagsSeeder::class,
+            FixProductSlugsSeeder::class,
+            BlogImageSeeder::class,
         ]);
     }
 }

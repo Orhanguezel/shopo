@@ -50,6 +50,7 @@
   <script src="{{ asset('backend/js/bootstrap-datepicker.min.js') }}"></script>
   <script src="{{ asset('backend/summernote/summernote.min.js') }}"></script>
   <script src="{{ asset('backend/clockpicker/dist/bootstrap-clockpicker.js') }}"></script>
+  <script src="{{ asset('js/turkish-slug.js') }}"></script>
 
     <script>
         @if(Session::has('messege'))

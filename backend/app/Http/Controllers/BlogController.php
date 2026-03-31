@@ -131,7 +131,7 @@ class BlogController extends Controller
 
     public function blogDetail($slug)
     {
-        $blog = Blog::with(['category:id,name,slug', 'admin:id,name'])
+        $blog = Blog::with(['category:id,name,slug', 'admin:id,name', 'gallery'])
             ->where('status', 1)
             ->whereIn('slug', $this->resolveSlugCandidates($slug))
             ->first();
@@ -152,6 +152,7 @@ class BlogController extends Controller
 
         return response()->json([
             'blog' => $blog,
+            'gallery' => $blog->gallery,
             'relatedBlogs' => $relatedBlogs,
             ...$this->getSidebarData(),
         ]);

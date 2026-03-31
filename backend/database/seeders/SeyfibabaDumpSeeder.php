@@ -13,7 +13,7 @@ class SeyfibabaDumpSeeder extends Seeder
      */
     public function run(): void
     {
-        $dumpPath = database_path('seyfibaba_db.sql');
+        $dumpPath = database_path('seyfibaba_canli_dump.sql');
 
         if (!file_exists($dumpPath)) {
             $this->command->error("SQL dump bulunamadı: {$dumpPath}");

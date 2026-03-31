@@ -50,6 +50,7 @@
   <script src="{{ asset('backend/datetimepicker/jquery.datetimepicker.js') }}"></script>
   <script src="{{ asset('backend/js/iziToast.min.js') }}"></script>
   <script src="{{ asset('backend/js/modules-toastr.js') }}"></script>
+  <script src="{{ asset('js/turkish-slug.js') }}"></script>
 
 
     <script>

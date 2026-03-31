@@ -6,7 +6,6 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import DataIteration from "../Helpers/DataIteration";
 import Star from "../Helpers/icons/Star";
 import ProductsFilter from "./ProductsFilter";
-import OneColumnAdsTwo from "../Home/ProductAds/OneColumnAdsTwo";
 import LoaderStyleOne from "../Helpers/Loaders/LoaderStyleOne";
 import ServeLangItem from "../Helpers/ServeLangItem";
 import ProductCard from "../Helpers/Cards/ProductCard";
@@ -52,93 +51,6 @@ function AllProductPageContent({ response, sellerInfo }) {
   );
   const [selectedBrandsFilterItem, setSelectedBrandsFilterItem] = useState([]);
 
-  const quickCategoryLinks = (response?.categories || []).slice(0, 6);
-  const quickBrandLinks = (response?.brands || []).slice(0, 6);
-
-  const formatSlugLabel = (value = "") =>
-    value
-      .split("-")
-      .filter(Boolean)
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(" ");
-
-  const resolvedCategorySlug = searchParams.get("category");
-  const resolvedBrandSlug = searchParams.get("brand");
-  const resolvedSearch = searchParams.get("search");
-  const resolvedCategoryData = response?.categories?.find(
-    (item) => item.slug === resolvedCategorySlug
-  );
-  const resolvedCategoryName =
-    resolvedCategoryData?.name ||
-    formatSlugLabel(resolvedCategorySlug || "");
-  const resolvedCategoryDescription = resolvedCategoryData?.description?.trim();
-  const resolvedBrandName =
-    response?.brands?.find((item) => item.slug === resolvedBrandSlug)?.name ||
-    formatSlugLabel(resolvedBrandSlug || "");
-  const listingHeading = resolvedCategoryName
-    ? `${resolvedCategoryName} urunleri`
-    : resolvedBrandName
-      ? `${resolvedBrandName} markali urunler`
-      : resolvedSearch
-        ? `"${resolvedSearch}" arama sonuclari`
-        : "Profesyonel berber ve kuafor urunleri";
-  const listingDescription = resolvedCategoryName
-    ? resolvedCategoryDescription ||
-      `${resolvedCategoryName} kategorisinde yer alan profesyonel urunleri, fiyat araliklarini, markalari ve teknik ozellikleri tek listede inceleyebilirsiniz.`
-    : resolvedBrandName
-      ? `${resolvedBrandName} markasina ait salon ekipmanlari ve sarf urunlerini filtreleyerek ihtiyaciniza uygun secenekleri karsilastirabilirsiniz.`
-      : resolvedSearch
-        ? `"${resolvedSearch}" ifadesiyle eslesen urunleri listeleyerek uygun fiyat, stok ve kategori bilgilerine hizli sekilde ulasabilirsiniz.`
-        : "Berber koltugu, kuafor tezgahi, salon ekipmanlari, sarf malzemeleri ve profesyonel aksesuarlar gibi farkli ihtiyaclara yonelik urunleri tek sayfada karsilastirabilirsiniz.";
-  const listingDeepDive = resolvedCategoryName
-    ? `${resolvedCategoryName} arayan isletmeler icin dayanıklılık, servis kolaylığı, parça uyumu ve günlük salon temposuna uygunluk gibi kriterler karar sürecinde kritik rol oynar. Bu sayfa; kategori bazında ürünleri aynı akışta inceleyip farklı satıcı ve marka seçeneklerini daha hızlı karşılaştırmanız için hazırlanmıştır.`
-    : resolvedBrandName
-      ? `${resolvedBrandName} markasına ait ürünleri incelerken yalnızca fiyat değil; garanti yapısı, stok sürekliliği, model çeşitliliği ve kullanım senaryosu uyumu da birlikte değerlendirilmelidir. Bu alan, markaya ait seçenekleri daha okunabilir hale getirerek satın alma sürecini kısaltmayı amaçlar.`
-      : resolvedSearch
-        ? `"${resolvedSearch}" sorgusuna ait sonuçlar; farklı kategori ve marka kümeleri içinde dağılabileceği için filtreleme, fiyat kırılımı ve stok durumu birlikte değerlendirilmelidir. Bu sayfa, arama sonucunu daha hızlı daraltıp ilgili ürün detaylarına geçişi kolaylaştırır.`
-        : "Profesyonel salon ekipmanı seçerken ürünün fiyatı kadar bakım maliyeti, servis erişimi, teknik dayanıklılığı ve iş akışına uygunluğu da önem taşır. Bu listeleme yapısı, farklı satıcı ve kategori kümelerini aynı ekranda görerek daha bilinçli ürün seçimi yapmanıza yardımcı olur.";
-  const listingUseCases = resolvedCategoryName
-    ? [
-        "Salon kurulumunda kullanılacak temel ekipmanları kategori bazında gruplayabilirsiniz.",
-        "Benzer ürünlerin fiyat ve marka dağılımını tek ekranda karşılaştırabilirsiniz.",
-        "Detay sayfalarına geçerek stok, satıcı ve görsel verisini birlikte inceleyebilirsiniz.",
-      ]
-    : [
-        "Öne çıkan kategori ve marka kümelerini filtrelerle daraltabilirsiniz.",
-        "Yeni kurulum, yenileme ve sarf tedarik senaryoları için farklı ürünleri kıyaslayabilirsiniz.",
-        "İlgili blog rehberlerine giderek satın alma öncesi daha fazla bağlam edinebilirsiniz.",
-      ];
-  const buyingChecklist = resolvedCategoryName
-    ? [
-        "Urunun gunluk kullanim yogunluguna uygun mekanik dayanikliligini kontrol edin.",
-        "Yedek parca, servis ve garanti kosullarinin salonunuzun bulundugu bolgede nasil isleyecegini inceleyin.",
-        "Ayni kategori icindeki urunleri sadece fiyat degil, olcu ve materyal farklariyla karsilastirin.",
-      ]
-    : resolvedBrandName
-      ? [
-          "Marka icindeki farkli serilerin hangi kullanim seviyesine hitap ettigini kontrol edin.",
-          "Garanti suresi ve servis yayginligini tek urun degil marka portfoyu bazinda degerlendirin.",
-          "Ayni markada butce ve performans dengesi acisindan daha uygun alternatif olup olmadigina bakin.",
-        ]
-      : [
-          "Arama sonucundaki urunleri once kategoriye gore daraltin, sonra fiyat ve stok filtresi ekleyin.",
-          "Salon kurulumu, yenileme veya sarf tedarik ihtiyacina gore ayni listede farkli urun siniflarini ayirin.",
-          "Karar vermeden once detay sayfasindaki satici, yorum ve teknik aciklama bloklarini birlikte okuyun.",
-        ];
-  const editorialContextTitle = resolvedCategoryName
-    ? `${resolvedCategoryName} Ürünleri`
-    : resolvedBrandName
-      ? `${resolvedBrandName} Ürünleri`
-      : resolvedSearch
-        ? `"${resolvedSearch}" için Arama Sonuçları`
-        : "Tüm Ürünler";
-  const editorialContextBody = resolvedCategoryName
-    ? `${resolvedCategoryName} kategorisindeki ürünleri inceleyin. Fiyat, marka ve satıcı seçeneklerini karşılaştırarak en uygun ürünü bulun.`
-    : resolvedBrandName
-      ? `${resolvedBrandName} markasına ait tüm ürünleri keşfedin. Farklı modelleri karşılaştırarak ihtiyacınıza en uygun olanı seçin.`
-      : resolvedSearch
-        ? `Arama sonuçlarını fiyat, kategori ve satıcıya göre filtreleyerek aradığınız ürüne hızlıca ulaşın.`
-        : "Seyfibaba'daki tüm ürünleri inceleyin. Kategoriler ve markalar arasında kolayca gezinin.";
 
   // Helper function to ensure arrays are always arrays
   const ensureArray = (value) => {
@@ -344,51 +256,6 @@ function AllProductPageContent({ response, sellerInfo }) {
       };
     }
   };
-
-  const renderEditorialGuide = () => (
-    <section className="mb-8 rounded-[28px] border border-[#ece7da] bg-[#fffaf0] px-6 py-7 md:px-8">
-      <h2 className="text-2xl font-bold text-[#1f2937]">
-        {editorialContextTitle}
-      </h2>
-      <p className="mt-4 text-[15px] leading-8 text-[#4b5563]">
-        {listingDescription}
-      </p>
-      <p className="mt-4 text-[15px] leading-8 text-[#4b5563]">
-        {listingDeepDive}
-      </p>
-      <p className="mt-4 text-[15px] leading-8 text-[#4b5563]">
-        {editorialContextBody}
-      </p>
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <article className="rounded-3xl bg-white px-5 py-5 ring-1 ring-[#eee0be]">
-          <h3 className="text-lg font-semibold text-[#22223b]">
-            Bu sayfa ne icin kullanilir?
-          </h3>
-          <ul className="mt-4 space-y-2 text-sm leading-7 text-[#4b5563]">
-            {listingUseCases.map((item) => (
-              <li key={item} className="flex items-start gap-3">
-                <span className="mt-2 inline-block h-2 w-2 rounded-full bg-[#9f7b2f]" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </article>
-        <article className="rounded-3xl bg-white px-5 py-5 ring-1 ring-[#eee0be]">
-          <h3 className="text-lg font-semibold text-[#22223b]">
-            Satin alma oncesi hizli kontrol listesi
-          </h3>
-          <ul className="mt-4 space-y-2 text-sm leading-7 text-[#4b5563]">
-            {buyingChecklist.map((item) => (
-              <li key={item} className="flex items-start gap-3">
-                <span className="mt-2 inline-block h-2 w-2 rounded-full bg-[#9f7b2f]" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </article>
-      </div>
-    </section>
-  );
 
   /**
    * Transform raw product data into standardized format for ProductCard components
@@ -1088,67 +955,6 @@ function AllProductPageContent({ response, sellerInfo }) {
   /**
    * Render sidebar banner
    */
-  const renderSidebarBanner = () => {
-    if (
-      !response?.shopPageSidebarBanner ||
-      parseInt(response.shopPageSidebarBanner.status) !== 1
-    ) {
-      return null;
-    }
-
-    return (
-      <div
-        data-aos="fade-up"
-        className="w-full hidden lg:block h-[320px] relative rounded-2xl overflow-hidden shadow-sm group border border-gray-100"
-      >
-        <Image
-          src={appConfig.BASE_URL + response.shopPageSidebarBanner.image}
-          alt={response.shopPageSidebarBanner.title_two || "Yan kampanya gorseli"}
-          fill
-          className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
-          sizes="270px"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-transparent to-white/40 pointer-events-none"></div>
-        
-        <div className="absolute inset-0 p-5 flex flex-col justify-between z-10">
-          <div className="bg-white/80 backdrop-blur-sm px-4 py-3 rounded-xl border border-white shadow-sm w-fit max-w-[200px]">
-            <span className="text-qyellow uppercase text-[10px] tracking-widest font-black block mb-0.5">
-              {response.shopPageSidebarBanner.title_one}
-            </span>
-            <h2 className="text-lg font-black text-qblack leading-tight line-clamp-2">
-              {response.shopPageSidebarBanner.title_two}
-            </h2>
-          </div>
-          
-          <div className="w-full flex justify-center">
-            <Link
-              href={{
-                pathname: "/products",
-                query: {
-                  category: response.shopPageSidebarBanner.product_slug,
-                },
-              }}
-            >
-              <div className="inline-flex items-center px-6 py-2 bg-qblack text-white rounded-full font-bold transition-all duration-300 hover:bg-qyellow hover:text-qblack shadow-lg cursor-pointer">
-                <span className="text-[13px] mr-2">
-                  {ServeLangItem()?.Shop_Now}
-                </span>
-                <svg
-                  className="w-3.5 h-3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   /**
    * Render product sorting and view controls
    */
@@ -1289,64 +1095,6 @@ function AllProductPageContent({ response, sellerInfo }) {
         {/* Seller Information Section */}
         {renderSellerInfo()}
 
-        {!sellerInfo && renderEditorialGuide()}
-
-        {!sellerInfo && (
-          <section className="mb-8 rounded-[28px] border border-[#ece3cf] bg-[#fffaf0] px-6 py-6">
-            <h2 className="text-2xl font-semibold text-qblack mb-3">
-              Kesfetmeye Devam Et
-            </h2>
-            <p className="text-sm leading-7 text-qgray mb-5">
-              Kategori ve marka linkleriyle ilgili urun listelerine hizli gecis
-              yapabilir, ic baglanti yapisini guclu tutarak istediginiz salon
-              ekipmanlarina daha hizli ulasabilirsiniz.
-            </p>
-            <div className="flex flex-wrap gap-3 mb-4">
-              <Link
-                href="/products"
-                className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
-              >
-                Tum urunler
-              </Link>
-            </div>
-            {quickCategoryLinks.length > 0 && (
-              <div className="mb-4">
-                <h3 className="text-base font-semibold text-qblack mb-3">
-                  One Cikan Kategoriler
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {quickCategoryLinks.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={`/products?category=${item.slug}`}
-                      className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-            {quickBrandLinks.length > 0 && (
-              <div>
-                <h3 className="text-base font-semibold text-qblack mb-3">
-                  Populer Markalar
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {quickBrandLinks.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={`/products?brand=${item.slug}`}
-                      className="rounded-full border border-[#e5d7b8] bg-white px-4 py-2 text-sm font-medium text-qblack transition hover:border-qyellow hover:text-qyellow"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </section>
-        )}
 
         <div className="w-full lg:flex lg:space-x-[30px] rtl:space-x-reverse">
           {/* Left Sidebar - Filters and Banner */}
@@ -1377,8 +1125,6 @@ function AllProductPageContent({ response, sellerInfo }) {
               clearAllFilters={clearAllFilters}
             />
 
-            {/* Sidebar Banner */}
-            {renderSidebarBanner()}
           </div>
 
           {/* Main Content Area */}
@@ -1394,19 +1140,6 @@ function AllProductPageContent({ response, sellerInfo }) {
                 {/* Load More Button */}
                 {renderLoadMoreButton()}
 
-                {/* Banner */}
-                <div className="w-full relative text-qblack my-[40px]">
-                  {response.shopPageCenterBanner && (
-                    <OneColumnAdsTwo
-                      data={
-                        response.shopPageCenterBanner &&
-                        parseInt(response.shopPageCenterBanner.status) === 1
-                          ? response.shopPageCenterBanner
-                          : null
-                      }
-                    />
-                  )}
-                </div>
               </div>
             ) : (
               <div className="mt-5 flex justify-center">

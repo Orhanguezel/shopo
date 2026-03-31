@@ -37,8 +37,8 @@
                                 @foreach ($blogs as $index => $blog)
                                     <tr>
                                         <td>{{ ++$index }}</td>
-                                        <td><a target="_blank" href="{{ $frontend_url.$blog->slug }}">{{ $blog->title }}</a></td>
-                                        <td>{{ $blog->category->name }}</td>
+                                        <td><a target="_blank" href="{{ env('FRONTEND_URL', 'http://localhost:3000').'/blog/'.$blog->slug }}">{{ $blog->title }}</a></td>
+                                        <td>{{ $blog->category->name ?? '-' }}</td>
                                         <td><img src="{{ asset($blog->image) }}" width="80px" height="80px" class="rounded-circle" alt=""></td>
                                         <td>
                                             @if ($blog->show_homepage)

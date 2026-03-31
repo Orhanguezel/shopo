@@ -81,3 +81,23 @@ Toplam: 44 madde
 ## Admin Raporlama (Yeni Modül)
 
 - [x] **#44** Komisyon rapor sayfası zaten mevcut + Türkçe çeviriler eklendi
+
+## Admin Dashboard — Gelir & Komisyon (Eksik)
+
+- [x] **#45** Dashboard'a komisyon kartları ekle (Toplam Komisyon / Bekleyen / Ödenen)
+- [x] **#46** Dashboard'a gelir özeti ekle (Toplam Satış / Admin Komisyonu / Satıcı Payı)
+- [x] **#47** Dashboard'a aylık satış + komisyon trend grafiği ekle
+- [x] **#48** Dashboard'a en çok satan ürünler tablosu ekle
+- [x] **#49** Dashboard'a en çok satış yapan satıcılar tablosu ekle
+- [x] **#50** Dashboard'a son siparişler tablosu ekle
+- [x] **#51** Dashboard'a sipariş durumu dağılımı ekle (bekleyen/onaylanan/teslim edilen/iptal)
+- [x] **#52** Dashboard tarih filtresi ekle (bugün/bu hafta/bu ay/bu yıl/özel aralık)
+
+## Admin Raporlama — Detaylı Raporlar (Eksik)
+
+- [x] **#53** Sipariş raporu sayfası (tarih/durum/ödeme filtreleri + tablo + CSV export)
+- [x] **#54** Satıcı bazlı rapor sayfası (satıcı performansı, satış/komisyon kırılımı)
+- [x] **#55** Ürün bazlı rapor sayfası (en çok satan/görüntülenen/yorumlanan)
+- [x] **#56** İşlem raporu (ödeme yöntemi kırılımı, günlük/aylık işlem hacimleri)
+- [x] **#57** İade raporu (iade oranı, iade nedenleri, satıcı bazlı iade kırılımı)
+- [x] **#58** Raporlarda CSV/Excel export desteği (tüm raporlara CSV eklendi)

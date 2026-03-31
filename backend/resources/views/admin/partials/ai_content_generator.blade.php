@@ -34,13 +34,6 @@
                             <a class="dropdown-item ai-action-btn" href="#" data-action="generate_meta">
                                 <i class="fas fa-search mr-1"></i> Sadece SEO Uret
                             </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item ai-action-btn" href="#" data-action="translate" data-lang="en">
-                                <i class="fas fa-language mr-1"></i> Ingilizceye Cevir
-                            </a>
-                            <a class="dropdown-item ai-action-btn" href="#" data-action="translate" data-lang="tr">
-                                <i class="fas fa-language mr-1"></i> Turkceye Cevir
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -110,9 +103,6 @@
         }
     }
 
-    function convertToSlug(text) {
-        return text.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
-    }
 
     $(document).on('click', '.ai-action-btn', function(e) {
         e.preventDefault();

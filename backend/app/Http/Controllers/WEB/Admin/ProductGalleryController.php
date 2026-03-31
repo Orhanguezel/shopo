@@ -60,6 +60,9 @@ class ProductGalleryController extends Controller
                     $gallery->save();
                 }
 
+                if(request()->ajax() || request()->wantsJson()){
+                    return response()->json(['success' => true, 'message' => 'Görseller yüklendi.']);
+                }
                 $notification = trans('admin_validation.Uploaded Successfully');
                 $notification=array('messege'=>$notification,'alert-type'=>'success');
                 return redirect()->back()->with($notification);
@@ -80,6 +83,10 @@ class ProductGalleryController extends Controller
         $gallery->delete();
         if($old_image){
             if(File::exists(public_path().'/'.$old_image))unlink(public_path().'/'.$old_image);
+        }
+
+        if(request()->ajax() || request()->wantsJson()){
+            return response()->json(['success' => true, 'message' => 'Görsel silindi.']);
         }
 
         $notification = trans('admin_validation.Delete Successfully');

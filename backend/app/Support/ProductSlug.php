@@ -41,6 +41,9 @@ class ProductSlug
             'ö' => 'o',
             'Ç' => 'C',
             'ç' => 'c',
+            'â' => 'a', 'Â' => 'A',
+            'î' => 'i', 'Î' => 'I',
+            'û' => 'u', 'Û' => 'U',
         ]);
 
         return Str::slug(Str::ascii($value));

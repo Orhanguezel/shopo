@@ -417,6 +417,21 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::resource('custom-page', CustomPageController::class);
         Route::put('custom-page-status/{id}', [CustomPageController::class, 'changeStatus'])->name('custom-page.status');
 
+        // Blog
+        Route::resource('blog', \App\Http\Controllers\WEB\Admin\BlogController::class);
+        Route::put('blog-status/{id}', [\App\Http\Controllers\WEB\Admin\BlogController::class, 'changeStatus'])->name('blog.status');
+        Route::resource('blog-category', \App\Http\Controllers\WEB\Admin\BlogCategoryController::class);
+        Route::put('blog-category-status/{id}', [\App\Http\Controllers\WEB\Admin\BlogCategoryController::class, 'changeStatus'])->name('blog-category.status');
+        Route::post('store-blog-gallery', [\App\Http\Controllers\WEB\Admin\BlogController::class, 'storeGallery'])->name('store-blog-gallery');
+        Route::delete('delete-blog-image/{id}', [\App\Http\Controllers\WEB\Admin\BlogController::class, 'destroyGallery'])->name('delete-blog-image');
+
+        // Raporlar
+        Route::get('report/orders', [\App\Http\Controllers\WEB\Admin\ReportController::class, 'orderReport'])->name('report.orders');
+        Route::get('report/sellers', [\App\Http\Controllers\WEB\Admin\ReportController::class, 'sellerReport'])->name('report.sellers');
+        Route::get('report/products', [\App\Http\Controllers\WEB\Admin\ReportController::class, 'productReport'])->name('report.products');
+        Route::get('report/transactions', [\App\Http\Controllers\WEB\Admin\ReportController::class, 'transactionReport'])->name('report.transactions');
+        Route::get('report/returns', [\App\Http\Controllers\WEB\Admin\ReportController::class, 'returnReport'])->name('report.returns');
+
         Route::resource('terms-and-condition', TermsAndConditionController::class);
         Route::resource('privacy-policy', PrivacyPolicyController::class);
 
