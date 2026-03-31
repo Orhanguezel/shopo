@@ -6,11 +6,11 @@ import CategorySection from "./CategorySection";
 import appConfig from "@/appConfig";
 import ProductCard from "../Helpers/Cards/ProductCard";
 
-const Ads = dynamic(() => import("./Ads"));
+const Ads = dynamic(() => import("./Ads"), { ssr: false });
 const ViewMoreTitle = dynamic(() => import("../Helpers/ViewMoreTitle"));
 const SectionStyleTwo = dynamic(() => import("../Helpers/SectionStyleTwo"));
-const BrandSection = dynamic(() => import("./BrandSection"));
-const CampaignCountDown = dynamic(() => import("./CampaignCountDown"));
+const BrandSection = dynamic(() => import("./BrandSection"), { ssr: false });
+const CampaignCountDown = dynamic(() => import("./CampaignCountDown"), { ssr: false });
 
 export default function Home({ homepageData }) {
   const getsectionTitles = homepageData.section_title;

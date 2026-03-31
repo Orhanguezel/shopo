@@ -20,9 +20,11 @@ function HomeSlider({ images, settings }) {
                 }
                 fill
                 priority={i === 0}
-                sizes="100vw"
+                fetchPriority={i === 0 ? "high" : "auto"}
+                sizes={i === 0 ? "(max-width: 1200px) 100vw, 740px" : "100vw"}
                 className="object-cover"
                 loading={i === 0 ? "eager" : "lazy"}
+                quality={i === 0 ? 75 : 60}
             />
 
             <div className="flex w-full max-w-full h-full relative items-center rtl:pr-[30px] ltr:pl-[30px] z-10">

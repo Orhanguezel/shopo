@@ -94,7 +94,9 @@ export default function Banner({
                       }
                       fill
                       className="object-cover"
-                      sizes="(max-width: 1200px) 100vw, 400px"
+                      sizes="(max-width: 1200px) 50vw, 400px"
+                      loading="lazy"
+                      quality={60}
                     />
                     <div className="flex flex-col justify-between relative z-10 items-start space-y-2">
                         <div className="inline-block md:w-[112px] w-[100px] shadow md:h-[25px] h-[18px] flex items-center justify-center  bg-white rounded-full md:mb-[15px] mb-[10px]">
@@ -172,7 +174,9 @@ export default function Banner({
                       }
                       fill
                       className="object-cover"
-                      sizes="(max-width: 1200px) 100vw, 400px"
+                      sizes="(max-width: 1200px) 50vw, 400px"
+                      loading="lazy"
+                      quality={60}
                     />
                     <div className="flex flex-col justify-between relative z-10 items-start space-y-2">
                         <div className="inline-block md:w-[112px] w-[100px] shadow md:h-[25px] h-[18px] flex items-center justify-center  bg-white rounded-full md:mb-[15px] mb-[10px]">

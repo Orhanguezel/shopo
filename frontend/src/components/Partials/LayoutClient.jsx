@@ -2,7 +2,8 @@
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import hexToRgb from "@/utils/hexToRgb";
-import DiscountBanner from "../DiscountBanner";
+import dynamic from "next/dynamic";
+const DiscountBanner = dynamic(() => import("../DiscountBanner"), { ssr: false });
 import Drawer from "../Mobile/Drawer";
 import Footer from "./Footers/Footer";
 import Header from "./Headers/Header";
