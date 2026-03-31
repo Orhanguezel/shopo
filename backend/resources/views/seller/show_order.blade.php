@@ -99,6 +99,24 @@
                           <span class="badge badge-danger">{{__('admin.Pending')}}</span>
                         @endif
                         </address>
+                        {{-- Kargo Bilgisi (#74) --}}
+                        @php
+                            $shipment = \App\Models\CargoShipment::where('order_id', $order->id)->first();
+                        @endphp
+                        <address>
+                            <strong>Kargo Bilgisi:</strong><br>
+                            @if($shipment)
+                                Kargo Firması: {{ $shipment->carrier_name ?? '-' }}<br>
+                                Takip No: <strong>{{ $shipment->tracking_number ?? '-' }}</strong><br>
+                                Durum: <span class="badge badge-info">{{ $shipment->status }}</span>
+                                @if($shipment->tracking_url)
+                                    <br><a href="{{ $shipment->tracking_url }}" target="_blank" class="text-primary">Kargo Takip</a>
+                                @endif
+                            @else
+                                <span class="text-muted">Henüz kargo bilgisi girilmemiş.</span>
+                            @endif
+                        </address>
+
                         @if($setting->map_status == 1)
                         <address>
                             <strong>{{__('admin.Delivery Location')}} :</strong><br><br>

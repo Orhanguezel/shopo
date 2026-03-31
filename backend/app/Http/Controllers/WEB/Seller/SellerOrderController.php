@@ -89,10 +89,27 @@ class SellerOrderController extends Controller
     }
 
     public function show($id){
-        $order = Order::with('user','orderProducts.orderProductVariants','orderAddress')->find($id);
+        $seller = Auth::guard('web')->user()->seller;
+
+        // Satıcının bu siparişte ürünü olduğunu doğrula
+        $order = Order::with(['user', 'orderAddress'])
+            ->whereHas('orderProducts', function($query) use ($seller) {
+                $query->where('seller_id', $seller->id);
+            })
+            ->find($id);
+
+        if (!$order) {
+            $notification = array('messege' => 'Bu siparişe erişim yetkiniz yok.', 'alert-type' => 'error');
+            return redirect()->route('seller.all-order')->with($notification);
+        }
+
+        // Sadece bu satıcıya ait ürünleri yükle
+        $order->setRelation(
+            'orderProducts',
+            $order->orderProducts()->where('seller_id', $seller->id)->with('orderProductVariants')->get()
+        );
 
         $setting = Setting::first();
-        return view('seller.show_order',compact('order','setting'));
-
+        return view('seller.show_order', compact('order', 'setting'));
     }
 }

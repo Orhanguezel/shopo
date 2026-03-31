@@ -62,6 +62,26 @@
                             <input type="text" class="form-control" value="{{ $seller->phone }}" name="phone">
                         </div>
 
+                        <div class="form-group col-md-4">
+                            <label>TC Kimlik No <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" value="{{ $seller->tc_identity }}" name="tc_identity" placeholder="11 haneli TC Kimlik No" maxlength="11">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label>Vergi No <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" value="{{ $seller->tax_number }}" name="tax_number" placeholder="Vergi numarası">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label>Vergi Dairesi</label>
+                            <input type="text" class="form-control" value="{{ $seller->tax_office }}" name="tax_office" placeholder="Vergi dairesi adı">
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label>IBAN <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" value="{{ $seller->iban }}" name="iban" placeholder="TR00 0000 0000 0000 0000 0000 00" maxlength="34">
+                        </div>
+
                         <div class="form-group col-12">
                             <label>{{__('admin.Opens at')}} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control clockpicker" value="{{ $seller->open_at }}" data-align="top" data-autoclose="true" name="opens_at">

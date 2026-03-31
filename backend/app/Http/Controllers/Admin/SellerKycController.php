@@ -183,7 +183,7 @@ class SellerKycController extends Controller
                 'email' => $user->email ?? '',
                 'gsm_number' => $vendor->phone ?? $user->phone ?? '',
                 'iban' => $vendor->iban ?? '',
-                'identity_number' => '00000000000', // Will be updated from KYC docs
+                'identity_number' => (string) ($vendor->tc_identity ?: data_get($user, 'tc_identity') ?: '00000000000'),
                 'address' => $vendor->address ?? '',
                 'contact_name' => $nameParts[0] ?? '',
                 'contact_surname' => $nameParts[1] ?? ($nameParts[0] ?? ''),

@@ -49,6 +49,8 @@ export default function ProfileTab({ profileInfo }) {
     name: profileInfo.personInfo.name,
     email: profileInfo.personInfo.email,
     phone: null,
+    tc_identity: profileInfo.personInfo.tc_identity || "",
+    tax_number: profileInfo.personInfo.tax_number || "",
     country: null,
     state: null,
     city: null,
@@ -295,6 +297,8 @@ export default function ProfileTab({ profileInfo }) {
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
+      tc_identity: formData.tc_identity,
+      tax_number: formData.tax_number,
       country: formData.country,
       address: formData.address,
       image: formImg ? formImg : null,
@@ -594,6 +598,29 @@ export default function ProfileTab({ profileInfo }) {
                 ) : (
                   ""
                 )}
+              </div>
+            </div>
+            {/* TC Kimlik / Vergi No */}
+            <div className="input-item md:flex md:space-x-2.5 rtl:space-x-reverse mb-8">
+              <div className="md:w-1/2 w-full mb-8 md:mb-0">
+                <InputCom
+                  label="TC Kimlik No"
+                  placeholder="11 haneli TC Kimlik No"
+                  type="text"
+                  inputClasses="h-[50px]"
+                  value={formData.tc_identity}
+                  inputHandler={(e) => handleInputChange("tc_identity", e.target.value)}
+                />
+              </div>
+              <div className="md:w-1/2 w-full">
+                <InputCom
+                  label="Vergi No (Kurumsal)"
+                  placeholder="Vergi numarası (opsiyonel)"
+                  type="text"
+                  inputClasses="h-[50px]"
+                  value={formData.tax_number}
+                  inputHandler={(e) => handleInputChange("tax_number", e.target.value)}
+                />
               </div>
             </div>
             {/* Address input */}

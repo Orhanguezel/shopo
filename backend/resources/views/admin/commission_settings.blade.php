@@ -107,7 +107,7 @@
                     toastr.success(response.message);
                 },
                 error: function(err) {
-                    toastr.error('Something went wrong');
+                    toastr.error('Bir hata oluştu');
                 }
             });
         });
@@ -131,7 +131,7 @@
                     toastr.success(response.message);
                 },
                 error: function() {
-                    toastr.error('Something went wrong');
+                    toastr.error('Bir hata oluştu');
                 }
             });
         });

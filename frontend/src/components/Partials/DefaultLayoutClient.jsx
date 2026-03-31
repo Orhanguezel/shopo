@@ -13,6 +13,7 @@ import GoogleTagManager from "./LayoutHelpers/GoogleTagManager";
 import AuthenticationModal from "./LayoutHelpers/AuthenticationModal";
 import SimpleFlyingCart from "../Helpers/SimpleFlyingCart";
 import FixedCartButton from "../Helpers/FixedCartButton";
+import ScrollToTop from "../Helpers/ScrollToTop";
 import ChatWidget from "../ChatWidget";
 
 const LOCAL_STORAGE_KEYS = {
@@ -143,7 +144,7 @@ export default function DefaultLayoutClient({ children }) {
    * Initializes Facebook Pixel
    */
   const initializeFacebookPixel = useCallback(async () => {
-    if (!fbPixel || !fbPixel.app_id) return;
+    if (!fbPixel || !fbPixel.app_id || fbPixel.app_id.length < 10 || !/^\d+$/.test(fbPixel.app_id)) return;
 
     try {
       const ReactPixel = (await import("react-facebook-pixel")).default;
@@ -158,7 +159,7 @@ export default function DefaultLayoutClient({ children }) {
    * Tracks page views for Facebook Pixel on route changes
    */
   const trackFacebookPixelPageView = useCallback(async () => {
-    if (!fbPixel || !fbPixel.app_id || typeof window === "undefined") return;
+    if (!fbPixel || !fbPixel.app_id || fbPixel.app_id.length < 10 || !/^\d+$/.test(fbPixel.app_id) || typeof window === "undefined") return;
 
     try {
       const ReactPixel = (await import("react-facebook-pixel")).default;
@@ -215,6 +216,9 @@ export default function DefaultLayoutClient({ children }) {
 
       {/* Fixed Cart Button */}
       <FixedCartButton />
+
+      {/* Scroll to Top */}
+      <ScrollToTop />
     </>
   );
 }

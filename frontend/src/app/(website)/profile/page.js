@@ -2,7 +2,7 @@ import React from "react";
 import Profile from "@/components/Auth/Profile";
 
 export const metadata = {
-  title: "Profile | Shopo",
+  title: "Profilim | Seyfibaba",
   robots: { index: false, follow: false },
   alternates: {
     canonical: "/profile",

@@ -274,6 +274,25 @@ Route::group(['middleware' => ['XSS']], function () {
             Route::get('load-new-message/{id}', [SellerMessageContoller::class, 'loadNewMessage'])->name('load-new-message');
             Route::get('send-message', [SellerMessageContoller::class, 'sendMessage'])->name('send-message');
 
+            // Admin'e mesaj
+            Route::get('contact-admin', function () {
+                $setting = \App\Models\Setting::first();
+                $messages = \App\Models\ContactMessage::where('email', \Auth::guard('web')->user()->email)->orderBy('id', 'desc')->get();
+                return view('seller.contact_admin', compact('setting', 'messages'));
+            })->name('contact-admin');
+
+            Route::post('send-admin-message', function (\Illuminate\Http\Request $request) {
+                $request->validate(['subject' => 'required', 'message' => 'required']);
+                $user = \Auth::guard('web')->user();
+                $msg = new \App\Models\ContactMessage();
+                $msg->name = $user->name;
+                $msg->email = $user->email;
+                $msg->phone = $user->seller->phone ?? $user->phone;
+                $msg->subject = $request->subject;
+                $msg->message = $request->message;
+                $msg->save();
+                return redirect()->route('seller.contact-admin')->with(['messege' => 'Mesajınız admin\'e iletildi.', 'alert-type' => 'success']);
+            })->name('send-admin-message');
 
             Route::get('inventory', [SellerInventoryController::class, 'index'])->name('inventory');
             Route::get('stock-history/{id}', [SellerInventoryController::class, 'show_inventory'])->name('stock-history');

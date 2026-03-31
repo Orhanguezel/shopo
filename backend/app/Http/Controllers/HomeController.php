@@ -1041,9 +1041,16 @@ class HomeController extends Controller
 
 
         if($request->search) {
-
-            $products = $products->where('name','LIKE','%'.$request->search.'%');
-
+            $searchTerm = $request->search;
+            $trMap = ['ğ'=>'g','ü'=>'u','ö'=>'o','ç'=>'c','ş'=>'s','ı'=>'i','â'=>'a','î'=>'i','û'=>'u'];
+            $searchAscii = strtr(mb_strtolower($searchTerm), $trMap);
+            $products = $products->where(function($q) use ($searchTerm, $searchAscii) {
+                $q->where('name', 'LIKE', '%'.$searchTerm.'%')
+                  ->orWhere('short_description', 'LIKE', '%'.$searchTerm.'%');
+                if ($searchAscii !== mb_strtolower($searchTerm)) {
+                    $q->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'ğ','g'),'ü','u'),'ö','o'),'ç','c'),'ş','s'),'ı','i'),'â','a')) LIKE ?", ['%'.$searchAscii.'%']);
+                }
+            });
         }
 
 
@@ -1296,9 +1303,16 @@ class HomeController extends Controller
 
 
         if($request->search) {
-
-            $products = $products->where('name','LIKE','%'.$request->search.'%');
-
+            $searchTerm = $request->search;
+            $trMap = ['ğ'=>'g','ü'=>'u','ö'=>'o','ç'=>'c','ş'=>'s','ı'=>'i','â'=>'a','î'=>'i','û'=>'u'];
+            $searchAscii = strtr(mb_strtolower($searchTerm), $trMap);
+            $products = $products->where(function($q) use ($searchTerm, $searchAscii) {
+                $q->where('name', 'LIKE', '%'.$searchTerm.'%')
+                  ->orWhere('short_description', 'LIKE', '%'.$searchTerm.'%');
+                if ($searchAscii !== mb_strtolower($searchTerm)) {
+                    $q->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'ğ','g'),'ü','u'),'ö','o'),'ç','c'),'ş','s'),'ı','i'),'â','a')) LIKE ?", ['%'.$searchAscii.'%']);
+                }
+            });
         }
 
 
@@ -1572,11 +1586,10 @@ class HomeController extends Controller
 
 
         if($request->search){
-
-            $products = $products->where('name', 'LIKE', '%'. $request->search. "%")
-
-                                ->orWhere('long_description','LIKE','%'.$request->search.'%');
-
+            $products = $products->where(function($query) use ($request){
+                $query->where('name', 'LIKE', '%'. $request->search. "%")
+                                    ->orWhere('long_description','LIKE','%'.$request->search.'%');
+            });
         }
 
 
@@ -1759,15 +1772,15 @@ class HomeController extends Controller
     }
 
     /**
-     * İsim maskeleme: "Hüseyin Coşkun" → "H**** C****"
+     * İsim maskeleme: "Hüseyin Coşkun" → "H.C."
      */
     private function maskName(string $name): string
     {
         $parts = explode(' ', trim($name));
-        return implode(' ', array_map(function ($part) {
-            if (mb_strlen($part) <= 1) return $part;
-            return mb_substr($part, 0, 1) . str_repeat('*', mb_strlen($part) - 1);
-        }, $parts));
+        $initials = array_map(function ($part) {
+            return mb_strtoupper(mb_substr($part, 0, 1));
+        }, $parts);
+        return implode('.', $initials) . '.';
     }
 
 

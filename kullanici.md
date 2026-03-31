@@ -101,9 +101,9 @@
 
 | Alan             | Deger                              |
 | ---------------- | ---------------------------------- |
-| API Key          | EiVUsVWshdypacqslile9I3OhcFCAJcG   |
-| Secret Key       | yD0kJDTf3jGdqHAHm41m6cni2T9aAEKq   |
-| Sub Merchant Key | K3bKwMeayD/5NUlr92VoltewMI4=       |
+| API Key          |                                    |
+| Secret Key       |                                    |
+| Sub Merchant Key |                                    |
 | Mod              | Production (QuickEcommerce hesabi) |
 | Admin Ayar       | /admin/payment-method              |
 

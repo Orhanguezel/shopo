@@ -303,15 +303,15 @@ function OrderComContent({ resData, orderStatus, orderId }) {
                             </div>
                           </td>
                           <td className="py-4 whitespace-nowrap text-center print:hidden space-x-2">
-                        {auth() && (
+                        {auth() && ["Teslim Edildi", "Tamamlandı"].includes(orderStatus) && (
                           <button
                             onClick={() =>
                               reviewModalHandler(item.product_id)
                             }
                             type="button"
-                            className="text-green-500 text-sm font-semibold capitalize"
+                            className="text-green-600 text-sm font-semibold border border-green-600 rounded px-3 py-1 hover:bg-green-600 hover:text-white transition-colors"
                           >
-                            {ServeLangItem()?.review}
+                            Yorum Yap
                           </button>
                         )}
                         {auth() &&
@@ -322,7 +322,7 @@ function OrderComContent({ resData, orderStatus, orderId }) {
                               returnModalHandler(item.id)
                             }
                             type="button"
-                            className="text-qred text-sm font-semibold capitalize"
+                            className="text-qred text-sm font-semibold border border-qred rounded px-3 py-1 hover:bg-qred hover:text-white transition-colors"
                           >
                             İade Et
                           </button>

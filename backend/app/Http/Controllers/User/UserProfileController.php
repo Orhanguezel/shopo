@@ -196,6 +196,8 @@ class UserProfileController extends Controller
 
         $user->name = $request->name;
         $user->phone = $request->phone;
+        $user->tc_identity = $request->tc_identity;
+        $user->tax_number = $request->tax_number;
         $user->country_id = $request->country;
         $user->state_id = $request->state;
         $user->city_id = $request->city;
@@ -481,6 +483,15 @@ class UserProfileController extends Controller
             $review->review = $request->review;
             $review->product_vendor_id = $product->vendor_id;
             $review->product_id = $request->product_id;
+
+            if ($request->hasFile('image')) {
+                $ext = $request->image->getClientOriginalExtension();
+                $name = 'review-' . date('Y-m-d-h-i-s-') . rand(999, 9999) . '.' . $ext;
+                $path = 'uploads/custom-images/' . $name;
+                \Image::make($request->image)->save(public_path() . '/' . $path);
+                $review->image = $path;
+            }
+
             $review->save();
             $message = trans('user_validation.Review Submited successfully');
             return response()->json(['message' => $message]);

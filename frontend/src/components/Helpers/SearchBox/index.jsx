@@ -1,8 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import ServeLangItem from "../ServeLangItem";
 import ArrowDownIcoCheck from "../icons/ArrowDownIcoCheck";
+import appConfig from "@/appConfig";
+import { buildProductPath } from "@/utils/url";
 
 export default function SearchBox({ className }) {
   const router = useRouter();
@@ -11,6 +14,44 @@ export default function SearchBox({ className }) {
   const [categories, setCategories] = useState(null);
   const [selectedCat, setSelectedCat] = useState(null);
   const [searchKey, setSearchkey] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debounceRef = useRef(null);
+  const searchBoxRef = useRef(null);
+
+  const fetchSuggestions = useCallback(async (term) => {
+    if (!term || term.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    try {
+      const res = await fetch(`${appConfig.BASE_URL}api/search-product?search=${encodeURIComponent(term)}&limit=5`);
+      const data = await res.json();
+      const items = data?.products?.data || data?.products || [];
+      setSuggestions(Array.isArray(items) ? items.slice(0, 5) : []);
+      setShowSuggestions(true);
+    } catch {
+      setSuggestions([]);
+    }
+  }, []);
+
+  const handleSearchInput = (value) => {
+    setSearchkey(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchSuggestions(value), 300);
+  };
+
+  // Dışarı tıklayınca kapat
+  useEffect(() => {
+    const handler = (e) => {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
   useEffect(() => {
     if (router && router.route && router.route === "/search") {
       setSearchkey(router.query ? router.query.search : "");
@@ -31,6 +72,7 @@ export default function SearchBox({ className }) {
     }
   }, [websiteSetup]);
   const searchHandler = () => {
+    setShowSuggestions(false);
     if (searchKey !== "") {
       if (selectedCat) {
         router.push(`/search?search=${searchKey}&category=${selectedCat.slug}`);
@@ -46,16 +88,17 @@ export default function SearchBox({ className }) {
 
   return (
     <div
-      className={`w-full h-full flex items-center  border border-qgray-border bg-white  ${
+      ref={searchBoxRef}
+      className={`w-full h-full flex items-center border border-qgray-border bg-white relative ${
         className || ""
       }`}
     >
-      <div className="flex-1 bg-red-500 h-full">
+      <div className="flex-1 h-full">
         <div className="h-full">
           <input
             value={searchKey}
             onKeyDown={(e) => e.key === "Enter" && searchHandler()}
-            onChange={(e) => setSearchkey(e.target.value)}
+            onChange={(e) => handleSearchInput(e.target.value)}
             type="text"
             className="search-input"
             placeholder={ServeLangItem()?.Search_products + "..."}
@@ -102,11 +145,37 @@ export default function SearchBox({ className }) {
       </div>
       <button
         onClick={searchHandler}
-        className="search-btn w-[93px]  h-full text-sm font-600 "
+        className="search-btn w-[93px] h-full text-sm font-600"
         type="button"
       >
         {ServeLangItem()?.Search}
       </button>
+
+      {/* Autocomplete Suggestions */}
+      {showSuggestions && suggestions.length > 0 && (
+        <div className="absolute left-0 right-0 top-full z-50 bg-white border border-qgray-border shadow-lg rounded-b max-h-[300px] overflow-y-auto">
+          {suggestions.map((item) => (
+            <Link
+              key={item.id}
+              href={buildProductPath(item.slug)}
+              onClick={() => { setShowSuggestions(false); setSearchkey(""); }}
+              className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
+            >
+              {item.thumb_image && (
+                <img
+                  src={appConfig.BASE_URL + item.thumb_image}
+                  alt=""
+                  className="w-10 h-10 object-cover rounded"
+                />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-qblack truncate">{item.name}</p>
+                <p className="text-xs text-qgray">{item.price} ₺</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

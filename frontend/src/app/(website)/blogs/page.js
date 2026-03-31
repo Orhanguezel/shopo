@@ -75,7 +75,6 @@ export default async function BlogsPage() {
                           year: "numeric",
                         })}
                       </span>
-                      <span>{blog.views} görüntülenme</span>
                     </div>
                   </div>
                 </article>

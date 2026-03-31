@@ -58,7 +58,7 @@ class BlogController extends Controller
         $blog->title = $request->title;
         $blog->slug = $request->slug;
         $blog->blog_category_id = $request->category;
-        $blog->description = $request->description;
+        $blog->description = clean($request->description);
         $blog->seo_title = $request->seo_title;
         $blog->seo_description = $request->seo_description;
         $blog->status = $request->status;
@@ -105,7 +105,7 @@ class BlogController extends Controller
         $blog->title = $request->title;
         $blog->slug = $request->slug;
         $blog->blog_category_id = $request->category;
-        $blog->description = $request->description;
+        $blog->description = clean($request->description);
         $blog->seo_title = $request->seo_title;
         $blog->seo_description = $request->seo_description;
         $blog->status = $request->status;

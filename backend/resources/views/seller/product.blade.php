@@ -81,7 +81,7 @@
                                         @endif
 
                                         {{-- Resim ve varyant butonları — ikon yerine yazı (#31) --}}
-                                        <a class="btn btn-info btn-sm" href="{{ route('seller.product-gallery',$product->id) }}">
+                                        <a class="btn btn-info btn-sm" href="{{ route('seller.product.edit',$product->id) }}#tab-images" onclick="localStorage.setItem('sellerProductTab','images')">
                                             <i class="far fa-image"></i> Resim Ekle
                                         </a>
                                         <a class="btn btn-warning btn-sm" href="{{ route('seller.product-variant',$product->id) }}">

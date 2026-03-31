@@ -46,6 +46,13 @@ export const metadata = {
     shortcut: appConfig.BASE_URL + "uploads/website-images/favicon.png",
     apple: appConfig.BASE_URL + "uploads/website-images/favicon.png",
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
+    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "",
+    other: {
+      "msvalidate.01": process.env.NEXT_PUBLIC_BING_VERIFICATION || "",
+    },
+  },
   alternates: {
     canonical: "/",
   },

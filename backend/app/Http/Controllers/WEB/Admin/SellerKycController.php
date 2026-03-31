@@ -19,12 +19,19 @@ class SellerKycController extends Controller
         $this->middleware('auth:admin');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $sellers = Vendor::query()
+        $query = Vendor::query()
             ->with(['user:id,name,email,phone', 'kycDocuments'])
-            ->where('kyc_status', 'pending')
-            ->orderByDesc('kyc_submitted_at')
+            ->where('status', 1);
+
+        // Durum filtresi
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('kyc_status', $request->status);
+        }
+
+        $sellers = $query->orderByRaw("FIELD(kyc_status, 'pending', 'not_submitted', 'approved', 'rejected')")
+            ->orderByDesc('id')
             ->get();
 
         return view('admin.seller_kyc', compact('sellers'));
@@ -195,7 +202,7 @@ class SellerKycController extends Controller
                 'email' => $user->email ?? '',
                 'gsm_number' => $vendor->phone ?? $user->phone ?? '',
                 'iban' => $vendor->iban ?? '',
-                'identity_number' => (string) (data_get($user, 'identity_number') ?: '00000000000'),
+                'identity_number' => (string) ($vendor->tc_identity ?: data_get($user, 'tc_identity') ?: '00000000000'),
                 'address' => $vendor->address ?? data_get($user, 'address', ''),
                 'contact_name' => $nameParts[0] ?? '',
                 'contact_surname' => $nameParts[1] ?? ($nameParts[0] ?? ''),

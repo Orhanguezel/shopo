@@ -73,6 +73,12 @@ class SellerProductController extends Controller
 
     public function create()
     {
+        $seller = Auth::guard('web')->user()->seller;
+        if (!$seller || $seller->kyc_status !== 'approved') {
+            $notification = array('messege' => 'Ürün eklemek için hesap doğrulamanızı tamamlamanız gerekmektedir.', 'alert-type' => 'error');
+            return redirect()->route('seller.dashboard')->with($notification);
+        }
+
         $categories = Category::all();
         $brands = Brand::all();
         $specificationKeys = ProductSpecificationKey::all();
@@ -103,6 +109,12 @@ class SellerProductController extends Controller
 
     public function store(Request $request)
     {
+        $seller = Auth::guard('web')->user()->seller;
+        if (!$seller || $seller->kyc_status !== 'approved') {
+            $notification = array('messege' => 'Ürün eklemek için hesap doğrulamanızı tamamlamanız gerekmektedir.', 'alert-type' => 'error');
+            return redirect()->route('seller.dashboard')->with($notification);
+        }
+
         $request->merge([
             'slug' => ProductSlug::normalize($request->slug ?: $request->name),
         ]);
@@ -162,7 +174,7 @@ class SellerProductController extends Controller
         $product->offer_price = $request->offer_price;
         $product->qty = $request->quantity ? $request->quantity : 0;
         $product->short_description = $request->short_description;
-        $product->long_description = $request->long_description;
+        $product->long_description = clean($request->long_description);
         $product->tags = $request->tags;
         $product->status = 1;
         $product->weight = $request->weight;
@@ -301,7 +313,7 @@ class SellerProductController extends Controller
         $product->price = $request->price;
         $product->offer_price = $request->offer_price;
         $product->short_description = $request->short_description;
-        $product->long_description = $request->long_description;
+        $product->long_description = clean($request->long_description);
         $product->tags = $request->tags;
 
         $product->weight = $request->weight;

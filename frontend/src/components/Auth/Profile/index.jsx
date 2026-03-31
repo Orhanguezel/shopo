@@ -50,8 +50,11 @@ import { deleteCookie } from "cookies-next";
 
 // Main Profile component content
 function ProfileContent() {
-  // Early return if not authenticated - must be before any hooks
+  // Early return if not authenticated - redirect to login
   if (!auth()) {
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
     return null;
   }
 
@@ -398,7 +401,7 @@ function ProfileContent() {
                               <IcoSupport />
                             </span>
                             <span className=" font-normal text-base capitalize cursor-pointer">
-                              Satıcı Araçları
+                              Hesap Doğrulama
                             </span>
                           </div>
                         </Link>

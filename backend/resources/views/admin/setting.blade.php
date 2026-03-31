@@ -841,8 +841,14 @@
                                                             </div>
 
                                                             <div class="form-group">
-                                                                <label for="">{{__('admin.Analytic Tracking Id')}}</label>
-                                                                <input type="text" class="form-control" name="analytic_id" value="{{ $googleAnalytic->analytic_id }}">
+                                                                <label for="">Google Analytics / GTM Ölçüm Kimliği</label>
+                                                                <input type="text" class="form-control" name="analytic_id" value="{{ $googleAnalytic->analytic_id }}" placeholder="Örn: G-XXXXXXXXXX veya GTM-XXXXXXX">
+                                                                <small class="text-muted">
+                                                                    Google Analytics 4 için <strong>G-XXXXXXXXXX</strong> formatında,
+                                                                    Google Tag Manager için <strong>GTM-XXXXXXX</strong> formatında ölçüm kimliğini girin.
+                                                                    Bu kimliği <a href="https://analytics.google.com" target="_blank">Google Analytics</a> veya
+                                                                    <a href="https://tagmanager.google.com" target="_blank">Google Tag Manager</a> panelinden alabilirsiniz.
+                                                                </small>
                                                             </div>
 
                                                             <button class="btn btn-primary">{{__('admin.Update')}}</button>
@@ -970,8 +976,12 @@
                                                             </div>
 
                                                             <div class="form-group">
-                                                                <label for="">{{__('admin.Facebook App Id')}}</label>
-                                                                <input type="text" value="{{ $facebookPixel->app_id }}" class="form-control" name="app_id">
+                                                                <label for="">Facebook Pixel ID</label>
+                                                                <input type="text" value="{{ $facebookPixel->app_id }}" class="form-control" name="app_id" placeholder="Örn: 123456789012345">
+                                                                <small class="text-muted">
+                                                                    Sadece rakamlardan oluşan 15-16 haneli Pixel ID'yi girin.
+                                                                    <a href="https://business.facebook.com/events_manager" target="_blank">Facebook Events Manager</a>'dan alabilirsiniz.
+                                                                </small>
                                                             </div>
                                                             <button class="btn btn-primary">{{__('admin.Update')}}</button>
                                                     </form>

@@ -450,12 +450,24 @@ class IyzicoController extends Controller
 
             $this->restoreStockForOrder($order);
 
-            Log::warning('Iyzico payment not completed — stock restored', [
+            $errorCode = $result->getErrorCode();
+            $errorCategory = match(true) {
+                str_contains($errorCode ?? '', '3D') => 'THREE_D_SECURE_FAILED',
+                str_contains($errorCode ?? '', 'INSUFFICIENT') || str_contains($errorCode ?? '', 'LIMIT') => 'INSUFFICIENT_FUNDS',
+                str_contains($errorCode ?? '', 'EXPIRED') => 'CARD_EXPIRED',
+                str_contains($errorCode ?? '', 'INVALID') => 'INVALID_CARD',
+                str_contains($errorCode ?? '', 'FRAUD') => 'FRAUD_DETECTED',
+                default => 'PAYMENT_DECLINED',
+            };
+
+            Log::warning("Iyzico payment failed [{$errorCategory}]", [
                 'order_id' => $order->id,
+                'category' => $errorCategory,
                 'status' => $result->getStatus(),
                 'payment_status' => $result->getPaymentStatus(),
-                'error_code' => $result->getErrorCode(),
+                'error_code' => $errorCode,
                 'error_message' => $result->getErrorMessage(),
+                'error_group' => $result->getErrorGroup(),
             ]);
 
             return redirect()->to(

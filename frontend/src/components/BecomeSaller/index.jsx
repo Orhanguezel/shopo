@@ -211,7 +211,7 @@ function BecomeSaller() {
         sellerReqHandler(data);
       }
     } else {
-      loginPopupBoard.setShowLoginPopup(true);
+      loginPopupBoard.handlerPopup(true);
     }
   };
 

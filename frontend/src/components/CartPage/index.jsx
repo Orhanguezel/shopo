@@ -176,33 +176,33 @@ function CartPage() {
           />
 
           {/* Action buttons */}
-          <div className="w-full sm:flex justify-between">
-            <div className="flex space-x-4 rtl:space-x-reverse items-center">
+          <div className="w-full flex flex-col sm:flex-row gap-3 sm:justify-between">
+            <div className="flex flex-wrap gap-3 items-center">
               {/* Clear cart button */}
               <button onClick={handleClearCart} type="button">
-                <div className="w-full text-sm font-semibold text-qred mb-5 sm:mb-0">
+                <div className="text-sm font-semibold text-qred">
                   {ServeLangItem()?.Clear_Cart}
                 </div>
               </button>
 
               {/* Update cart button */}
               <Link href="/cart">
-                <div className="w-[140px] h-[50px] bg-[#F6F6F6] flex justify-center items-center cursor-pointer">
+                <div className="px-5 h-[44px] bg-[#F6F6F6] flex justify-center items-center cursor-pointer rounded">
                   <span className="text-sm font-semibold">
                     {ServeLangItem()?.Update_Cart}
                   </span>
                 </div>
               </Link>
-
-              {/* Checkout button */}
-              <button onClick={handleCheckout}>
-                <div className="w-[300px] h-[50px] black-btn flex justify-center items-center cursor-pointer">
-                  <span className="text-sm font-semibold">
-                    {ServeLangItem()?.Proceed_to_Checkout}
-                  </span>
-                </div>
-              </button>
             </div>
+
+            {/* Checkout button */}
+            <button onClick={handleCheckout} className="w-full sm:w-auto">
+              <div className="w-full sm:w-[280px] h-[50px] black-btn flex justify-center items-center cursor-pointer rounded">
+                <span className="text-sm font-semibold">
+                  {ServeLangItem()?.Proceed_to_Checkout}
+                </span>
+              </div>
+            </button>
           </div>
         </div>
       </div>

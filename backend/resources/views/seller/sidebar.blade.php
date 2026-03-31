@@ -39,8 +39,6 @@
 
             <ul class="dropdown-menu">
 
-            <li><a class="nav-link" href="{{ route('seller.product-import-page') }}">{{__('admin.Product Bulk Import')}}</a></li>
-
             <li><a class="nav-link" href="{{ route('seller.product.create') }}">{{__('admin.Product Create')}}</a></li>
 
             <li class="{{ Route::is('seller.product.*') || Route::is('seller.product-variant') || Route::is('seller.create-product-variant') || Route::is('seller.edit-product-variant') || Route::is('seller.product-gallery') || Route::is('seller.product-variant-item') || Route::is('seller.create-product-variant-item') || Route::is('seller.edit-product-variant-item') || Route::is('seller.wholesale') || Route::is('seller.create-wholesale') || Route::is('seller.edit-wholesale') || Route::is('admin.product-highlight') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.product.index') }}">{{__('admin.Products')}}</a></li>
@@ -65,11 +63,11 @@
 
           <li class="{{ Route::is('seller.return-requests.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.return-requests.index') }}"><i class="fas fa-undo"></i> <span>İade Talepleri</span></a></li>
 
-           <li class="{{ Route::is('seller.message') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.message') }}"><i class="far fa-newspaper"></i> <span>{{__('Message')}}</span></a></li>
+           <li class="{{ Route::is('seller.message') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.message') }}"><i class="far fa-envelope"></i> <span>Mesajlar</span></a></li>
 
+          <li class="{{ Route::is('seller.contact-admin') ? 'active' : '' }}"><a class="nav-link" href="{{ route('seller.contact-admin') }}"><i class="fas fa-headset"></i> <span>Admin'e Mesaj</span></a></li>
 
-
-          <li class=""><a class="nav-link" href="{{ route('user.dashboard') }}"><i class="fas fa-user"></i> <span>{{__('admin.Visit User Dashboard')}}</span></a></li>
+          <li class=""><a class="nav-link" href="{{ route('user.dashboard') }}"><i class="fas fa-user"></i> <span>Kullanıcı Paneli</span></a></li>
 
         </ul>
 

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             HomepageProductFlagsSeeder::class,
             FixProductSlugsSeeder::class,
             BlogImageSeeder::class,
+            CleanAnalyticsSeeder::class,
         ]);
     }
 }

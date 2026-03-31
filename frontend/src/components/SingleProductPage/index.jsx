@@ -63,7 +63,7 @@ export default function SingleProductPage({ details }) {
     if (auth()) {
       setReport(!report);
     } else {
-      loginPopupBoard.setShowLoginPopup(true);
+      loginPopupBoard.handlerPopup(true);
     }
   };
 
@@ -302,20 +302,7 @@ export default function SingleProductPage({ details }) {
                     {ServeLangItem()?.Reviews}
                   </span>
                 </li>
-                {Multivendor() === 1 && safeDetails?.is_seller_product && (
-                  <li>
-                    <span
-                      onClick={() => setTab("info")}
-                      className={`py-[15px] sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
-                        tab === "info"
-                          ? "border-qyellow text-qblack "
-                          : "border-transparent text-qgray"
-                      }`}
-                    >
-                      {ServeLangItem()?.Seller_Info}
-                    </span>
-                  </li>
-                )}
+                {/* Satıcı bilgisi gizlendi (#70) */}
                 <li>
                   <span
                     onClick={() => setTab("shipping")}
@@ -444,26 +431,7 @@ export default function SingleProductPage({ details }) {
                   </div>
                 </div>
               )}
-              {tab === "info" && (
-                <div data-aos="fade-up" className="w-full tab-content-item">
-                  {sellerInfo && (
-                    <SallerInfo
-                      sellerInfo={sellerInfo}
-                      products={
-                        safeDetails.this_seller_products &&
-                        Array.isArray(safeDetails.this_seller_products) &&
-                        safeDetails.this_seller_products.length > 0 &&
-                        safeDetails.this_seller_products.slice(
-                          0,
-                          safeDetails.this_seller_products.length > 8
-                            ? 8
-                            : safeDetails.this_seller_products.length
-                        )
-                      }
-                    />
-                  )}
-                </div>
-              )}
+              {/* Satıcı bilgisi tab içeriği gizlendi (#70) */}
               {tab === "shipping" && (
                 <div data-aos="fade-up" className="w-full tab-content-item">
                   <div className="prose max-w-none text-qgray text-sm leading-7">

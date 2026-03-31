@@ -179,16 +179,20 @@
                 <li class="{{ Route::is('admin.flash-sale-product') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.flash-sale-product') }}">{{__('admin.Flash Sale Product')}}</a></li>
 
                 <li class="{{ Route::is('admin.coupon.*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.coupon.index') }}">{{__('admin.Coupon')}}</a></li>
-                <li class="nav-item dropdown {{ Route::is('admin.commission-settings') || Route::is('admin.commission-report') ? 'active' : '' }}">
-                    <a href="#" class="nav-link has-dropdown"><i class="fas fa-coins"></i><span>{{__('admin.Commission')}}</span></a>
-                    <ul class="dropdown-menu">
-                        <li class="{{ Route::is('admin.commission-settings') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.commission-settings') }}">{{__('admin.Settings')}}</a></li>
-                        <li class="{{ Route::is('admin.commission-report') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.commission-report') }}">{{__('admin.Report')}}</a></li>
-                    </ul>
-                </li>
 
             </ul>
 
+          </li>
+
+          <li class="nav-item dropdown {{ Route::is('admin.commission-settings') || Route::is('admin.commission-report') ? 'active' : '' }}">
+            <a href="#" class="nav-link has-dropdown">
+              <div class="icon"><i class="fas fa-coins"></i></div>
+              <span>Komisyon</span>
+            </a>
+            <ul class="dropdown-menu">
+                <li class="{{ Route::is('admin.commission-settings') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.commission-settings') }}">Komisyon Ayarları</a></li>
+                <li class="{{ Route::is('admin.commission-report') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.commission-report') }}">Komisyon Raporu</a></li>
+            </ul>
           </li>
 
           <li class="{{ Route::is('admin.advertisement') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin.advertisement') }}">

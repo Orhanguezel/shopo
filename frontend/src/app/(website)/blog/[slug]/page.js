@@ -76,7 +76,6 @@ export default async function BlogDetailPage({ params }) {
                   year: "numeric",
                 })}
               </span>
-              <span>{blog.views} görüntülenme</span>
             </div>
 
             <h1 className="text-3xl md:text-4xl font-bold text-qblack mb-6 leading-tight">

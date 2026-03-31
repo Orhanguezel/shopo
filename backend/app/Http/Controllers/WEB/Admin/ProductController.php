@@ -157,7 +157,7 @@ class ProductController extends Controller
         $product->offer_price = $request->offer_price;
         $product->qty = $request->quantity ? $request->quantity : 0;
         $product->short_description = $request->short_description;
-        $product->long_description = $request->long_description;
+        $product->long_description = clean($request->long_description);
         $product->status = $request->status;
         $product->weight = $request->weight;
         $product->is_undefine = 1;
@@ -289,7 +289,7 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->offer_price = $request->offer_price;
         $product->short_description = $request->short_description;
-        $product->long_description = $request->long_description;
+        $product->long_description = clean($request->long_description);
         $product->tags = $request->tags;
         $product->status = $request->status;
         $product->weight = $request->weight;

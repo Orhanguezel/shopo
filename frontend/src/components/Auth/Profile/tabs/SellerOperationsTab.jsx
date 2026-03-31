@@ -185,7 +185,7 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
   if (!isSeller) {
     return (
       <div className="rounded-lg border border-qgray-border p-6">
-        <h2 className="text-xl font-semibold text-qblack">Satıcı Araçları</h2>
+        <h2 className="text-xl font-semibold text-qblack">Hesap Doğrulama</h2>
         <p className="mt-3 text-sm text-qgray">
           Bu alan yalnızca satıcı hesaplarında kullanılabilir.
         </p>
@@ -491,99 +491,6 @@ export default function SellerOperationsTab({ token, isActive, isSeller }) {
               )}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <div className="rounded-lg border border-qgray-border p-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-qblack">Toplu Ürün İçe Aktarma</h2>
-            <p className="mt-1 text-sm text-qgray">
-              Şablonu indirip ürün satırlarını tek dosyada yükleyin.
-            </p>
-          </div>
-          <a
-            href={templateUrl}
-            className="inline-flex h-[42px] items-center justify-center bg-qblack px-5 text-sm font-semibold text-white"
-          >
-            Şablonu İndir
-          </a>
-        </div>
-
-        <form className="mt-6 flex flex-col gap-4 md:flex-row" onSubmit={handleBulkUpload}>
-          <input
-            id="seller-bulk-import-file"
-            type="file"
-            accept=".csv,.xlsx,.xls"
-            onChange={(event) => setBulkFile(event.target.files?.[0] || null)}
-            className="flex-1 border border-qgray-border px-4 py-3 text-sm focus:outline-none"
-          />
-          <button
-            type="submit"
-            disabled={isBulkUploading}
-            className="h-[46px] px-6 bg-qyellow text-qblack text-sm font-semibold disabled:opacity-60"
-          >
-            {isBulkUploading ? "İşleniyor..." : "İçe Aktarma Dosyasını Yükle"}
-          </button>
-        </form>
-
-        <div className="mt-6 space-y-4">
-          {imports.length > 0 ? (
-            imports.map((item) => (
-              <div key={item.id} className="rounded-lg border border-qgray-border p-4">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-qblack">
-                      {item.original_name || `Import #${item.id}`}
-                    </p>
-                    <p className="mt-1 text-xs text-qgray">
-                      Başlangıç: {formatDateTime(item.started_at || item.created_at)}
-                    </p>
-                  </div>
-                  <span
-                    className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-                      STATUS_STYLES[item.status] || "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </div>
-
-                <div className="mt-4 grid gap-3 md:grid-cols-4">
-                  <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="text-xs text-qgray">Satır</p>
-                    <p className="mt-1 font-semibold text-qblack">{item.total_rows || 0}</p>
-                  </div>
-                  <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="text-xs text-qgray">İşlenen</p>
-                    <p className="mt-1 font-semibold text-qblack">
-                      {item.processed_rows || 0}
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="text-xs text-qgray">Başarılı</p>
-                    <p className="mt-1 font-semibold text-green-700">
-                      {item.success_count || 0}
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="text-xs text-qgray">Hata</p>
-                    <p className="mt-1 font-semibold text-red-700">
-                      {item.error_count || 0}
-                    </p>
-                  </div>
-                </div>
-
-                <ErrorList errors={item.error_log || []} />
-              </div>
-            ))
-          ) : (
-            <div className="rounded-lg bg-gray-50 p-4 text-sm text-qgray">
-              {isBulkImportsFetching
-                ? "İçe aktarma geçmişi yükleniyor..."
-                : "Bu satıcı hesabı için içe aktarma geçmişi bulunamadı."}
-            </div>
-          )}
         </div>
       </div>
 

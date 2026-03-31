@@ -170,6 +170,10 @@ class SellerProfileController extends Controller
         $this->validate($request, $rules,$customMessages);
 
         $seller->phone = $request->phone;
+        $seller->tc_identity = $request->tc_identity;
+        $seller->tax_number = $request->tax_number;
+        $seller->tax_office = $request->tax_office;
+        $seller->iban = $request->iban;
         $seller->open_at = $request->opens_at;
         $seller->closed_at = $request->closed_at;
         $seller->address = $request->address;

@@ -87,7 +87,25 @@
     (function($) {
     "use strict";
     $(document).ready(function () {
-        $('#dataTable').DataTable();
+        $('#dataTable').DataTable({
+            language: {
+                emptyTable: "Tabloda veri bulunamadı",
+                info: "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                infoEmpty: "Kayıt bulunamadı",
+                infoFiltered: "(_MAX_ kayıt içinden filtrelendi)",
+                lengthMenu: "_MENU_ kayıt göster",
+                loadingRecords: "Yükleniyor...",
+                processing: "İşleniyor...",
+                search: "Ara:",
+                zeroRecords: "Eşleşen kayıt bulunamadı",
+                paginate: {
+                    first: "İlk",
+                    last: "Son",
+                    next: "Sonraki",
+                    previous: "Önceki"
+                }
+            }
+        });
         $('.select1').select2();
         $('.select2').select2();
         $('.select3').select2();

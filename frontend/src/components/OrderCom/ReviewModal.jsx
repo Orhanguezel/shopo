@@ -17,6 +17,8 @@ function ReviewModal({ productId, setReviewModal }) {
   const [hover, setHover] = useState(0);
   // Form state for name and message fields
   const [form, setForm] = useState({ name: "", message: "" });
+  const [reviewImage, setReviewImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   /**
    * user product review functionality
@@ -49,15 +51,17 @@ function ReviewModal({ productId, setReviewModal }) {
   };
 
   const reviewAction = async () => {
-    const data = {
-      rating: rating,
-      product_id: productId,
-      review: form.message,
-    };
+    const formData = new FormData();
+    formData.append("rating", rating);
+    formData.append("product_id", productId);
+    formData.append("review", form.message);
+    if (reviewImage) {
+      formData.append("image", reviewImage);
+    }
     const userToken = auth()?.access_token;
     await reviewActionApi({
       token: userToken,
-      data: data,
+      data: formData,
       success: reviewActionSuccessHandler,
       error: reviewActionErrorHandler,
     });
@@ -137,6 +141,37 @@ function ReviewModal({ productId, setReviewModal }) {
                 rows="3"
                 className="w-full focus:ring-0 border border-qgray-border focus:outline-none p-6 o"
               ></textarea>
+            </div>
+
+            {/* Fotoğraf yükleme (#63) */}
+            <div className="w-full mb-[30px]">
+              <h6 className="input-label text-qgray capitalize text-[13px] font-normal block mb-2">
+                Fotoğraf (opsiyonel)
+              </h6>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setReviewImage(file);
+                    const reader = new FileReader();
+                    reader.onload = (ev) => setImagePreview(ev.target.result);
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="w-full border border-qgray-border p-2 text-sm"
+              />
+              {imagePreview && (
+                <div className="mt-2 relative inline-block">
+                  <img src={imagePreview} alt="Önizleme" className="h-20 rounded" />
+                  <button
+                    type="button"
+                    onClick={() => { setReviewImage(null); setImagePreview(null); }}
+                    className="absolute -top-2 -right-2 bg-qred text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
+                  >×</button>
+                </div>
+              )}
             </div>
 
             {/* Submit button */}

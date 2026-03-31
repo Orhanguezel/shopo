@@ -30,6 +30,7 @@ export default function Middlebar({ className, settings }) {
   // Local state
   const [profile, setProfile] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [mobileSearch, setMobileSearch] = useState(false);
 
   // Derived values
   const wishlists = wishlistData?.wishlists;
@@ -104,10 +105,22 @@ export default function Middlebar({ className, settings }) {
               </Link>
             </div>
 
-            {/* Search Box */}
-            <div className="w-[517px] h-[44px]">
+            {/* Search Box — Desktop */}
+            <div className="w-[517px] h-[44px] hidden lg:block">
               <SearchBox className="search-com" />
             </div>
+
+            {/* Mobile Search Icon */}
+            <button
+              type="button"
+              onClick={() => setMobileSearch(!mobileSearch)}
+              className="lg:hidden text-qblack"
+              aria-label="Ara"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
 
             {/* Right Side Icons & Profile */}
             <div className="flex space-x-6 rtl:space-x-reverse items-center relative">
@@ -248,6 +261,13 @@ export default function Middlebar({ className, settings }) {
           </div>
         </div>
       </div>
+
+      {/* Mobile Search Overlay */}
+      {mobileSearch && (
+        <div className="lg:hidden absolute left-0 right-0 top-full z-50 bg-white shadow-lg border-t p-3">
+          <SearchBox className="search-com" />
+        </div>
+      )}
     </div>
   );
 }

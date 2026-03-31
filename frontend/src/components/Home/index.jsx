@@ -116,74 +116,86 @@ export default function Home({ homepageData }) {
         )}
       </div>
 
-      {/* 1. Öne Çıkan Kategoriler */}
-      <section className="py-10 bg-white/50 backdrop-blur-sm">
-        <CategorySection
-          categories={homepage?.homepage_categories}
-          sectionTitle={sectionTitles && sectionTitles.Trending_Category}
-        />
-      </section>
+      {/* Dinamik section'lar — admin paneldeki sıraya göre render */}
+      {(getsectionTitles || []).map((section) => {
+        const key = section.key;
+        const title = sectionTitles[key] || section.custom || section.default;
 
-      {/* 2. Popüler Ürünler (is_top) */}
-      {homepage?.topRatedProducts?.length > 0 && (
-        <section>
-          <ViewMoreTitle
-            className="popular-products-section"
-            seeMoreUrl="/products?highlight=top_product"
-            categoryTitle="Popüler Ürünler"
-          >
-            <SectionStyleTwo products={homepage.topRatedProducts.slice(0, 4)} />
-          </ViewMoreTitle>
-        </section>
-      )}
+        switch (key) {
+          case "Trending_Category":
+            return (
+              <section key={key} className="py-10 bg-white/50 backdrop-blur-sm">
+                <CategorySection
+                  categories={homepage?.homepage_categories}
+                  sectionTitle={title}
+                />
+              </section>
+            );
 
-      {/* 3. Yeni Gelenler (new_product) */}
-      {homepage?.newArrivalProducts?.length > 0 && (
-        <section>
-          <ViewMoreTitle
-            className="new-arrival-section"
-            seeMoreUrl="/products?highlight=new_arrival"
-            categoryTitle="Yeni Gelenler"
-          >
-            <SectionStyleTwo products={homepage.newArrivalProducts.slice(0, 4)} />
-          </ViewMoreTitle>
-        </section>
-      )}
+          case "Popular_Category":
+            return homepage?.popularCategoryProducts?.length > 0 ? (
+              <section key={key}>
+                <ViewMoreTitle seeMoreUrl="/products?highlight=popular_category" categoryTitle={title}>
+                  <SectionStyleTwo products={homepage.popularCategoryProducts.slice(0, 4)} />
+                </ViewMoreTitle>
+              </section>
+            ) : null;
 
-      {/* 4. En Çok Satanlar (is_best) */}
-      {homepage?.bestProducts?.length > 0 && (
-        <section>
-          <ViewMoreTitle
-            className="best-selling-section"
-            seeMoreUrl="/products?highlight=best_product"
-            categoryTitle="En Çok Satanlar"
-          >
-            <SectionStyleTwo products={homepage.bestProducts.slice(0, 4)} />
-          </ViewMoreTitle>
-        </section>
-      )}
+          case "Top_Rated_Products":
+            return homepage?.topRatedProducts?.length > 0 ? (
+              <section key={key}>
+                <ViewMoreTitle seeMoreUrl="/products?highlight=top_product" categoryTitle={title}>
+                  <SectionStyleTwo products={homepage.topRatedProducts.slice(0, 4)} />
+                </ViewMoreTitle>
+              </section>
+            ) : null;
 
-      {/* 5. Öne Çıkan Ürünler (is_featured) */}
-      {homepage?.featuredCategoryProducts?.length > 0 && (
-        <section>
-          <ViewMoreTitle
-            className="featured-products-section"
-            seeMoreUrl="/products?highlight=featured_product"
-            categoryTitle="Öne Çıkan Ürünler"
-          >
-            <SectionStyleTwo products={homepage.featuredCategoryProducts.slice(0, 4)} />
-          </ViewMoreTitle>
-        </section>
-      )}
+          case "Best_Seller":
+            // Best Seller = En çok satan satıcılar — şu an gizli
+            return null;
 
-      {/* Markalar */}
-      <section className="py-16 bg-gray-50/50 border-y border-gray-100">
-        <BrandSection
-          brands={homepage?.brands?.length > 0 ? homepage.brands : []}
-          sectionTitle={sectionTitles && sectionTitles.Shop_by_Brand}
-          className="brand-section-wrapper"
-        />
-      </section>
+          case "Shop_by_Brand":
+            return (
+              <section key={key} className="py-16 bg-gray-50/50 border-y border-gray-100">
+                <BrandSection
+                  brands={homepage?.brands?.length > 0 ? homepage.brands : []}
+                  sectionTitle={title}
+                  className="brand-section-wrapper"
+                />
+              </section>
+            );
+
+          case "New_Arrivals":
+            return homepage?.newArrivalProducts?.length > 0 ? (
+              <section key={key}>
+                <ViewMoreTitle seeMoreUrl="/products?highlight=new_arrival" categoryTitle={title}>
+                  <SectionStyleTwo products={homepage.newArrivalProducts.slice(0, 4)} />
+                </ViewMoreTitle>
+              </section>
+            ) : null;
+
+          case "Best_Products":
+            return homepage?.bestProducts?.length > 0 ? (
+              <section key={key}>
+                <ViewMoreTitle seeMoreUrl="/products?highlight=best_product" categoryTitle={title}>
+                  <SectionStyleTwo products={homepage.bestProducts.slice(0, 4)} />
+                </ViewMoreTitle>
+              </section>
+            ) : null;
+
+          case "Featured_Products":
+            return homepage?.featuredCategoryProducts?.length > 0 ? (
+              <section key={key}>
+                <ViewMoreTitle seeMoreUrl="/products?highlight=featured_product" categoryTitle={title}>
+                  <SectionStyleTwo products={homepage.featuredCategoryProducts.slice(0, 4)} />
+                </ViewMoreTitle>
+              </section>
+            ) : null;
+
+          default:
+            return null;
+        }
+      })}
 
       {/* Flash Sale */}
       {homepage?.flashSale && (

@@ -248,6 +248,9 @@ return array (
   'Latitude is required' => 'Enlem gereklidir',
   'Longitude is required' => 'Boylam gereklidir',
   'Order Not Found!' => 'Sipariş Bulunamadı!',
+  'Global commission rate updated successfully' => 'Genel komisyon oranı güncellendi',
+  'Vendor commission rate updated successfully' => 'Satıcı komisyon oranı güncellendi',
+  'Vendor commission rate reset successfully' => 'Satıcı komisyon oranı sıfırlandı',
 );
 ?>
 
