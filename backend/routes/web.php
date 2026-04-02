@@ -243,8 +243,7 @@ Route::group(['middleware' => ['XSS']], function () {
             Route::get('show-product-review/{id}', [SellerProductReviewController::class, 'show'])->name('show-product-review');
 
 
-            Route::get('product-report', [SellerProductReportControler::class, 'index'])->name('product-report');
-            Route::get('show-product-report/{id}', [SellerProductReportControler::class, 'show'])->name('show-product-report');
+            // Ürün şikayetleri (product-report) satıcıdan kaldırıldı — sadece admin görebilir
 
             Route::resource('my-withdraw', WithdrawController::class);
             Route::get('get-withdraw-account-info/{id}', [WithdrawController::class, 'getWithDrawAccountInfo'])->name('get-withdraw-account-info');

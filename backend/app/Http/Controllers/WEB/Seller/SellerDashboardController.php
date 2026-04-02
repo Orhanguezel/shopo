@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Product;
-use App\Models\ProductReport;
 use App\Models\ProductReview;
 use App\Models\Vendor;
 use App\Models\Subscriber;
@@ -145,37 +144,16 @@ class SellerDashboardController extends Controller
             ->get();
 
         $reviews = ProductReview::where('product_vendor_id', $seller->id)->get();
-        $reports = ProductReport::where('seller_id', $seller->id)->get();
 
         $totalWithdraw = SellerWithdraw::where('seller_id',$seller->id)->where('status',1)->sum('withdraw_amount');
         $totalPendingWithdraw = SellerWithdraw::where('seller_id',$seller->id)->where('status',0)->sum('withdraw_amount');
 
-        return view('seller.dashboard',compact('todayOrders','totalOrders','setting','monthlyOrders','yearlyOrders','weeklyOrders','weeklyEarning','weeklyProductSale','products','topProducts','reviews','reports','seller','totalWithdraw','totalPendingWithdraw'));
-
-        return response()->json([
-            'todayTotalOrder' => $todayTotalOrder,
-            'todayOrders' => $todayOrders,
-            'todayEarning' => $todayEarning,
-            'todayPendingEarning' => $todayPendingEarning,
-            'todayProductSale' => $todayProductSale,
-            'monthlyTotalOrder' => $monthlyTotalOrder,
-            'thisMonthEarning' => $thisMonthEarning,
-            'thisMonthProductSale' => $thisMonthProductSale,
-            'yearlyTotalOrder' => $yearlyTotalOrder,
-            'thisYearEarning' => $thisYearEarning,
-            'thisYearProductSale' => $thisYearProductSale,
-            'totalOrder' => $totalOrder->count(),
-            'totalPendingOrder' => $totalPendingOrder,
-            'totalDeclinedOrder' => $totalDeclinedOrder,
-            'totalCompleteOrder' => $totalCompleteOrder,
-            'totalEarning' => $totalEarning,
-            'totalProductSale' => $totalProductSale,
-            'total_product' => $products->count(),
-            'reviews' => $reviews->count(),
-            'reports' => $reports->count(),
-            'seller' => $seller,
-            'totalWithdraw' => $totalWithdraw,
-            'totalPendingWithdraw' => $totalPendingWithdraw
-        ]);
+        return view('seller.dashboard', compact(
+            'todayOrders', 'totalOrders', 'setting',
+            'monthlyOrders', 'yearlyOrders',
+            'weeklyOrders', 'weeklyEarning', 'weeklyProductSale',
+            'products', 'topProducts', 'reviews', 'seller',
+            'totalWithdraw', 'totalPendingWithdraw'
+        ));
     }
 }
