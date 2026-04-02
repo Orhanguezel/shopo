@@ -91,9 +91,9 @@ const PaymentMethods = ({
           <div className="input-item mb-5">
             <div className="bank-info-alert w-full p-5 bg-amber-100 rounded mb-4">
               <p className="text-sm font-semibold text-amber-900 mb-2">Banka Hesap Bilgileri:</p>
-              <pre className="w-full table table-fixed text-sm text-amber-800">
+              <p className="text-sm text-amber-800 whitespace-pre-wrap break-words">
                 {bankInfo?.account_info || "Hesap Sahibi: Seyfibaba Tic. Ltd. Şti.\nBanka: Ziraat Bankası\nIBAN: TR00 0000 0000 0000 0000 0000 00\n\nHavale/EFT yaparken sipariş numaranızı açıklama kısmına yazınız."}
-              </pre>
+              </p>
             </div>
             <h6 className="input-label capitalize text-[13px] font-600 leading-[24px] text-qblack block mb-2">
               İşlem Bilgisi*

@@ -329,9 +329,17 @@ class PaymentController extends Controller
         $is_draft = 'no';
         $order_result = $this->orderStore($user, $total_price, $cartProducts,  $totalProduct, 'Bank Payment', $transaction_id, 0, $shipping, $shipping_fee, $coupon_price, 1, $request->billing_address_id, $request->shipping_address_id, $is_draft);
 
-        $this->sendOrderSuccessMail($user, $total_price, 'Bank Payment', 0, $order_result['order'], $order_result['order_details']);
+        try {
+            $this->sendOrderSuccessMail($user, $total_price, 'Bank Payment', 0, $order_result['order'], $order_result['order_details']);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Bank payment mail gönderilemedi', ['order_id' => $order_result['order']->id, 'error' => $e->getMessage()]);
+        }
 
-        $this->sendOrderSuccessSms($user, $order_result['order']);
+        try {
+            $this->sendOrderSuccessSms($user, $order_result['order']);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Bank payment SMS gönderilemedi', ['order_id' => $order_result['order']->id, 'error' => $e->getMessage()]);
+        }
 
         $notification = trans('user_validation.Order submited successfully. please wait for admin approval');
 

@@ -99,3 +99,7 @@ Tarih: 2026-04-02
 | 9 | Sepet Hatası | ✅ Tamamlandı |
 | 10 | Iyzico Ödeme Hatası | ✅ Tamamlandı |
 | 11 | Iyzico Alt İşyeri | ✅ Tamamlandı |
+| 12 | Banka havalesi not alanı taşıyor | ✅ Tamamlandı |
+| 13 | Banka havalesi 500 hatası (SMTP try-catch) | ✅ Tamamlandı |
+| 14 | Profil dropdown sabit yükseklik + Çıkış Yap dar | ✅ Tamamlandı |
+| 15 | React #418 hydration mismatch (auth SSR) | ✅ Tamamlandı |

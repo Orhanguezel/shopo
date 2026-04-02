@@ -31,6 +31,11 @@ export default function Middlebar({ className, settings }) {
   const [profile, setProfile] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [mobileSearch, setMobileSearch] = useState(false);
+  // Hydration fix: auth() reads localStorage (SSR'da yok) — mount sonrası oku
+  const [authUser, setAuthUser] = useState(null);
+  useEffect(() => {
+    setAuthUser(auth());
+  }, []);
 
   // Derived values
   const wishlists = wishlistData?.wishlists;
@@ -76,9 +81,9 @@ export default function Middlebar({ className, settings }) {
   };
 
   const logout = async () => {
-    if (auth()) {
+    if (authUser) {
       await logoutApi({
-        token: auth()?.access_token,
+        token: authUser?.access_token,
         success: logoutSuccessHandler,
       });
     }
@@ -126,8 +131,8 @@ export default function Middlebar({ className, settings }) {
             <div className="flex space-x-6 rtl:space-x-reverse items-center relative">
               {/* Compare Products */}
               <div className="compare relative">
-                <Link 
-                  href={auth() ? "/products-compare" : "/login"}
+                <Link
+                  href={authUser ? "/products-compare" : "/login"}
                   aria-label={ServeLangItem()?.Compare || "Karşılaştır"}
                 >
                   <span className="cursor-pointer">
@@ -141,8 +146,8 @@ export default function Middlebar({ className, settings }) {
 
               {/* Wishlist */}
               <div className="favorite relative">
-                <Link 
-                  href={auth() ? "/wishlist" : "/login"}
+                <Link
+                  href={authUser ? "/wishlist" : "/login"}
                   aria-label={ServeLangItem()?.Wishlist || "Favorilerim"}
                 >
                   <span className="cursor-pointer">
@@ -174,17 +179,17 @@ export default function Middlebar({ className, settings }) {
 
               {/* User Profile */}
               <div>
-                {auth() ? (
+                {authUser ? (
                   <button onClick={toggleProfile} type="button">
                     <span className="text-qblack font-bold text-sm block">
-                      {auth()?.user?.name}
+                      {authUser?.user?.name}
                     </span>
                     <span className="text-qgray font-medium text-sm block">
-                      {auth()?.user?.phone}
+                      {authUser?.user?.phone}
                     </span>
                   </button>
                 ) : (
-                  <Link 
+                  <Link
                     href="/login"
                     aria-label={ServeLangItem()?.Login || "Giriş Yap"}
                   >
@@ -196,7 +201,7 @@ export default function Middlebar({ className, settings }) {
               </div>
 
               {/* Profile Dropdown */}
-              {profile && (
+              {profile && authUser && (
                 <>
                   {/* Backdrop */}
                   <div
@@ -207,35 +212,35 @@ export default function Middlebar({ className, settings }) {
 
                   {/* Dropdown Menu */}
                   <div
-                    className="w-[208px] h-[267px] bg-white absolute right-0 top-11 z-40 border-t-[3px] primary-border flex flex-col justify-between"
+                    className="w-[220px] bg-white absolute right-0 top-11 z-40 border-t-[3px] primary-border flex flex-col"
                     style={{
                       boxShadow: "0px 15px 50px 0px rgba(0, 0, 0, 0.14)",
                     }}
                   >
                     {/* Menu Items */}
-                    <div className="menu-item-area w-full p-5">
-                      <ul className="w-full flex flex-col space-y-7">
-                        <li className="text-base text-qgraytwo">
+                    <div className="menu-item-area w-full px-5 pt-5 pb-4">
+                      <ul className="w-full flex flex-col space-y-5">
+                        <li className="text-base text-qgraytwo font-medium">
                           <span>
-                            {ServeLangItem()?.Hi}, {auth()?.user?.name}
+                            {ServeLangItem()?.Hi}, {authUser?.user?.name}
                           </span>
                         </li>
                         <li className="text-base text-qgraytwo cursor-pointer hover:text-qblack hover:font-semibold">
-                          <Link href="/profile#dashboard">
+                          <Link href="/profile#dashboard" onClick={() => setProfile(false)}>
                             <span className="capitalize">
                               {ServeLangItem()?.profile}
                             </span>
                           </Link>
                         </li>
                         <li className="text-base text-qgraytwo cursor-pointer hover:text-qblack hover:font-semibold">
-                          <Link href="/contact">
+                          <Link href="/contact" onClick={() => setProfile(false)}>
                             <span className="capitalize">
                               {ServeLangItem()?.Support}
                             </span>
                           </Link>
                         </li>
                         <li className="text-base text-qgraytwo cursor-pointer hover:text-qblack hover:font-semibold">
-                          <Link href="/faq">
+                          <Link href="/faq" onClick={() => setProfile(false)}>
                             <span className="capitalize">
                               {ServeLangItem()?.FAQ}
                             </span>
@@ -245,11 +250,11 @@ export default function Middlebar({ className, settings }) {
                     </div>
 
                     {/* Logout Button */}
-                    <div className="w-full h-10 flex justify-center items-center border-t border-qgray-border">
+                    <div className="w-full h-[50px] flex justify-center items-center border-t border-qgray-border">
                       <button
                         onClick={logout}
                         type="button"
-                        className="text-qblack text-base font-semibold"
+                        className="text-qblack text-base font-semibold hover:text-qred transition-colors"
                       >
                         {ServeLangItem()?.Sign_Out}
                       </button>
