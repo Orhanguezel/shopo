@@ -615,17 +615,17 @@ class PaymentController extends Controller
         $orderAddress->billing_email = $billing->email;
         $orderAddress->billing_phone = $billing->phone;
         $orderAddress->billing_address = $billing->address;
-        $orderAddress->billing_country = $billing->country->name;
-        $orderAddress->billing_state = $billing->countryState->name;
-        $orderAddress->billing_city = $billing->city->name;
+        $orderAddress->billing_country = optional($billing->country)->name ?? '';
+        $orderAddress->billing_state = optional($billing->countryState)->name ?? '';
+        $orderAddress->billing_city = optional($billing->city)->name ?? '';
         $orderAddress->billing_address_type = $billing->type;
         $orderAddress->shipping_name = $shipping->name;
         $orderAddress->shipping_email = $shipping->email;
         $orderAddress->shipping_phone = $shipping->phone;
         $orderAddress->shipping_address = $shipping->address;
-        $orderAddress->shipping_country = $shipping->country->name;
-        $orderAddress->shipping_state = $shipping->countryState->name;
-        $orderAddress->shipping_city = $shipping->city->name;
+        $orderAddress->shipping_country = optional($shipping->country)->name ?? '';
+        $orderAddress->shipping_state = optional($shipping->countryState)->name ?? '';
+        $orderAddress->shipping_city = optional($shipping->city)->name ?? '';
         $orderAddress->shipping_address_type = $shipping->type;
         $orderAddress->save();
         foreach ($cartProducts as $cartProduct) {
