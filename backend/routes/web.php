@@ -379,20 +379,20 @@ Route::group(['middleware' => ['XSS']], function () {
                     $seller->iban = $iban;
                     $changed = true;
                 }
-                if ($request->filled('tax_number')) {
-                    $seller->tax_number = $request->tax_number;
+                if ($request->has('tax_number')) {
+                    $seller->tax_number = $request->tax_number ?: null;
                     $changed = true;
                 }
-                if ($request->filled('address')) {
-                    $seller->address = $request->address;
+                if ($request->has('address')) {
+                    $seller->address = $request->address ?: null;
                     $changed = true;
                 }
-                if ($request->filled('tax_office')) {
-                    $seller->tax_office = $request->tax_office;
+                if ($request->has('tax_office')) {
+                    $seller->tax_office = $request->tax_office ?: null;
                     $changed = true;
                 }
-                if ($request->filled('legal_company_title')) {
-                    $seller->legal_company_title = $request->legal_company_title;
+                if ($request->has('legal_company_title')) {
+                    $seller->legal_company_title = $request->legal_company_title ?: null;
                     $changed = true;
                 }
                 if ($changed) $seller->save();
