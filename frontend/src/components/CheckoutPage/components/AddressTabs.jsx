@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AddressList from "./AddressList";
 import CheckoutAddressForm from "./CheckoutAddressForm";
 
@@ -10,6 +10,8 @@ import CheckoutAddressForm from "./CheckoutAddressForm";
 const AddressTabs = ({
   // Address data
   addresses,
+  /** RTK Query: adresler yüklenirken true — ilk render'da addresses=null iken yanlışlıkla "yeni adres" açılmasını önler */
+  isAddressLoading = false,
   activeAddress,
   selectedBilling,
   selectedShipping,
@@ -24,8 +26,28 @@ const AddressTabs = ({
   // Callback for address refresh
   onAddressRefresh,
 }) => {
-  // State for showing new address form — auto-open if no addresses
-  const [showNewAddressForm, setShowNewAddressForm] = useState(!addresses || addresses.length === 0);
+  // İlk render'da addresses henüz null; useState ilk değeri bir daha hesaplanmaz → API geldikten sonra da "yeni adres" açık kalıyordu
+  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
+  const prevAddressCountRef = useRef(null);
+
+  useEffect(() => {
+    if (isAddressLoading) return;
+    if (addresses === null || addresses === undefined) return;
+
+    const len = addresses.length;
+    const prev = prevAddressCountRef.current;
+
+    if (len > 0) {
+      // Sadece ilk yükleme veya boş listeden en az bir adrese geçişte listeyi göster; refetch ile formu kapatma
+      if (prev === null || prev === 0) {
+        setShowNewAddressForm(false);
+      }
+      prevAddressCountRef.current = len;
+    } else {
+      setShowNewAddressForm(true);
+      prevAddressCountRef.current = 0;
+    }
+  }, [addresses, isAddressLoading]);
 
   /**
    * Handle tab switching
@@ -58,6 +80,14 @@ const AddressTabs = ({
   const handleCancelNewAddress = () => {
     setShowNewAddressForm(false);
   };
+
+  if (isAddressLoading && (addresses === null || addresses === undefined)) {
+    return (
+      <div className="w-full py-10 text-center text-qgray text-sm">
+        Adresler yükleniyor...
+      </div>
+    );
+  }
 
   return (
     <>

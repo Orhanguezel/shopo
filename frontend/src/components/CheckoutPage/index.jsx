@@ -137,7 +137,7 @@ export default function CheckoutPage() {
   const totalPrice = calculateTotalPrice(subTotal);
 
   // Redux RTK Query hooks for address management
-  const { data: addressesData, refetch: refetchAddresses } =
+  const { data: addressesData, refetch: refetchAddresses, isFetching: isAddressesFetching } =
     useGetAllUserAddressQueryQuery(
       { token: auth()?.access_token },
       { skip: !auth() }
@@ -723,6 +723,7 @@ export default function CheckoutPage() {
                   {auth() ? (
                     <AddressTabs
                       addresses={addresses}
+                      isAddressLoading={isAddressesFetching}
                       activeAddress={activeAddress}
                       selectedBilling={selectedBilling}
                       selectedShipping={selectedShipping}
