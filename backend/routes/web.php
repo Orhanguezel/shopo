@@ -139,6 +139,15 @@ Route::get('/sellers/{shop_name}', function (string $shop_name) {
     return redirect()->away($frontend.'/seller/'.$shop_name);
 })->name('seller-detail');
 
+/**
+ * Ürün vitrin (Blade route('product-detail')) — /api/product/... JSON yerine Next.js ürün sayfası
+ */
+Route::get('/product/{slug}', function (string $slug) {
+    $frontend = rtrim(optional(Setting::first())->frontend_url, '/') ?: config('app.url');
+
+    return redirect()->away($frontend.'/urun/'.$slug);
+})->name('product-detail');
+
 Route::group([
     'prefix' => 'auth'
 

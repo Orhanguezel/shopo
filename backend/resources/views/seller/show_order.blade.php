@@ -122,48 +122,6 @@
                             </div>
                           @endif
                         </address>
-                        {{-- Kargo Bilgisi (#74) --}}
-                        @php
-                            $shipment = \App\Models\CargoShipment::where('order_id', $order->id)->first();
-                        @endphp
-                        <address>
-                            <strong>Kargo Bilgisi:</strong><br>
-                            @if($shipment)
-                                Kargo Firması: {{ $shipment->carrier_name ?? '-' }}<br>
-                                Takip No: <strong>{{ $shipment->tracking_number ?? '-' }}</strong><br>
-                                Durum: <span class="badge badge-info">{{ $shipment->status }}</span>
-                                @if($shipment->tracking_url)
-                                    <br><a href="{{ $shipment->tracking_url }}" target="_blank" class="text-primary">Kargo Takip</a>
-                                @endif
-                            @else
-                                <span class="text-muted">Henüz kargo bilgisi girilmemiş.</span>
-                            @endif
-                        </address>
-
-                        @php
-                          $canCreateCargo = ! $shipment || ($shipment->status ?? '') === 'cancelled';
-                        @endphp
-                        <div class="mt-2">
-                          @if($canCreateCargo)
-                            <button
-                              type="button"
-                              id="createCargoBtn"
-                              class="btn btn-primary btn-sm"
-                              data-order-id="{{ $order->id }}"
-                            >
-                              Kargoya Ver
-                            </button>
-                          @else
-                            <button
-                              type="button"
-                              id="cancelCargoBtn"
-                              class="btn btn-danger btn-sm"
-                              data-order-id="{{ $order->id }}"
-                            >
-                              Kargoyu İptal Et
-                            </button>
-                          @endif
-                        </div>
 
                         @if($setting->map_status == 1)
                         <address>
@@ -197,11 +155,17 @@
                             @php
                                 $variantPrice = 0;
                                 $totalVariant = $orderProduct->orderProductVariants->count();
-                                $product = App\Models\Product::where('id',$orderProduct->product_id)->first();
+                                $lineProduct = $orderProduct->product;
                             @endphp
                             <tr>
                                 <td>{{ ++$index }}</td>
-                                <td><a href="{{ route('product-detail', $product->slug) }}">{{ $orderProduct->product_name }}</a></td>
+                                <td>
+                                  @if($lineProduct && $lineProduct->slug)
+                                    <a href="{{ storefront_product_url($lineProduct->slug) }}" target="_blank" rel="noopener">{{ $orderProduct->product_name }}</a>
+                                  @else
+                                    {{ $orderProduct->product_name }}
+                                  @endif
+                                </td>
                                 <td>
                                     @foreach ($orderProduct->orderProductVariants as $indx => $variant)
                                         {{ $variant->variant_name.' : '.$variant->variant_value }}{{ $totalVariant == ++$indx ? '' : ',' }}
@@ -258,6 +222,9 @@
                       </div>
 
                     </div>
+
+                    @include('partials.order_geliver_card', ['order' => $order, 'cardId' => 'geliver-kargo'])
+
                   </div>
                 </div>
               </div>
@@ -348,10 +315,6 @@
     @endif
 
     <script>
-        function deleteData(id){
-            $("#deleteForm").attr("action",'{{ url("admin/delete-order/") }}'+"/"+id)
-        }
-
         (function($) {
             "use strict";
             $(document).ready(function() {
@@ -365,55 +328,7 @@
         })(jQuery);
     </script>
 
-      <script>
-          (function($) {
-              "use strict";
-
-              $(document).on("click", "#createCargoBtn", function () {
-                  const orderId = $(this).data("order-id");
-                  const csrfToken = "{{ csrf_token() }}";
-                  const $btn = $(this);
-                  const originalText = $btn.text();
-
-                  $btn.prop("disabled", true).text("Kargo oluşturuluyor...");
-
-                  $.ajax({
-                      url: "{{ url('seller/orders') }}/" + orderId + "/cargo",
-                      method: "POST",
-                      data: { _token: csrfToken },
-                      success: function (response) {
-                          toastr.success(response.message || "Kargo oluşturuldu.");
-                          window.location.reload();
-                      },
-                      error: function (xhr) {
-                          toastr.error(xhr.responseJSON?.message || "Kargo oluşturulamadı.");
-                          $btn.prop("disabled", false).text(originalText);
-                      },
-                  });
-              });
-
-              $(document).on("click", "#cancelCargoBtn", function () {
-                  const orderId = $(this).data("order-id");
-                  const csrfToken = "{{ csrf_token() }}";
-                  const $btn = $(this);
-                  const originalText = $btn.text();
-
-                  $btn.prop("disabled", true).text("İptal ediliyor...");
-
-                  $.ajax({
-                      url: "{{ url('seller/orders') }}/" + orderId + "/cargo",
-                      method: "POST",
-                      data: { _token: csrfToken, _method: "DELETE" },
-                      success: function (response) {
-                          toastr.success(response.message || "Kargo iptal edildi.");
-                          window.location.reload();
-                      },
-                      error: function (xhr) {
-                          toastr.error(xhr.responseJSON?.message || "Kargo iptal edilemedi.");
-                          $btn.prop("disabled", false).text(originalText);
-                      },
-                  });
-              });
-          })(jQuery);
-      </script>
+    <script>
+        @include('partials.order_geliver_scripts', ['cargoBaseUrl' => url('seller/orders'), 'order' => $order])
+    </script>
 @endsection

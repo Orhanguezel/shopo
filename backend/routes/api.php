@@ -165,7 +165,7 @@ Route::group([], function () {
     Route::get('/product', [HomeController::class, 'product'])->name('product');
     Route::get('/variant-items-by-variant/{variant_name}', [HomeController::class, 'variantItemsByVariant'])->name('variant-items-by-variant');
     Route::get('/search-product', [HomeController::class, 'searchProduct'])->name('search-product');
-    Route::get('/product/{slug}', [HomeController::class, 'productDetail'])->name('product-detail');
+    Route::get('/product/{slug}', [HomeController::class, 'productDetail'])->name('api.product-detail');
     Route::get('/product-review-list/{id}', [HomeController::class, 'productReviewList'])->name('product-review-list');
 
     // Blog API

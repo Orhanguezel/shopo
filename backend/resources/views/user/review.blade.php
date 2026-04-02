@@ -17,7 +17,7 @@
                   <img src="{{ asset($review->product->thumb_image) }}" alt="product" class="img-fluid w-100">
                 </div>
                 <div class="wsus__dash_rev_text">
-                  <h5><a href="{{ route('product-detail', $review->product->slug) }}">{{ $review->product->short_name }}</a> <span>{{ $review->created_at->format('d M, Y') }}</span></h5>
+                  <h5><a href="{{ storefront_product_url($review->product->slug) }}">{{ $review->product->short_name }}</a> <span>{{ $review->created_at->format('d M, Y') }}</span></h5>
                   <p class="wsus__dash_review">
                     @for ($i = 1; $i <= 5; $i++)
                         @if ($i <= $review->rating)

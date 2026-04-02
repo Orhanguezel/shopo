@@ -13,7 +13,7 @@
             <a class="wsis__del_icon" onclick="sidebarCartItemRemove('{{ $sidebar_cart_content->rowId }}')" href="javascript:;"><i class="fas fa-minus-circle"></i></a>
         </div>
         <div class="wsus__cart_text">
-            <a class="wsus__cart_title" href="{{ route('product-detail', $sidebar_cart_content->options->slug) }}">{{ $sidebar_cart_content->name }}</a>
+            <a class="wsus__cart_title" href="{{ storefront_product_url($sidebar_cart_content->options->slug) }}">{{ $sidebar_cart_content->name }}</a>
             <p><span>{{ $sidebar_cart_content->qty }} x</span> ${{ $sidebar_cart_content->price }}</p>
         </div>
     </li>

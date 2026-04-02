@@ -82,7 +82,7 @@ class OrderController extends Controller
     }
 
     public function show($id){
-        $order = Order::with('user','orderProducts.orderProductVariants','orderAddress')->find($id);
+        $order = Order::with('user', 'orderProducts.orderProductVariants', 'orderProducts.product', 'orderAddress')->find($id);
         $products = Product::where('status',1)->get();
         $deliverymans=DeliveryMan::latest()->get();
         $setting = Setting::first();

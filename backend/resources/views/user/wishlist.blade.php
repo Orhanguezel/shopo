@@ -41,7 +41,7 @@
                                             </td>
 
                                             <td class="wsus__pro_name">
-                                                <p><a href="{{ route('product-detail', $product->slug) }}">{{ $product->short_name }}</a></p>
+                                                <p><a href="{{ storefront_product_url($product->slug) }}">{{ $product->short_name }}</a></p>
                                             </td>
 
 
@@ -96,7 +96,7 @@
                                             </td>
 
                                             <td class="wsus__pro_icon">
-                                                <a class="common_btn" href="{{ route('product-detail', $product->slug) }}">{{__('View Product')}}</a>
+                                                <a class="common_btn" href="{{ storefront_product_url($product->slug) }}">{{__('View Product')}}</a>
                                             </td>
                                         </tr>
 

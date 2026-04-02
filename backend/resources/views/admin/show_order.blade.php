@@ -167,7 +167,14 @@
                             @endphp
                             <tr>
                                 <td>{{ ++$index }}</td>
-                                <td><a href="">{{ $orderProduct->product_name }}</a></td>
+                                <td>
+                                  @php $lineProduct = $orderProduct->product; @endphp
+                                  @if($lineProduct && $lineProduct->slug)
+                                    <a href="{{ storefront_product_url($lineProduct->slug) }}" target="_blank" rel="noopener">{{ $orderProduct->product_name }}</a>
+                                  @else
+                                    {{ $orderProduct->product_name }}
+                                  @endif
+                                </td>
                                 <td>
                                     @foreach ($orderProduct->orderProductVariants as $indx => $variant)
                                         {{ $variant->variant_name.' : '.$variant->variant_value }}{{ $totalVariant == ++$indx ? '' : ',' }}
@@ -307,57 +314,7 @@
 
                     </div>
 
-                    <div class="row mt-4">
-                      <div class="col-12">
-                        <div class="card">
-                          <div class="card-header d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">Geliver Kargo</h4>
-                            <div class="d-flex align-items-center">
-                              <button type="button" class="btn btn-outline-primary btn-sm mr-2" id="loadCargoOffers">Teklifleri Getir</button>
-                              <button type="button" class="btn btn-primary btn-sm" id="createCargoWithoutOffer">En Uygun Teklifle Oluştur</button>
-                            </div>
-                          </div>
-                          <div class="card-body">
-                            <div class="alert alert-light border">
-                              <div><strong>Mevcut Kargo Durumu:</strong> <span id="cargoStatusText">{{ $order->cargoShipment?->status ?? 'Kargo kaydı yok' }}</span></div>
-                              <div class="mt-1"><strong>Takip No:</strong> <span id="cargoTrackingText">{{ $order->cargoShipment?->tracking_number ?? '-' }}</span></div>
-                              <div class="mt-1"><strong>Kargo Firması:</strong> <span id="cargoCarrierText">{{ $order->cargoShipment?->carrier_name ?? '-' }}</span></div>
-                              <div class="mt-2">
-                                @if($order->cargoShipment?->tracking_url)
-                                  <a id="cargoTrackingLink" href="{{ $order->cargoShipment->tracking_url }}" class="btn btn-outline-info btn-sm mr-2" target="_blank">Takip Linki</a>
-                                @else
-                                  <a id="cargoTrackingLink" href="#" class="btn btn-outline-info btn-sm mr-2 d-none" target="_blank">Takip Linki</a>
-                                @endif
-                                @if($order->cargoShipment?->label_url)
-                                  <a id="cargoLabelLink" href="{{ $order->cargoShipment->label_url }}" class="btn btn-outline-secondary btn-sm mr-2" target="_blank">Etiketi Aç</a>
-                                @else
-                                  <a id="cargoLabelLink" href="#" class="btn btn-outline-secondary btn-sm mr-2 d-none" target="_blank">Etiketi Aç</a>
-                                @endif
-                                @if($order->cargoShipment && $order->cargoShipment->status !== 'cancelled')
-                                  <button type="button" class="btn btn-danger btn-sm" id="cancelCargoBtn">Kargoyu İptal Et</button>
-                                @else
-                                  <button type="button" class="btn btn-danger btn-sm d-none" id="cancelCargoBtn">Kargoyu İptal Et</button>
-                                @endif
-                              </div>
-                            </div>
-
-                            <div class="table-responsive d-none" id="cargoOffersWrap">
-                              <table class="table table-striped">
-                                <thead>
-                                  <tr>
-                                    <th>Seç</th>
-                                    <th>Kargo Firması</th>
-                                    <th>Fiyat</th>
-                                  </tr>
-                                </thead>
-                                <tbody id="cargoOffersBody"></tbody>
-                              </table>
-                              <button type="button" class="btn btn-success btn-sm" id="createCargoWithOffer">Seçili Teklifle Oluştur</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    @include('partials.order_geliver_card', ['order' => $order, 'cardId' => null])
 
                   </div>
                 </div>
@@ -763,124 +720,7 @@
         });
     })(jQuery);
 
-    (function($) {
-        "use strict";
-
-        const orderId = {{ $order->id }};
-        const csrfToken = '{{ csrf_token() }}';
-
-        function showAlert(type, message) {
-            const klass = type === 'success' ? 'alert-success' : 'alert-danger';
-            const html = `<div class="alert ${klass} mt-3" id="cargoTempAlert">${message}</div>`;
-            $('#cargoOffersWrap').before(html);
-            setTimeout(() => $('#cargoTempAlert').remove(), 4000);
-        }
-
-        function refreshCargoInfo() {
-            $.get(`{{ url('admin/orders') }}/${orderId}/cargo`)
-                .done(function(response) {
-                    const cargo = response.data;
-                    $('#cargoStatusText').text(cargo.status || '-');
-                    $('#cargoTrackingText').text(cargo.tracking_number || '-');
-                    $('#cargoCarrierText').text(cargo.carrier_name || '-');
-
-                    if (cargo.tracking_url) {
-                        $('#cargoTrackingLink').attr('href', cargo.tracking_url).removeClass('d-none');
-                    } else {
-                        $('#cargoTrackingLink').addClass('d-none');
-                    }
-
-                    if (cargo.label_url) {
-                        $('#cargoLabelLink').attr('href', cargo.label_url).removeClass('d-none');
-                    } else {
-                        $('#cargoLabelLink').addClass('d-none');
-                    }
-
-                    if (cargo.status !== 'cancelled') {
-                        $('#cancelCargoBtn').removeClass('d-none');
-                    }
-                })
-                .fail(function() {
-                    $('#cargoStatusText').text('Kargo kaydı yok');
-                    $('#cargoTrackingText').text('-');
-                    $('#cargoCarrierText').text('-');
-                    $('#cargoTrackingLink, #cargoLabelLink, #cancelCargoBtn').addClass('d-none');
-                });
-        }
-
-        $('#loadCargoOffers').on('click', function() {
-            $.get(`{{ url('admin/orders') }}/${orderId}/cargo/offers`)
-                .done(function(response) {
-                    const offers = response.data.offers || [];
-                    const defaultOfferId = response.data.default_offer_id;
-                    let html = '';
-
-                    offers.forEach(function(offer, index) {
-                        const checked = offer.id === defaultOfferId || (index === 0 && !defaultOfferId) ? 'checked' : '';
-                        html += `
-                            <tr>
-                                <td><input type="radio" name="cargo_offer_id" value="${offer.id}" ${checked}></td>
-                                <td>${offer.carrier_name || '-'}</td>
-                                <td>${offer.price_text || '-'}</td>
-                            </tr>
-                        `;
-                    });
-
-                    $('#cargoOffersBody').html(html);
-                    $('#cargoOffersWrap').removeClass('d-none');
-                })
-                .fail(function(xhr) {
-                    showAlert('error', xhr.responseJSON?.message || 'Geliver teklifleri alınamadı.');
-                });
-        });
-
-        $('#createCargoWithoutOffer').on('click', function() {
-            $.ajax({
-                url: `{{ url('admin/orders') }}/${orderId}/cargo`,
-                method: 'POST',
-                data: { _token: csrfToken },
-                success: function(response) {
-                    showAlert('success', response.message || 'Kargo oluşturuldu.');
-                    refreshCargoInfo();
-                },
-                error: function(xhr) {
-                    showAlert('error', xhr.responseJSON?.message || 'Kargo oluşturulamadı.');
-                }
-            });
-        });
-
-        $('#createCargoWithOffer').on('click', function() {
-            const selectedOfferId = $('input[name="cargo_offer_id"]:checked').val();
-            $.ajax({
-                url: `{{ url('admin/orders') }}/${orderId}/cargo`,
-                method: 'POST',
-                data: { _token: csrfToken, offer_id: selectedOfferId },
-                success: function(response) {
-                    showAlert('success', response.message || 'Kargo oluşturuldu.');
-                    refreshCargoInfo();
-                },
-                error: function(xhr) {
-                    showAlert('error', xhr.responseJSON?.message || 'Kargo oluşturulamadı.');
-                }
-            });
-        });
-
-        $('#cancelCargoBtn').on('click', function() {
-            $.ajax({
-                url: `{{ url('admin/orders') }}/${orderId}/cargo`,
-                method: 'POST',
-                data: { _token: csrfToken, _method: 'DELETE' },
-                success: function(response) {
-                    showAlert('success', response.message || 'Kargo iptal edildi.');
-                    refreshCargoInfo();
-                },
-                error: function(xhr) {
-                    showAlert('error', xhr.responseJSON?.message || 'Kargo iptal edilemedi.');
-                }
-            });
-        });
-    })(jQuery);
-
+    @include('partials.order_geliver_scripts', ['cargoBaseUrl' => url('admin/orders'), 'order' => $order])
 
     function previewThumnailImage(event) {
         var reader = new FileReader();

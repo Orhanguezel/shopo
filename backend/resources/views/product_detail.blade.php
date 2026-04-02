@@ -272,10 +272,10 @@
                         <div class="wsus__pro_det_share d-none">
                             <h5>{{__('share')}} :</h5>
                             <ul class="d-flex">
-                                <li><a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ route('product-detail', $product->slug) }}&t={{ $product->name }}"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a class="twitter" href="https://twitter.com/share?text={{ $product->name }}&url={{ route('product-detail', $product->slug) }}"><i class="fab fa-twitter"></i></a></li>
-                                <li><a class="linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url={{ route('product-detail', $product->slug) }}&title={{ $product->name }}"><i class="fab fa-linkedin"></i></a></li>
-                                <li><a class="pinterest" href="https://www.pinterest.com/pin/create/button/?description={{ $product->name }}&media=&url={{ route('product-detail', $product->slug) }}"><i class="fab fa-pinterest-p"></i></a></li>
+                                <li><a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ storefront_product_url($product->slug) }}&t={{ $product->name }}"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a class="twitter" href="https://twitter.com/share?text={{ $product->name }}&url={{ storefront_product_url($product->slug) }}"><i class="fab fa-twitter"></i></a></li>
+                                <li><a class="linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url={{ storefront_product_url($product->slug) }}&title={{ $product->name }}"><i class="fab fa-linkedin"></i></a></li>
+                                <li><a class="pinterest" href="https://www.pinterest.com/pin/create/button/?description={{ $product->name }}&media=&url={{ storefront_product_url($product->slug) }}"><i class="fab fa-pinterest-p"></i></a></li>
                             </ul>
                         </div>
                         @auth
@@ -728,7 +728,7 @@
                                     <span class="wsus__minus">-{{ $percentage }}%</span>
                                 @endif
                             @endif
-                            <a class="wsus__pro_link" href="{{ route('product-detail', $relatedProduct->slug) }}">
+                            <a class="wsus__pro_link" href="{{ storefront_product_url($relatedProduct->slug) }}">
                                 <img src="{{ asset($relatedProduct->thumb_image) }}" alt="product" class="img-fluid w-100 img_1" />
                                 <img src="{{ asset($relatedProduct->thumb_image) }}" alt="product" class="img-fluid w-100 img_2" />
                             </a>
@@ -773,7 +773,7 @@
                                     </p>
                                 @endif
 
-                                <a class="wsus__pro_name" href="{{ route('product-detail', $relatedProduct->slug) }}">{{ $relatedProduct->short_name }}</a>
+                                <a class="wsus__pro_name" href="{{ storefront_product_url($relatedProduct->slug) }}">{{ $relatedProduct->short_name }}</a>
                                 @if ($isCampaign)
                                     <p class="wsus__price">{{ $currencySetting->currency_icon }}{{ sprintf("%.2f", $campaignOfferPrice + $variantPrice) }} <del>{{ $currencySetting->currency_icon }}{{ sprintf("%.2f",$totalPrice) }}</del></p>
                                 @else
@@ -825,7 +825,7 @@
                                         </div>
                                         <div class="col-xl-6 col-12 col-sm-12 col-md-12 col-lg-6">
                                             <div class="wsus__pro_details_text">
-                                                <a class="title" href="{{ route('product-detail', $relatedProduct->slug) }}">{{ $relatedProduct->name }}</a>
+                                                <a class="title" href="{{ storefront_product_url($relatedProduct->slug) }}">{{ $relatedProduct->name }}</a>
 
                                                     @if ($relatedProduct->qty == 0)
                                                     <p class="wsus__stock_area"><span class="in_stock">{{__('Out of Stock')}}</span></p>
@@ -1009,10 +1009,10 @@
                                             <div class="wsus__pro_det_share d-none">
                                                 <h5>{{__('share')}} :</h5>
                                                 <ul class="d-flex">
-                                                    <li><a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ route('product-detail', $relatedProduct->slug) }}&t={{ $relatedProduct->name }}"><i class="fab fa-facebook-f"></i></a></li>
-                                                    <li><a class="twitter" href="https://twitter.com/share?text={{ $relatedProduct->name }}&url={{ route('product-detail', $relatedProduct->slug) }}"><i class="fab fa-twitter"></i></a></li>
-                                                    <li><a class="linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url={{ route('product-detail', $relatedProduct->slug) }}&title={{ $relatedProduct->name }}"><i class="fab fa-linkedin"></i></a></li>
-                                                    <li><a class="pinterest" href="https://www.pinterest.com/pin/create/button/?description={{ $relatedProduct->name }}&media=&url={{ route('product-detail', $relatedProduct->slug) }}"><i class="fab fa-pinterest-p"></i></a></li>
+                                                    <li><a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ storefront_product_url($relatedProduct->slug) }}&t={{ $relatedProduct->name }}"><i class="fab fa-facebook-f"></i></a></li>
+                                                    <li><a class="twitter" href="https://twitter.com/share?text={{ $relatedProduct->name }}&url={{ storefront_product_url($relatedProduct->slug) }}"><i class="fab fa-twitter"></i></a></li>
+                                                    <li><a class="linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url={{ storefront_product_url($relatedProduct->slug) }}&title={{ $relatedProduct->name }}"><i class="fab fa-linkedin"></i></a></li>
+                                                    <li><a class="pinterest" href="https://www.pinterest.com/pin/create/button/?description={{ $relatedProduct->name }}&media=&url={{ storefront_product_url($relatedProduct->slug) }}"><i class="fab fa-pinterest-p"></i></a></li>
                                                 </ul>
                                             </div>
                                             </div>

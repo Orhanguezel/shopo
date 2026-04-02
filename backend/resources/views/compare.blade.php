@@ -73,7 +73,7 @@
                                         </td>
                                         @foreach ($compare_contents as $compare_content)
                                             <td class="wsus__compare_text">
-                                                <p><a href="{{ route('product-detail', $compare_content->options->product->slug) }}">{{ $compare_content->options->product->short_name }}</a></p>
+                                                <p><a href="{{ storefront_product_url($compare_content->options->product->slug) }}">{{ $compare_content->options->product->short_name }}</a></p>
                                             </td>
                                         </td>
                                         @endforeach
@@ -284,7 +284,7 @@
                                         </td>
                                         @foreach ($compare_contents as $compare_content)
                                         <td class="wsus__compare_text">
-                                             <a href="{{ route('product-detail', $compare_content->options->product->slug) }}" class="common_btn">{{__('Add to cart')}}</a>
+                                             <a href="{{ storefront_product_url($compare_content->options->product->slug) }}" class="common_btn">{{__('Add to cart')}}</a>
                                         </td>
                                         @endforeach
 

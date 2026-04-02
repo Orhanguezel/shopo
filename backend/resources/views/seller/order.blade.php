@@ -68,7 +68,7 @@
                                         @php
                                             $cargo = $order->cargoShipment;
                                             $hasActiveCargo = $cargo && ($cargo->status ?? '') !== 'cancelled';
-                                            $canShipCargo = ! $hasActiveCargo && in_array((int) $order->order_status, [0, 1], true);
+                                            $canOpenGeliver = in_array((int) $order->order_status, [0, 1], true);
                                         @endphp
                                         <div class="d-flex flex-wrap align-items-center" style="gap: 4px;">
                                         <a href="{{ route('seller.order-show',$order->id) }}" class="btn btn-primary btn-sm" title="{{__('admin.View')}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
@@ -91,10 +91,11 @@
                                         </form>
                                         @endif
 
-                                        @if($canShipCargo)
-                                        <button type="button" class="btn btn-warning btn-sm btn-seller-list-cargo" data-order-id="{{ $order->id }}">Kargoya Ver</button>
-                                        @elseif($hasActiveCargo && in_array((int) $order->order_status, [0, 1], true))
-                                        <span class="badge badge-secondary">Kargo oluşturuldu</span>
+                                        @if($canOpenGeliver)
+                                        <a href="{{ route('seller.order-show', $order->id) }}#geliver-kargo" class="btn btn-outline-secondary btn-sm" title="Teklifleri getir, kargo seç, etiket — admin ile aynı Geliver paneli">Geliver</a>
+                                        @endif
+                                        @if($hasActiveCargo && in_array((int) $order->order_status, [0, 1], true))
+                                        <a href="{{ route('seller.order-show', $order->id) }}#geliver-kargo" class="badge badge-secondary align-middle" style="line-height:1.5;">Kargo: {{ Str::limit($cargo->carrier_name ?? 'oluşturuldu', 18) }}</a>
                                         @endif
                                         </div>
                                         </td>
@@ -109,38 +110,5 @@
           </div>
         </section>
       </div>
-
-      <script>
-      (function($) {
-          "use strict";
-          $(document).on("click", ".btn-seller-list-cargo", function () {
-              var orderId = $(this).data("order-id");
-              var $btn = $(this);
-              var originalText = $btn.text();
-              var csrfToken = $('meta[name="csrf-token"]').attr("content");
-              $btn.prop("disabled", true).text("Kargo…");
-              $.ajax({
-                  url: "{{ url('seller/orders') }}/" + orderId + "/cargo",
-                  method: "POST",
-                  data: { _token: csrfToken },
-                  success: function (response) {
-                      if (typeof toastr !== "undefined") {
-                          toastr.success(response.message || "Kargo oluşturuldu.");
-                      }
-                      window.location.reload();
-                  },
-                  error: function (xhr) {
-                      var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : "Kargo oluşturulamadı.";
-                      if (typeof toastr !== "undefined") {
-                          toastr.error(msg);
-                      } else {
-                          alert(msg);
-                      }
-                      $btn.prop("disabled", false).text(originalText);
-                  }
-              });
-          });
-      })(jQuery);
-      </script>
 
 @endsection

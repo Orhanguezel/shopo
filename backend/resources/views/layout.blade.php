@@ -248,7 +248,7 @@
                             <a class="wsis__del_icon" onclick="sidebarCartItemRemove('{{ $sidebar_cart_content->rowId }}')" href="javascript:;"><i class="fas fa-minus-circle"></i></a>
                         </div>
                         <div class="wsus__cart_text">
-                            <a class="wsus__cart_title" href="{{ route('product-detail', $sidebar_cart_content->options->slug) }}">{{ $sidebar_cart_content->name }}</a>
+                            <a class="wsus__cart_title" href="{{ storefront_product_url($sidebar_cart_content->options->slug) }}">{{ $sidebar_cart_content->name }}</a>
                             <p><span>{{ $sidebar_cart_content->qty }} x</span> {{ $currencySetting->currency_icon }}{{ $sidebar_cart_content->price }}</p>
                         </div>
                     </li>
@@ -681,7 +681,7 @@
                                 </div>
                                 <div class="col-xl-6 col-12 col-sm-12 col-md-12 col-lg-6">
                                     <div class="wsus__pro_details_text">
-                                        <a class="title" href="{{ route('product-detail', $modalProducts->slug) }}">{{ $modalProducts->name }}</a>
+                                        <a class="title" href="{{ storefront_product_url($modalProducts->slug) }}">{{ $modalProducts->name }}</a>
 
                                             @if ($modalProducts->qty == 0)
                                             <p class="wsus__stock_area"><span class="in_stock">{{__('Out of Stock')}}</span></p>
@@ -865,10 +865,10 @@
                                     <div class="wsus__pro_det_share d-none">
                                         <h5>{{__('share')}} :</h5>
                                         <ul class="d-flex">
-                                            <li><a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ route('product-detail', $modalProducts->slug) }}&t={{ $modalProducts->name }}"><i class="fab fa-facebook-f"></i></a></li>
-                                            <li><a class="twitter" href="https://twitter.com/share?text={{ $modalProducts->name }}&url={{ route('product-detail', $modalProducts->slug) }}"><i class="fab fa-twitter"></i></a></li>
-                                            <li><a class="linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url={{ route('product-detail', $modalProducts->slug) }}&title={{ $modalProducts->name }}"><i class="fab fa-linkedin"></i></a></li>
-                                            <li><a class="pinterest" href="https://www.pinterest.com/pin/create/button/?description={{ $modalProducts->name }}&media=&url={{ route('product-detail', $modalProducts->slug) }}"><i class="fab fa-pinterest-p"></i></a></li>
+                                            <li><a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ storefront_product_url($modalProducts->slug) }}&t={{ $modalProducts->name }}"><i class="fab fa-facebook-f"></i></a></li>
+                                            <li><a class="twitter" href="https://twitter.com/share?text={{ $modalProducts->name }}&url={{ storefront_product_url($modalProducts->slug) }}"><i class="fab fa-twitter"></i></a></li>
+                                            <li><a class="linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url={{ storefront_product_url($modalProducts->slug) }}&title={{ $modalProducts->name }}"><i class="fab fa-linkedin"></i></a></li>
+                                            <li><a class="pinterest" href="https://www.pinterest.com/pin/create/button/?description={{ $modalProducts->name }}&media=&url={{ storefront_product_url($modalProducts->slug) }}"><i class="fab fa-pinterest-p"></i></a></li>
                                         </ul>
                                     </div>
                                     </div>

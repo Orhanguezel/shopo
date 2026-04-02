@@ -92,7 +92,7 @@ class SellerOrderController extends Controller
         $seller = Auth::guard('web')->user()->seller;
 
         // Satıcının bu siparişte ürünü olduğunu doğrula
-        $order = Order::with(['user', 'orderAddress'])
+        $order = Order::with(['user', 'orderAddress', 'cargoShipment'])
             ->whereHas('orderProducts', function($query) use ($seller) {
                 $query->where('seller_id', $seller->id);
             })
@@ -106,7 +106,7 @@ class SellerOrderController extends Controller
         // Sadece bu satıcıya ait ürünleri yükle
         $order->setRelation(
             'orderProducts',
-            $order->orderProducts()->where('seller_id', $seller->id)->with('orderProductVariants')->get()
+            $order->orderProducts()->where('seller_id', $seller->id)->with(['orderProductVariants', 'product'])->get()
         );
 
         $setting = Setting::first();

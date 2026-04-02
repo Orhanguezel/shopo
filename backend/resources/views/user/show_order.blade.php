@@ -120,7 +120,7 @@
                                         @php
                                             $product = $products->where('id',$orderProduct->product_id)->first();
                                         @endphp
-                                        <p><a href="{{ route('product-detail', $product->slug) }}">{{ $orderProduct->product_name }}</a></p>
+                                        <p><a href="{{ storefront_product_url($product->slug) }}">{{ $orderProduct->product_name }}</a></p>
 
                                         @foreach ($orderProduct->orderProductVariants as $indx => $variant)
                                             <span>{{ $variant->variant_name }} : {{ $variant->variant_value }}</span>
