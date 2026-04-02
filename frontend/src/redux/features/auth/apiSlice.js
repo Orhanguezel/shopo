@@ -336,6 +336,11 @@ export const authApis = apiSlice.injectEndpoints({
                   ...oldData,
                   personInfo: {
                     ...oldData?.personInfo,
+                    name: newData?.name ?? oldData?.personInfo?.name,
+                    phone: newData?.phone ?? oldData?.personInfo?.phone,
+                    address: newData?.address ?? oldData?.personInfo?.address,
+                    tc_identity: newData?.tc_identity ?? oldData?.personInfo?.tc_identity,
+                    tax_number: newData?.tax_number ?? oldData?.personInfo?.tax_number,
                     city_id: newData?.city,
                     country_id: newData?.country,
                     state_id: newData?.state,
@@ -344,6 +349,13 @@ export const authApis = apiSlice.injectEndpoints({
                 };
                 return (draft = updateData);
               }
+            )
+          );
+          // Dashboard cache'ini de zorla yenile — adres/isim değişince dashboard da güncellensin
+          dispatch(
+            apiSlice.endpoints.dashboardApi.initiate(
+              { token: info.token },
+              { forceRefetch: true }
             )
           );
         } catch (error) {

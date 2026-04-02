@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import auth from "./../../../../utils/auth";
 import InputCom from "../../../Helpers/InputCom";
 import Selectbox from "../../../Helpers/Selectbox";
+import SearchableSelectbox from "../../../Helpers/SearchableSelectbox";
 import { toast } from "react-toastify";
 import ServeLangItem from "../../../Helpers/ServeLangItem";
 import countries from "../../../../data/CountryCodes.json";
@@ -494,7 +495,7 @@ export default function ProfileTab({ profileInfo }) {
             </div>
             {/* State and City dropdowns */}
             <div className="md:flex md:space-x-5 rtl:space-x-reverse items-center mb-6">
-              {/* State dropdown */}
+              {/* State dropdown — aranabilir */}
               <div className="md:w-1/2 mb-8 md:mb-0">
                 <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
                   {ServeLangItem()?.State}*
@@ -506,17 +507,16 @@ export default function ProfileTab({ profileInfo }) {
                       : "border-qgray-border"
                   }`}
                 >
-                  <Selectbox
+                  <SearchableSelectbox
                     action={getcity}
                     className="w-full px-5"
+                    placeholder="İl ara..."
                     defaultValue={
-                      profileInfo.states &&
-                      profileInfo.states.length > 0 &&
+                      stateDropdown &&
+                      stateDropdown.length > 0 &&
                       (function () {
-                        let item = profileInfo.states.find(
-                          (item) =>
-                            item.id ===
-                            parseInt(profileInfo.personInfo.state_id)
+                        let item = stateDropdown.find(
+                          (item) => item.id === parseInt(formData.state)
                         );
                         return item ? item.name : "Seçiniz";
                       })()
@@ -524,20 +524,12 @@ export default function ProfileTab({ profileInfo }) {
                     datas={stateDropdown && stateDropdown}
                   >
                     {({ item }) => (
-                      <>
-                        <div className="flex justify-between items-center w-full">
-                          <div>
-                            <span className="text-[13px] text-qblack">
-                              {item}
-                            </span>
-                          </div>
-                          <span>
-                            <ArrowDownIco />
-                          </span>
-                        </div>
-                      </>
+                      <div className="flex justify-between items-center w-full">
+                        <span className="text-[13px] text-qblack">{item}</span>
+                        <ArrowDownIco />
+                      </div>
                     )}
-                  </Selectbox>
+                  </SearchableSelectbox>
                 </div>
                 {errors && Object.hasOwn(errors, "state") ? (
                   <span className="text-sm mt-1 text-qred">
@@ -559,16 +551,16 @@ export default function ProfileTab({ profileInfo }) {
                       : "border-qgray-border"
                   }`}
                 >
-                  <Selectbox
+                  <SearchableSelectbox
                     action={selectCity}
                     className="w-full px-5"
+                    placeholder="İlçe ara..."
                     defaultValue={
-                      profileInfo.cities &&
-                      profileInfo.cities.length > 0 &&
+                      cityDropdown &&
+                      cityDropdown.length > 0 &&
                       (function () {
-                        let item = profileInfo.cities.find(
-                          (item) =>
-                            item.id === parseInt(profileInfo.personInfo.city_id)
+                        let item = cityDropdown.find(
+                          (item) => item.id === parseInt(formData.city)
                         );
                         return item ? item.name : "Seçiniz";
                       })()
@@ -576,20 +568,12 @@ export default function ProfileTab({ profileInfo }) {
                     datas={cityDropdown && cityDropdown}
                   >
                     {({ item }) => (
-                      <>
-                        <div className="flex justify-between items-center w-full">
-                          <div>
-                            <span className="text-[13px] text-qblack">
-                              {item}
-                            </span>
-                          </div>
-                          <span>
-                            <ArrowDownIco />
-                          </span>
-                        </div>
-                      </>
+                      <div className="flex justify-between items-center w-full">
+                        <span className="text-[13px] text-qblack">{item}</span>
+                        <ArrowDownIco />
+                      </div>
                     )}
-                  </Selectbox>
+                  </SearchableSelectbox>
                 </div>
                 {errors && Object.hasOwn(errors, "city") ? (
                   <span className="text-sm mt-1 text-qred">
