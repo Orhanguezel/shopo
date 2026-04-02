@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState, Suspense } from "react";
-import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 // Redux imports
 import { useDispatch } from "react-redux";
@@ -316,110 +315,33 @@ function ProfileContent() {
               {/* Sidebar navigation */}
               <div className="xl:w-[236px] w-full xl:min-h-[600px] ltr:xl:border-r rtl:xl:border-l border-[rgba(0, 0, 0, 0.1)] mb-10 xl:mb-0">
                 <div className="flex xl:flex-col flex-row xl:space-y-10 rtl:space-x-reverse flex-wrap gap-3 xl:gap-0">
-                  {/* Dashboard tab */}
-                  <div className="item group">
-                    <Link href="/profile#dashboard">
-                      <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
-                        <span>
-                          <IcoDashboard />
+                  {/* Sidebar tab navigation helper — replaceState kullanıyoruz, history birikmiyor */}
+                  {[
+                    { tab: "dashboard", icon: <IcoDashboard />, label: ServeLangItem()?.Dashboard },
+                    { tab: "profile", icon: <IcoPeople />, label: ServeLangItem()?.Personal_Info },
+                    { tab: "order", icon: <IcoCart />, label: ServeLangItem()?.Order },
+                    { tab: "wishlist", icon: <IcoLove />, label: ServeLangItem()?.Wishlist },
+                    { tab: "address", icon: <IcoAdress />, label: ServeLangItem()?.Address },
+                    { tab: "review", icon: <IcoReviewHand />, label: ServeLangItem()?.Reviews },
+                    { tab: "returns", icon: <IcoSupport />, label: "İade Taleplerim" },
+                    { tab: "password", icon: <IcoPassword />, label: ServeLangItem()?.Change_Password },
+                  ].map(({ tab, icon, label }) => (
+                    <div key={tab} className="item group">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActive(tab);
+                          window.history.replaceState(null, "", `/profile#${tab}`);
+                        }}
+                        className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize"
+                      >
+                        <span>{icon}</span>
+                        <span className={`font-normal text-base capitalize cursor-pointer${active === tab ? " text-qblack font-semibold" : ""}`}>
+                          {label}
                         </span>
-                        <span className=" font-normal text-base capitalize cursor-pointer">
-                          {ServeLangItem()?.Dashboard}
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                  {/* Profile tab */}
-                  <div className="item group">
-                    <Link href="/profile#profile">
-                      <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
-                        <span>
-                          <IcoPeople />
-                        </span>
-                        <span className=" font-normal text-base capitalize cursor-pointer">
-                          {ServeLangItem()?.Personal_Info}
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                  {/* Order tab */}
-                  <div className="item group">
-                    <Link href="/profile#order">
-                      <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
-                        <span>
-                          <IcoCart />
-                        </span>
-                        <span className=" font-normal text-base capitalize cursor-pointer">
-                          {ServeLangItem()?.Order}
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                  {/* Wishlist tab */}
-                  <div className="item group">
-                    <Link href="/profile#wishlist">
-                      <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
-                        <span>
-                          <IcoLove />
-                        </span>
-                        <span className=" font-normal text-base capitalize cursor-pointer">
-                          {ServeLangItem()?.Wishlist}
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                  {/* Address tab */}
-                  <div className="item group">
-                    <Link href="/profile#address">
-                      <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
-                        <span>
-                          <IcoAdress />
-                        </span>
-                        <span className=" font-normal text-base capitalize cursor-pointer">
-                          {ServeLangItem()?.Address}
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                  {/* Review tab */}
-                  <div className="item group">
-                    <Link href="/profile#review">
-                      <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
-                        <span>
-                          <IcoReviewHand />
-                        </span>
-                        <span className=" font-normal text-base capitalize cursor-pointer">
-                          {ServeLangItem()?.Reviews}
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                  {/* Return Requests tab */}
-                  <div className="item group">
-                    <Link href="/profile#returns">
-                      <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
-                        <span>
-                          <IcoSupport />
-                        </span>
-                        <span className=" font-normal text-base capitalize cursor-pointer">
-                          Iade Taleplerim
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                  {/* Change password tab */}
-                  <div className="item group">
-                    <Link href="/profile#password">
-                      <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
-                        <span>
-                          <IcoPassword />
-                        </span>
-                        <span className=" font-normal text-base capitalize cursor-pointer">
-                          {ServeLangItem()?.Change_Password}
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
+                      </button>
+                    </div>
+                  ))}
                   {/* Logout button */}
                   <div className="item group">
                     <div
