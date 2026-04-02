@@ -35,17 +35,19 @@ export default function Home({ homepageData }) {
 
   const homepage = homepageData;
 
-  // Tüm Ürünler — sonsuz scroll (tekrarsız birleştir)
-  const allProducts = [
+  // Tüm Ürünler — API'den gelen genel liste (vitrin bayrağı gerekmez); yoksa eski birleşik vitrin listesi
+  const mergedVitrineProducts = [
     ...(homepage?.newArrivalProducts || []),
     ...(homepage?.topRatedProducts || []),
     ...(homepage?.bestProducts || []),
     ...(homepage?.popularCategoryProducts || []),
     ...(homepage?.featuredCategoryProducts || []),
   ];
-  const uniqueProducts = allProducts.filter(
+  const uniqueProducts = mergedVitrineProducts.filter(
     (product, index, self) => index === self.findIndex((p) => p.id === product.id)
   );
+  const homepageAllProducts =
+    homepage?.allProducts?.length > 0 ? homepage.allProducts : uniqueProducts;
 
   const ITEMS_PER_PAGE = 8;
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
@@ -74,7 +76,7 @@ export default function Home({ homepageData }) {
     };
   }, [loadMore]);
 
-  const visibleProducts = uniqueProducts.slice(0, visibleCount);
+  const visibleProducts = homepageAllProducts.slice(0, visibleCount);
 
   const formatProduct = (item) => ({
     id: item.id,
@@ -210,7 +212,7 @@ export default function Home({ homepageData }) {
       )}
 
       {/* Tüm Ürünler — sonsuz scroll */}
-      {uniqueProducts.length > 0 && (
+      {homepageAllProducts.length > 0 && (
         <section>
           <div className="container-x mx-auto">
             <div className="flex justify-between items-center mb-5">
@@ -225,7 +227,7 @@ export default function Home({ homepageData }) {
                 </div>
               ))}
             </div>
-            {visibleCount < uniqueProducts.length && (
+            {visibleCount < homepageAllProducts.length && (
               <div
                 ref={loaderRef}
                 className="w-full flex justify-center py-10"

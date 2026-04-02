@@ -111,27 +111,6 @@ export default function ProfileTab({ profileInfo }) {
       }));
     }
   }, [profileInfo]);
-  // get initial location states
-  useEffect(() => {
-    if (profileInfo && !stateDropdown?.length) {
-      getState(
-        profileInfo.personInfo.country_id &&
-          profileInfo.personInfo.country_id !== ""
-          ? { id: profileInfo.personInfo.country_id }
-          : null
-      );
-    }
-  }, [profileInfo, stateDropdown]);
-  // get initial location cities — ref ile sadece bir kez çalışır, race condition önlenir
-  const cityInitialized = useRef(false);
-  useEffect(() => {
-    if (profileInfo && !cityInitialized.current) {
-      cityInitialized.current = true;
-      if (profileInfo.personInfo.state_id && profileInfo.personInfo.state_id !== "") {
-        getcity({ id: profileInfo.personInfo.state_id });
-      }
-    }
-  }, [profileInfo]);
 
   // Initialize countries data from static JSON
   // NOTE: This is for phone number input
@@ -249,6 +228,43 @@ export default function ProfileTab({ profileInfo }) {
       }
     }
   };
+
+  // İl → ilçe sırayla yükle; paralel effect + getState içindeki setCityDropdown(null) ilçe listesini siliyordu
+  useEffect(() => {
+    const p = profileInfo?.personInfo;
+    if (!p) return;
+    let cancelled = false;
+
+    const loadLocation = async () => {
+      const cid = p.country_id;
+      const sid = p.state_id;
+      if (cid === undefined || cid === null || cid === "") return;
+
+      const stRes = await getStateListApi({
+        countryId: Number(cid),
+        token: auth()?.access_token,
+      });
+      if (cancelled) return;
+      if (stRes.isSuccess && stRes.data?.states) {
+        setStateDropdown(stRes.data.states);
+      }
+
+      if (sid === undefined || sid === null || sid === "") return;
+      const ctRes = await getCityListApi({
+        stateId: Number(sid),
+        token: auth()?.access_token,
+      });
+      if (cancelled) return;
+      if (ctRes.isSuccess && ctRes.data?.cities) {
+        setCityDropdown(ctRes.data.cities);
+      }
+    };
+
+    loadLocation();
+    return () => {
+      cancelled = true;
+    };
+  }, [profileInfo, getStateListApi, getCityListApi]);
 
   // Handler for city selection
   const selectCity = (value) => {
@@ -460,8 +476,8 @@ export default function ProfileTab({ profileInfo }) {
                         countryDropdown.length > 0 &&
                         countryDropdown.find(
                           (item) =>
-                            parseInt(item.id) ===
-                            parseInt(profileInfo.personInfo.country_id)
+                            Number(item.id) ===
+                            Number(profileInfo.personInfo.country_id)
                         );
                       return item ? item.name : "Seçiniz";
                     })()
@@ -515,7 +531,8 @@ export default function ProfileTab({ profileInfo }) {
                       stateDropdown.length > 0 &&
                       (function () {
                         let item = stateDropdown.find(
-                          (item) => item.id === parseInt(formData.state)
+                          (item) =>
+                            Number(item.id) === Number(formData.state)
                         );
                         return item ? item.name : "Seçiniz";
                       })()
@@ -559,7 +576,8 @@ export default function ProfileTab({ profileInfo }) {
                       cityDropdown.length > 0 &&
                       (function () {
                         let item = cityDropdown.find(
-                          (item) => item.id === parseInt(formData.city)
+                          (item) =>
+                            Number(item.id) === Number(formData.city)
                         );
                         return item ? item.name : "Seçiniz";
                       })()

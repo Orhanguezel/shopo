@@ -62,14 +62,30 @@ function ProfileContent() {
   // State for active tab (dashboard, profile, order, etc.)
   const [active, setActive] = useState("dashboard");
 
-  // Auth kontrolünü client-side'da yap (hydration sonrası)
+  // Auth — cookie/localStorage bazen birkaç tick gecikebilir; erken /login yönlendirmesini önle
   useEffect(() => {
-    if (!auth()) {
-      router.replace("/login");
-    } else {
-      setAuthChecked(true);
-    }
-  }, []);
+    let cancelled = false;
+    const timeouts = [];
+    const tryAuth = (attempt) => {
+      if (cancelled) return;
+      if (auth()) {
+        setAuthChecked(true);
+        return;
+      }
+      if (attempt >= 6) {
+        router.replace("/login");
+        return;
+      }
+      const delay = attempt === 0 ? 0 : 80 * attempt;
+      const id = setTimeout(() => tryAuth(attempt + 1), delay);
+      timeouts.push(id);
+    };
+    tryAuth(0);
+    return () => {
+      cancelled = true;
+      timeouts.forEach(clearTimeout);
+    };
+  }, [pathname, router]);
   const [returnRequestFilters, setReturnRequestFilters] = useState({
     status: "all",
     search: "",
@@ -247,21 +263,24 @@ function ProfileContent() {
   useEffect(() => {
     if (dashboardApi) {
       const country = getCountryListData?.countries.find(
-        (item) => item.id === parseInt(dashboardApi?.personInfo?.country_id)
+        (item) =>
+          Number(item.id) === Number(dashboardApi?.personInfo?.country_id)
       );
       setUserLocation((prev) => ({
         ...prev,
         country: country ? country?.name : null,
       }));
       const state = getStateListApi?.states.find(
-        (item) => item.id === parseInt(dashboardApi?.personInfo?.state_id)
+        (item) =>
+          Number(item.id) === Number(dashboardApi?.personInfo?.state_id)
       );
       setUserLocation((prev) => ({
         ...prev,
         state: state ? state?.name : null,
       }));
       const city = getCityListApi?.cities.find(
-        (item) => item.id === parseInt(dashboardApi?.personInfo?.city_id)
+        (item) =>
+          Number(item.id) === Number(dashboardApi?.personInfo?.city_id)
       );
       setUserLocation((prev) => ({ ...prev, city: city ? city?.name : null }));
     }

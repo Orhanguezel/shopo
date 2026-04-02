@@ -600,7 +600,8 @@ export default function AddressesTab({ countryLists }) {
                         stateDropdown.length > 0 &&
                         (function () {
                           let item = stateDropdown.find(
-                            (item) => item.id === parseInt(formData.state)
+                            (item) =>
+                              Number(item.id) === Number(formData.state)
                           );
                           return item ? item.name : "Seçiniz";
                         })()
@@ -662,7 +663,8 @@ export default function AddressesTab({ countryLists }) {
                         cityDropdown.length > 0 &&
                         (function () {
                           let item = cityDropdown.find(
-                            (item) => item.id === parseInt(formData.city)
+                            (item) =>
+                              Number(item.id) === Number(formData.city)
                           );
                           return item ? item.name : "Seçiniz";
                         })()

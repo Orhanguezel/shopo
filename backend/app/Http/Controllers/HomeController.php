@@ -580,6 +580,10 @@ class HomeController extends Controller
 
         $bestProductVisibility = $bestProductVisibility->status == 1 ? true : false;
 
+        // Ana sayfa "Tüm Ürünler" bloğu — vitrin bayraklarına bağlı değil (yeni/gözde/kategori seçimi vb.)
+        $allProductsHomeLimit = 120;
+        $allProducts = Product::with('activeVariants.activeVariantItems')->select('id','name', 'short_name', 'slug', 'thumb_image','qty','sold_qty', 'price', 'offer_price','is_undefine','is_featured','new_product', 'is_top', 'is_best','category_id','sub_category_id','child_category_id','brand_id','vendor_id')->where('status', 1)->where('approve_by_admin', 1)->orderBy('id', 'desc')->take($allProductsHomeLimit)->get();
+
 
         $seoSetting = SeoSetting::find(1);
 
@@ -666,6 +670,8 @@ class HomeController extends Controller
             'singleBannerTwo' => $singleBannerTwo,
 
             'bestProducts' => $bestProducts,
+
+            'allProducts' => $allProducts,
 
    
 

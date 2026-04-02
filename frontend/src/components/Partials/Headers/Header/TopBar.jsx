@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import ServeLangItem from "../../../Helpers/ServeLangItem";
 import { deleteCookie } from "cookies-next";
+import auth from "@/utils/auth";
 
 /**
  * Configuration constants for language handling
@@ -149,13 +151,13 @@ export default function TopBar({
 }) {
   const { allCurrency, defaultCurrency, handler } = topBarProps;
 
-  // State for authentication status
-  const [auth, setAuth] = useState(null);
+  // Oturum — Middlebar ile aynı kaynak (auth()); route değişince yenile (giriş sonrası TopBar güncellenir)
+  const pathname = usePathname() ?? "";
+  const [session, setSession] = useState(null);
 
-  // Initialize authentication state from localStorage on component mount
   useEffect(() => {
-    setAuth(JSON.parse(localStorage.getItem("auth")));
-  }, []);
+    setSession(auth());
+  }, [pathname]);
 
   // Force Turkish-only display by removing legacy translation cookies.
   useEffect(() => {
@@ -177,7 +179,7 @@ export default function TopBar({
           <div className="topbar-nav">
             <ul className="flex space-x-6">
               <li className="rtl:ml-6 ltr:ml-0">
-                <AccountLink auth={auth} />
+                <AccountLink auth={session} />
               </li>
               <li>
                 <Link

@@ -13,6 +13,7 @@ const EMPTY_HOMEPAGE = {
   topRatedProducts: [],
   newArrivalProducts: [],
   bestProducts: [],
+  allProducts: [],
   brands: [],
   section_title: [],
   flashSale: null,
