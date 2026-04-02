@@ -17,8 +17,24 @@ export const cartSlice = createSlice({
   initialState,
   reducers: {
     addItem: (state, { payload }) => {
-      const newItem = [...state.cart.cartProducts, payload];
-      state.cart.cartProducts = newItem;
+      // Reducer seviyesinde duplicate kontrolü — stale closure race condition'ı önler
+      // Aynı ürün + aynı varyant kombinasyonu varsa qty artır
+      const payloadVariantKey = JSON.stringify(
+        (payload.variants || []).map((v) => v.variant_item_id).sort()
+      );
+      const existingIndex = state.cart.cartProducts.findIndex((item) => {
+        if (Number(item.product_id) !== Number(payload.product_id)) return false;
+        const itemVariantKey = JSON.stringify(
+          (item.variants || []).map((v) => v.variant_item_id).sort()
+        );
+        return itemVariantKey === payloadVariantKey;
+      });
+      if (existingIndex >= 0) {
+        // Aynı ürün + aynı varyant zaten sepette, qty artır
+        state.cart.cartProducts[existingIndex].qty += payload.qty || 1;
+      } else {
+        state.cart.cartProducts = [...state.cart.cartProducts, payload];
+      }
     },
     deleteItemAction: (state, { payload }) => {
       const newItem = state.cart.cartProducts.filter(

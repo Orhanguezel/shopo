@@ -25,12 +25,13 @@
                             <thead>
                                 <tr>
                                     <th width="5%">{{__('admin.SN')}}</th>
-                                    <th width="30%">{{__('admin.Name')}}</th>
-                                    <th width="10%">{{__('admin.Price')}}</th>
-                                    <th width="15%">{{__('admin.Photo')}}</th>
-                                    <th width="15%">{{__('admin.Type')}}</th>
+                                    <th width="25%">{{__('admin.Name')}}</th>
+                                    <th width="8%">{{__('admin.Price')}}</th>
+                                    <th width="8%">İndirimli</th>
+                                    <th width="12%">{{__('admin.Photo')}}</th>
+                                    <th width="12%">{{__('admin.Type')}}</th>
                                     <th width="10%">{{__('admin.Status')}}</th>
-                                    <th width="15%">{{__('admin.Action')}}</th>
+                                    <th width="20%">{{__('admin.Action')}}</th>
                                   </tr>
                             </thead>
                             <tbody>
@@ -39,6 +40,13 @@
                                         <td>{{ ++$index }}</td>
                                         <td><a href="javascript:;">{{ $product->short_name }}</a></td>
                                         <td>{{ $setting->currency_icon }}{{ $product->price }}</td>
+                                        <td>
+                                            @if ($product->offer_price > 0)
+                                                <span class="text-success font-weight-bold">{{ $setting->currency_icon }}{{ $product->offer_price }}</span>
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
                                         <td> <img class="rounded-circle" src="{{ asset($product->thumb_image) }}" alt="" width="80px"></td>
                                         <td>
                                             @if ($product->new_product == 1)

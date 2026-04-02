@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 export default function InputQuantityCom({
   incrementQty,
   cartId,
@@ -6,6 +6,11 @@ export default function InputQuantityCom({
   qyt,
 }) {
   const [quantity, setQuantity] = useState(qyt);
+
+  // Redux güncellenince local state'i senkronize et
+  useEffect(() => {
+    setQuantity(qyt);
+  }, [qyt]);
   const increment = () => {
     setQuantity((prev) => prev + 1);
     incrementQty(cartId);

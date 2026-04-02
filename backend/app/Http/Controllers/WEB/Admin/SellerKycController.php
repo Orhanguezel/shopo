@@ -208,6 +208,25 @@ class SellerKycController extends Controller
             $iyzicoService = app(IyzicoService::class);
             $user = $vendor->user;
 
+            // Zorunlu alan validasyonu — eksik veriyle Iyzico'ya istek atmayı önle (#11 revizyon2)
+            $tcIdentity = $vendor->tc_identity ?: data_get($user, 'tc_identity');
+            $iban = $vendor->iban ?? '';
+            $phone = $vendor->phone ?? $user->phone ?? '';
+
+            $missing = [];
+            if (empty($tcIdentity)) $missing[] = 'TC Kimlik No';
+            if (empty($iban)) $missing[] = 'IBAN';
+            if (empty($phone)) $missing[] = 'Telefon';
+
+            if (!empty($missing)) {
+                $reason = 'Eksik bilgiler: ' . implode(', ', $missing);
+                Log::warning('Iyzico sub-merchant oluşturulamadı — eksik veri', [
+                    'vendor_id' => $vendor->id,
+                    'missing' => $missing,
+                ]);
+                return $reason;
+            }
+
             $hasTaxNumber = !empty($vendor->tax_number);
             $type = $hasTaxNumber
                 ? \Iyzipay\Model\SubMerchantType::LIMITED_OR_JOINT_STOCK_COMPANY
@@ -220,9 +239,9 @@ class SellerKycController extends Controller
                 'type' => $type,
                 'name' => $vendor->shop_name ?? ('Satıcı ' . $vendor->id),
                 'email' => $user->email ?? '',
-                'gsm_number' => $vendor->phone ?? $user->phone ?? '',
-                'iban' => $vendor->iban ?? '',
-                'identity_number' => (string) ($vendor->tc_identity ?: data_get($user, 'tc_identity') ?: '00000000000'),
+                'gsm_number' => $phone,
+                'iban' => $iban,
+                'identity_number' => (string) $tcIdentity,
                 'address' => $vendor->address ?? data_get($user, 'address', 'Türkiye'),
                 'contact_name' => $nameParts[0] ?? '',
                 'contact_surname' => $nameParts[1] ?? ($nameParts[0] ?? ''),

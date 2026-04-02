@@ -102,9 +102,22 @@
               </table>
 
               @if($status['kyc_status'] === 'approved' && empty($seller->iyzico_sub_merchant_key))
+                @php
+                  $missingFields = [];
+                  if (empty($seller->tc_identity) && empty(optional($seller->user)->tc_identity)) $missingFields[] = 'TC Kimlik No';
+                  if (empty($seller->iban)) $missingFields[] = 'IBAN';
+                  if (empty($seller->phone) && empty(optional($seller->user)->phone)) $missingFields[] = 'Telefon';
+                @endphp
+                @if(!empty($missingFields))
+                  <div class="alert alert-warning mt-3">
+                    <strong>Alt işyeri oluşturulamıyor.</strong><br>
+                    Satıcının şu bilgileri eksik: <b>{{ implode(', ', $missingFields) }}</b><br>
+                    <small>Satıcı bu bilgileri profilinden doldurmalı, ardından butona tıklayın.</small>
+                  </div>
+                @endif
                 <form action="{{ route('admin.kyc.create-sub-merchant', $seller->id) }}" method="POST" class="mt-3">
                   @csrf
-                  <button class="btn btn-dark btn-block" type="submit">
+                  <button class="btn btn-dark btn-block" type="submit" {{ !empty($missingFields) ? 'disabled' : '' }}>
                     <i class="fas fa-store mr-1"></i> Iyzico Alt Üye İşyeri Oluştur
                   </button>
                 </form>

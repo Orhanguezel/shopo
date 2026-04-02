@@ -29,7 +29,6 @@ import OrderTab from "./tabs/OrderTab";
 import PasswordTab from "./tabs/PasswordTab";
 import ProfileTab from "./tabs/ProfileTab";
 import ReviewTab from "./tabs/ReviewTab";
-import SellerOperationsTab from "./tabs/SellerOperationsTab";
 import WishlistTab from "./tabs/WishlistTab";
 import {
   useDashboardApiQuery,
@@ -50,24 +49,27 @@ import { deleteCookie } from "cookies-next";
 
 // Main Profile component content
 function ProfileContent() {
-  // Early return if not authenticated - redirect to login
-  if (!auth()) {
-    if (typeof window !== "undefined") {
-      window.location.href = "/login";
-    }
-    return null;
-  }
-
   // Next.js router and navigation hooks
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   // Redux dispatch
   const dispatch = useDispatch();
+  // Auth check state — hydration'dan sonra kontrol edilir
+  const [authChecked, setAuthChecked] = useState(false);
   // State for switching to seller dashboard
   const [switchDashboard, setSwitchDashboard] = useState(false);
   // State for active tab (dashboard, profile, order, etc.)
   const [active, setActive] = useState("dashboard");
+
+  // Auth kontrolünü client-side'da yap (hydration sonrası)
+  useEffect(() => {
+    if (!auth()) {
+      router.replace("/login");
+    } else {
+      setAuthChecked(true);
+    }
+  }, []);
   const [returnRequestFilters, setReturnRequestFilters] = useState({
     status: "all",
     search: "",
@@ -258,6 +260,8 @@ function ProfileContent() {
     }
   }, [dashboardApi, getCountryListData, getStateListApi, getCityListApi]);
 
+  if (!authChecked) return null;
+
   return (
     <div className="profile-page-wrapper w-full">
       <div className="container-x mx-auto">
@@ -391,22 +395,6 @@ function ProfileContent() {
                       </div>
                     </Link>
                   </div>
-                  {Multivendor() === 1 &&
-                    dashboardApi &&
-                    dashboardApi.is_seller && (
-                      <div className="item group">
-                        <Link href="/profile#seller-tools">
-                          <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
-                            <span>
-                              <IcoSupport />
-                            </span>
-                            <span className=" font-normal text-base capitalize cursor-pointer">
-                              Hesap Doğrulama
-                            </span>
-                          </div>
-                        </Link>
-                      </div>
-                    )}
                   {/* Change password tab */}
                   <div className="item group">
                     <Link href="/profile#password">
@@ -516,12 +504,6 @@ function ProfileContent() {
                         </div>
                       )}
                     </>
-                  ) : active === "seller-tools" ? (
-                    <SellerOperationsTab
-                      token={auth()?.access_token}
-                      isActive={active === "seller-tools"}
-                      isSeller={Boolean(dashboardApi?.is_seller)}
-                    />
                   ) : (
                     ""
                   )}

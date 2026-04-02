@@ -69,7 +69,8 @@ export default function Cart({ className }) {
                 (item.variant_item ? parseInt(item.variant_item.price) : 0),
               0
             ) || 0;
-          const totalPrice = parseInt(basePrice) + variantPrice;
+          const unitPrice = parseInt(basePrice) + variantPrice;
+          const totalPrice = unitPrice * (v.qty || 1);
           return checkProductExistsInFlashSale(v.product_id, totalPrice);
         })
       );

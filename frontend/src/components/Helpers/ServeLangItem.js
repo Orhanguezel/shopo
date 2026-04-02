@@ -244,7 +244,7 @@ function ServeLangItem() {
           Submit_Review: "Yorum Gönder",
           Subscribe: "Abone Ol",
           Support: "Destek",
-          Switch_Dashboard: "Satıcı Paneline Git",
+          Switch_Dashboard: "Satıcı Paneline Geçiş Yap",
           Tags: "Etiketler",
           Term_and_Conditions: "Şartlar ve Koşullar",
           Total: "Toplam",

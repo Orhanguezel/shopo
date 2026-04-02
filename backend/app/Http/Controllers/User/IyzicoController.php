@@ -97,6 +97,18 @@ class IyzicoController extends Controller
             $callbackUrl = route('iyzico.callback', ['order_id' => $order->id]);
             $basketItems = $this->buildGuestBasketItems($order, $cartProducts, $iyzicoConfig);
 
+            // Kargo ücretini basket items'a ekle — Iyzico, basket toplamı = price olmasını zorunlu kılar
+            if ((float)$shippingFee > 0) {
+                $basketItems[] = [
+                    'id' => 'SHIPPING-' . $order->id,
+                    'name' => 'Kargo Ücreti',
+                    'category_1' => 'Kargo',
+                    'category_2' => 'Kargo',
+                    'item_type' => 'VIRTUAL',
+                    'price' => number_format((float)$shippingFee, 2, '.', ''),
+                ];
+            }
+
             $addressText = (string)($shippingAddress->address ?? 'Adres belirtilmedi');
             $city = (string)($shippingAddress->city->name ?? $shippingAddress->countryState->name ?? 'Istanbul');
             $country = (string)($shippingAddress->country->name ?? 'Turkey');
@@ -254,6 +266,18 @@ class IyzicoController extends Controller
 
             $callbackUrl = route('iyzico.callback', ['order_id' => $order->id]);
             $basketItems = $this->buildGuestBasketItems($order, $cartProducts, $iyzicoConfig);
+
+            // Kargo ücretini basket items'a ekle
+            if ((float)$shippingFee > 0) {
+                $basketItems[] = [
+                    'id' => 'SHIPPING-' . $order->id,
+                    'name' => 'Kargo Ücreti',
+                    'category_1' => 'Kargo',
+                    'category_2' => 'Kargo',
+                    'item_type' => 'VIRTUAL',
+                    'price' => number_format((float)$shippingFee, 2, '.', ''),
+                ];
+            }
 
             $addressText = (string)($addr['address'] ?? 'Adres belirtilmedi');
             $city = (string)($addr['city'] ?? 'Istanbul');

@@ -149,9 +149,11 @@ class SellerProductController extends Controller
         $product->short_description = $request->short_description;
         $product->long_description = $request->long_description;
         $product->tags = $request->tags;
-        // Doğrulanmış satıcılar ürünü direkt yayına alabilir, diğerleri onay bekler (#30)
+        // Doğrulanmış satıcılar ürünü admin onayı olmadan direkt yayına alabilir (#5 revizyon2)
         $seller = Auth::guard('api')->user()->seller;
-        $product->status = ($seller && $seller->is_verified) ? 1 : 0;
+        $isVerified = $seller && $seller->is_verified;
+        $product->status = $isVerified ? 1 : 0;
+        $product->approve_by_admin = $isVerified ? 1 : 0;
         $product->weight = $request->weight;
         $product->is_undefine = 1;
         $product->is_specification = $request->is_specification ? 1 : 0;
@@ -285,7 +287,10 @@ class SellerProductController extends Controller
         $product->short_description = $request->short_description;
         $product->long_description = $request->long_description;
         $product->tags = $request->tags;
-        $product->status = $request->status;
+        // Admin reddettiyse (approve_by_admin=0) satıcı status'u değiştiremez; onaylıysa serbestçe yönetebilir
+        if ($product->approve_by_admin == 1) {
+            $product->status = $request->status;
+        }
         $product->weight = $request->weight;
         $product->is_specification = $request->is_specification ? 1 : 0;
         $product->seo_title = $request->seo_title ? $request->seo_title : $request->name;
@@ -361,6 +366,10 @@ class SellerProductController extends Controller
 
     public function changeStatus($id){
         $product = Product::find($id);
+        // Admin reddettiyse (approve_by_admin=0) satıcı ürünü aktif edemez
+        if ($product->approve_by_admin == 0) {
+            return response()->json(trans('Bu ürün admin onayı olmadan aktif edilemez.'), 403);
+        }
         if($product->status == 1){
             $product->status = 0;
             $product->save();

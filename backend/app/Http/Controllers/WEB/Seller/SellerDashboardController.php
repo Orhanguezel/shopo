@@ -81,6 +81,21 @@ class SellerDashboardController extends Controller
             }
         }
 
+        $weeklyOrders = Order::with('user')->whereHas('orderProducts',function($query) use ($user){
+            $query->where('seller_id', $user->seller->id);
+        })->orderBy('id','desc')->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->get();
+
+        $weeklyEarning = 0;
+        $weeklyProductSale = 0;
+        foreach ($weeklyOrders as $weeklyOrder) {
+            $orderProducts = $weeklyOrder->orderProducts->where('seller_id', $seller->id);
+            foreach ($orderProducts as $orderProduct) {
+                $price = $orderProduct->seller_net_amount > 0 ? $orderProduct->seller_net_amount : ($orderProduct->unit_price * $orderProduct->qty);
+                $weeklyEarning += $price;
+                $weeklyProductSale += $orderProduct->qty;
+            }
+        }
+
         $monthlyOrders = Order::with('user')->whereHas('orderProducts',function($query) use ($user){
             $query->where('seller_id', $user->seller->id);
         })->orderBy('id','desc')->whereMonth('created_at', now()->month)->get();
@@ -117,13 +132,25 @@ class SellerDashboardController extends Controller
         $setting = Setting::first();
         $products = Product::where('vendor_id', $seller->id)->get();
 
+        // Ürün bazlı raporlama — bu ayki en çok satan ürünler (#8 revizyon2)
+        $topProducts = OrderProduct::with('product')
+            ->where('seller_id', $seller->id)
+            ->whereHas('order', function($q) {
+                $q->whereMonth('created_at', now()->month);
+            })
+            ->selectRaw('product_id, SUM(qty) as total_qty, SUM(unit_price * qty) as total_revenue')
+            ->groupBy('product_id')
+            ->orderByDesc('total_qty')
+            ->limit(10)
+            ->get();
+
         $reviews = ProductReview::where('product_vendor_id', $seller->id)->get();
         $reports = ProductReport::where('seller_id', $seller->id)->get();
 
         $totalWithdraw = SellerWithdraw::where('seller_id',$seller->id)->where('status',1)->sum('withdraw_amount');
         $totalPendingWithdraw = SellerWithdraw::where('seller_id',$seller->id)->where('status',0)->sum('withdraw_amount');
 
-        return view('seller.dashboard',compact('todayOrders','totalOrders','setting','monthlyOrders','yearlyOrders','products','reviews','reports','seller','totalWithdraw','totalPendingWithdraw'));
+        return view('seller.dashboard',compact('todayOrders','totalOrders','setting','monthlyOrders','yearlyOrders','weeklyOrders','weeklyEarning','weeklyProductSale','products','topProducts','reviews','reports','seller','totalWithdraw','totalPendingWithdraw'));
 
         return response()->json([
             'todayTotalOrder' => $todayTotalOrder,

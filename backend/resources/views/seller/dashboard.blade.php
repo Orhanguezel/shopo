@@ -162,6 +162,55 @@
               </div>
             </div>
 
+            {{-- Bu Hafta Özeti --}}
+            <div class="col-12 mt-3 mb-2"><h5 class="text-muted font-weight-bold">Bu Hafta</h5></div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+              <div class="card card-statistic-1">
+                <div class="card-icon bg-info">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="card-wrap">
+                  <div class="card-header">
+                    <h4>Bu Hafta Sipariş</h4>
+                  </div>
+                  <div class="card-body">
+                    {{ $weeklyOrders->count() }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+              <div class="card card-statistic-1">
+                <div class="card-icon bg-info">
+                  <i class="far fa-newspaper"></i>
+                </div>
+                <div class="card-wrap">
+                  <div class="card-header">
+                    <h4>Bu Hafta Kazanç</h4>
+                  </div>
+                  <div class="card-body">
+                    {{ $setting->currency_icon }}{{ $weeklyEarning }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+              <div class="card card-statistic-1">
+                <div class="card-icon bg-info">
+                  <i class="fas fa-circle"></i>
+                </div>
+                <div class="card-wrap">
+                  <div class="card-header">
+                    <h4>Bu Hafta Satış</h4>
+                  </div>
+                  <div class="card-body">
+                    {{ $weeklyProductSale }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{-- Bu Ay Özeti Başlığı --}}
+            <div class="col-12 mt-3 mb-2"><h5 class="text-muted font-weight-bold">Bu Ay</h5></div>
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
               <div class="card card-statistic-1">
                 <div class="card-icon bg-success">
@@ -460,6 +509,50 @@
               </div>
             </div>
       </div>
+
+      {{-- Ürün Bazlı Raporlama — Bu Ayki En Çok Satan Ürünler (#8 revizyon2) --}}
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h4>Bu Ay — Ürün Bazlı Satış Raporu</h4>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Ürün Adı</th>
+                      <th>Satılan Adet</th>
+                      <th>Toplam Ciro</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @forelse($topProducts as $i => $tp)
+                      <tr>
+                        <td>{{ $i + 1 }}</td>
+                        <td>
+                          @if($tp->product)
+                            <a href="{{ route('seller.product.edit', $tp->product_id) }}">{{ $tp->product->short_name ?? $tp->product->name }}</a>
+                          @else
+                            <span class="text-muted">Silinmiş ürün</span>
+                          @endif
+                        </td>
+                        <td>{{ $tp->total_qty }}</td>
+                        <td>{{ $setting->currency_icon }}{{ number_format($tp->total_revenue, 2) }}</td>
+                      </tr>
+                    @empty
+                      <tr><td colspan="4" class="text-center text-muted">Bu ay henüz satış yok.</td></tr>
+                    @endforelse
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </section>
   </div>
 @endsection

@@ -39,6 +39,11 @@
                     <i class="fas fa-cogs mr-1"></i> Özellikler
                   </a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="seo-tab" data-toggle="tab" href="#tab-seo" role="tab">
+                    <i class="fas fa-search mr-1"></i> SEO
+                  </a>
+                </li>
               </ul>
 
               <div class="tab-content" id="productTabContent">
@@ -257,6 +262,24 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {{-- TAB: SEO --}}
+                <div class="tab-pane fade" id="tab-seo" role="tabpanel">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="form-group col-12">
+                          <label>SEO Başlığı</label>
+                          <input type="text" class="form-control" name="seo_title" value="{{ $product->seo_title }}" placeholder="Arama motorları için başlık (opsiyonel — boş bırakılırsa ürün adı kullanılır)">
+                        </div>
+                        <div class="form-group col-12">
+                          <label>SEO Açıklaması</label>
+                          <textarea name="seo_description" cols="30" rows="5" class="form-control" placeholder="Arama motorları için açıklama (opsiyonel)">{{ $product->seo_description }}</textarea>
                         </div>
                       </div>
                     </div>
