@@ -127,6 +127,12 @@ class SellerOrderController extends Controller
 
         if ($order->orderAddress) {
             $addr = $order->orderAddress;
+            if (trim((string) ($addr->billing_name ?? '')) === '') {
+                $addr->billing_name = trim(($addr->billing_first_name ?? '').' '.($addr->billing_last_name ?? ''));
+            }
+            if (trim((string) ($addr->shipping_name ?? '')) === '') {
+                $addr->shipping_name = trim(($addr->shipping_first_name ?? '').' '.($addr->shipping_last_name ?? ''));
+            }
             if (trim((string) ($addr->shipping_state ?? '')) === '' && (int) $addr->shipping_state_id > 0) {
                 $addr->shipping_state = CountryState::query()->find($addr->shipping_state_id)?->name;
             }

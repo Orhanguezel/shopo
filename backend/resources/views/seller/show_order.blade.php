@@ -1,375 +1,156 @@
 @extends('seller.master_layout')
 @section('title')
-<title>{{__('admin.Invoice')}}</title>
+<title>{{ __('admin.Invoice') }}</title>
 @endsection
 <style>
-    .seller-invoice-address address {
-        white-space: normal;
-        word-wrap: break-word;
-        overflow: visible;
-        text-overflow: clip;
-        max-width: 100%;
-    }
     @media print {
         .section-header,
         .order-status,
         #sidebar-wrapper,
         .print-area,
-        .main-footer {
-            display:none!important;
+        .main-footer,
+        .new-product,
+        .mainas,
+        .plus,
+        .action-btn,
+        .delete-icon,
+        .new-product,
+        .additional_info {
+            display: none !important;
         }
     }
 </style>
 @section('seller-content')
-      <!-- Main Content -->
-      <div class="main-content">
+    <div class="main-content">
         <section class="section">
-          <div class="section-header">
-            <h1>{{__('admin.Invoice')}}</h1>
-            <div class="section-header-breadcrumb">
-              <div class="breadcrumb-item active"><a href="{{ route('seller.dashboard') }}">{{__('admin.Dashboard')}}</a></div>
-              <div class="breadcrumb-item">{{__('admin.Invoice')}}</div>
-            </div>
-          </div>
-          <div class="section-body">
-            <div class="invoice">
-              <div class="invoice-print">
-                <div class="row">
-                  <div class="col-lg-12">
-                    <div class="invoice-title">
-                      <h2><img src="{{ asset($setting->logo) }}" alt="" width="120px"></h2>
-                      <div class="invoice-number">{{__('admin.Order')}} #{{ $order->order_id }}</div>
-                    </div>
-                    <hr>
-                    @php
-                        $orderAddress = $order->orderAddress;
-                        $billingPerson = trim(($orderAddress->billing_first_name ?? '').' '.($orderAddress->billing_last_name ?? ''));
-                        if ($billingPerson === '') {
-                            $billingPerson = $orderAddress->billing_name ?? '';
-                        }
-                        $shippingPerson = trim(($orderAddress->shipping_first_name ?? '').' '.($orderAddress->shipping_last_name ?? ''));
-                        if ($shippingPerson === '') {
-                            $shippingPerson = $orderAddress->shipping_name ?? '';
-                        }
-                        $billingLoc = array_filter([$orderAddress->billing_city ?? null, $orderAddress->billing_state ?? null, $orderAddress->billing_country ?? null]);
-                        $shippingLoc = array_filter([$orderAddress->shipping_city ?? null, $orderAddress->shipping_state ?? null, $orderAddress->shipping_country ?? null]);
-                        $multiSeller = ($orderDistinctSellerCount ?? 1) > 1;
-                    @endphp
-                    <div class="row seller-invoice-address">
-                      <div class="col-md-6">
-                        <address>
-                          <strong>{{__('admin.Billing Information')}}:</strong><br>
-                            @if($billingPerson !== '')
-                            {{ $billingPerson }}<br>
-                            @endif
-                            @if ($orderAddress->billing_email)
-                            {{ $orderAddress->billing_email }}<br>
-                            @endif
-                            @if ($orderAddress->billing_phone)
-                            {{ $orderAddress->billing_phone }}<br>
-                            @endif
-                            @if($orderAddress->billing_address)
-                            {{ $orderAddress->billing_address }}@if(count($billingLoc))<br>@endif
-                            @endif
-                            @if(count($billingLoc))
-                            {{ implode(', ', $billingLoc) }}<br>
-                            @endif
-                        </address>
-                      </div>
-                      <div class="col-md-6 text-md-right">
-                        <address>
-                          <strong>{{__('admin.Shipping Information')}} :</strong><br>
-                            @if($shippingPerson !== '')
-                            {{ $shippingPerson }}<br>
-                            @endif
-                            @if ($orderAddress->shipping_email)
-                            {{ $orderAddress->shipping_email }}<br>
-                            @endif
-                            @if ($orderAddress->shipping_phone)
-                            {{ $orderAddress->shipping_phone }}<br>
-                            @endif
-                            @if($orderAddress->shipping_address)
-                            {{ $orderAddress->shipping_address }}@if(count($shippingLoc))<br>@endif
-                            @endif
-                            @if(count($shippingLoc))
-                            {{ implode(', ', $shippingLoc) }}<br>
-                            @endif
-                        </address>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <address>
-                          <strong>{{__('admin.Payment Information')}}:</strong><br>
-                          {{__('admin.Method')}}: {{ $order->payment_method }}<br>
-                          {{__('admin.Status')}} : @if ($order->payment_status == 1)
-                              <span class="badge badge-success">{{__('admin.Success')}}</span>
-                              @else
-                              <span class="badge badge-danger">{{__('admin.Pending')}}</span>
-                          @endif
-                          <br>
-                          {{__('admin.Transaction')}}: {{ $order->transection_id }}
-                        </address>
-                      </div>
-                      <div class="col-md-6 text-md-right">
-                        <address>
-                          <strong>{{__('admin.Order Information')}}:</strong><br>
-                          {{__('admin.Date')}}: {{ $order->created_at->format('d F, Y') }}<br>
-                          {{__('admin.Shipping')}}: {{ $order->shipping_method }}<br>
-                          {{__('admin.Status')}} :
-                          @if ($order->order_status == 1)
-                          <span class="badge badge-success">{{__('admin.Pregress')}} </span>
-                          @elseif ($order->order_status == 2)
-                          <span class="badge badge-success">{{__('admin.Delivered')}} </span>
-                          @elseif ($order->order_status == 3)
-                          <span class="badge badge-success">{{__('admin.Completed')}} </span>
-                          @elseif ($order->order_status == 4)
-                          <span class="badge badge-danger">{{__('admin.Declined')}} </span>
-                          @else
-                          <span class="badge badge-danger">{{__('admin.Pending')}}</span>
-                        @endif
-
-                          @if((int)$order->order_status === 0)
-                            <div class="mt-2">
-                              <form action="{{ route('seller.update-order-status', $order->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="order_status" value="1" />
-                                <button class="btn btn-success btn-sm" type="submit">
-                                  Siparişi Onayla
-                                </button>
-                              </form>
-                            </div>
-                          @endif
-                          @if((int)$order->order_status === 1)
-                            <div class="mt-2">
-                              <form action="{{ route('seller.update-order-status', $order->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="order_status" value="2" />
-                                <button class="btn btn-info btn-sm" type="submit">Teslim Edildi</button>
-                              </form>
-                            </div>
-                          @endif
-                        </address>
-
-                        @if($setting->map_status == 1)
-                        <address>
-                            <strong>{{__('admin.Delivery Location')}} :</strong><br><br>
-                            <button class="badge badge-success" data-toggle="modal" data-target="#mapModal" id="viewMapButton">{{__('admin.View Map')}}</button>
-                        </address>
-                        @endif
-                      </div>
-                    </div>
-                  </div>
+            <div class="section-header">
+                <h1>{{ __('admin.Invoice') }}</h1>
+                <div class="section-header-breadcrumb">
+                    <div class="breadcrumb-item active"><a href="{{ route('seller.dashboard') }}">{{ __('admin.Dashboard') }}</a></div>
+                    <div class="breadcrumb-item">{{ __('admin.Invoice') }}</div>
                 </div>
-
-                <div class="row mt-4">
-                  <div class="col-md-12">
-                    <div class="section-title">{{__('admin.Order Summary')}}</div>
-                    <div class="table-responsive">
-                      <table class="table table-striped table-hover table-md">
-                        <tr>
-                          <th width="5%">#</th>
-                          <th width="25%">{{__('admin.Product')}}</th>
-                          <th width="20%">{{__('admin.Variant')}}</th>
-                          <th width="10%">{{__('admin.Shop Name')}}</th>
-                          <th width="10%" class="text-center">{{__('admin.Unit Price')}}</th>
-                          <th width="10%" class="text-center">{{__('admin.Quantity')}}</th>
-                          <th width="10%" class="text-right">{{__('admin.Total')}}</th>
-                        </tr>
-                        @php
-                            $subTotal = 0;
-                        @endphp
-                        @foreach ($order->orderProducts as $index => $orderProduct)
-                            @php
-                                $variantPrice = 0;
-                                $totalVariant = $orderProduct->orderProductVariants->count();
-                                $lineProduct = $orderProduct->product;
-                            @endphp
-                            <tr>
-                                <td>{{ ++$index }}</td>
-                                <td>
-                                  @if($lineProduct && $lineProduct->slug)
-                                    <a href="{{ storefront_product_url($lineProduct->slug) }}" target="_blank" rel="noopener">{{ $orderProduct->product_name }}</a>
-                                  @else
-                                    {{ $orderProduct->product_name }}
-                                  @endif
-                                </td>
-                                <td>
-                                    @foreach ($orderProduct->orderProductVariants as $indx => $variant)
-                                        {{ $variant->variant_name.' : '.$variant->variant_value }}{{ $totalVariant == ++$indx ? '' : ',' }}
-                                        <br>
-                                        @php
-                                            $variantPrice += $variant->variant_price;
-                                        @endphp
-                                    @endforeach
-
-                                </td>
-                                <td>
-                                    @if ($orderProduct->seller)
-                                        <a href="{{ route('seller-detail',['shop_name' => $orderProduct->seller->slug]) }}">{{  $orderProduct->seller->shop_name }}</a>
-                                    @endif
-                                </td>
-                                <td class="text-center">{{ $setting->currency_icon }}{{ $orderProduct->unit_price }}</td>
-                                <td class="text-center">{{ $orderProduct->qty }}</td>
+            </div>
+            <div class="section-body">
+                <div class="invoice">
+                    <div class="invoice-print">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="invoice-title">
+                                    <h2><img src="{{ asset($setting->logo) }}" alt="" width="120px"></h2>
+                                    <div class="invoice-number">Order #{{ $order->order_id }}</div>
+                                </div>
+                                <hr>
                                 @php
-                                    $total = (float) $orderProduct->unit_price * (int) $orderProduct->qty;
-                                    foreach ($orderProduct->orderProductVariants as $v) {
-                                        $total += (float) $v->variant_price * (int) $orderProduct->qty;
-                                    }
+                                    $orderAddress = $order->orderAddress;
                                 @endphp
-                                <td class="text-right">{{ $setting->currency_icon }}{{ round($total, 2) }}</td>
-                            </tr>
-                            @php
-                                $totalVariant = 0;
-                            @endphp
-                        @endforeach
-                      </table>
-                    </div>
-                    <div class="row mt-4">
-                      <div class="col-lg-6 order-status">
-                      </div>
-
-                      <div class="col-lg-6 text-right">
-                        <div class="invoice-detail-item">
-                            @php
-                                $sellerSub = round((float) ($sellerLinesSubtotal ?? 0), 2);
-                                if ($multiSeller) {
-                                    $subtotal_display = $sellerSub;
-                                    $discount_display = null;
-                                    $shipping_display = null;
-                                    $total_display = $sellerSub;
-                                } else {
-                                    $subtotal_display = $sellerSub;
-                                    $discount_display = round((float) $order->coupon_coast, 2);
-                                    $shipping_display = round((float) $order->shipping_cost, 2);
-                                    $total_display = round($sellerSub + $shipping_display - $discount_display, 2);
-                                }
-                            @endphp
-                            <div class="invoice-detail-name">{{__('admin.Subtotal')}} : {{ $setting->currency_icon }}{{ round($subtotal_display, 2) }}</div>
-                          </div>
-                          <div class="invoice-detail-item">
-                            <div class="invoice-detail-name">{{__('admin.Discount')}}(-) : @if($multiSeller)<span class="text-muted">—</span>@else{{ $setting->currency_icon }}{{ round($discount_display, 2) }}@endif</div>
-                          </div>
-                          <div class="invoice-detail-item">
-                            <div class="invoice-detail-name">{{__('admin.Shipping')}} : @if($multiSeller)<span class="text-muted">—</span>@else{{ $setting->currency_icon }}{{ round($shipping_display, 2) }}@endif</div>
-                          </div>
-                          @if($multiSeller)
-                          <div class="invoice-detail-item small text-muted">
-                            <div class="invoice-detail-name">Bu siparişte birden fazla satıcı var; kargo ve kupon sipariş genelinde hesaplanır.</div>
-                          </div>
-                          @endif
-
-                        <hr class="mt-2 mb-2">
-                        <div class="invoice-detail-item">
-                          <div class="invoice-detail-value invoice-detail-value-lg">{{__('admin.Total')}} : {{ $setting->currency_icon }}{{ round($total_display, 2) }}</div>
+                                @include('partials.order_invoice.addresses', ['orderAddress' => $orderAddress])
+                                @include('partials.order_invoice.payment_block', ['order' => $order, 'setting' => $setting, 'invoiceContext' => 'seller'])
+                            </div>
                         </div>
-                      </div>
 
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="section-title">{{ __('admin.Order Summary') }}</div>
+                                @include('partials.order_invoice.summary_table', [
+                                    'order' => $order,
+                                    'setting' => $setting,
+                                    'invoiceContext' => 'seller',
+                                ])
+                                @include('partials.order_invoice.additional_info', ['order' => $order])
+
+                                @include('partials.order_invoice.order_status_and_totals_row', [
+                                    'order' => $order,
+                                    'setting' => $setting,
+                                    'invoiceContext' => 'seller',
+                                    'orderDistinctSellerCount' => $orderDistinctSellerCount,
+                                    'sellerLinesSubtotal' => $sellerLinesSubtotal,
+                                ])
+
+                                @include('partials.order_geliver_card', ['order' => $order, 'cardId' => 'geliver-kargo'])
+                            </div>
+                        </div>
                     </div>
 
-                    @include('partials.order_geliver_card', ['order' => $order, 'cardId' => 'geliver-kargo'])
-
-                  </div>
+                    <div class="text-md-right print-area">
+                        <hr>
+                        <button class="btn btn-success btn-icon icon-left print_btn"><i class="fas fa-print"></i> {{ __('admin.Print') }}</button>
+                    </div>
                 </div>
-              </div>
-
-              <div class="text-md-right print-area">
-                <hr>
-                <button class="btn btn-success btn-icon icon-left print_btn"><i class="fas fa-print"></i> {{__('admin.Print')}}</button>
-              </div>
             </div>
-          </div>
-
         </section>
-      </div>
+    </div>
 
-      @if($setting->map_status == 1)
-      <div class="modal fade" id="mapModal" tabindex="-1" role="dialog" aria-labelledby="mapModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-              <div class="modal-header">
-              <h5 class="modal-title" id="mapModalLabel">{{$orderAddress->shipping_address}}</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-              </div>
-              <div class="modal-body">
-              <!-- Google Map -->
-              <div id="map" style="height: 400px; width: 100%;"></div>
-              </div>
-          </div>
-          </div>
-      </div>
+    @if ($setting->map_status == 1)
+        <div class="modal fade" id="mapModal" tabindex="-1" role="dialog" aria-labelledby="mapModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="mapModalLabel">{{ $order->orderAddress?->shipping_address }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="map" style="height: 400px; width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endif
 
-    @if($setting->map_status == 1)
-    <script src="https://maps.googleapis.com/maps/api/js?key={{$setting->map_key}}&callback=initMap" async defer></script>
+    @if ($setting->map_status == 1)
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ $setting->map_key }}&callback=initMap" async defer></script>
 
-    <script>
-      let map;
+        <script>
+            let map;
 
-      function initMap() {
-        // Set default coordinates (can be dynamic)
-        const location = {
-          lat: {{ $order->latitude ?? 0 }},
-          lng: {{ $order->longitude ?? 0 }}
-        };
-         // Example: New York
+            function initMap() {
+                const location = {
+                    lat: {{ $order->latitude ?? 0 }},
+                    lng: {{ $order->longitude ?? 0 }}
+                };
+                map = new google.maps.Map(document.getElementById("map"), {
+                    center: location,
+                    zoom: 10
+                });
+                new google.maps.Marker({
+                    position: location,
+                    map: map
+                });
+            }
 
-        // Create a new map
-        map = new google.maps.Map(document.getElementById("map"), {
-          center: location,
-          zoom: 10
-        });
+            $('#mapModal').on('shown.bs.modal', function() {
+                google.maps.event.trigger(map, "resize");
+                map.setCenter({
+                    lat: {{ $order->latitude ?? 0 }},
+                    lng: {{ $order->longitude ?? 0 }}
+                });
+            });
 
-        // Create a marker on the map at the location
-        const marker = new google.maps.Marker({
-          position: location,
-          map: map
-        });
-      }
-
-      // Event listener for showing the map modal
-      $('#mapModal').on('shown.bs.modal', function () {
-        // Reinitialize the map when the modal is opened
-        google.maps.event.trigger(map, "resize");
-
-        // Optional: Center the map again after resizing
-        map.setCenter({
-          lat: {{ $order->latitude ?? 0 }},
-          lng: {{ $order->longitude ?? 0 }}
-        }); // Example: New York
-      });
-
-      // Optional: Update map coordinates based on dynamic values
-      $('#viewMapButton').click(function() {
-        // You can use dynamic latitude and longitude values here
-        const lat = {{$order->latitude}}; // Replace with dynamic latitude
-        const lng = {{$order->longitude}}; // Replace with dynamic longitude
-
-        // Update map and marker position
-        const location = { lat: lat, lng: lng };
-        map.setCenter(location);
-        new google.maps.Marker({
-          position: location,
-          map: map
-        });
-      });
-    </script>
+            $('#viewMapButton').click(function() {
+                const lat = {{ $order->latitude ?? 0 }};
+                const lng = {{ $order->longitude ?? 0 }};
+                const location = {
+                    lat: lat,
+                    lng: lng
+                };
+                map.setCenter(location);
+                new google.maps.Marker({
+                    position: location,
+                    map: map
+                });
+            });
+        </script>
     @endif
 
     <script>
         (function($) {
             "use strict";
             $(document).ready(function() {
-
-                $(".print_btn").on("click", function(){
+                $(".print_btn").on("click", function() {
                     $(".custom_click").click();
                     window.print()
                 })
-
             });
         })(jQuery);
     </script>
