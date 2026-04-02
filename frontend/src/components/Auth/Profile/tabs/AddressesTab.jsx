@@ -883,7 +883,7 @@ export default function AddressesTab({ countryLists }) {
                               <p>{ServeLangItem()?.Country}:</p>
                             </td>
                             <td className="text-base text-qblack line-clamp-1 font-medium">
-                              {item.country.name}
+                              {item.country?.name || "-"}
                             </td>
                           </tr>
                           <tr className="flex mb-3">
@@ -891,7 +891,7 @@ export default function AddressesTab({ countryLists }) {
                               <p>{ServeLangItem()?.State}:</p>
                             </td>
                             <td className="text-base text-qblack line-clamp-1 font-medium">
-                              {item.country_state.name}
+                              {item.country_state?.name || "-"}
                             </td>
                           </tr>
                           <tr className="flex mb-3">
@@ -899,7 +899,7 @@ export default function AddressesTab({ countryLists }) {
                               <p>{ServeLangItem()?.City}:</p>
                             </td>
                             <td className="text-base text-qblack line-clamp-1 font-medium">
-                              {item.city.name}
+                              {item.city?.name || "-"}
                             </td>
                           </tr>
                         </tbody>
