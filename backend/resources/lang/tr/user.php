@@ -48,7 +48,7 @@ return array (
   'dashboard' => 'Kontrol Paneli',
   'profile' => 'Profil',
   'Your Dashboard' => 'Kontrol Paneliniz',
-  'Switch Dashboard' => 'Kontrol Panelini Değiştir',
+  'Switch Dashboard' => 'Satıcı Paneline Geçiş Yap',
   'Dashboard' => 'Kontrol Paneli',
   'Personal Info' => 'Kişisel Bilgiler',
   'Order' => 'Sipariş',
