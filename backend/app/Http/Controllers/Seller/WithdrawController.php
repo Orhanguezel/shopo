@@ -19,8 +19,9 @@ class WithdrawController extends Controller
         $user = Auth::guard('api')->user();
         $seller = $user->seller;
         $withdraws = SellerWithdraw::where('seller_id',$seller->id)->get();
+        $earnings = $this->commissionService->getSellerEarningsSummary($seller->id);
 
-        return response()->json(['withdraws' => $withdraws], 200);
+        return response()->json(['withdraws' => $withdraws, 'earnings' => $earnings], 200);
 
     }
 
@@ -33,8 +34,10 @@ class WithdrawController extends Controller
 
     public function create(){
         $methods = WithdrawMethod::whereStatus('1')->get();
+        $seller = Auth::guard('api')->user()->seller;
+        $earnings = $this->commissionService->getSellerEarningsSummary($seller->id);
 
-        return response()->json(['methods' => $methods], 200);
+        return response()->json(['methods' => $methods, 'earnings' => $earnings], 200);
     }
 
     public function getWithDrawAccountInfo($id){

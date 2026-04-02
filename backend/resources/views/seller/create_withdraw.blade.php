@@ -16,6 +16,30 @@
 
           <div class="section-body">
             <a href="{{ route('seller.my-withdraw.index') }}" class="btn btn-primary"><i class="fas fa-list"></i> {{__('admin.My withdraw')}}</a>
+
+            <div class="row mt-3">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h6 class="text-primary mb-3">{{ __('admin.Earnings breakdown') }}</h6>
+                    <div class="row">
+                      <div class="col-md-3 col-6 mb-2"><strong>{{ __('admin.Withdrawable balance') }}</strong><br>
+                        <span class="text-success">{{ $setting->currency_icon }}{{ number_format($earnings['withdrawable_balance'], 2, ',', '.') }}</span></div>
+                      <div class="col-md-3 col-6 mb-2"><strong>{{ __('admin.Net from completed orders') }}</strong><br>
+                        {{ $setting->currency_icon }}{{ number_format($earnings['settled_net'], 2, ',', '.') }}</div>
+                      <div class="col-md-3 col-6 mb-2"><strong>{{ __('admin.Pending settlement (orders not completed)') }}</strong><br>
+                        {{ $setting->currency_icon }}{{ number_format($earnings['pending_net'], 2, ',', '.') }}</div>
+                      <div class="col-md-3 col-6 mb-2"><strong>{{ __('admin.Approved withdrawals total') }}</strong><br>
+                        {{ $setting->currency_icon }}{{ number_format($earnings['approved_withdraw_total'], 2, ',', '.') }}</div>
+                    </div>
+                    <div class="alert alert-light border mt-3 mb-0">
+                      <small class="text-muted">{!! __('admin.Earnings help marketplace') !!}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="row mt-4">
                 <div class="col-6">
                   <div class="card">
@@ -34,7 +58,8 @@
 
                         <div class="form-group">
                             <label for="">{{__('admin.Withdraw Amount')}}</label>
-                            <input type="text" class="form-control" name="withdraw_amount">
+                            <input type="number" step="0.01" min="0.01" @if($earnings['withdrawable_balance'] > 0) max="{{ $earnings['withdrawable_balance'] }}" @endif class="form-control" name="withdraw_amount" placeholder="{{ __('admin.Max') }}: {{ number_format($earnings['withdrawable_balance'], 2, ',', '.') }}">
+                            <small class="form-text text-muted">{{ __('admin.Request cannot exceed withdrawable balance') }}</small>
                         </div>
 
 

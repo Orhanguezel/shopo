@@ -25,7 +25,9 @@ class WithdrawController extends Controller
         $seller = $user->seller;
         $withdraws = SellerWithdraw::where('seller_id',$seller->id)->get();
         $setting = Setting::first();
-        return view('seller.withdraw', compact('withdraws','setting'));
+        $earnings = $this->commissionService->getSellerEarningsSummary($seller->id);
+
+        return view('seller.withdraw', compact('withdraws','setting', 'earnings'));
 
     }
 
@@ -41,7 +43,10 @@ class WithdrawController extends Controller
         $methods = WithdrawMethod::whereStatus('1')->get();
 
         $setting = Setting::first();
-        return view('seller.create_withdraw', compact('methods','setting'));
+        $seller = Auth::guard('web')->user()->seller;
+        $earnings = $this->commissionService->getSellerEarningsSummary($seller->id);
+
+        return view('seller.create_withdraw', compact('methods','setting', 'earnings'));
     }
 
     public function getWithDrawAccountInfo($id){

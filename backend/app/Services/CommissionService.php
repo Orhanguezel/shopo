@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\CommissionLedger;
+use App\Models\SellerWithdraw;
 use App\Models\Vendor;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Log;
@@ -80,11 +81,44 @@ class CommissionService
             ->where('status', 'settled')
             ->sum('seller_net_amount');
 
-        $totalWithdrawn = \App\Models\SellerWithdraw::where('seller_id', $sellerId)
+        $totalWithdrawn = SellerWithdraw::where('seller_id', $sellerId)
             ->where('status', 1)
             ->sum('total_amount');
 
         return max(0, (float) $totalNet - (float) $totalWithdrawn);
+    }
+
+    /**
+     * Satıcı paneli: komisyon, net ve çekilebilir tutar özeti.
+     * Not: Kargo ücreti sipariş satırında değil; Iyzico sepetinde ayrı kalem olarak ana üye hesabına gider.
+     */
+    public function getSellerEarningsSummary(int $sellerId): array
+    {
+        $pending = CommissionLedger::where('seller_id', $sellerId)->where('status', 'pending');
+        $settled = CommissionLedger::where('seller_id', $sellerId)->where('status', 'settled');
+
+        $pendingNet = (float) $pending->sum('seller_net_amount');
+        $pendingGross = (float) $pending->sum('gross_amount');
+        $pendingCommission = (float) $pending->sum('commission_amount');
+
+        $settledNet = (float) $settled->sum('seller_net_amount');
+        $settledGross = (float) $settled->sum('gross_amount');
+        $settledCommission = (float) $settled->sum('commission_amount');
+
+        $approvedWithdraw = (float) SellerWithdraw::where('seller_id', $sellerId)->where('status', 1)->sum('total_amount');
+        $pendingWithdrawRequests = (float) SellerWithdraw::where('seller_id', $sellerId)->where('status', 0)->sum('total_amount');
+
+        return [
+            'pending_gross' => $pendingGross,
+            'pending_commission' => $pendingCommission,
+            'pending_net' => $pendingNet,
+            'settled_gross' => $settledGross,
+            'settled_commission' => $settledCommission,
+            'settled_net' => $settledNet,
+            'approved_withdraw_total' => $approvedWithdraw,
+            'pending_withdraw_total' => $pendingWithdrawRequests,
+            'withdrawable_balance' => $this->getSellerBalance($sellerId),
+        ];
     }
 
     /**
