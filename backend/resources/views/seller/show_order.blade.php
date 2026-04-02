@@ -98,6 +98,19 @@
                           @else
                           <span class="badge badge-danger">{{__('admin.Pending')}}</span>
                         @endif
+
+                          @if((int)$order->order_status === 0)
+                            <div class="mt-2">
+                              <form action="{{ route('seller.update-order-status', $order->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="order_status" value="1" />
+                                <button class="btn btn-success btn-sm" type="submit">
+                                  Siparişi Onayla
+                                </button>
+                              </form>
+                            </div>
+                          @endif
                         </address>
                         {{-- Kargo Bilgisi (#74) --}}
                         @php
@@ -116,6 +129,31 @@
                                 <span class="text-muted">Henüz kargo bilgisi girilmemiş.</span>
                             @endif
                         </address>
+
+                        @php
+                          $canCreateCargo = ! $shipment || ($shipment->status ?? '') === 'cancelled';
+                        @endphp
+                        <div class="mt-2">
+                          @if($canCreateCargo)
+                            <button
+                              type="button"
+                              id="createCargoBtn"
+                              class="btn btn-primary btn-sm"
+                              data-order-id="{{ $order->id }}"
+                            >
+                              Kargoya Ver
+                            </button>
+                          @else
+                            <button
+                              type="button"
+                              id="cancelCargoBtn"
+                              class="btn btn-danger btn-sm"
+                              data-order-id="{{ $order->id }}"
+                            >
+                              Kargoyu İptal Et
+                            </button>
+                          @endif
+                        </div>
 
                         @if($setting->map_status == 1)
                         <address>
@@ -316,4 +354,56 @@
             });
         })(jQuery);
     </script>
+
+      <script>
+          (function($) {
+              "use strict";
+
+              $(document).on("click", "#createCargoBtn", function () {
+                  const orderId = $(this).data("order-id");
+                  const csrfToken = "{{ csrf_token() }}";
+                  const $btn = $(this);
+                  const originalText = $btn.text();
+
+                  $btn.prop("disabled", true).text("Kargo oluşturuluyor...");
+
+                  $.ajax({
+                      url: "{{ url('seller/orders') }}/" + orderId + "/cargo",
+                      method: "POST",
+                      data: { _token: csrfToken },
+                      success: function (response) {
+                          toastr.success(response.message || "Kargo oluşturuldu.");
+                          window.location.reload();
+                      },
+                      error: function (xhr) {
+                          toastr.error(xhr.responseJSON?.message || "Kargo oluşturulamadı.");
+                          $btn.prop("disabled", false).text(originalText);
+                      },
+                  });
+              });
+
+              $(document).on("click", "#cancelCargoBtn", function () {
+                  const orderId = $(this).data("order-id");
+                  const csrfToken = "{{ csrf_token() }}";
+                  const $btn = $(this);
+                  const originalText = $btn.text();
+
+                  $btn.prop("disabled", true).text("İptal ediliyor...");
+
+                  $.ajax({
+                      url: "{{ url('seller/orders') }}/" + orderId + "/cargo",
+                      method: "POST",
+                      data: { _token: csrfToken, _method: "DELETE" },
+                      success: function (response) {
+                          toastr.success(response.message || "Kargo iptal edildi.");
+                          window.location.reload();
+                      },
+                      error: function (xhr) {
+                          toastr.error(xhr.responseJSON?.message || "Kargo iptal edilemedi.");
+                          $btn.prop("disabled", false).text(originalText);
+                      },
+                  });
+              });
+          })(jQuery);
+      </script>
 @endsection

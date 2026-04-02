@@ -161,7 +161,7 @@ Route::group([], function () {
     Route::get('/sellers/sitemap', [HomeController::class, 'sellerSitemap'])->name('sellers.sitemap');
 
     Route::get('/sellers', [HomeController::class, 'seller'])->name('sellers');
-    Route::get('/sellers/{shop_name}', [HomeController::class, 'sellerDetail'])->name('seller-detail');
+    Route::get('/sellers/{shop_name}', [HomeController::class, 'sellerDetail'])->name('api.seller-detail');
     Route::get('/product', [HomeController::class, 'product'])->name('product');
     Route::get('/variant-items-by-variant/{variant_name}', [HomeController::class, 'variantItemsByVariant'])->name('variant-items-by-variant');
     Route::get('/search-product', [HomeController::class, 'searchProduct'])->name('search-product');

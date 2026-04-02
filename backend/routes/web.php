@@ -56,6 +56,7 @@ use App\Http\Controllers\WEB\Admin\CountryStateController;
 use App\Http\Controllers\WEB\Admin\NotificationController;
 use App\Http\Controllers\WEB\Admin\ProductBrandController;
 use App\Http\Controllers\WEB\Seller\SellerOrderController;
+use App\Http\Controllers\WEB\Seller\SellerOrderCargoController;
 use App\Http\Controllers\WEB\Admin\AdminLanguageController;
 use App\Http\Controllers\WEB\Admin\AdvertisementController;
 use App\Http\Controllers\WEB\Admin\EmailTemplateController;
@@ -127,6 +128,16 @@ Broadcast::routes(['prefix' => 'seller', 'middleware' => 'auth:web']);
 Broadcast::routes(['prefix' => 'api', 'middleware' => 'auth:api']);
 
 Route::get('/language-switcher', [LanguageSwitchController::class, 'language_switcher'])->name('language-switcher');
+
+/**
+ * Mağaza vitrin linki (Blade: route('seller-detail')) — eskiden API route adıyla /api/sellers/... JSON dönüyordu.
+ * Next.js mağaza sayfası: {frontend_url}/seller/{slug}
+ */
+Route::get('/sellers/{shop_name}', function (string $shop_name) {
+    $frontend = rtrim(optional(Setting::first())->frontend_url, '/') ?: config('app.url');
+
+    return redirect()->away($frontend.'/seller/'.$shop_name);
+})->name('seller-detail');
 
 Route::group([
     'prefix' => 'auth'
@@ -260,6 +271,13 @@ Route::group(['middleware' => ['XSS']], function () {
             Route::get('declined-order', [SellerOrderController::class, 'declinedOrder'])->name('declined-order');
             Route::get('cash-on-delivery', [SellerOrderController::class, 'cashOnDelivery'])->name('cash-on-delivery');
             Route::get('order-show/{id}', [SellerOrderController::class, 'show'])->name('order-show');
+
+            // Seller - order approval (0 -> 1) ve kargo (Geliver) işlemleri
+            Route::put('update-order-status/{id}', [SellerOrderController::class, 'updateOrderStatus'])->name('update-order-status');
+            Route::get('orders/{orderId}/cargo', [SellerOrderCargoController::class, 'show'])->name('orders.cargo.show');
+            Route::get('orders/{orderId}/cargo/offers', [SellerOrderCargoController::class, 'offers'])->name('orders.cargo.offers');
+            Route::post('orders/{orderId}/cargo', [SellerOrderCargoController::class, 'createShipment'])->name('orders.cargo.create');
+            Route::delete('orders/{orderId}/cargo', [SellerOrderCargoController::class, 'cancel'])->name('orders.cargo.cancel');
 
             Route::get('message', [SellerMessageContoller::class, 'index'])->name('message');
             Route::get('message-customer-list', [SellerMessageContoller::class, 'existing_customer_list'])->name('message-customer-list');

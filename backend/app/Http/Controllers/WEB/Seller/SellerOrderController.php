@@ -112,4 +112,55 @@ class SellerOrderController extends Controller
         $setting = Setting::first();
         return view('seller.show_order', compact('order', 'setting'));
     }
+
+    /**
+     * Seller'ın sipariş durumunu güncellemesi (onay/kargoya verildi akışı)
+     * Not: Bu aksiyon yalnızca 0(beklemede) -> 1(kargoya verildi) geçişine izin verir.
+     */
+    public function updateOrderStatus(Request $request, $id)
+    {
+        $rules = [
+            'order_status' => 'required|integer|in:1',
+        ];
+        $this->validate($request, $rules);
+
+        $seller = Auth::guard('web')->user()->seller;
+
+        $order = Order::query()
+            ->where('id', $id)
+            ->whereHas('orderProducts', function ($query) use ($seller) {
+                $query->where('seller_id', $seller->id);
+            })
+            ->first();
+
+        if (! $order) {
+            $notification = [
+                'messege' => 'Bu siparişe erişim yetkiniz yok.',
+                'alert-type' => 'error',
+            ];
+            return redirect()->route('seller.all-order')->with($notification);
+        }
+
+        $currentStatus = (int) $order->order_status;
+        $newStatus = (int) $request->order_status;
+
+        if ($currentStatus !== 0 || $newStatus !== 1) {
+            $notification = [
+                'messege' => 'Sipariş durumu bu işlem için uygun değil.',
+                'alert-type' => 'warning',
+            ];
+            return redirect()->back()->with($notification);
+        }
+
+        $order->order_status = 1;
+        $order->order_approval_date = date('Y-m-d');
+        $order->save();
+
+        $notification = [
+            'messege' => 'Sipariş onaylandı. Kargoya verilme adımına geçebilirsiniz.',
+            'alert-type' => 'success',
+        ];
+
+        return redirect()->back()->with($notification);
+    }
 }
