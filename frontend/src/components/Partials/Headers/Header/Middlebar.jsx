@@ -34,10 +34,12 @@ export default function Middlebar({ className, settings }) {
   const [mobileSearch, setMobileSearch] = useState(false);
   // Hydration fix: auth() reads localStorage (SSR'da yok) — mount sonrası oku
   // pathname dependency: layout'ta kalıcı bileşen olduğu için route değişince yeniden kontrol et
+  // pathname ?? '' → her zaman string, null/undefined olmaz (React hook deps stable size)
+  const stablePath = pathname ?? "";
   const [authUser, setAuthUser] = useState(null);
   useEffect(() => {
     setAuthUser(auth());
-  }, [pathname]);
+  }, [stablePath]);
 
   // Derived values
   const wishlists = wishlistData?.wishlists;

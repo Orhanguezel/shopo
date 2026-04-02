@@ -8,7 +8,7 @@ export default function Error({ error }) {
       fetch("/api/log-error", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: error.message, stack: error.stack?.slice(0, 500) }),
+        body: JSON.stringify({ message: error.message, stack: error.stack?.slice(0, 2000) }),
       }).catch(() => {});
     }
   }, [error]);
