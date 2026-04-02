@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Compair from "../../Helpers/icons/Compair";
 import ThinLove from "../../Helpers/icons/ThinLove";
 import CloseButtonIcon from "../../Helpers/icons/CloseButtonIcon";
@@ -12,7 +12,11 @@ import ServeLangItem from "../../Helpers/ServeLangItem";
 import Multivendor from "../../Shared/Multivendor";
 
 export default function Drawer({ className, open, action }) {
-  const isMultivendor = Multivendor();
+  // Hydration-safe: Multivendor() → settings() → localStorage, mount sonrası oku
+  const [isMultivendor, setIsMultivendor] = useState(null);
+  useEffect(() => {
+    setIsMultivendor(Multivendor());
+  }, []);
   const router = useRouter();
   const [tab, setTab] = useState("category");
   const { websiteSetup } = useSelector((state) => state.websiteSetup);

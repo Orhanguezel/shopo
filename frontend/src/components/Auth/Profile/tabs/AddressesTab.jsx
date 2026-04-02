@@ -817,6 +817,13 @@ export default function AddressesTab({ countryLists }) {
       {!newAddress && (
         <div className="w-full">
           {!isFetchingAddresses && addressesData ? (
+            {addresses && addresses.length === 0 && (
+              <div className="w-full p-6 bg-yellow-50 border border-yellow-200 rounded text-sm text-gray-600 mb-4">
+                <p className="font-semibold mb-1">Henüz teslimat adresiniz yok.</p>
+                <p>Sipariş verebilmek için yukarıdaki <strong>"Yeni Adres Ekle"</strong> butonuyla bir teslimat adresi ekleyin.</p>
+                <p className="mt-1 text-xs text-gray-500">Not: Kişisel bilgilerinizdeki adres farklı bir alandır. Buraya ödeme/teslimat adresi girilir.</p>
+              </div>
+            )}
             <div className="grid sm:grid-cols-2 grid-cols-1 gap-[30px] w-full">
               {addresses &&
                 addresses.length > 0 &&
