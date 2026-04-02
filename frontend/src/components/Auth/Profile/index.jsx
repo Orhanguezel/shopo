@@ -400,21 +400,6 @@ function ProfileContent() {
                       </div>
                     </Link>
                   </div>
-                  {/* Seller operations tab — only for sellers */}
-                  {dashboardApi?.is_seller && (
-                    <div className="item group">
-                      <Link href="/profile#seller-tools">
-                        <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
-                          <span>
-                            <IcoSupport />
-                          </span>
-                          <span className="font-normal text-base capitalize cursor-pointer">
-                            Satıcı Araçları
-                          </span>
-                        </div>
-                      </Link>
-                    </div>
-                  )}
                   {/* Change password tab */}
                   <div className="item group">
                     <Link href="/profile#password">

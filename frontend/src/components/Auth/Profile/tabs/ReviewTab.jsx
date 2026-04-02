@@ -33,9 +33,11 @@ export default function ReviewTab({ className, reviews }) {
                         <Image
                           layout="fill"
                           objectFit="scale-down"
-                          src={`${
-                            appConfig.BASE_URL + datas.product.thumb_image
-                          }`}
+                          src={
+                            datas.product.thumb_image
+                              ? `${appConfig.BASE_URL}${datas.product.thumb_image}`
+                              : "/assets/images/server-error.png"
+                          }
                           alt=""
                           className="w-full h-full object-contain"
                         />

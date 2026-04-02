@@ -174,15 +174,16 @@ export default function Dashboard({ dashBoardData, userLocation }) {
                     <p>{ServeLangItem()?.Address}:</p>
                   </td>
                   <td className="text-base text-qblack font-medium">
-                    {/* Display full address if all parts are available */}
-                    {userLocation.country &&
-                      userLocation.state &&
-                      userLocation.city &&
-                      `${userLocation.city}, ${userLocation.state}${
-                        dashBoardData.personInfo.zip_code
-                          ? ` - ${dashBoardData.personInfo.zip_code}`
-                          : ""
-                      }, ${userLocation.country}`}
+                    {dashBoardData.personInfo.address ||
+                      (userLocation.country &&
+                        userLocation.state &&
+                        userLocation.city &&
+                        `${userLocation.city}, ${userLocation.state}${
+                          dashBoardData.personInfo.zip_code
+                            ? ` - ${dashBoardData.personInfo.zip_code}`
+                            : ""
+                        }, ${userLocation.country}`) ||
+                      ""}
                   </td>
                 </tr>
               </tbody>

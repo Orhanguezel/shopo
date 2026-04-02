@@ -93,6 +93,11 @@ class UserProfileController extends Controller
         $sellerInfo = Vendor::select('id','user_id','banner_image','phone','email','shop_name','slug','open_at','closed_at','address')->where('user_id', $personInfo->id)->first();
         $is_seller = $sellerInfo ? true : false;
 
+        // Satıcı KYC'de girilen adres users tablosunda yoksa vendor adresini kullan
+        if ($is_seller && $sellerInfo && empty($personInfo->address) && !empty($sellerInfo->address)) {
+            $personInfo->address = $sellerInfo->address;
+        }
+
         return response()->json([
             'personInfo' => $personInfo,
             'is_seller' => $is_seller,

@@ -84,9 +84,11 @@ export default function WishlistTab({ className }) {
                         <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED] relative">
                           <Image
                             layout="fill"
-                            src={`${
-                              appConfig.BASE_URL + item.product.thumb_image
-                            }`}
+                            src={
+                              item.product.thumb_image
+                                ? `${appConfig.BASE_URL}${item.product.thumb_image}`
+                                : "/assets/images/server-error.png"
+                            }
                             alt="product"
                             className="w-full h-full object-contain"
                           />
