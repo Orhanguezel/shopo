@@ -337,9 +337,21 @@ Route::group(['middleware' => ['XSS']], function () {
                     ]
                 );
 
-                // TC/IBAN/Vergi bilgilerini güncelle
-                if ($request->filled('tc_identity')) $seller->tc_identity = $request->tc_identity;
-                if ($request->filled('iban')) $seller->iban = $request->iban;
+                // TC/IBAN/Vergi bilgilerini güncelle (IBAN normalize: boşluk sil, büyük harf)
+                if ($request->filled('tc_identity')) {
+                    $tc = preg_replace('/\D/', '', $request->tc_identity);
+                    if (strlen($tc) !== 11) {
+                        return redirect()->back()->withErrors(['tc_identity' => 'TC Kimlik No 11 haneli olmalıdır.'])->withInput();
+                    }
+                    $seller->tc_identity = $tc;
+                }
+                if ($request->filled('iban')) {
+                    $iban = strtoupper(preg_replace('/\s+/', '', $request->iban));
+                    if (!preg_match('/^TR\d{24}$/', $iban)) {
+                        return redirect()->back()->withErrors(['iban' => 'IBAN formatı hatalı. TR ile başlayan 26 karakterli numara olmalıdır. Örn: TR960015700000000083650899'])->withInput();
+                    }
+                    $seller->iban = $iban;
+                }
                 if ($request->filled('tax_number')) $seller->tax_number = $request->tax_number;
                 $seller->kyc_status = 'pending';
                 $seller->kyc_submitted_at = now();

@@ -75,12 +75,30 @@
 
                 <div class="form-group">
                   <label>TC Kimlik No <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control" name="tc_identity" value="{{ $seller->tc_identity }}" placeholder="11 haneli TC Kimlik No" maxlength="11" required>
+                  <input type="text" class="form-control" name="tc_identity" id="tc_identity"
+                    value="{{ $seller->tc_identity }}"
+                    placeholder="Örn: 12345678901"
+                    maxlength="11"
+                    pattern="\d{11}"
+                    title="11 haneli TC Kimlik Numarası (sadece rakam)"
+                    required>
+                  <small class="text-muted">11 haneli, sadece rakamlardan oluşan TC Kimlik Numaranız</small>
                 </div>
 
                 <div class="form-group">
                   <label>IBAN <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control" name="iban" value="{{ $seller->iban }}" placeholder="TR00 0000 0000 0000 0000 0000 00" maxlength="34" required>
+                  <input type="text" class="form-control" name="iban" id="iban_input"
+                    value="{{ $seller->iban }}"
+                    placeholder="TR960015700000000083650899"
+                    maxlength="26"
+                    pattern="TR[0-9]{24}"
+                    title="TR ile başlayan 26 karakterli IBAN (boşluksuz, büyük harf)"
+                    required>
+                  <small class="text-muted">
+                    <strong>Format:</strong> TR ile başlayan 26 karakter — boşluksuz yazın.<br>
+                    <strong>Örnek:</strong> <code>TR960015700000000083650899</code><br>
+                    <span class="text-info">Not: IBAN'ınızı bankadan veya internet bankacılığından boşluksuz kopyalayın.</span>
+                  </small>
                 </div>
 
                 <div class="form-group">
@@ -166,3 +184,32 @@
   </section>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+  // IBAN auto-normalize: boşlukları sil, büyük harfe çevir
+  const ibanInput = document.getElementById('iban_input');
+  if (ibanInput) {
+    ibanInput.addEventListener('input', function () {
+      this.value = this.value.toUpperCase().replace(/\s+/g, '');
+    });
+    ibanInput.addEventListener('blur', function () {
+      let val = this.value.toUpperCase().replace(/\s+/g, '');
+      if (val && !val.startsWith('TR')) val = 'TR' + val;
+      this.value = val;
+      if (val.length > 0 && val.length !== 26) {
+        this.setCustomValidity('Türkiye IBAN\'ı TR ile başlayan 26 karakter olmalıdır. Şu an: ' + val.length + ' karakter.');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+  }
+  // TC Kimlik: sadece rakam
+  const tcInput = document.getElementById('tc_identity');
+  if (tcInput) {
+    tcInput.addEventListener('input', function () {
+      this.value = this.value.replace(/\D/g, '');
+    });
+  }
+</script>
+@endpush

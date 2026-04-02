@@ -202,6 +202,20 @@ class SellerKycController extends Controller
         ];
     }
 
+    /**
+     * Iyzico için telefon numarasını +90XXXXXXXXXX formatına normalize et
+     */
+    private function normalizePhone(string $phone): string
+    {
+        $digits = preg_replace('/\D/', '', $phone);
+        if (str_starts_with($digits, '90') && strlen($digits) === 12) {
+            $digits = substr($digits, 2);
+        } elseif (str_starts_with($digits, '0') && strlen($digits) === 11) {
+            $digits = substr($digits, 1);
+        }
+        return '+90' . $digits;
+    }
+
     private function createIyzicoSubMerchant(Vendor $vendor): ?string
     {
         try {
@@ -210,8 +224,9 @@ class SellerKycController extends Controller
 
             // Zorunlu alan validasyonu — eksik veriyle Iyzico'ya istek atmayı önle (#11 revizyon2)
             $tcIdentity = $vendor->tc_identity ?: data_get($user, 'tc_identity');
-            $iban = $vendor->iban ?? '';
-            $phone = $vendor->phone ?? $user->phone ?? '';
+            $iban = strtoupper(preg_replace('/\s+/', '', $vendor->iban ?? ''));
+            $rawPhone = $vendor->phone ?? $user->phone ?? '';
+            $phone = $this->normalizePhone($rawPhone);
 
             $missing = [];
             if (empty($tcIdentity)) $missing[] = 'TC Kimlik No';
