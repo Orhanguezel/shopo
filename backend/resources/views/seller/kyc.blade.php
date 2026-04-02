@@ -70,7 +70,7 @@
           <div class="card">
             <div class="card-header"><h4><i class="fas fa-user-edit mr-1"></i> Kişisel Bilgiler</h4></div>
             <div class="card-body">
-              @if($errors->has('tc_identity') || $errors->has('iban'))
+              @if($errors->any())
                 <div class="alert alert-danger">
                   @foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach
                 </div>
@@ -106,6 +106,28 @@
                     <div class="form-group">
                       <label>Vergi No</label>
                       <input type="text" class="form-control" name="tax_number" value="{{ old('tax_number', $seller->tax_number) }}" placeholder="Kurumsal ise">
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Adres <span class="text-danger">*</span></label>
+                      <textarea class="form-control" name="address" rows="2"
+                        placeholder="Cadde, Mahalle, İlçe, İl (Iyzico için zorunlu)">{{ old('address', $seller->address) }}</textarea>
+                      <small class="text-muted">Iyzico alt üye işyeri kaydı için tam adres zorunludur.</small>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label>Vergi Dairesi</label>
+                      <input type="text" class="form-control" name="tax_office" value="{{ old('tax_office', $seller->tax_office) }}" placeholder="Örn: Kadıköy VD">
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label>Ticari Unvan</label>
+                      <input type="text" class="form-control" name="legal_company_title" value="{{ old('legal_company_title', $seller->legal_company_title) }}" placeholder="Tüzel kişi ise">
                     </div>
                   </div>
                 </div>

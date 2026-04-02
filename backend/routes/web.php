@@ -383,6 +383,18 @@ Route::group(['middleware' => ['XSS']], function () {
                     $seller->tax_number = $request->tax_number;
                     $changed = true;
                 }
+                if ($request->filled('address')) {
+                    $seller->address = $request->address;
+                    $changed = true;
+                }
+                if ($request->filled('tax_office')) {
+                    $seller->tax_office = $request->tax_office;
+                    $changed = true;
+                }
+                if ($request->filled('legal_company_title')) {
+                    $seller->legal_company_title = $request->legal_company_title;
+                    $changed = true;
+                }
                 if ($changed) $seller->save();
 
                 return redirect()->route('seller.kyc')->with(['messege' => 'Bilgiler kaydedildi.', 'alert-type' => 'success']);
