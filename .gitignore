@@ -60,5 +60,9 @@ localhost_*.json
 docs/*
 !docs/hesaplar.local.md.example
 !docs/hesaplar.local.txt.example
+!docs/hesaplar-canli-musteri.md.example
+!docs/hesaplar-canli-musteri.txt.example
 docs/hesaplar.local.md
 docs/hesaplar.local.txt
+docs/hesaplar-canli-musteri.md
+docs/hesaplar-canli-musteri.txt
