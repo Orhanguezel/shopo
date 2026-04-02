@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Cart from "../../../Cart";
@@ -20,6 +20,7 @@ import { deleteCookie } from "cookies-next";
 
 export default function Middlebar({ className, settings }) {
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useDispatch();
 
   // Redux selectors
@@ -32,10 +33,11 @@ export default function Middlebar({ className, settings }) {
   const [cartItems, setCartItems] = useState([]);
   const [mobileSearch, setMobileSearch] = useState(false);
   // Hydration fix: auth() reads localStorage (SSR'da yok) — mount sonrası oku
+  // pathname dependency: layout'ta kalıcı bileşen olduğu için route değişince yeniden kontrol et
   const [authUser, setAuthUser] = useState(null);
   useEffect(() => {
     setAuthUser(auth());
-  }, []);
+  }, [pathname]);
 
   // Derived values
   const wishlists = wishlistData?.wishlists;
