@@ -19,7 +19,7 @@ class SellerOrderController extends Controller
 
     public function index(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with('user')->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->paginate(15);
         $title = trans('admin_validation.All Orders');
@@ -29,7 +29,7 @@ class SellerOrderController extends Controller
 
     public function pendingOrder(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with('user')->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('order_status',0)->paginate(15);
         $title = trans('admin_validation.Pending Orders');
@@ -39,7 +39,7 @@ class SellerOrderController extends Controller
 
     public function pregressOrder(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with('user')->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('order_status',1)->paginate(15);
         $title = trans('admin_validation.Pregress Orders');
@@ -49,7 +49,7 @@ class SellerOrderController extends Controller
 
     public function deliveredOrder(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with('user')->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('order_status',2)->paginate(15);
         $title = trans('admin_validation.Delivered Orders');
@@ -59,7 +59,7 @@ class SellerOrderController extends Controller
 
     public function completedOrder(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with('user')->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('order_status',3)->paginate(15);
         $title = trans('admin_validation.Completed Orders');
@@ -69,7 +69,7 @@ class SellerOrderController extends Controller
 
     public function declinedOrder(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with('user')->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('order_status',4)->paginate(15);
         $title = trans('admin_validation.Declined Orders');
@@ -79,7 +79,7 @@ class SellerOrderController extends Controller
 
     public function cashOnDelivery(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with('user')->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('cash_on_delivery',1)->paginate(15);
 
@@ -114,13 +114,12 @@ class SellerOrderController extends Controller
     }
 
     /**
-     * Seller'ın sipariş durumunu güncellemesi (onay/kargoya verildi akışı)
-     * Not: Bu aksiyon yalnızca 0(beklemede) -> 1(kargoya verildi) geçişine izin verir.
+     * Seller sipariş durumu: 0 (beklemede) → 1 (işlemde), 1 → 2 (teslim edildi)
      */
     public function updateOrderStatus(Request $request, $id)
     {
         $rules = [
-            'order_status' => 'required|integer|in:1',
+            'order_status' => 'required|integer|in:1,2',
         ];
         $this->validate($request, $rules);
 
@@ -144,22 +143,37 @@ class SellerOrderController extends Controller
         $currentStatus = (int) $order->order_status;
         $newStatus = (int) $request->order_status;
 
-        if ($currentStatus !== 0 || $newStatus !== 1) {
+        if ($newStatus === 1) {
+            if ($currentStatus !== 0) {
+                $notification = [
+                    'messege' => 'Sipariş durumu bu işlem için uygun değil.',
+                    'alert-type' => 'warning',
+                ];
+                return redirect()->back()->with($notification);
+            }
+            $order->order_status = 1;
+            $order->order_approval_date = date('Y-m-d');
+            $order->save();
             $notification = [
-                'messege' => 'Sipariş durumu bu işlem için uygun değil.',
-                'alert-type' => 'warning',
+                'messege' => 'Sipariş onaylandı. Kargoya verebilir veya teslim bilgisini güncelleyebilirsiniz.',
+                'alert-type' => 'success',
             ];
-            return redirect()->back()->with($notification);
+        } elseif ($newStatus === 2) {
+            if ($currentStatus !== 1) {
+                $notification = [
+                    'messege' => 'Sadece “kargoda / işlemde” siparişler teslim olarak işaretlenebilir.',
+                    'alert-type' => 'warning',
+                ];
+                return redirect()->back()->with($notification);
+            }
+            $order->order_status = 2;
+            $order->order_delivered_date = date('Y-m-d');
+            $order->save();
+            $notification = [
+                'messege' => 'Sipariş teslim edildi olarak işaretlendi.',
+                'alert-type' => 'success',
+            ];
         }
-
-        $order->order_status = 1;
-        $order->order_approval_date = date('Y-m-d');
-        $order->save();
-
-        $notification = [
-            'messege' => 'Sipariş onaylandı. Kargoya verilme adımına geçebilirsiniz.',
-            'alert-type' => 'success',
-        ];
 
         return redirect()->back()->with($notification);
     }

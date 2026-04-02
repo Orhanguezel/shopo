@@ -111,6 +111,16 @@
                               </form>
                             </div>
                           @endif
+                          @if((int)$order->order_status === 1)
+                            <div class="mt-2">
+                              <form action="{{ route('seller.update-order-status', $order->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="order_status" value="2" />
+                                <button class="btn btn-info btn-sm" type="submit">Teslim Edildi</button>
+                              </form>
+                            </div>
+                          @endif
                         </address>
                         {{-- Kargo Bilgisi (#74) --}}
                         @php
