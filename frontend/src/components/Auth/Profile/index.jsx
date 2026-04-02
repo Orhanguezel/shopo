@@ -289,7 +289,7 @@ function ProfileContent() {
                 dashboardApi.is_seller && (
                   <div className="switch-dashboard flex md:flex-row md:space-x-3 flex-col space-y-3 md:space-y-0 rtl:space-x-reverse rtl:space-x-reverse items-center">
                     <p className="text-qgray text-base">
-                      {ServeLangItem()?.Switch_Dashboard || "Satıcı Paneline Geçiş Yap"}
+                      Satıcı Paneline Geçiş Yap
                     </p>
                     <button
                       onClick={switchDashboardHandler}
