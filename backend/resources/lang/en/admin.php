@@ -683,7 +683,7 @@
   'Earnings breakdown' => 'Earnings breakdown',
   'Net from completed orders' => 'Net from completed orders',
   'Approved withdrawals total' => 'Approved withdrawals (paid out)',
-  'Earnings help marketplace' => '<strong>How payouts work:</strong> Your net share is calculated per product line (after platform commission). It becomes <strong>withdrawable</strong> only after the order is marked <strong>completed</strong> in the admin panel. Shipping fees are charged as a separate basket line in İyzico and go to the marketplace account, not to the seller product split. If İyzico Marketplace + sub-merchant is enabled, the card payment is split by İyzico according to basket items; this screen shows your <strong>internal</strong> ledger used for manual withdrawal requests.',
+  'Earnings help marketplace' => '<strong>What do these numbers show?</strong> Your net amount from sales after the platform commission. This is <strong>not</strong> your live bank or İyzico balance—it is calculated in this system from your orders.<br><br><strong>When does it become withdrawable?</strong> After the order is marked <strong>completed</strong> in the admin panel.<br><br><strong>How do I get paid?</strong> You submit a request here; after admin approval, payment is sent to the account details you provide (e.g. IBAN). Card payments are processed by İyzico; this screen is for limits and summary only. Shipping is handled separately for the marketplace, not as part of the product line total here.',
   'Request cannot exceed withdrawable balance' => 'You cannot request more than your withdrawable balance.',
   'Max' => 'Max',
   'Stock In Quantity' => 'Stock In Quantity',

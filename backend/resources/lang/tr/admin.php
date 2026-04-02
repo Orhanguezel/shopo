@@ -686,7 +686,7 @@ return array (
   'Earnings breakdown' => 'Kazanç özeti',
   'Net from completed orders' => 'Tamamlanan siparişlerden net',
   'Approved withdrawals total' => 'Onaylanan çekimler (ödenen)',
-  'Earnings help marketplace' => '<strong>Ödeme nasıl işler?</strong> Payınız ürün satırları üzerinden, platform komisyonu düşüldükten sonra hesaplanır. Tutar <strong>çekilebilir</strong> olması için siparişin yönetim panelinde <strong>tamamlandı</strong> durumuna geçmesi gerekir. Kargo ücreti İyzico sepetinde ayrı kalem olup pazaryeri ana hesabına yazılır; satıcı payı ürün satırlarından hesaplanır. İyzico pazaryeri + alt üye (sub-merchant) açıksa kart ödemesi İyzico tarafından sepet kalemlerine göre bölünür; bu ekrandaki rakamlar <strong>manuel çekim talebi</strong> için kullanılan iç muhasebe kaydıdır.',
+  'Earnings help marketplace' => '<strong>Bu rakamlar neyi gösterir?</strong> Sattığınız ürünlerden, platform komisyonu düştükten sonra size kalan net tutarı. Bu, banka veya İyzico’daki anlık bakiye değil; sipariş kayıtlarına göre sitede hesaplanan tutardır.<br><br><strong>Ne zaman çekilebilir olur?</strong> Sipariş yönetim panelinde <strong>tamamlandı</strong> işaretlenince net tutarınız çekilebilir bakiyeye eklenir.<br><br><strong>Para çekme nasıl işler?</strong> Buradan talep açarsınız; yönetici onayladıktan sonra ödeme, verdiğiniz hesap bilgisine (ör. IBAN) göre yapılır. Kartla ödeme İyzico üzerinden alınır; bu ekran ise “ne kadar talep edebilirsiniz” ve özet bilgi içindir. Kargo bedeli ürün satırına eklenmez; pazaryeri tarafından ayrı yönetilir.',
   'Request cannot exceed withdrawable balance' => 'Tutar çekilebilir bakiyeden fazla olamaz.',
   'Max' => 'En fazla',
   'Stock In Quantity' => 'Stok Miktarı',
