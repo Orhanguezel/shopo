@@ -23,7 +23,13 @@
                         <table class="table table-bordered table-striped table-hover">
                             <tr>
                                 <td width="50%">{{__('admin.Seller')}}</td>
-                                <td width="50%"><a href="{{ route('admin.seller-show',$withdraw->seller->id) }}">{{ $withdraw->seller->user->name }}</a></td>
+                                <td width="50%">
+                                    @if($withdraw->seller)
+                                        <a href="{{ route('admin.seller-show',$withdraw->seller->id) }}">{{ $withdraw->seller->user->name ?? '—' }}</a>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
                             </tr>
                             <tr>
                                 <td width="50%">{{__('admin.Withdraw Method')}}</td>
@@ -73,14 +79,15 @@
 
                         </table>
 
-                        @if ($withdraw->status == 0)
+                        @if ($withdraw->status == 0 && $withdraw->seller)
                             <form action="{{ route('admin.approved-seller-withdraw', $withdraw->id) }}" method="POST" id="approved-withdraw">
                                 @csrf
                                 @method('PUT')
                             </form>
 
-                            <a href="{{ route('admin.show-seller-withdraw',$withdraw->id) }}" class="btn btn-primary" onclick="event.preventDefault();
-                                document.getElementById('approved-withdraw').submit();">{{__('admin.Approve withdraw')}}</i></a>
+                            <button type="submit" form="approved-withdraw" class="btn btn-success">{{__('admin.Approve withdraw')}}</button>
+                        @elseif($withdraw->status == 0)
+                            <p class="text-danger small mb-2">{{ __('admin_validation.Seller or user record missing') }}</p>
                         @endif
 
 

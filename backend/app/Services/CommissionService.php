@@ -73,7 +73,7 @@ class CommissionService
 
     /**
      * Get the withdrawable balance for a seller.
-     * Balance = SUM(seller_net_amount from settled ledger entries) - SUM(approved withdrawals)
+     * Balance = settled net − approved withdrawals − pending withdrawal requests (status 0).
      */
     public function getSellerBalance(int $sellerId): float
     {
@@ -81,11 +81,41 @@ class CommissionService
             ->where('status', 'settled')
             ->sum('seller_net_amount');
 
-        $totalWithdrawn = SellerWithdraw::where('seller_id', $sellerId)
+        $totalApproved = SellerWithdraw::where('seller_id', $sellerId)
             ->where('status', 1)
             ->sum('total_amount');
 
-        return max(0, (float) $totalNet - (float) $totalWithdrawn);
+        $totalPendingRequests = SellerWithdraw::where('seller_id', $sellerId)
+            ->where('status', 0)
+            ->sum('total_amount');
+
+        return max(0, (float) $totalNet - (float) $totalApproved - (float) $totalPendingRequests);
+    }
+
+    /**
+     * Admin onayı: bu talep hâlâ deftere göre güvenli mi? (sipariş iadesi vb. sonrası)
+     */
+    public function canApproveSellerWithdraw(SellerWithdraw $withdraw): bool
+    {
+        if ((int) $withdraw->status !== 0) {
+            return false;
+        }
+
+        $sellerId = $withdraw->seller_id;
+        $settled = (float) CommissionLedger::where('seller_id', $sellerId)
+            ->where('status', 'settled')
+            ->sum('seller_net_amount');
+        $approved = (float) SellerWithdraw::where('seller_id', $sellerId)
+            ->where('status', 1)
+            ->sum('total_amount');
+        $pendingOther = (float) SellerWithdraw::where('seller_id', $sellerId)
+            ->where('status', 0)
+            ->where('id', '!=', $withdraw->id)
+            ->sum('total_amount');
+
+        $ceiling = $settled - $approved - $pendingOther;
+
+        return round((float) $withdraw->total_amount, 2) <= round($ceiling, 2);
     }
 
     /**
