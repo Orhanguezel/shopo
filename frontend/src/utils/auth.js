@@ -3,8 +3,12 @@ import { getCookie } from "cookies-next";
 export default function auth() {
   if (typeof window !== "undefined") {
     // First try to get from localStorage (for backward compatibility)
-    if (localStorage.getItem("auth")) {
-      return JSON.parse(localStorage.getItem("auth"));
+    const raw = localStorage.getItem("auth");
+    if (raw && raw !== "null" && raw !== "undefined") {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") return parsed;
+      } catch {}
     }
 
     // If not in localStorage, try to get from cookie

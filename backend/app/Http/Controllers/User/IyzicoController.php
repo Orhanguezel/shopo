@@ -97,6 +97,18 @@ class IyzicoController extends Controller
             $callbackUrl = route('iyzico.callback', ['order_id' => $order->id]);
             $basketItems = $this->buildGuestBasketItems($order, $cartProducts, $iyzicoConfig);
 
+            // Marketplace mode aktif ama tüm ürünlerde sub-merchant key yoksa standard moda geç
+            if ($iyzicoConfig->marketplace_mode) {
+                $allHaveSubMerchant = collect($basketItems)->every(fn($item) => !empty($item['sub_merchant_key']));
+                if (!$allHaveSubMerchant) {
+                    $basketItems = array_map(function ($item) {
+                        unset($item['sub_merchant_key'], $item['sub_merchant_price']);
+                        return $item;
+                    }, $basketItems);
+                    Log::warning('Iyzico: marketplace mode aktif ama sub-merchant key eksik, standard moda geçiliyor', ['order_id' => $order->id]);
+                }
+            }
+
             // Kargo ücretini basket items'a ekle — Iyzico, basket toplamı = price olmasını zorunlu kılar
             if ((float)$shippingFee > 0) {
                 $basketItems[] = [
@@ -266,6 +278,18 @@ class IyzicoController extends Controller
 
             $callbackUrl = route('iyzico.callback', ['order_id' => $order->id]);
             $basketItems = $this->buildGuestBasketItems($order, $cartProducts, $iyzicoConfig);
+
+            // Marketplace mode aktif ama tüm ürünlerde sub-merchant key yoksa standard moda geç
+            if ($iyzicoConfig->marketplace_mode) {
+                $allHaveSubMerchant = collect($basketItems)->every(fn($item) => !empty($item['sub_merchant_key']));
+                if (!$allHaveSubMerchant) {
+                    $basketItems = array_map(function ($item) {
+                        unset($item['sub_merchant_key'], $item['sub_merchant_price']);
+                        return $item;
+                    }, $basketItems);
+                    Log::warning('Iyzico: marketplace mode aktif ama sub-merchant key eksik, standard moda geçiliyor', ['order_id' => $order->id]);
+                }
+            }
 
             // Kargo ücretini basket items'a ekle
             if ((float)$shippingFee > 0) {

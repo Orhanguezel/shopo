@@ -55,3 +55,6 @@ docs/lighthouse/*.json
 *.pem
 *.tmp
 localhost_*.json
+
+
+docs

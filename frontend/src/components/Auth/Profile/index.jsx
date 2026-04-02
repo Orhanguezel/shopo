@@ -24,6 +24,7 @@ import IcoSupport from "./icons/IcoSupport";
 // Tab component imports
 import AddressesTab from "./tabs/AddressesTab";
 import ReturnRequestsTab from "./tabs/ReturnRequestsTab";
+import SellerOperationsTab from "./tabs/SellerOperationsTab";
 import Dashboard from "./tabs/Dashboard";
 import OrderTab from "./tabs/OrderTab";
 import PasswordTab from "./tabs/PasswordTab";
@@ -288,7 +289,7 @@ function ProfileContent() {
                 dashboardApi.is_seller && (
                   <div className="switch-dashboard flex md:flex-row md:space-x-3 flex-col space-y-3 md:space-y-0 rtl:space-x-reverse rtl:space-x-reverse items-center">
                     <p className="text-qgray text-base">
-                      {ServeLangItem()?.Switch_Dashboard}
+                      {ServeLangItem()?.Switch_Dashboard || "Satıcı Paneline Geçiş Yap"}
                     </p>
                     <button
                       onClick={switchDashboardHandler}
@@ -399,6 +400,21 @@ function ProfileContent() {
                       </div>
                     </Link>
                   </div>
+                  {/* Seller operations tab — only for sellers */}
+                  {dashboardApi?.is_seller && (
+                    <div className="item group">
+                      <Link href="/profile#seller-tools">
+                        <div className="flex space-x-3 rtl:space-x-reverse items-center text-qgray hover:text-qblack capitalize">
+                          <span>
+                            <IcoSupport />
+                          </span>
+                          <span className="font-normal text-base capitalize cursor-pointer">
+                            Satıcı Araçları
+                          </span>
+                        </div>
+                      </Link>
+                    </div>
+                  )}
                   {/* Change password tab */}
                   <div className="item group">
                     <Link href="/profile#password">
@@ -508,6 +524,12 @@ function ProfileContent() {
                         </div>
                       )}
                     </>
+                  ) : active === "seller-tools" ? (
+                    <SellerOperationsTab
+                      token={auth()?.access_token}
+                      isActive={active === "seller-tools"}
+                      isSeller={!!dashboardApi?.is_seller}
+                    />
                   ) : (
                     ""
                   )}

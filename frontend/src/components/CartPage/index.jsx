@@ -57,9 +57,17 @@ function CartPage() {
   const updateItemQuantity = (productId, quantityChange) => {
     if (!cartItems || cartItems.length === 0) return;
 
+    const existingItem = cartItems.find((item) => item.product.id === productId);
+    if (!existingItem) return;
+
+    const newQty = existingItem.qty + quantityChange;
+    if (newQty < 1) {
+      dispatch(deleteItemAction(productId));
+      return;
+    }
+
     const updatedCart = cartItems.map((cartItem) => {
       if (cartItem.product.id === productId) {
-        const newQty = cartItem.qty + quantityChange;
         const basePrice =
           cartItem.product.offer_price || cartItem.product.price;
 
