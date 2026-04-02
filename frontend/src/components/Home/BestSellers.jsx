@@ -20,7 +20,7 @@ export default function BestSellers({ className, sallers = [] }) {
                   width={170}
                   height={170}
                   className="w-full h-full object-contain"
-                  src={`${appConfig.BASE_URL + saller.logo}`}
+                  src={saller.logo ? appConfig.BASE_URL + saller.logo : "/assets/images/server-error.png"}
                   alt={
                     saller.shop_name
                       ? `${saller.shop_name} satici logosu`

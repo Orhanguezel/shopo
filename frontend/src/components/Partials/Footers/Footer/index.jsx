@@ -117,7 +117,7 @@ export default function Footer({ settings }) {
         <div className="w-full flex flex-col items-center mb-[50px]">
           <div className="mb-[40px]">
             <Link href="/">
-              {settings && (
+              {settings?.logo && (
                 <div className="w-[153px] h-[44px] relative">
                   <Image
                     fill

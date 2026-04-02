@@ -236,6 +236,7 @@ Route::group(['middleware' => ['XSS']], function () {
             Route::post('store-product-gallery', [SellerProductGalleryController::class, 'store'])->name('store-product-gallery');
             Route::delete('delete-product-image/{id}', [SellerProductGalleryController::class, 'destroy'])->name('delete-product-image');
             Route::put('product-gallery-status/{id}', [SellerProductGalleryController::class, 'changeStatus'])->name('product-gallery.status');
+            Route::post('product-thumbnail/{id}', [SellerProductController::class, 'updateThumbnail'])->name('product.update-thumbnail');
 
 
             Route::get('product-review', [SellerProductReviewController::class, 'index'])->name('product-review');

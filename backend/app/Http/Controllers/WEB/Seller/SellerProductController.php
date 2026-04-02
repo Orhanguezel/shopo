@@ -177,6 +177,8 @@ class SellerProductController extends Controller
         $product->long_description = clean($request->long_description);
         $product->tags = $request->tags;
         $product->status = 1;
+        // KYC onaylı satıcı: ürün doğrudan yayında (admin ürün onayı gerekmez)
+        $product->approve_by_admin = 1;
         $product->weight = $request->weight;
         $product->is_undefine = 1;
         $product->is_specification = $request->is_specification ? 1 : 0;
@@ -456,6 +458,27 @@ class SellerProductController extends Controller
     public function aiGenerateContent(Request $request)
     {
         return app(\App\Http\Controllers\AiContentController::class)->generate($request);
+    }
+
+    public function updateThumbnail(Request $request, $id)
+    {
+        $request->validate(['thumb_image' => 'required|image|max:5120']);
+
+        $seller = auth()->user()->seller;
+        $product = Product::where('id', $id)->where('vendor_id', $seller->id)->firstOrFail();
+
+        $old = $product->thumb_image;
+        $ext = $request->thumb_image->getClientOriginalExtension();
+        $name = 'uploads/custom-images/thumb-' . $id . '-' . time() . '.' . $ext;
+        Image::make($request->thumb_image)->save(public_path('/' . $name));
+        $product->thumb_image = $name;
+        $product->save();
+
+        if ($old && File::exists(public_path('/' . $old))) {
+            unlink(public_path('/' . $old));
+        }
+
+        return response()->json(['success' => true, 'message' => 'Thumbnail güncellendi.', 'image' => asset($name)]);
     }
 
 }

@@ -122,17 +122,16 @@ export default function ProfileTab({ profileInfo }) {
       );
     }
   }, [profileInfo, stateDropdown]);
-  // get initial location cities
+  // get initial location cities — ref ile sadece bir kez çalışır, race condition önlenir
+  const cityInitialized = useRef(false);
   useEffect(() => {
-    if (profileInfo && !cityDropdown?.length) {
-      getcity(
-        profileInfo.personInfo.state_id &&
-          profileInfo.personInfo.state_id !== ""
-          ? { id: profileInfo.personInfo.state_id }
-          : null
-      );
+    if (profileInfo && !cityInitialized.current) {
+      cityInitialized.current = true;
+      if (profileInfo.personInfo.state_id && profileInfo.personInfo.state_id !== "") {
+        getcity({ id: profileInfo.personInfo.state_id });
+      }
     }
-  }, [profileInfo, cityDropdown]);
+  }, [profileInfo]);
 
   // Initialize countries data from static JSON
   // NOTE: This is for phone number input
@@ -498,7 +497,7 @@ export default function ProfileTab({ profileInfo }) {
               {/* State dropdown — aranabilir */}
               <div className="md:w-1/2 mb-8 md:mb-0">
                 <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
-                  {ServeLangItem()?.State}*
+                  İl*
                 </h2>
                 <div
                   className={`w-full h-[50px] border border-qgray-border flex justify-between items-center mb-2 ${
@@ -542,7 +541,7 @@ export default function ProfileTab({ profileInfo }) {
               {/* City dropdown */}
               <div className="md:w-1/2 w-full">
                 <h2 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
-                  {ServeLangItem()?.City}*
+                  İlçe*
                 </h2>
                 <div
                   className={`w-full h-[50px] border border-qgray-border flex justify-between items-center mb-2 ${

@@ -33,7 +33,7 @@ export default function BrandSection({ className, sectionTitle, brands = [] }) {
                       <Image
                         fill
                         className="object-contain transition-opacity duration-300 opacity-80 group-hover:opacity-100"
-                        src={`${appConfig.BASE_URL + datas.logo}`}
+                        src={datas.logo ? appConfig.BASE_URL + datas.logo : "/assets/images/server-error.png"}
                         alt={`${datas.name} marka logosu`}
                         loading="lazy"
                         sizes="(max-width: 768px) 50vw, 16vw"

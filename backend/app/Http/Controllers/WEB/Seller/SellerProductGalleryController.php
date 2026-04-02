@@ -47,7 +47,7 @@ class SellerProductGalleryController extends Controller
         ];
         $this->validate($request, $rules, $customMessages);
 
-        $product = Product::find($request->product_id)->first();
+        $product = Product::find($request->product_id);
         if($product){
             if($request->images){
                 foreach($request->images as $index => $image){

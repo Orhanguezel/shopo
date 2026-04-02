@@ -67,7 +67,7 @@ export default function Header({
           {/* Logo */}
           <div className="w-[200px] h-full relative">
             <Link href="/">
-              {settings && (
+              {settings?.logo && (
                 <Image
                   width={153}
                   height={44}

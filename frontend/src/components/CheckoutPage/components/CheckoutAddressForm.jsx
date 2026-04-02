@@ -30,11 +30,15 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
   // Get website settings for map configuration
   const webSettings = settings();
 
+  // Pre-fill from logged-in user info
+  const _auth = auth();
+  const _user = _auth?.user || _auth;
+
   // Form data state - same structure as AddressTab
   const [formData, setFormData] = useState({
-    fName: "",
-    email: "",
-    phone: "",
+    fName: _user?.name || "",
+    email: _user?.email || "",
+    phone: _user?.phone || "",
     address: "",
     home: true,
     office: false,
@@ -300,7 +304,7 @@ const CheckoutAddressForm = ({ onAddressSaved, onCancel }) => {
   };
 
   return (
-    <div data-aos="zoom-in" className="w-full">
+    <div className="w-full">
       {/* Form Header */}
       <div className="flex justify-between items-center">
         <h2 className="sm:text-2xl text-xl text-qblack font-medium mb-5">

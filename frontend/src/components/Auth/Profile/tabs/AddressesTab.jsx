@@ -216,10 +216,12 @@ export default function AddressesTab({ countryLists }) {
    * @func saveAddress @const saveAddress
    */
   const addNewAddressHandler = () => {
+    const _auth = auth();
+    const _user = _auth?.user || _auth;
     setFormData({
-      fName: "",
-      email: "",
-      phone: "",
+      fName: _user?.name || "",
+      email: _user?.email || "",
+      phone: _user?.phone || "",
       address: "",
       home: true,
       office: false,
@@ -417,7 +419,7 @@ export default function AddressesTab({ countryLists }) {
 
       {/* Address Form Section */}
       {newAddress && (
-        <div data-aos="zoom-in" className="w-full">
+        <div className="w-full">
           {/* Form Header */}
           <div className="flex justify-between items-center">
             <h2 className="sm:text-2xl text-xl text-qblack font-medium mb-5">
@@ -817,14 +819,15 @@ export default function AddressesTab({ countryLists }) {
       {!newAddress && (
         <div className="w-full">
           {!isFetchingAddresses && addressesData ? (
-            {addresses && addresses.length === 0 && (
-              <div className="w-full p-6 bg-yellow-50 border border-yellow-200 rounded text-sm text-gray-600 mb-4">
-                <p className="font-semibold mb-1">Henüz teslimat adresiniz yok.</p>
-                <p>Sipariş verebilmek için yukarıdaki <strong>"Yeni Adres Ekle"</strong> butonuyla bir teslimat adresi ekleyin.</p>
-                <p className="mt-1 text-xs text-gray-500">Not: Kişisel bilgilerinizdeki adres farklı bir alandır. Buraya ödeme/teslimat adresi girilir.</p>
-              </div>
-            )}
-            <div className="grid sm:grid-cols-2 grid-cols-1 gap-[30px] w-full">
+            <>
+              {addresses && addresses.length === 0 && (
+                <div className="w-full p-6 bg-yellow-50 border border-yellow-200 rounded text-sm text-gray-600 mb-4">
+                  <p className="font-semibold mb-1">Henüz teslimat adresiniz yok.</p>
+                  <p>Sipariş verebilmek için yukarıdaki <strong>"Yeni Adres Ekle"</strong> butonuyla bir teslimat adresi ekleyin.</p>
+                  <p className="mt-1 text-xs text-gray-500">Not: Kişisel bilgilerinizdeki adres farklı bir alandır. Buraya ödeme/teslimat adresi girilir.</p>
+                </div>
+              )}
+              <div className="grid sm:grid-cols-2 grid-cols-1 gap-[30px] w-full">
               {addresses &&
                 addresses.length > 0 &&
                 [...addresses].reverse().map((item, index) => (
@@ -914,7 +917,8 @@ export default function AddressesTab({ countryLists }) {
                     </div>
                   </div>
                 ))}
-            </div>
+              </div>
+            </>
           ) : (
             <div className="flex justify-center items-center h-full mt-10">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>

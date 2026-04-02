@@ -24,8 +24,8 @@ const AddressTabs = ({
   // Callback for address refresh
   onAddressRefresh,
 }) => {
-  // State for showing new address form
-  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
+  // State for showing new address form — auto-open if no addresses
+  const [showNewAddressForm, setShowNewAddressForm] = useState(!addresses || addresses.length === 0);
 
   /**
    * Handle tab switching

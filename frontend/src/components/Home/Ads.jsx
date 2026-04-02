@@ -65,7 +65,7 @@ export default function Ads() {
   return (
     <>
       <div>
-        {ads && announcment && parseInt(announcment.status) === 1 && (
+        {ads && announcment && announcment.image && parseInt(announcment.status) === 1 && (
           <div className="w-full h-full flex fixed left-0 top-0 justify-center z-40 items-center ">
             <div className="w-full h-full fixed left-0 right-0 bg-black  bg-opacity-25"></div>
             <div

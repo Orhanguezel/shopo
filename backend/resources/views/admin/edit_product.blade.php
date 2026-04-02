@@ -135,6 +135,11 @@
                             <input type="text" class="form-control" name="weight" value="{{ $product->weight }}">
                         </div>
 
+                        <div class="form-group col-md-4">
+                            <label>Stok Miktarı (Adet) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="quantity" min="0" value="{{ $product->qty }}">
+                        </div>
+
                         <div class="form-group col-12">
                             <label>{{__('admin.Short Description') }} <span class="text-danger">*</span></label>
                             <textarea name="short_description" cols="30" rows="10" class="form-control text-area-5">{{ $product->short_description }}</textarea>

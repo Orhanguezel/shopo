@@ -14,6 +14,16 @@
           </div>
 
           <div class="section-body">
+            @if ($errors->any())
+              <div class="alert alert-danger">
+                <ul class="mb-0">
+                  @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+            @endif
+
             <div class="d-flex align-items-center mb-4">
               <a href="{{ route('seller.product.index') }}" class="btn btn-primary mr-2"><i class="fas fa-list"></i> {{__('admin.Products')}}</a>
               @include('seller.partials.ai_content_generator_button')
@@ -69,7 +79,7 @@
                             <select name="category" class="form-control select2" id="category">
                                 <option value="">{{__('admin.Select Category')}}</option>
                                 @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" {{ old('category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                 @endforeach
                             </select>
                         </div>

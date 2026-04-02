@@ -374,6 +374,27 @@ export default function CheckoutPage() {
             selectedShippingAddress
           );
           setLocationShippingPrice(calcPrice);
+        } else if (!selectedRule && shippingRules?.length > 0) {
+          // Shipping rule not yet selected (e.g. address just added) — auto-select now
+          const cityId = parseInt(selectedShippingAddress.city_id);
+          const filteredRules = filterShippingRulesByCity(shippingRules, cityId);
+          setShippingRulesByCityId(filteredRules);
+          if (filteredRules.length > 0) {
+            const cartTotal = cart?.cartProducts?.reduce((sum, item) => {
+              const basePrice = item.product?.offer_price || item.product?.price || 0;
+              return sum + parseFloat(basePrice) * parseInt(item.qty);
+            }, 0) || 0;
+            const matching = filteredRules.filter((r) => {
+              if (r.type !== "base_on_price") return true;
+              const from = parseInt(r.condition_from);
+              const to = parseInt(r.condition_to);
+              return from <= cartTotal && (to >= cartTotal || to === -1);
+            });
+            const best = (matching.length > 0 ? matching : filteredRules)
+              .sort((a, b) => parseFloat(a.shipping_fee) - parseFloat(b.shipping_fee))[0];
+            setSelectedRule(best.id.toString());
+            setShippingCharge(best.shipping_fee);
+          }
         }
       } else {
         setShipping(null);
@@ -384,7 +405,7 @@ export default function CheckoutPage() {
         setShippingRulesByCityId([]);
       }
     }
-  }, [addressesData, webSettings, selectedShipping, selectedBilling]);
+  }, [addressesData, webSettings, selectedShipping, selectedBilling, shippingRules, selectedRule]);
 
   // Update cart data when cart changes
   useEffect(() => {

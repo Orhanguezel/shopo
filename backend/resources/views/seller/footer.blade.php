@@ -143,7 +143,7 @@
             format: 'yyyy-mm-dd',
             startDate: '-Infinity'
         });
-        $('.clockpicker').clockpicker();
+        if ($.fn.clockpicker) { $('.clockpicker').clockpicker(); }
 
         // Echo.private("App.Models.User.{{$user->id}}")
         //     .listen('UserToSellerMessage', (e) => {

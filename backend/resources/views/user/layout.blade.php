@@ -269,7 +269,7 @@
   (function($) {
       "use strict";
       $(document).ready(function () {
-            $('.clockpicker').clockpicker();
+            if ($.fn.clockpicker) { $('.clockpicker').clockpicker(); }
 
             Echo.private("App.Models.User.{{$user->id}}")
             .listen('SellerToUser', (e) => {

@@ -184,11 +184,18 @@ const AddressList = ({
     );
   };
 
+  if (!addresses || addresses.length === 0) {
+    return (
+      <div className="w-full p-4 bg-yellow-50 border border-yellow-200 rounded text-sm text-gray-600">
+        <p className="font-semibold mb-1">Kayıtlı adresiniz yok.</p>
+        <p>Yukarıdaki <strong>"Yeni Ekle"</strong> butonuyla bir teslimat adresi ekleyin.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid sm:grid-cols-2 grid-cols-1 gap-3">
-      {addresses &&
-        addresses.length > 0 &&
-        addresses.map((address, i) => renderAddressCard(address, i))}
+      {addresses.map((address, i) => renderAddressCard(address, i))}
     </div>
   );
 };

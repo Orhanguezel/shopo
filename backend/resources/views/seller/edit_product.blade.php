@@ -117,9 +117,13 @@
                             <label>{{__('admin.Offer Price')}} <span class="text-danger">(TL)</span></label>
                             <input type="text" class="form-control" name="offer_price" value="{{ $product->offer_price }}">
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-4">
                             <label>{{__('admin.Weight')}}(g) <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="weight" value="{{ $product->weight }}">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Stok Miktarı (Adet) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="quantity" min="0" value="{{ $product->qty }}">
                         </div>
                         <div class="form-group col-12">
                             <label>{{__('admin.Short Description')}} <span class="text-danger">*</span></label>
@@ -143,8 +147,12 @@
                         <div class="form-group col-md-3">
                             <img id="preview-img" class="admin-img img-fluid rounded" src="{{ asset($product->thumb_image) }}" alt="">
                         </div>
-                        <div class="form-group col-md-9 d-flex align-items-center">
-                            <input type="file" class="form-control-file" name="thumb_image" onchange="previewThumnailImage(event)">
+                        <div class="form-group col-md-9">
+                            <input type="file" class="form-control-file mb-2" id="thumb-input" accept="image/*" onchange="previewThumnailImage(event)">
+                            <button type="button" class="btn btn-primary" id="upload-thumb-btn">
+                                <i class="fas fa-upload mr-1"></i> Thumbnail Yükle
+                            </button>
+                            <small class="d-block text-muted mt-1">Yeni görsel seçip "Thumbnail Yükle" butonuna basın.</small>
                         </div>
                       </div>
                     </div>
@@ -390,6 +398,32 @@
         }
         reader.readAsDataURL(event.target.files[0]);
     };
+
+    // Thumbnail yükleme (bağımsız AJAX)
+    $("#upload-thumb-btn").on("click", function() {
+        var file = $("#thumb-input")[0].files[0];
+        if (!file) { toastr.warning("Lütfen bir küçük resim seçin."); return; }
+        var formData = new FormData();
+        formData.append("_token", "{{ csrf_token() }}");
+        formData.append("thumb_image", file);
+        var btn = $(this);
+        btn.prop("disabled", true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Yükleniyor...');
+        $.ajax({
+            type: "POST",
+            url: "{{ route('seller.product.update-thumbnail', $product->id) }}",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                btn.prop("disabled", false).html('<i class="fas fa-upload mr-1"></i> Thumbnail Yükle');
+                toastr.success("Küçük resim güncellendi.");
+            },
+            error: function(xhr) {
+                btn.prop("disabled", false).html('<i class="fas fa-upload mr-1"></i> Thumbnail Yükle');
+                toastr.error("Yükleme hatası: " + (xhr.responseJSON?.message || "Bilinmeyen hata"));
+            }
+        });
+    });
 
     // Galeri yükleme
     $("#upload-gallery-btn").on("click", function() {
