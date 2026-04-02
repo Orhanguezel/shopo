@@ -279,8 +279,8 @@ function LoginWidget({ redirect = true, loginActionPopup, notVerifyHandler }) {
         {/* Email Input Field */}
         <div className="input-item mb-5">
           <InputCom
-            placeholder="(5XX) XXX XX XX"
-            label="Telefon Numarası*"
+            placeholder="ornek@email.com"
+            label="E-posta*"
             name="email"
             type="text"
             inputClasses="h-[50px]"
