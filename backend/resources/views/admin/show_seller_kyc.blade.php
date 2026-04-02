@@ -93,9 +93,10 @@
                   <td><span class="badge {{ $statusBadge[$status['kyc_status']] ?? 'badge-secondary' }}">{{ $statusLabels[$status['kyc_status']] ?? $status['kyc_status'] }}</span></td>
                 </tr>
                 <tr><td><strong>TC Kimlik</strong></td><td>{{ $seller->tc_identity ?: '-' }}</td></tr>
-                <tr><td><strong>IBAN</strong></td><td>{{ $seller->iban ?: '-' }}</td></tr>
+                <tr><td><strong>IBAN</strong></td><td><code>{{ $seller->iban ?: '-' }}</code></td></tr>
                 <tr><td><strong>Vergi No</strong></td><td>{{ $seller->tax_number ?: '-' }}</td></tr>
                 <tr><td><strong>Vergi Dairesi</strong></td><td>{{ $seller->tax_office ?: '-' }}</td></tr>
+                <tr><td><strong>Adres</strong></td><td>{{ $seller->address ?: (optional($seller->user)->address ?: '-') }}</td></tr>
                 <tr><td><strong>Gönderim Tarihi</strong></td><td>{{ optional($status['submitted_at'])->format('d.m.Y H:i') ?: '-' }}</td></tr>
                 <tr><td><strong>Onay Tarihi</strong></td><td>{{ optional($status['approved_at'])->format('d.m.Y H:i') ?: '-' }}</td></tr>
                 <tr><td><strong>Iyzico Anahtarı</strong></td><td><code class="small">{{ $seller->iyzico_sub_merchant_key ?: '-' }}</code></td></tr>
@@ -107,6 +108,7 @@
                   if (empty($seller->tc_identity) && empty(optional($seller->user)->tc_identity)) $missingFields[] = 'TC Kimlik No';
                   if (empty($seller->iban)) $missingFields[] = 'IBAN';
                   if (empty($seller->phone) && empty(optional($seller->user)->phone)) $missingFields[] = 'Telefon';
+                  if (empty($seller->address) && empty(optional($seller->user)->address)) $missingFields[] = 'Adres';
                 @endphp
                 @if(!empty($missingFields))
                   <div class="alert alert-warning mt-3">
