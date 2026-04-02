@@ -199,7 +199,8 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::post('seller/login', [SellerLoginController::class, 'storeLogin'])->name('seller.login');
         Route::get('seller/logout', [SellerLoginController::class, 'adminLogout'])->name('seller.logout');
 
-        Route::group(['as' => 'seller.', 'prefix' => 'seller'], function () {
+        // auth:web grubu: closure rotaları (kyc, contact-admin) controller middleware'inden yararlanmaz
+        Route::group(['as' => 'seller.', 'prefix' => 'seller', 'middleware' => ['auth:web']], function () {
             Route::get('dashboard', [SellerDashboardController::class, 'index'])->name('dashboard');
             Route::get('my-profile', [SellerProfileController::class, 'index'])->name('my-profile');
             Route::get('state-by-country/{id}', [SellerProfileController::class, 'stateByCountry'])->name('state-by-country');
