@@ -633,7 +633,8 @@ class CheckoutWithoutTokenController extends Controller
         $orderAddress->shipping_phone = $address_info['phone'] ?? '';
         $orderAddress->shipping_address = $address_info['address'] ?? '';
         $orderAddress->shipping_country = $address_country?->name ?? '';
-        $orderAddress->shipping_state = $address_info['countryState']['name'] ?? '';
+        // İl adı: state id ile yüklenen kayıt öncelikli (countryState gövdesi her zaman gelmeyebilir)
+        $orderAddress->shipping_state = $address_state?->name ?? ($address_info['countryState']['name'] ?? '');
         $orderAddress->shipping_city = $address_city?->name ?? '';
         $orderAddress->shipping_address_type = $address_info['type'] ?? '';
         $orderAddress->save();
