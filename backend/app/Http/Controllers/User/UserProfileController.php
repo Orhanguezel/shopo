@@ -165,11 +165,25 @@ class UserProfileController extends Controller
 
     public function myProfile(){
         $user = Auth::guard('api')->user();
-        $personInfo = User::select('id','name','email','phone','image','country_id','state_id','city_id','zip_code','address')->find($user->id);
+        $personInfo = User::select('id','name','email','phone','image','country_id','state_id','city_id','zip_code','address','tc_identity','tax_number')->find($user->id);
         $countries = Country::orderBy('name','asc')->where('status',1)->get();
         $states = CountryState::orderBy('name','asc')->where(['status' => 1, 'country_id' => $user->country_id])->get();
         $cities = City::orderBy('name','asc')->where(['status' => 1, 'country_state_id' => $user->state_id])->get();
         $defaultProfile = BannerImage::select('id','image')->whereId('15')->first();
+
+        // Satıcı KYC'de girilen veriler users tablosunda yoksa vendor'dan merge et
+        $vendor = Vendor::where('user_id', $user->id)->first();
+        if ($vendor) {
+            if (empty($personInfo->tc_identity) && !empty($vendor->tc_identity)) {
+                $personInfo->tc_identity = $vendor->tc_identity;
+            }
+            if (empty($personInfo->tax_number) && !empty($vendor->tax_number)) {
+                $personInfo->tax_number = $vendor->tax_number;
+            }
+            if (empty($personInfo->address) && !empty($vendor->address)) {
+                $personInfo->address = $vendor->address;
+            }
+        }
 
         return response()->json([
             'personInfo' => $personInfo,
