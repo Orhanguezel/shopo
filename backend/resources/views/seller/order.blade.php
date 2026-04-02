@@ -31,7 +31,7 @@
                                     <th width="10%">{{__('admin.Amount')}}</th>
                                     <th width="10%">{{__('admin.Order Status')}}</th>
                                     <th width="10%">{{__('admin.Payment')}}</th>
-                                    <th width="22%">{{__('admin.Action')}}</th>
+                                    <th width="15%">{{__('admin.Action')}}</th>
                                   </tr>
                             </thead>
                             <tbody>
@@ -65,39 +65,8 @@
                                         </td>
 
                                         <td>
-                                        @php
-                                            $cargo = $order->cargoShipment;
-                                            $hasActiveCargo = $cargo && ($cargo->status ?? '') !== 'cancelled';
-                                            $canOpenGeliver = in_array((int) $order->order_status, [0, 1], true);
-                                        @endphp
-                                        <div class="d-flex flex-wrap align-items-center" style="gap: 4px;">
+                                        {{-- Sipariş içi: onay, teslim, kargo — sadece detay sayfasında (admin listesi gibi) --}}
                                         <a href="{{ route('seller.order-show',$order->id) }}" class="btn btn-primary btn-sm" title="{{__('admin.View')}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
-
-                                        @if((int) $order->order_status === 0)
-                                        <form action="{{ route('seller.update-order-status', $order->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('PUT')
-                                            <input type="hidden" name="order_status" value="1" />
-                                            <button type="submit" class="btn btn-success btn-sm">Onayla</button>
-                                        </form>
-                                        @endif
-
-                                        @if((int) $order->order_status === 1)
-                                        <form action="{{ route('seller.update-order-status', $order->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('PUT')
-                                            <input type="hidden" name="order_status" value="2" />
-                                            <button type="submit" class="btn btn-info btn-sm">Teslim Edildi</button>
-                                        </form>
-                                        @endif
-
-                                        @if($canOpenGeliver)
-                                        <a href="{{ route('seller.order-show', $order->id) }}#geliver-kargo" class="btn btn-outline-secondary btn-sm" title="Teklifleri getir, kargo seç, etiket — admin ile aynı Geliver paneli">Geliver</a>
-                                        @endif
-                                        @if($hasActiveCargo && in_array((int) $order->order_status, [0, 1], true))
-                                        <a href="{{ route('seller.order-show', $order->id) }}#geliver-kargo" class="badge badge-secondary align-middle" style="line-height:1.5;">Kargo: {{ Str::limit($cargo->carrier_name ?? 'oluşturuldu', 18) }}</a>
-                                        @endif
-                                        </div>
                                         </td>
                                     </tr>
                                   @endforeach

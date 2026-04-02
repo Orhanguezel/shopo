@@ -21,7 +21,7 @@ class SellerOrderController extends Controller
 
     public function index(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->paginate(15);
         $title = trans('admin_validation.All Orders');
@@ -31,7 +31,7 @@ class SellerOrderController extends Controller
 
     public function pendingOrder(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('order_status',0)->paginate(15);
         $title = trans('admin_validation.Pending Orders');
@@ -41,7 +41,7 @@ class SellerOrderController extends Controller
 
     public function pregressOrder(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('order_status',1)->paginate(15);
         $title = trans('admin_validation.Pregress Orders');
@@ -51,7 +51,7 @@ class SellerOrderController extends Controller
 
     public function deliveredOrder(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('order_status',2)->paginate(15);
         $title = trans('admin_validation.Delivered Orders');
@@ -61,7 +61,7 @@ class SellerOrderController extends Controller
 
     public function completedOrder(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('order_status',3)->paginate(15);
         $title = trans('admin_validation.Completed Orders');
@@ -71,7 +71,7 @@ class SellerOrderController extends Controller
 
     public function declinedOrder(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('order_status',4)->paginate(15);
         $title = trans('admin_validation.Declined Orders');
@@ -81,7 +81,7 @@ class SellerOrderController extends Controller
 
     public function cashOnDelivery(){
         $seller = Auth::guard('web')->user()->seller;
-        $orders = Order::with(['user', 'cargoShipment'])->whereHas('orderProducts',function($query) use ($seller){
+        $orders = Order::with(['user'])->whereHas('orderProducts',function($query) use ($seller){
             $query->where(['seller_id' => $seller->id]);
         })->orderBy('id','desc')->where('cash_on_delivery',1)->paginate(15);
 
