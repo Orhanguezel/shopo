@@ -82,12 +82,19 @@ function ProfileContent() {
 
   // Set active tab based on URL hash (e.g., #dashboard, #profile, etc.)
   useEffect(() => {
-    // Get hash from window.location since Next.js app router doesn't expose hash directly
-    const hash =
-      typeof window !== "undefined"
-        ? window.location.hash.replace("#", "")
-        : "";
-    setActive(hash || "dashboard");
+    const getTabFromHash = () => {
+      const rawHash = window.location.hash;
+      // Birden fazla # birikmiş olabilir (#profile#address#order) — son segmenti al
+      const segments = rawHash.split("#").filter(Boolean);
+      return segments[segments.length - 1] || "dashboard";
+    };
+
+    setActive(getTabFromHash());
+
+    // Aynı pathname'de hash değiştiğinde (tab tıklanınca) aktif tabı güncelle
+    const handleHashChange = () => setActive(getTabFromHash());
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, [pathname, searchParams]);
 
   // switch dashboard handler
