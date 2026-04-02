@@ -1,16 +1,10 @@
-"use client";
 import settings from "./../../utils/settings";
-import { useEffect, useState } from "react";
 
 function Multivendor() {
-  const { enable_multivendor } = settings();
-  const [isMultivendor, setIsMultivendor] = useState(null);
-  useEffect(() => {
-    if (!isMultivendor) {
-      setIsMultivendor(enable_multivendor && parseInt(enable_multivendor));
-    }
-  }, [enable_multivendor, isMultivendor]);
-  return isMultivendor;
+  const settingsData = settings();
+  if (!settingsData) return null;
+  const { enable_multivendor } = settingsData;
+  return enable_multivendor ? parseInt(enable_multivendor) : null;
 }
 
 export default Multivendor;
