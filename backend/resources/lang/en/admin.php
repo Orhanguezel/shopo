@@ -675,6 +675,8 @@
   'Stock' => 'Stock',
   'Sold' => 'Sold',
   'Stock History' => 'Stock History',
+  'Current Stock' => 'Current stock',
+  'No stock log entries yet' => 'No stock entries from this form yet. Current quantity is shown above.',
   'Stock In Quantity' => 'Stock In Quantity',
   'Add Stock' => 'Add Stock',
   'Product Bulk Import' => 'Product Bulk Import',

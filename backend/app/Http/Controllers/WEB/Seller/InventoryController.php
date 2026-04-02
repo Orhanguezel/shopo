@@ -27,9 +27,15 @@ class InventoryController extends Controller
     }
 
     public function show_inventory($id){
-        $product = Product::where('id', $id)->first();
+        $seller = Auth::guard('web')->user()->seller;
+        $product = Product::where('id', $id)->where('vendor_id', $seller->id)->first();
+        if (! $product) {
+            $notification = ['messege' => __('admin_validation.Product not found'), 'alert-type' => 'error'];
 
-        $histories = Inventory::where('product_id', $id)->orderBy('id','desc')->get();
+            return redirect()->route('seller.inventory')->with($notification);
+        }
+
+        $histories = Inventory::where('product_id', $id)->orderBy('id', 'desc')->get();
 
         return view('seller.stock_history')->with(['product' => $product, 'histories' => $histories]);
     }
@@ -45,13 +51,20 @@ class InventoryController extends Controller
         ];
         $this->validate($request, $rules,$customMessages);
 
+        $seller = Auth::guard('web')->user()->seller;
+        $product = Product::where('id', $request->product_id)->where('vendor_id', $seller->id)->first();
+        if (! $product) {
+            $notification = ['messege' => __('admin_validation.Product not found'), 'alert-type' => 'error'];
+
+            return redirect()->route('seller.inventory')->with($notification);
+        }
+
         $inventory = new Inventory();
         $inventory->product_id = $request->product_id;
         $inventory->stock_in = $request->stock_in;
         $inventory->save();
 
-        $product = Product::where('id', $request->product_id)->first();
-        $product->qty = $product->qty + $request->stock_in;
+        $product->qty = $product->qty + (int) $request->stock_in;
         $product->save();
 
         $notification=trans('Added Successfully');
@@ -61,8 +74,19 @@ class InventoryController extends Controller
     }
 
     public function delete_stock($id){
+        $seller = Auth::guard('web')->user()->seller;
         $inventory = Inventory::find($id);
-        $product = Product::where('id', $inventory->product_id)->first();
+        if (! $inventory) {
+            $notification = ['messege' => __('admin_validation.Record not found'), 'alert-type' => 'error'];
+
+            return redirect()->back()->with($notification);
+        }
+        $product = Product::where('id', $inventory->product_id)->where('vendor_id', $seller->id)->first();
+        if (! $product) {
+            $notification = ['messege' => __('admin_validation.Product not found'), 'alert-type' => 'error'];
+
+            return redirect()->route('seller.inventory')->with($notification);
+        }
         $update_qty = $product->qty - $inventory->stock_in;
         $product->qty = $update_qty < 0 ? 0 : $update_qty;
         $product->save();

@@ -81,6 +81,8 @@
   'End time is required' => 'End time is required',
   'Product is required' => 'Product is required',
   'Product already exist' => 'Product already exist',
+  'Product not found' => 'Product not found',
+  'Record not found' => 'Record not found',
   'Added Successfully' => 'Added Successfully',
   'About us is required' => 'About us is required',
   'Copyright is required' => 'Copyright is required',

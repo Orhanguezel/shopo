@@ -25,8 +25,18 @@
                                 </div>
 
                                 <div class="form-group">
+                                    <label for="">{{__('admin.Current Stock')}}</label>
+                                    <input type="text" class="form-control" value="{{ $product->qty }}" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="">{{__('admin.Sold')}}</label>
+                                    <input type="text" class="form-control" value="{{ $product->total_sold }}" readonly>
+                                </div>
+
+                                <div class="form-group">
                                     <label for="">{{__('admin.Stock In Quantity')}}</label>
-                                    <input type="number" name="stock_in" class="form-control">
+                                    <input type="number" name="stock_in" class="form-control" min="1">
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">{{__('admin.Add Stock')}}</button>
@@ -53,16 +63,20 @@
                                   </tr>
                             </thead>
                             <tbody>
-                                @foreach ($histories as $index => $history)
+                                @forelse ($histories as $index => $history)
                                     <tr>
-                                        <td>{{ ++$index }}</td>
+                                        <td>{{ $index + 1 }}</td>
                                         <td>{{ $history->stock_in }}</td>
                                         <td>{{ $history->created_at->format('H:ia d F, Y') }}</td>
                                         <td>
                                             <a href="javascript:;" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger btn-sm" onclick="deleteData({{ $history->id }})"><i class="fa fa-trash" aria-hidden="true"></i></a>
                                         </td>
                                     </tr>
-                                  @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">{{__('admin.No stock log entries yet')}}</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                       </div>

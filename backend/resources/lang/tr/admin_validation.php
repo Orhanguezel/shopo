@@ -81,6 +81,8 @@ return array (
   'End time is required' => 'Bitiş saati gereklidir',
   'Product is required' => 'Ürün gereklidir',
   'Product already exist' => 'Ürün zaten mevcut',
+  'Product not found' => 'Ürün bulunamadı',
+  'Record not found' => 'Kayıt bulunamadı',
   'Added Successfully' => 'Başarıyla Eklendi',
   'About us is required' => 'Hakkımızda gereklidir',
   'Copyright is required' => 'Telif hakkı gereklidir',

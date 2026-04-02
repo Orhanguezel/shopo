@@ -678,6 +678,8 @@ return array (
   'Stock' => 'Stok',
   'Sold' => 'Satıldı',
   'Stock History' => 'Stok Geçmişi',
+  'Current Stock' => 'Mevcut stok',
+  'No stock log entries yet' => 'Bu formdan eklenmiş stok kaydı yok. Güncel adet yukarıda.',
   'Stock In Quantity' => 'Stok Miktarı',
   'Add Stock' => 'Stok Ekle',
   'Product Bulk Import' => 'Ürün Toplu İçe Aktarma',
