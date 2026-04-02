@@ -9,6 +9,8 @@ use App\Models\Setting;
 use App\Models\OrderProduct;
 use App\Models\OrderProductVariant;
 use App\Models\OrderAddress;
+use App\Models\CountryState;
+use App\Models\City;
 use Auth;
 class SellerOrderController extends Controller
 {
@@ -109,8 +111,43 @@ class SellerOrderController extends Controller
             $order->orderProducts()->where('seller_id', $seller->id)->with(['orderProductVariants', 'product'])->get()
         );
 
+        $orderDistinctSellerCount = (int) OrderProduct::query()
+            ->where('order_id', $order->id)
+            ->selectRaw('COUNT(DISTINCT seller_id) as c')
+            ->value('c');
+
+        $sellerLinesSubtotal = 0.0;
+        foreach ($order->orderProducts as $op) {
+            $line = (float) $op->unit_price * (int) $op->qty;
+            foreach ($op->orderProductVariants as $v) {
+                $line += (float) $v->variant_price * (int) $op->qty;
+            }
+            $sellerLinesSubtotal += $line;
+        }
+
+        if ($order->orderAddress) {
+            $addr = $order->orderAddress;
+            if (trim((string) ($addr->shipping_state ?? '')) === '' && (int) $addr->shipping_state_id > 0) {
+                $addr->shipping_state = CountryState::query()->find($addr->shipping_state_id)?->name;
+            }
+            if (trim((string) ($addr->shipping_city ?? '')) === '' && (int) $addr->shipping_city_id > 0) {
+                $addr->shipping_city = City::query()->find($addr->shipping_city_id)?->name;
+            }
+            if (trim((string) ($addr->billing_state ?? '')) === '' && (int) $addr->billing_state_id > 0) {
+                $addr->billing_state = CountryState::query()->find($addr->billing_state_id)?->name;
+            }
+            if (trim((string) ($addr->billing_city ?? '')) === '' && (int) $addr->billing_city_id > 0) {
+                $addr->billing_city = City::query()->find($addr->billing_city_id)?->name;
+            }
+        }
+
         $setting = Setting::first();
-        return view('seller.show_order', compact('order', 'setting'));
+        return view('seller.show_order', compact(
+            'order',
+            'setting',
+            'orderDistinctSellerCount',
+            'sellerLinesSubtotal'
+        ));
     }
 
     /**

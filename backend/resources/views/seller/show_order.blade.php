@@ -3,6 +3,13 @@
 <title>{{__('admin.Invoice')}}</title>
 @endsection
 <style>
+    .seller-invoice-address address {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow: visible;
+        text-overflow: clip;
+        max-width: 100%;
+    }
     @media print {
         .section-header,
         .order-status,
@@ -36,34 +43,57 @@
                     <hr>
                     @php
                         $orderAddress = $order->orderAddress;
+                        $billingPerson = trim(($orderAddress->billing_first_name ?? '').' '.($orderAddress->billing_last_name ?? ''));
+                        if ($billingPerson === '') {
+                            $billingPerson = $orderAddress->billing_name ?? '';
+                        }
+                        $shippingPerson = trim(($orderAddress->shipping_first_name ?? '').' '.($orderAddress->shipping_last_name ?? ''));
+                        if ($shippingPerson === '') {
+                            $shippingPerson = $orderAddress->shipping_name ?? '';
+                        }
+                        $billingLoc = array_filter([$orderAddress->billing_city ?? null, $orderAddress->billing_state ?? null, $orderAddress->billing_country ?? null]);
+                        $shippingLoc = array_filter([$orderAddress->shipping_city ?? null, $orderAddress->shipping_state ?? null, $orderAddress->shipping_country ?? null]);
+                        $multiSeller = ($orderDistinctSellerCount ?? 1) > 1;
                     @endphp
-                    <div class="row">
+                    <div class="row seller-invoice-address">
                       <div class="col-md-6">
                         <address>
                           <strong>{{__('admin.Billing Information')}}:</strong><br>
-                            {{ $orderAddress->billing_first_name . ' '.$orderAddress->billing_last_name }}<br>
+                            @if($billingPerson !== '')
+                            {{ $billingPerson }}<br>
+                            @endif
                             @if ($orderAddress->billing_email)
                             {{ $orderAddress->billing_email }}<br>
                             @endif
                             @if ($orderAddress->billing_phone)
                             {{ $orderAddress->billing_phone }}<br>
                             @endif
-                            {{ $orderAddress->billing_address }},
-                            {{ $orderAddress->billing_city.', '. $orderAddress->billing_state.', '.$orderAddress->billing_country }}<br>
+                            @if($orderAddress->billing_address)
+                            {{ $orderAddress->billing_address }}@if(count($billingLoc))<br>@endif
+                            @endif
+                            @if(count($billingLoc))
+                            {{ implode(', ', $billingLoc) }}<br>
+                            @endif
                         </address>
                       </div>
                       <div class="col-md-6 text-md-right">
                         <address>
                           <strong>{{__('admin.Shipping Information')}} :</strong><br>
-                          {{ $orderAddress->shipping_first_name . ' '.$orderAddress->shipping_last_name }}<br>
+                            @if($shippingPerson !== '')
+                            {{ $shippingPerson }}<br>
+                            @endif
                             @if ($orderAddress->shipping_email)
                             {{ $orderAddress->shipping_email }}<br>
                             @endif
                             @if ($orderAddress->shipping_phone)
                             {{ $orderAddress->shipping_phone }}<br>
                             @endif
-                            {{ $orderAddress->shipping_address }},
-                            {{ $orderAddress->shipping_city.', '. $orderAddress->shipping_state.', '.$orderAddress->shipping_country }}<br>
+                            @if($orderAddress->shipping_address)
+                            {{ $orderAddress->shipping_address }}@if(count($shippingLoc))<br>@endif
+                            @endif
+                            @if(count($shippingLoc))
+                            {{ implode(', ', $shippingLoc) }}<br>
+                            @endif
                         </address>
                       </div>
                     </div>
@@ -184,9 +214,12 @@
                                 <td class="text-center">{{ $setting->currency_icon }}{{ $orderProduct->unit_price }}</td>
                                 <td class="text-center">{{ $orderProduct->qty }}</td>
                                 @php
-                                    $total = ($orderProduct->unit_price * $orderProduct->qty)
+                                    $total = (float) $orderProduct->unit_price * (int) $orderProduct->qty;
+                                    foreach ($orderProduct->orderProductVariants as $v) {
+                                        $total += (float) $v->variant_price * (int) $orderProduct->qty;
+                                    }
                                 @endphp
-                                <td class="text-right">{{ $setting->currency_icon }}{{ $total }}</td>
+                                <td class="text-right">{{ $setting->currency_icon }}{{ round($total, 2) }}</td>
                             </tr>
                             @php
                                 $totalVariant = 0;
@@ -201,23 +234,36 @@
                       <div class="col-lg-6 text-right">
                         <div class="invoice-detail-item">
                             @php
-                                $sub_total = $order->total_amount;
-                                $sub_total = $sub_total - $order->shipping_cost;
-                                $sub_total = $sub_total + $order->coupon_coast;
+                                $sellerSub = round((float) ($sellerLinesSubtotal ?? 0), 2);
+                                if ($multiSeller) {
+                                    $subtotal_display = $sellerSub;
+                                    $discount_display = null;
+                                    $shipping_display = null;
+                                    $total_display = $sellerSub;
+                                } else {
+                                    $subtotal_display = $sellerSub;
+                                    $discount_display = round((float) $order->coupon_coast, 2);
+                                    $shipping_display = round((float) $order->shipping_cost, 2);
+                                    $total_display = round($sellerSub + $shipping_display - $discount_display, 2);
+                                }
                             @endphp
-                            <div class="invoice-detail-name">{{__('admin.Subtotal')}} : {{ $setting->currency_icon }}{{ round($sub_total, 2) }}</div>
+                            <div class="invoice-detail-name">{{__('admin.Subtotal')}} : {{ $setting->currency_icon }}{{ round($subtotal_display, 2) }}</div>
                           </div>
                           <div class="invoice-detail-item">
-                            <div class="invoice-detail-name">{{__('admin.Discount')}}(-) : {{ $setting->currency_icon }}{{ round($order->coupon_coast, 2) }}</div>
+                            <div class="invoice-detail-name">{{__('admin.Discount')}}(-) : @if($multiSeller)<span class="text-muted">—</span>@else{{ $setting->currency_icon }}{{ round($discount_display, 2) }}@endif</div>
                           </div>
                           <div class="invoice-detail-item">
-                            <div class="invoice-detail-name">{{__('admin.Shipping')}} : {{ $setting->currency_icon }}{{ round($order->shipping_cost, 2) }}</div>
+                            <div class="invoice-detail-name">{{__('admin.Shipping')}} : @if($multiSeller)<span class="text-muted">—</span>@else{{ $setting->currency_icon }}{{ round($shipping_display, 2) }}@endif</div>
                           </div>
-
+                          @if($multiSeller)
+                          <div class="invoice-detail-item small text-muted">
+                            <div class="invoice-detail-name">Bu siparişte birden fazla satıcı var; kargo ve kupon sipariş genelinde hesaplanır.</div>
+                          </div>
+                          @endif
 
                         <hr class="mt-2 mb-2">
                         <div class="invoice-detail-item">
-                          <div class="invoice-detail-value invoice-detail-value-lg">{{__('admin.Total')}} : {{ $setting->currency_icon }}{{ round($order->total_amount, 2) }}</div>
+                          <div class="invoice-detail-value invoice-detail-value-lg">{{__('admin.Total')}} : {{ $setting->currency_icon }}{{ round($total_display, 2) }}</div>
                         </div>
                       </div>
 
