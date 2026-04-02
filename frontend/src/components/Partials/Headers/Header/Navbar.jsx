@@ -30,6 +30,13 @@ export default function Navbar({ className }) {
   // Local state
   const [categoryToggle, setToggle] = useState(false);
   const [subCatHeight, setHeight] = useState(null);
+  // Hydration-safe auth + multivendor state — localStorage sadece mount sonrası okunur
+  const [authUser, setAuthUser] = useState(null);
+  const [multivendor, setMultivendor] = useState(null);
+  useEffect(() => {
+    setAuthUser(auth());
+    setMultivendor(Multivendor());
+  }, []);
   const navLinkClass =
     "flex items-center text-sm font-600 cursor-pointer text-qblack hover:text-white transition-colors";
 
@@ -388,7 +395,7 @@ export default function Navbar({ className }) {
                     </span>
                   </Link>
                 </li>
-                {Multivendor() === 1 && (
+                {multivendor === 1 && (
                   <li>
                     <Link href="seller-terms-condition">
                       <span className="text-qgray text-sm font-400 border-b border-transparent hover:border-qyellow hover:text-qyellow cursor-pointer">
@@ -433,9 +440,10 @@ export default function Navbar({ className }) {
 
   /**
    * Render seller button — giriş yapmış satıcıya "Satıcı Paneli", yoksa gizle
+   * authUser state kullanıyoruz, auth() direkt çağırmıyoruz (hydration-safe)
    */
   const renderSellerButton = () => {
-    const userData = auth();
+    const userData = authUser;
     const isSeller = userData?.user?.seller;
 
     if (!userData) return null; // Giriş yapmamış → buton gizli
@@ -498,7 +506,7 @@ export default function Navbar({ className }) {
             </div>
 
             {/* Right Section: Seller Panel Button */}
-            {Multivendor() === 1 && renderSellerButton()}
+            {multivendor === 1 && renderSellerButton()}
           </div>
         </div>
       </div>
