@@ -56,5 +56,7 @@ docs/lighthouse/*.json
 *.tmp
 localhost_*.json
 
-
-docs
+# docs: çoğu not yerel; yalnızca hesap şablonu örneği repoda
+docs/*
+!docs/hesaplar.local.md.example
+docs/hesaplar.local.md
