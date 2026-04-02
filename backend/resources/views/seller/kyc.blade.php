@@ -64,6 +64,60 @@
         </div>
       @endif
 
+      {{-- Kişisel Bilgiler Formu --}}
+      <div class="row mb-3">
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-header"><h4><i class="fas fa-user-edit mr-1"></i> Kişisel Bilgiler</h4></div>
+            <div class="card-body">
+              @if($errors->has('tc_identity') || $errors->has('iban'))
+                <div class="alert alert-danger">
+                  @foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach
+                </div>
+              @endif
+              <form action="{{ route('seller.kyc.update-info') }}" method="POST">
+                @csrf
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>TC Kimlik No</label>
+                      <input type="text" class="form-control" name="tc_identity" id="tc_identity"
+                        value="{{ old('tc_identity', $seller->tc_identity) }}"
+                        placeholder="12345678901"
+                        maxlength="11"
+                        pattern="\d{11}"
+                        title="11 haneli TC Kimlik Numarası">
+                      <small class="text-muted">11 haneli, sadece rakam</small>
+                    </div>
+                  </div>
+                  <div class="col-md-5">
+                    <div class="form-group">
+                      <label>IBAN</label>
+                      <input type="text" class="form-control" name="iban" id="iban_input"
+                        value="{{ old('iban', $seller->iban) }}"
+                        placeholder="TR960015700000000083650899"
+                        maxlength="26"
+                        pattern="TR[0-9]{24}"
+                        title="TR ile başlayan 26 karakterli IBAN">
+                      <small class="text-muted">TR + 24 rakam, boşluksuz</small>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label>Vergi No</label>
+                      <input type="text" class="form-control" name="tax_number" value="{{ old('tax_number', $seller->tax_number) }}" placeholder="Kurumsal ise">
+                    </div>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-success">
+                  <i class="fas fa-save mr-1"></i> Bilgileri Kaydet
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="row">
         {{-- Belge Yükleme Formu --}}
         <div class="col-lg-6">
@@ -72,41 +126,6 @@
             <div class="card-body">
               <form action="{{ route('seller.kyc.upload') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-
-                <div class="form-group">
-                  <label>TC Kimlik No <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control" name="tc_identity" id="tc_identity"
-                    value="{{ $seller->tc_identity }}"
-                    placeholder="Örn: 12345678901"
-                    maxlength="11"
-                    pattern="\d{11}"
-                    title="11 haneli TC Kimlik Numarası (sadece rakam)"
-                    required>
-                  <small class="text-muted">11 haneli, sadece rakamlardan oluşan TC Kimlik Numaranız</small>
-                </div>
-
-                <div class="form-group">
-                  <label>IBAN <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control" name="iban" id="iban_input"
-                    value="{{ $seller->iban }}"
-                    placeholder="TR960015700000000083650899"
-                    maxlength="26"
-                    pattern="TR[0-9]{24}"
-                    title="TR ile başlayan 26 karakterli IBAN (boşluksuz, büyük harf)"
-                    required>
-                  <small class="text-muted">
-                    <strong>Format:</strong> TR ile başlayan 26 karakter — boşluksuz yazın.<br>
-                    <strong>Örnek:</strong> <code>TR960015700000000083650899</code><br>
-                    <span class="text-info">Not: IBAN'ınızı bankadan veya internet bankacılığından boşluksuz kopyalayın.</span>
-                  </small>
-                </div>
-
-                <div class="form-group">
-                  <label>Vergi No</label>
-                  <input type="text" class="form-control" name="tax_number" value="{{ $seller->tax_number }}" placeholder="Vergi numarası (kurumsal ise)">
-                </div>
-
-                <hr>
 
                 <div class="form-group">
                   <label>Belge Türü <span class="text-danger">*</span></label>

@@ -359,6 +359,35 @@ Route::group(['middleware' => ['XSS']], function () {
                 return redirect()->route('seller.kyc')->with(['messege' => 'Belge başarıyla yüklendi.', 'alert-type' => 'success']);
             })->name('kyc.upload');
 
+            Route::post('kyc/update-info', function (\Illuminate\Http\Request $request) {
+                $seller = \Auth::guard('web')->user()->seller;
+                $changed = false;
+
+                if ($request->filled('tc_identity')) {
+                    $tc = preg_replace('/\D/', '', $request->tc_identity);
+                    if (strlen($tc) !== 11) {
+                        return redirect()->back()->withErrors(['tc_identity' => 'TC Kimlik No 11 haneli olmalıdır.'])->withInput();
+                    }
+                    $seller->tc_identity = $tc;
+                    $changed = true;
+                }
+                if ($request->filled('iban')) {
+                    $iban = strtoupper(preg_replace('/\s+/', '', $request->iban));
+                    if (!preg_match('/^TR\d{24}$/', $iban)) {
+                        return redirect()->back()->withErrors(['iban' => 'IBAN formatı hatalı. TR ile başlayan 26 karakterli numara olmalıdır. Örn: TR960015700000000083650899'])->withInput();
+                    }
+                    $seller->iban = $iban;
+                    $changed = true;
+                }
+                if ($request->filled('tax_number')) {
+                    $seller->tax_number = $request->tax_number;
+                    $changed = true;
+                }
+                if ($changed) $seller->save();
+
+                return redirect()->route('seller.kyc')->with(['messege' => 'Bilgiler kaydedildi.', 'alert-type' => 'success']);
+            })->name('kyc.update-info');
+
             Route::get('inventory', [SellerInventoryController::class, 'index'])->name('inventory');
             Route::get('stock-history/{id}', [SellerInventoryController::class, 'show_inventory'])->name('stock-history');
             Route::post('add-stock', [SellerInventoryController::class, 'add_stock'])->name('add-stock');
