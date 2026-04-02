@@ -36,7 +36,13 @@ class IyzicoController extends Controller
         ]);
 
         $user = Auth::guard('api')->user();
-        $cartProducts = collect($request->input('cart_products', []));
+        $cartProductIds = $request->input('cart_products', []);
+
+        // cart_products olarak ham ID listesi geldiyse ShoppingCart objelerine çevir
+        $cartProducts = ShoppingCart::with(['product', 'variants.variantItem'])
+            ->where('user_id', $user->id)
+            ->when(!empty($cartProductIds), fn($q) => $q->whereIn('id', $cartProductIds))
+            ->get();
 
         if ($cartProducts->count() == 0) {
             return response()->json(['message' => trans('user_validation.Your shopping cart is empty')], 403);
