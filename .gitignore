@@ -59,4 +59,6 @@ localhost_*.json
 # docs: çoğu not yerel; yalnızca hesap şablonu örneği repoda
 docs/*
 !docs/hesaplar.local.md.example
+!docs/hesaplar.local.txt.example
 docs/hesaplar.local.md
+docs/hesaplar.local.txt
