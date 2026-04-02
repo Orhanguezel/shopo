@@ -260,7 +260,11 @@ function ProfileContent() {
     }
   }, [dashboardApi, getCountryListData, getStateListApi, getCityListApi]);
 
-  if (!authChecked) return null;
+  if (!authChecked) return (
+    <div className="w-full flex justify-center items-center min-h-[400px]">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+    </div>
+  );
 
   return (
     <div className="profile-page-wrapper w-full">
