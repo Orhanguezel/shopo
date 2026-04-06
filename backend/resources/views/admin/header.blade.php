@@ -34,6 +34,7 @@
   @yield('clockpicker-css')
   <link rel="stylesheet" href="{{ asset('backend/datetimepicker/jquery.datetimepicker.css') }}">
   <link rel="stylesheet" href="{{ asset('backend/css/iziToast.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('backend/css/custom.css') }}">
 
   <script src="{{ asset('backend/js/jquery-3.6.0.min.js') }}"></script>
     @yield('style')
